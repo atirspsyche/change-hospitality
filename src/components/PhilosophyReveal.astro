@@ -1,0 +1,13 @@
+---
+import { philosophy } from '../data/home';
+
+const words = philosophy.split(' ');
+---
+
+<section data-philosophy class="relative flex min-h-screen w-full items-center justify-center bg-obsidian px-6 py-24 md:px-24">
+  <div class="mx-auto max-w-6xl text-center">
+    <p class="font-serif text-3xl leading-tight text-off-white md:text-5xl md:leading-tight">
+      {words.map((word) => <span class="reveal-word inline-block opacity-15">{word}&nbsp;</span>)}
+    </p>
+  </div>
+</section>

@@ -1,0 +1,30 @@
+---
+import { testimonials } from '../data/home';
+---
+
+<section id="testimonials" data-testimonials-section class="relative bg-obsidian px-6 py-24 text-off-white md:px-10 lg:px-20">
+  <div class="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+    <div class="lg:sticky lg:top-28">
+      <p class="mb-4 text-sm font-semibold uppercase text-champagne">Trusted by operators</p>
+      <h2 class="font-serif text-5xl leading-none md:text-7xl">The room feels different when the people are right.</h2>
+      <p class="mt-7 max-w-xl text-base leading-8 text-off-white/70">
+        Hospitality leaders come back to Change because the shortlist is considered, the communication is honest and the relationship lasts beyond placement.
+      </p>
+    </div>
+    <div data-testimonial-stack class="relative min-h-[620px]">
+      {testimonials.map((testimonial, index) => (
+        <article
+          data-testimonial-card
+          class="absolute inset-x-0 top-0 rounded-lg border border-off-white/10 bg-off-white/[0.05] p-8 shadow-2xl backdrop-blur md:p-10"
+          style={`transform: translateY(${index * 120}px); z-index: ${testimonials.length + index};`}
+        >
+          <p class="font-serif text-3xl leading-tight text-off-white md:text-4xl">&ldquo;{testimonial.quote}&rdquo;</p>
+          <div class="mt-10 border-t border-off-white/10 pt-6">
+            <p class="font-semibold text-champagne">{testimonial.name}</p>
+            <p class="mt-1 text-sm text-off-white/64">{testimonial.role}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

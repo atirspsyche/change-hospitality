@@ -1,0 +1,21 @@
+---
+import { navigationItems } from '../data/home';
+---
+
+<header class="absolute left-0 right-0 top-0 z-30 px-5 py-5 md:px-10" aria-label="Site header">
+  <div class="mx-auto flex max-w-7xl items-center justify-between gap-5 border-b border-off-white/10 pb-5">
+    <a href="#top" class="group flex items-center gap-3" aria-label="Change Hospitality home">
+      <span class="flex h-10 w-10 items-center justify-center rounded-lg border border-champagne/50 font-serif text-xl text-champagne">C</span>
+      <span class="hidden text-sm font-semibold uppercase text-off-white sm:block">Change Hospitality</span>
+    </a>
+    <nav class="hidden items-center gap-8 text-sm text-off-white/76 lg:flex" aria-label="Primary navigation">
+      {navigationItems.map((item) => <a class="transition-colors hover:text-champagne" href={item.href}>{item.label}</a>)}
+    </nav>
+    <a
+      href="#impact"
+      class="rounded-full border border-bcorp-green/70 px-4 py-2 text-xs font-semibold uppercase text-off-white transition-colors hover:bg-bcorp-green"
+    >
+      Certified B-Corp
+    </a>
+  </div>
+</header>

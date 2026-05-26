@@ -1,17 +1,26 @@
 ---
-
+import ApplicationSection from '../components/ApplicationSection.astro';
+import DivisionSplit from '../components/DivisionSplit.astro';
+import FinalCTA from '../components/FinalCTA.astro';
+import Hero from '../components/Hero.astro';
+import HomeExperience from '../components/HomeExperience.astro';
+import ImpactTracker from '../components/ImpactTracker.astro';
+import OpportunitiesStream from '../components/OpportunitiesStream.astro';
+import PhilosophyReveal from '../components/PhilosophyReveal.astro';
+import TestimonialsStack from '../components/TestimonialsStack.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout>
+  <main>
+    <Hero />
+    <PhilosophyReveal />
+    <DivisionSplit />
+    <ImpactTracker />
+    <OpportunitiesStream />
+    <TestimonialsStack />
+    <ApplicationSection />
+    <FinalCTA />
+  </main>
+  <HomeExperience />
+</BaseLayout>

@@ -1,0 +1,42 @@
+---
+import SiteHeader from './SiteHeader.astro';
+import { hero } from '../data/home';
+---
+
+<section id="top" data-hero class="relative h-screen w-full overflow-hidden bg-obsidian">
+  <SiteHeader />
+  <div class="absolute inset-0 image-veil" aria-hidden="true">
+    <img
+      data-hero-media
+      class="h-full w-full scale-105 object-cover opacity-0"
+      src={hero.image}
+      alt=""
+      loading="eager"
+      decoding="async"
+    />
+  </div>
+  <div class="absolute inset-0 bg-gradient-to-t from-obsidian via-transparent to-obsidian/50" aria-hidden="true"></div>
+  <div class="relative z-10 mx-auto flex h-full max-w-7xl flex-col items-center justify-center px-5 pt-24 text-center md:px-10">
+    <p data-hero-kicker class="mb-6 text-sm font-semibold uppercase text-champagne opacity-0">People-first recruitment for hospitality</p>
+    <h1 class="font-serif text-5xl font-medium leading-none text-off-white md:text-7xl lg:text-8xl">
+      <span class="block overflow-hidden"><span data-split-line class="block translate-y-full">People who make</span></span>
+      <span class="block overflow-hidden"><span data-split-line class="block translate-y-full italic text-champagne">hospitality feel</span></span>
+      <span class="block overflow-hidden"><span data-split-line class="block translate-y-full">effortless.</span></span>
+    </h1>
+    <p data-hero-copy class="mt-7 max-w-2xl text-base leading-8 text-off-white/78 opacity-0 md:text-lg">
+      Premium recruitment for restaurants, hotels, members clubs and events, shaped by 20 years of face-to-face relationships.
+    </p>
+    <div data-hero-actions class="mt-10 flex w-full max-w-xl flex-col gap-4 opacity-0 sm:flex-row sm:justify-center">
+      <a class="luxury-button flex min-h-14 flex-1 items-center justify-center rounded-lg px-8 text-sm font-semibold uppercase text-off-white" href="#apply">
+        Find Talent
+      </a>
+      <a class="luxury-button flex min-h-14 flex-1 items-center justify-center rounded-lg px-8 text-sm font-semibold uppercase text-off-white" href="#opportunities">
+        Find Work
+      </a>
+    </div>
+  </div>
+  <div class="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-3 text-xs uppercase text-off-white/60" aria-hidden="true">
+    <span>Scroll</span>
+    <span class="h-12 w-px overflow-hidden bg-off-white/15"><span data-scroll-line class="block h-12 w-px -translate-y-full bg-champagne"></span></span>
+  </div>
+</section>

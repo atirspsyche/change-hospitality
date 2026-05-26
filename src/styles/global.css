@@ -1,0 +1,221 @@
+@config "../../tailwind.config.mjs";
+@import "tailwindcss";
+
+@theme {
+  --color-obsidian: #0D0D0D;
+  --color-champagne: #D4C3B3;
+  --color-off-white: #FBF9F6;
+  --color-bcorp-green: #2E5A44;
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+}
+
+:root {
+  --color-obsidian: #0D0D0D;
+  --color-champagne: #D4C3B3;
+  --color-off-white: #FBF9F6;
+  --color-bcorp-green: #2E5A44;
+  --ease-luxury: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--color-obsidian);
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: var(--color-obsidian);
+  color: var(--color-off-white);
+  font-family: var(--font-sans);
+  text-rendering: geometricPrecision;
+}
+
+body::selection {
+  background: var(--color-champagne);
+  color: var(--color-obsidian);
+}
+
+a,
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img,
+video,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-champagne);
+  outline-offset: 4px;
+}
+
+.color-bcorp-green {
+  color: var(--color-bcorp-green);
+}
+
+.surface-line {
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--color-champagne) 32%, transparent),
+    transparent
+  );
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.text-pretty {
+  text-wrap: pretty;
+}
+
+.luxury-button {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--color-champagne) 48%, transparent);
+  transition:
+    color 400ms var(--ease-luxury),
+    border-color 400ms var(--ease-luxury),
+    transform 400ms var(--ease-luxury);
+}
+
+.luxury-button::before {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: -1;
+  height: 0;
+  background: var(--color-champagne);
+  content: "";
+  transition: height 450ms var(--ease-luxury);
+}
+
+.luxury-button:hover,
+.luxury-button:focus-visible {
+  color: var(--color-obsidian);
+  border-color: var(--color-champagne);
+  transform: translateY(-2px);
+}
+
+.luxury-button:hover::before,
+.luxury-button:focus-visible::before {
+  height: 100%;
+}
+
+.image-veil::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to top, var(--color-obsidian), transparent 48%, color-mix(in srgb, var(--color-obsidian) 52%, transparent)),
+    linear-gradient(to right, color-mix(in srgb, var(--color-obsidian) 62%, transparent), transparent 48%);
+  content: "";
+}
+
+.job-card::before {
+  position: absolute;
+  inset: auto 0 0;
+  height: 0;
+  background: var(--color-champagne);
+  content: "";
+  transition: height 450ms var(--ease-luxury);
+}
+
+.job-card:hover::before,
+.job-card:focus-within::before {
+  height: 100%;
+}
+
+.job-card:hover,
+.job-card:focus-within {
+  transform: scale(1.03);
+}
+
+.job-card:hover *,
+.job-card:focus-within * {
+  color: var(--color-obsidian);
+}
+
+.job-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-champagne) transparent;
+}
+
+.job-scrollbar::-webkit-scrollbar {
+  height: 6px;
+}
+
+.job-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-champagne);
+}
+
+.field-shell {
+  border: 1px solid color-mix(in srgb, var(--color-off-white) 14%, transparent);
+  background: color-mix(in srgb, var(--color-off-white) 6%, transparent);
+  transition:
+    border-color 250ms ease,
+    background-color 250ms ease;
+}
+
+.field-shell:focus-within {
+  border-color: var(--color-champagne);
+  background: color-mix(in srgb, var(--color-off-white) 10%, transparent);
+}
+
+.field-shell input,
+.field-shell select,
+.field-shell textarea {
+  width: 100%;
+  background: transparent;
+  color: var(--color-off-white);
+  outline: none;
+}
+
+.field-shell select option {
+  color: var(--color-obsidian);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

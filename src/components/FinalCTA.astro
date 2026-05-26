@@ -1,0 +1,26 @@
+---
+import { navigationItems } from '../data/home';
+---
+
+<section data-inversion-section class="bg-champagne px-6 py-28 text-obsidian md:px-10 lg:px-20">
+  <div class="mx-auto max-w-5xl text-center">
+    <p class="mb-5 text-sm font-semibold uppercase">Ready to make the change?</p>
+    <h2 class="font-serif text-5xl leading-none md:text-7xl">A better shortlist starts with a better conversation.</h2>
+    <div class="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
+      <a class="flex min-h-14 items-center justify-center rounded-lg border border-obsidian px-8 text-sm font-semibold uppercase transition-colors hover:bg-obsidian hover:text-off-white" href="#apply">Send profile</a>
+      <a class="flex min-h-14 items-center justify-center rounded-lg border border-obsidian px-8 text-sm font-semibold uppercase transition-colors hover:bg-obsidian hover:text-off-white" href="mailto:hello@changehospitality.co.uk">Email the team</a>
+    </div>
+  </div>
+</section>
+
+<footer class="bg-champagne px-6 pb-10 text-obsidian md:px-10 lg:px-20">
+  <div class="mx-auto flex max-w-7xl flex-col gap-8 border-t border-obsidian/15 pt-8 md:flex-row md:items-center md:justify-between">
+    <div>
+      <p class="font-serif text-3xl">Change Hospitality</p>
+      <p class="mt-2 max-w-xl text-sm leading-6 text-obsidian/72">Premium hospitality recruitment for people, venues and teams who care about service.</p>
+    </div>
+    <nav class="flex flex-wrap gap-5 text-sm font-semibold uppercase" aria-label="Footer navigation">
+      {navigationItems.map((item) => <a class="hover:underline" href={item.href}>{item.label}</a>)}
+    </nav>
+  </div>
+</footer>

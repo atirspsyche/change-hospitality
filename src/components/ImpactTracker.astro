@@ -1,0 +1,43 @@
+---
+import { impactStats } from '../data/home';
+---
+
+<section id="impact" data-impact-section class="relative overflow-hidden bg-obsidian px-6 py-24 text-off-white md:px-10 lg:px-20">
+  <div class="absolute inset-x-0 top-0 h-px surface-line" aria-hidden="true"></div>
+  <div class="absolute inset-x-0 bottom-0 h-px surface-line" aria-hidden="true"></div>
+  <div class="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+    <div>
+      <p class="mb-4 text-sm font-semibold uppercase text-bcorp-green">Impact for good</p>
+      <h2 class="font-serif text-5xl leading-none text-off-white md:text-7xl">Certified care, measured properly.</h2>
+      <p class="mt-7 max-w-xl text-base leading-8 text-off-white/72">
+        Change Hospitality's B-Corp certification reflects a recruitment model that values people, community and long-term responsibility alongside commercial performance.
+      </p>
+    </div>
+    <div class="grid gap-5 md:grid-cols-3">
+      {impactStats.map((stat) => (
+        <article class="rounded-lg border border-off-white/10 bg-off-white/[0.04] p-6">
+          <p class="font-serif text-5xl leading-none text-champagne md:text-6xl">
+            <span data-count data-target={stat.target} data-decimals={stat.decimals}>0</span>{stat.suffix}
+          </p>
+          <p class="mt-4 text-sm font-semibold uppercase text-off-white/76">{stat.label}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+  <div class="mx-auto mt-14 grid max-w-7xl gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+    <div class="flex items-center gap-5 rounded-lg border border-bcorp-green/40 bg-bcorp-green/12 p-6">
+      <svg class="h-24 w-24 shrink-0 text-bcorp-green" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+        <circle data-draw-path cx="60" cy="60" r="45" stroke="currentColor" stroke-width="2"></circle>
+        <path data-draw-path d="M60 86V44M42 64C42 53 50 44 60 44C70 44 78 53 78 64C78 75 70 84 60 84C50 84 42 75 42 64Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+        <path data-draw-path d="M49 58C56 58 61 54 64 48M71 63C65 63 61 59 58 52" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+      </svg>
+      <div>
+        <p class="text-sm font-semibold uppercase text-bcorp-green">B-Corp verified</p>
+        <p class="mt-2 text-sm leading-7 text-off-white/72">Ethical recruitment, transparent standards and a measurable commitment to doing better business.</p>
+      </div>
+    </div>
+    <p class="font-serif text-3xl leading-tight text-off-white/88 md:text-4xl">
+      The same care applied to a candidate conversation should show up in the way the business treats communities, suppliers and the planet.
+    </p>
+  </div>
+</section>

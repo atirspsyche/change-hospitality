@@ -1,0 +1,86 @@
+---
+import { divisions } from '../data/home';
+---
+
+<section id="apply" class="relative bg-obsidian px-6 py-24 text-off-white md:px-10 lg:px-20">
+  <div class="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.75fr_1.25fr] lg:items-start">
+    <div class="lg:sticky lg:top-28">
+      <p class="mb-4 text-sm font-semibold uppercase text-champagne">Candidate profile</p>
+      <h2 class="font-serif text-5xl leading-none md:text-7xl">Apply with a profile, not a portal maze.</h2>
+      <p class="mt-7 text-base leading-8 text-off-white/72">
+        Candidates can send core details and a resume in one clean flow. This build currently uses a mock upload response, with the future email handoff prepared in the Vercel function.
+      </p>
+      <div class="mt-8 rounded-lg border border-off-white/10 bg-off-white/[0.04] p-5 text-sm leading-7 text-off-white/72">
+        Mock mode stores nothing, sends nothing and returns a reference number so the journey can be reviewed safely with the client.
+      </div>
+    </div>
+    <form data-application-form class="rounded-lg border border-off-white/10 bg-off-white/[0.04] p-5 md:p-8" enctype="multipart/form-data" method="post" action="/api/apply">
+      <div class="grid gap-5 md:grid-cols-2">
+        <label class="field-shell rounded-lg p-4">
+          <span class="mb-2 block text-xs font-semibold uppercase text-champagne">First name</span>
+          <input name="firstName" autocomplete="given-name" required />
+        </label>
+        <label class="field-shell rounded-lg p-4">
+          <span class="mb-2 block text-xs font-semibold uppercase text-champagne">Last name</span>
+          <input name="lastName" autocomplete="family-name" required />
+        </label>
+        <label class="field-shell rounded-lg p-4">
+          <span class="mb-2 block text-xs font-semibold uppercase text-champagne">Email</span>
+          <input name="email" type="email" autocomplete="email" required />
+        </label>
+        <label class="field-shell rounded-lg p-4">
+          <span class="mb-2 block text-xs font-semibold uppercase text-champagne">Phone</span>
+          <input name="phone" type="tel" autocomplete="tel" required />
+        </label>
+        <label class="field-shell rounded-lg p-4 md:col-span-2">
+          <span class="mb-2 block text-xs font-semibold uppercase text-champagne">Role of interest</span>
+          <input id="roleInterest" name="roleInterest" placeholder="Senior Sous Chef, Event Manager, General Manager..." required />
+        </label>
+        <label class="field-shell rounded-lg p-4">
+          <span class="mb-2 block text-xs font-semibold uppercase text-champagne">Division</span>
+          <select name="division" required>
+            <option value="">Select a division</option>
+            {divisions.map((division) => <option value={division.name}>{division.name}</option>)}
+          </select>
+        </label>
+        <label class="field-shell rounded-lg p-4">
+          <span class="mb-2 block text-xs font-semibold uppercase text-champagne">Preferred location</span>
+          <input name="location" autocomplete="address-level2" placeholder="London, Manchester, remote..." required />
+        </label>
+        <label class="field-shell rounded-lg p-4">
+          <span class="mb-2 block text-xs font-semibold uppercase text-champagne">Work type</span>
+          <select name="workType" required>
+            <option value="">Select availability</option>
+            <option>Permanent</option>
+            <option>Temporary</option>
+            <option>Contract</option>
+            <option>Open to all</option>
+          </select>
+        </label>
+        <label class="field-shell rounded-lg p-4">
+          <span class="mb-2 block text-xs font-semibold uppercase text-champagne">Resume</span>
+          <input name="resume" type="file" accept=".pdf,.doc,.docx" required aria-describedby="resume-help" />
+          <span id="resume-help" class="mt-2 block text-xs text-off-white/58">PDF, DOC or DOCX. Maximum 5MB in mock mode.</span>
+        </label>
+        <label class="field-shell rounded-lg p-4 md:col-span-2">
+          <span class="mb-2 block text-xs font-semibold uppercase text-champagne">Profile link</span>
+          <input name="profileLink" type="url" placeholder="LinkedIn, portfolio or personal site" />
+        </label>
+        <label class="field-shell rounded-lg p-4 md:col-span-2">
+          <span class="mb-2 block text-xs font-semibold uppercase text-champagne">Short note</span>
+          <textarea name="message" rows="5" placeholder="Tell us what kind of hospitality environment suits you best." required></textarea>
+        </label>
+      </div>
+      <label class="mt-5 flex gap-3 text-sm leading-6 text-off-white/72">
+        <input class="mt-1 h-4 w-4 accent-champagne" name="consent" type="checkbox" required />
+        <span>I consent to Change Hospitality reviewing my profile for recruitment opportunities. Mock mode does not store or send this submission.</span>
+      </label>
+      <div class="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
+        <button data-submit-button class="luxury-button min-h-14 rounded-lg px-8 text-sm font-semibold uppercase text-off-white" type="submit">
+          Send profile
+        </button>
+        <p data-form-status class="min-h-6 text-sm text-off-white/70" role="status" aria-live="polite"></p>
+      </div>
+    </form>
+  </div>
+</section>

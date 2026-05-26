@@ -1,0 +1,295 @@
+<script>
+  import Lenis from 'lenis';
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  gsap.registerPlugin(ScrollTrigger);
+
+  const rootStyles = getComputedStyle(document.documentElement);
+  const obsidian = rootStyles.getPropertyValue('--color-obsidian').trim();
+  const champagne = rootStyles.getPropertyValue('--color-champagne').trim();
+
+  if (!prefersReducedMotion) {
+    const lenis = new Lenis({
+      duration: 1.15,
+      easing: (time) => Math.min(1, 1.001 - Math.pow(2, -10 * time)),
+      smoothWheel: true,
+    });
+
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add((time) => lenis.raf(time * 1000));
+    gsap.ticker.lagSmoothing(0);
+  }
+
+  const setReducedMotionState = () => {
+    gsap.set('[data-hero-media], [data-hero-kicker], [data-hero-copy], [data-hero-actions]', { opacity: 1 });
+    gsap.set('[data-split-line]', { yPercent: 0 });
+    gsap.set('.reveal-word', { opacity: 1 });
+  };
+
+  const animateCounters = (shouldAnimate = true) => {
+    document.querySelectorAll<HTMLElement>('[data-count]').forEach((counter) => {
+      const target = Number(counter.dataset.target ?? 0);
+      const decimals = Number(counter.dataset.decimals ?? 0);
+      const formatter = new Intl.NumberFormat('en-GB', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      });
+
+      if (!shouldAnimate) {
+        counter.textContent = formatter.format(target);
+        return;
+      }
+
+      const state = { value: 0 };
+
+      gsap.to(state, {
+        value: target,
+        duration: 2.2,
+        ease: 'power3.out',
+        onUpdate: () => {
+          counter.textContent = formatter.format(state.value);
+        },
+      });
+    });
+  };
+
+  const prepareDrawPaths = () => {
+    document.querySelectorAll<SVGGeometryElement>('[data-draw-path]').forEach((path) => {
+      const length = path.getTotalLength();
+      path.style.strokeDasharray = `${length}`;
+      path.style.strokeDashoffset = `${length}`;
+    });
+  };
+
+  const initCarousel = () => {
+    const carousel = document.querySelector<HTMLElement>('[data-job-carousel]');
+    const track = document.querySelector<HTMLElement>('[data-job-track]');
+    const cursor = document.querySelector<HTMLElement>('[data-drag-cursor]');
+
+    if (!carousel || !track || !cursor) return;
+
+    let isDragging = false;
+    let startX = 0;
+    let startScrollLeft = 0;
+
+    carousel.addEventListener('pointerenter', () => cursor.classList.remove('hidden'));
+    carousel.addEventListener('pointerleave', () => {
+      cursor.classList.add('hidden');
+      isDragging = false;
+    });
+    carousel.addEventListener('pointermove', (event) => {
+      gsap.to(cursor, { x: event.clientX, y: event.clientY, duration: 0.25, ease: 'power2.out' });
+
+      if (!isDragging) return;
+      const delta = event.clientX - startX;
+      track.scrollLeft = startScrollLeft - delta;
+    });
+    carousel.addEventListener('pointerdown', (event) => {
+      isDragging = true;
+      startX = event.clientX;
+      startScrollLeft = track.scrollLeft;
+      carousel.setPointerCapture(event.pointerId);
+    });
+    carousel.addEventListener('pointerup', (event) => {
+      isDragging = false;
+      carousel.releasePointerCapture(event.pointerId);
+    });
+    carousel.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight') track.scrollBy({ left: 320, behavior: 'smooth' });
+      if (event.key === 'ArrowLeft') track.scrollBy({ left: -320, behavior: 'smooth' });
+    });
+
+    document.querySelectorAll<HTMLElement>('[data-job-apply]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const roleInput = document.querySelector<HTMLInputElement>('#roleInterest');
+        if (roleInput && button.dataset.jobRole) roleInput.value = button.dataset.jobRole;
+      });
+    });
+  };
+
+  const initApplicationForm = () => {
+    const form = document.querySelector<HTMLFormElement>('[data-application-form]');
+    const status = document.querySelector<HTMLElement>('[data-form-status]');
+    const button = document.querySelector<HTMLButtonElement>('[data-submit-button]');
+
+    if (!form || !status || !button) return;
+
+    const setStatus = (message: string, isError = false) => {
+      status.textContent = message;
+      status.classList.toggle('text-champagne', !isError);
+      status.classList.toggle('text-off-white/70', isError);
+    };
+
+    const mockSubmit = async (formData: FormData) => {
+      await new Promise((resolve) => window.setTimeout(resolve, 850));
+      const firstName = String(formData.get('firstName') ?? 'candidate').trim();
+      return {
+        ok: true,
+        reference: `CH-${Date.now().toString().slice(-6)}`,
+        message: `${firstName || 'Candidate'} profile received in mock mode.`,
+      };
+    };
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      const formData = new FormData(form);
+      const resume = formData.get('resume');
+
+      if (resume instanceof File && resume.size > 5 * 1024 * 1024) {
+        setStatus('Please upload a resume under 5MB for mock mode.', true);
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = 'Sending...';
+      setStatus('Preparing your profile...');
+
+      try {
+        let result;
+        const shouldUseVercelFunction = !['localhost', '127.0.0.1'].includes(window.location.hostname);
+
+        try {
+          if (!shouldUseVercelFunction) throw new Error('Use local mock');
+          const response = await fetch(form.action, { method: 'POST', body: formData });
+          if (!response.ok) throw new Error('Mock endpoint unavailable');
+          result = await response.json();
+        } catch {
+          result = await mockSubmit(formData);
+        }
+
+        setStatus(`${result.message ?? 'Profile received.'} Reference ${result.reference}.`);
+        form.reset();
+      } catch {
+        setStatus('Something went wrong in the mock submission. Please try again.', true);
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Send profile';
+      }
+    });
+  };
+
+  initCarousel();
+  initApplicationForm();
+  prepareDrawPaths();
+
+  if (prefersReducedMotion) {
+    setReducedMotionState();
+    animateCounters(false);
+    document.querySelectorAll<SVGGeometryElement>('[data-draw-path]').forEach((path) => {
+      path.style.strokeDashoffset = '0';
+    });
+  } else {
+    const media = gsap.matchMedia();
+
+    media.add('(min-width: 1024px)', () => {
+      gsap.timeline({ defaults: { ease: 'power3.out' } })
+        .to('[data-hero-media]', { opacity: 0.4, duration: 1.5 }, 0)
+        .to('[data-split-line]', { yPercent: -100, duration: 1.1, stagger: 0.12 }, 0.18)
+        .to('[data-hero-kicker], [data-hero-copy], [data-hero-actions]', { opacity: 1, y: 0, duration: 0.9, stagger: 0.12 }, 0.68)
+        .to('[data-scroll-line]', { yPercent: 200, duration: 1.2, repeat: -1, ease: 'power2.inOut' }, 0.8);
+
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: '[data-hero]',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true,
+        },
+      })
+        .to('[data-hero]', { scale: 0.95, opacity: 0 }, 0)
+        .to('[data-hero-media]', { yPercent: 30 }, 0);
+
+      gsap.to('.reveal-word', {
+        opacity: 1,
+        stagger: 0.05,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '[data-philosophy]',
+          start: 'top top',
+          end: '+=180%',
+          scrub: true,
+          pin: true,
+        },
+      });
+
+      const divisionCopies = gsap.utils.toArray<HTMLElement>('[data-division-copy]');
+      const divisionImages = gsap.utils.toArray<HTMLElement>('[data-division-image]');
+      gsap.set(divisionImages.slice(1), { clipPath: 'inset(100% 0% 0% 0%)' });
+      gsap.set(divisionCopies.slice(1), { opacity: 0.38, scale: 0.96 });
+
+      const divisionTimeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: '[data-division-section]',
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: true,
+        },
+      });
+
+      divisionImages.slice(1).forEach((image, index) => {
+        const step = (index + 1) / divisionImages.length;
+        divisionTimeline
+          .to(image, { clipPath: 'inset(0% 0% 0% 0%)', ease: 'none' }, step)
+          .to(divisionCopies[index], { opacity: 0.38, scale: 0.96, ease: 'none' }, step)
+          .to(divisionCopies[index + 1], { opacity: 1, scale: 1, ease: 'none' }, step);
+      });
+
+      const cards = gsap.utils.toArray<HTMLElement>('[data-testimonial-card]');
+      cards.forEach((card, index) => {
+        gsap.to(card, {
+          y: index * 34,
+          scale: 1 - index * 0.035,
+          scrollTrigger: {
+            trigger: '[data-testimonials-section]',
+            start: 'top 45%',
+            end: 'bottom 55%',
+            scrub: true,
+          },
+        });
+      });
+    });
+
+    media.add('(max-width: 1023px)', () => {
+      gsap.to('[data-hero-media]', { opacity: 0.4, duration: 1 });
+      gsap.to('[data-split-line]', { yPercent: -100, duration: 0.8, stagger: 0.08, ease: 'power3.out' });
+      gsap.to('[data-hero-kicker], [data-hero-copy], [data-hero-actions]', { opacity: 1, duration: 0.8, stagger: 0.08 });
+      gsap.set('.reveal-word', { opacity: 1 });
+      gsap.set('[data-division-image]', { clipPath: 'inset(0% 0% 0% 0%)' });
+    });
+
+    media.add('(min-width: 0px)', () => {
+      ScrollTrigger.create({
+        trigger: '[data-impact-section]',
+        start: 'top 80%',
+        once: true,
+        onEnter: () => {
+          animateCounters();
+          gsap.to('[data-draw-path]', { strokeDashoffset: 0, duration: 1.8, stagger: 0.18, ease: 'power3.out' });
+        },
+      });
+
+      gsap.to(document.body, {
+        backgroundColor: champagne,
+        scrollTrigger: {
+          trigger: '[data-inversion-section]',
+          start: 'top 82%',
+          end: 'top 20%',
+          scrub: true,
+        },
+      });
+
+      ScrollTrigger.create({
+        trigger: '[data-inversion-section]',
+        start: 'bottom bottom',
+        onLeaveBack: () => gsap.to(document.body, { backgroundColor: obsidian, duration: 0.3 }),
+      });
+    });
+  }
+</script>
