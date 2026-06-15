@@ -1,0 +1,618 @@
+---
+const sequenceModules = import.meta.glob('../../data/home_sequence/*.png');
+
+const getFrameNumber = (path: string) => Number(path.match(/Untitled_Artwork-(\d+)\.png$/)?.[1] ?? 0);
+
+const sequenceFrames = Object.entries(sequenceModules)
+  .sort(([leftPath], [rightPath]) => getFrameNumber(leftPath) - getFrameNumber(rightPath))
+  .map(([path]) => `/home_sequence/Untitled_Artwork-${getFrameNumber(path)}.png`);
+
+const firstFrame = sequenceFrames[0];
+const lastFrame = sequenceFrames.at(-1) ?? firstFrame;
+
+const storyBeats = [
+  {
+    id: 'arrival',
+    eyebrow: 'Change Hospitality Portal',
+    title: 'The right role is rarely found. It is heard.',
+    copy: 'A premium job platform for hospitality talent and hiring teams who move by instinct, trust and timing.',
+  },
+  {
+    id: 'listen',
+    eyebrow: 'Scene 01 / Listen',
+    title: 'Talent tunes in before the market speaks.',
+    copy: 'As the signal sharpens, profile details, service style and ambition move from background noise into focus.',
+  },
+  {
+    id: 'signal',
+    eyebrow: 'Scene 02 / Signal',
+    title: 'Live opportunities begin to orbit the person.',
+    copy: 'Roles surface with context: division, pace, culture, salary and the human notes that make a placement last.',
+  },
+  {
+    id: 'match',
+    eyebrow: 'Scene 03 / Match',
+    title: 'The headphones become a private line to the right room.',
+    copy: 'Candidate signal and client need meet in one composed interface, built for fast action without losing the relationship.',
+  },
+  {
+    id: 'cta',
+    eyebrow: 'The portal is open',
+    title: 'Recruit beautifully. Apply with confidence.',
+    copy: 'Start with a live brief, a candidate profile, or the next role that deserves your full attention.',
+  },
+];
+
+const platformStats = [
+  { value: '20+', label: 'years of trusted hospitality relationships' },
+  { value: '3', label: 'specialist divisions across service, kitchen and events' },
+  { value: '85.5', label: 'B Impact score supporting responsible growth', tone: 'impact' },
+];
+
+const liveRoles = [
+  { role: 'Members Club Manager', location: 'Soho', salary: 'GBP 50k', division: 'Front of House' },
+  { role: 'Senior Sous Chef', location: 'Mayfair', salary: 'GBP 55k', division: 'Back of House' },
+  { role: 'Events Staffing Lead', location: 'Central London', salary: 'GBP 22/hr', division: 'Events & Commercial' },
+];
+---
+
+<section data-portal-story class="portal-story relative isolate min-h-screen overflow-hidden bg-obsidian text-off-white" aria-labelledby="portal-story-title" aria-describedby="portal-story-summary">
+  <script id="portal-sequence-data" type="application/json" set:html={JSON.stringify(sequenceFrames)}></script>
+  <p id="portal-story-summary" class="visually-hidden">
+    A scroll-controlled story shows a candidate putting on headphones as job and profile signals resolve into a hospitality recruitment portal with calls to action.
+  </p>
+
+  <div data-portal-pin class="portal-stage relative min-h-screen overflow-hidden">
+    <div class="absolute inset-0 bg-obsidian" aria-hidden="true"></div>
+    <div data-aurora class="portal-aurora absolute inset-x-0 top-0 h-2/3" aria-hidden="true"></div>
+    <div data-grid class="portal-grid absolute inset-0 opacity-35" aria-hidden="true"></div>
+    <div data-rings class="portal-rings absolute left-1/2 top-1/2 h-[54vmin] w-[54vmin] -translate-x-1/2 -translate-y-1/2 rounded-full" aria-hidden="true"></div>
+
+    <header class="absolute left-0 right-0 top-0 z-30 px-5 py-5 md:px-10" aria-label="Portal page header">
+      <div class="mx-auto flex max-w-7xl items-center justify-between gap-5 border-b border-off-white/10 pb-5">
+        <a href="/" class="group flex items-center gap-3" aria-label="Change Hospitality home">
+          <span class="flex h-10 w-10 items-center justify-center rounded-lg border border-champagne/50 font-serif text-xl text-champagne">C</span>
+          <span class="hidden text-sm font-semibold uppercase text-off-white sm:block">Change Hospitality</span>
+        </a>
+        <nav class="hidden items-center gap-8 text-sm text-off-white/76 lg:flex" aria-label="Portal navigation">
+          <a class="transition-colors hover:text-champagne" href="#story">Story</a>
+          <a class="transition-colors hover:text-champagne" href="#portal-cta">Start</a>
+          <a class="transition-colors hover:text-champagne" href="/#opportunities">Live Roles</a>
+        </nav>
+        <a class="rounded-full border border-champagne/50 px-4 py-2 text-xs font-semibold uppercase text-off-white transition-colors hover:bg-champagne hover:text-obsidian" href="/#apply">
+          Register
+        </a>
+      </div>
+    </header>
+
+    <div id="story" class="relative z-10 mx-auto grid min-h-screen max-w-7xl grid-cols-1 items-center gap-8 px-5 pt-28 md:px-10 lg:grid-cols-[0.9fr_1.15fr] lg:gap-12 lg:pt-20">
+      <div class="relative z-20 flex min-h-[44vh] flex-col justify-center lg:min-h-0">
+        <div class="portal-copy-stack relative min-h-100 md:min-h-108">
+          {storyBeats.map((beat, index) => (
+            <article class="portal-beat absolute inset-0 flex flex-col justify-center" data-beat={beat.id} data-initial={index === 0 ? 'true' : 'false'}>
+              <p class="mb-5 text-sm font-semibold uppercase text-champagne">{beat.eyebrow}</p>
+              {index === 0 ? (
+                <h1 id="portal-story-title" class="max-w-4xl font-serif text-5xl font-medium leading-none text-off-white md:text-7xl lg:text-8xl">
+                  {beat.title}
+                </h1>
+              ) : (
+                <h2 class="max-w-4xl font-serif text-5xl font-medium leading-none text-off-white md:text-7xl lg:text-8xl">
+                  {beat.title}
+                </h2>
+              )}
+              <p class="mt-7 max-w-xl text-base leading-8 text-off-white/76 md:text-lg">{beat.copy}</p>
+              {beat.id === 'cta' && (
+                <div id="portal-cta" class="mt-10 flex w-full max-w-xl flex-col gap-4 sm:flex-row">
+                  <a class="portal-button luxury-button flex min-h-14 flex-1 items-center justify-center rounded-lg px-7 text-sm font-semibold uppercase text-off-white" href="/#apply">
+                    Find Talent
+                  </a>
+                  <a class="portal-button luxury-button flex min-h-14 flex-1 items-center justify-center rounded-lg px-7 text-sm font-semibold uppercase text-off-white" href="/#opportunities">
+                    Find Work
+                  </a>
+                </div>
+              )}
+            </article>
+          ))}
+        </div>
+
+        <dl data-stat-row class="grid max-w-2xl grid-cols-3 gap-3 border-t border-off-white/10 pt-6">
+          {platformStats.map((stat) => (
+            <div>
+              <dt class:list={['text-2xl font-semibold md:text-3xl', stat.tone === 'impact' ? 'text-bcorp-green' : 'text-champagne']}>{stat.value}</dt>
+              <dd class="mt-2 text-xs leading-5 text-off-white/58 md:text-sm">{stat.label}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+
+      <div class="portal-visual relative z-10 min-h-[47vh] lg:min-h-[78vh]" aria-label="Animated portal visual">
+        <div data-loader class="portal-loader absolute left-1/2 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2 rounded-full border border-champagne/40 bg-obsidian/85 px-5 py-3 text-xs font-semibold uppercase text-champagne opacity-0" aria-live="polite">
+          Tuning signal
+        </div>
+
+        <div data-canvas-shell class="portal-canvas-shell absolute inset-x-0 bottom-0 top-0 mx-auto max-w-2xl overflow-visible lg:right-0">
+          <img data-sequence-fallback class="portal-fallback absolute inset-0 h-full w-full object-contain" src={firstFrame} alt="" loading="eager" decoding="async" />
+          <canvas data-sequence-canvas class="portal-canvas absolute inset-0 h-full w-full" width="1350" height="1080" aria-hidden="true"></canvas>
+        </div>
+
+        <aside class="portal-layer absolute inset-0" aria-label="Live platform signals">
+          <article data-float-card="profile" class="portal-card profile-card absolute left-0 top-[22%] w-68 rounded-lg border border-off-white/12 bg-obsidian/72 p-4 shadow-champagne backdrop-blur-md">
+            <p class="text-xs font-semibold uppercase text-champagne">Candidate signal</p>
+            <h3 class="mt-3 font-serif text-3xl leading-none text-off-white">Service-led host</h3>
+            <dl class="mt-5 grid gap-3 text-xs text-off-white/68">
+              <div class="flex justify-between gap-4 border-t border-off-white/10 pt-3"><dt>Style</dt><dd>Polished</dd></div>
+              <div class="flex justify-between gap-4 border-t border-off-white/10 pt-3"><dt>Availability</dt><dd>2 weeks</dd></div>
+            </dl>
+          </article>
+
+          <article data-float-card="role" class="portal-card role-card absolute right-0 top-[14%] w-72 rounded-lg border border-champagne/22 bg-off-white/5.5 p-4 shadow-champagne backdrop-blur-md">
+            <p class="text-xs font-semibold uppercase text-champagne">Live role</p>
+            <h3 class="mt-3 font-serif text-3xl leading-none text-off-white">Members Club Manager</h3>
+            <p class="mt-4 text-sm leading-6 text-off-white/68">Soho / GBP 50k / Front of House</p>
+          </article>
+
+          <article data-float-card="match" class="portal-card match-card absolute bottom-[12%] left-1/2 w-[20rem] -translate-x-1/2 rounded-lg border border-champagne/30 bg-champagne p-5 text-obsidian shadow-champagne">
+            <p class="text-xs font-semibold uppercase">Match composed</p>
+            <h3 class="mt-3 font-serif text-4xl leading-none">98% brief alignment</h3>
+            <div class="mt-5 h-2 overflow-hidden rounded-full bg-obsidian/15"><span data-match-bar class="block h-full w-0 rounded-full bg-obsidian"></span></div>
+          </article>
+
+          <div data-signal-line class="signal-line absolute left-[23%] top-[45%] h-px w-[56%] origin-left bg-champagne/50" aria-hidden="true"></div>
+        </aside>
+      </div>
+    </div>
+
+    <div data-role-dock class="portal-dock pointer-events-none absolute inset-x-0 bottom-6 z-20 mx-auto hidden max-w-7xl px-5 md:block md:px-10" aria-hidden="true">
+      <div class="grid grid-cols-3 gap-4">
+        {liveRoles.map((job) => (
+          <article class="rounded-lg border border-off-white/10 bg-off-white/4.5 p-4 backdrop-blur-md">
+            <p class="text-xs font-semibold uppercase text-champagne">{job.division}</p>
+            <h3 class="mt-2 font-serif text-2xl leading-none text-off-white">{job.role}</h3>
+            <p class="mt-3 text-xs text-off-white/60">{job.location} / {job.salary}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+
+    <div data-scroll-cue class="absolute bottom-8 left-1/2 z-30 flex -translate-x-1/2 flex-col items-center gap-3 text-xs uppercase text-off-white/60 lg:bottom-9" aria-hidden="true">
+      <span>Scroll</span>
+      <span class="h-12 w-px overflow-hidden bg-off-white/15"><span data-scroll-meter class="block h-12 w-px -translate-y-full bg-champagne"></span></span>
+    </div>
+  </div>
+</section>
+
+<style>
+  .portal-stage {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    contain: paint;
+  }
+
+  .portal-aurora {
+    background:
+      radial-gradient(circle at 68% 28%, color-mix(in srgb, var(--color-champagne) 24%, transparent), transparent 28%),
+      radial-gradient(circle at 34% 64%, color-mix(in srgb, var(--color-off-white) 10%, transparent), transparent 34%);
+    filter: blur(42px);
+    opacity: 0.7;
+    transform: translateZ(0);
+  }
+
+  .portal-grid {
+    background-image:
+      linear-gradient(color-mix(in srgb, var(--color-off-white) 7%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in srgb, var(--color-off-white) 7%, transparent) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: radial-gradient(circle at center, black, transparent 68%);
+  }
+
+  .portal-rings {
+    border: 1px solid color-mix(in srgb, var(--color-champagne) 36%, transparent);
+    box-shadow:
+      0 0 0 16vmin color-mix(in srgb, var(--color-champagne) 4%, transparent),
+      0 0 0 31vmin color-mix(in srgb, var(--color-off-white) 3%, transparent);
+    opacity: 0.28;
+  }
+
+  .portal-canvas-shell {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    filter: drop-shadow(0 36px 100px color-mix(in srgb, var(--color-champagne) 16%, transparent));
+  }
+
+  .portal-canvas,
+  .portal-fallback {
+    image-rendering: auto;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  .portal-canvas {
+    opacity: 0;
+    transition: opacity 420ms var(--ease-luxury);
+  }
+
+  .portal-story[data-ready='true'] .portal-canvas {
+    opacity: 1;
+  }
+
+  .portal-story[data-ready='true'] .portal-fallback {
+    opacity: 0;
+  }
+
+  .portal-story[data-enhanced='true'] .portal-beat:not([data-initial='true']),
+  .portal-story[data-enhanced='true'] .portal-card,
+  .portal-story[data-enhanced='true'] [data-role-dock],
+  .portal-story[data-enhanced='true'] [data-signal-line] {
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  .portal-story[data-enhanced='true']:not([data-ready='true']) [data-loader] {
+    opacity: 1;
+  }
+
+  .portal-card {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  .portal-copy-stack {
+    min-height: clamp(32rem, 56vh, 38rem);
+  }
+
+  .signal-line::before,
+  .signal-line::after {
+    position: absolute;
+    top: 50%;
+    height: 0.65rem;
+    width: 0.65rem;
+    border-radius: 999px;
+    background: var(--color-champagne);
+    content: '';
+    transform: translateY(-50%);
+  }
+
+  .signal-line::before {
+    left: 0;
+  }
+
+  .signal-line::after {
+    right: 0;
+  }
+
+  .portal-button::after {
+    margin-left: 0.75rem;
+    content: '->';
+    transition: transform 400ms var(--ease-luxury);
+  }
+
+  .portal-button:hover::after,
+  .portal-button:focus-visible::after {
+    transform: translateX(0.25rem);
+  }
+
+  @media (max-width: 1023px) {
+    .portal-stage {
+      min-height: auto;
+    }
+
+    .portal-copy-stack {
+      min-height: auto;
+    }
+
+    .portal-beat {
+      position: relative;
+      padding-block: 2.25rem;
+      border-top: 1px solid color-mix(in srgb, var(--color-off-white) 10%, transparent);
+    }
+
+    .portal-beat:first-child {
+      border-top: 0;
+    }
+
+    .portal-visual {
+      min-height: 54rem;
+    }
+
+    .portal-card {
+      position: absolute;
+      width: min(17rem, 72vw);
+    }
+
+    .profile-card {
+      top: 4rem;
+    }
+
+    .role-card {
+      top: 10rem;
+    }
+
+    .match-card {
+      bottom: 2rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .portal-visual {
+      display: flex;
+      min-height: auto;
+      flex-direction: column;
+      gap: 1rem;
+      padding-bottom: 2rem;
+    }
+
+    .portal-canvas-shell {
+      position: relative;
+      inset: auto;
+      width: min(100%, 22rem);
+      height: 25rem;
+      margin-inline: auto;
+      order: 1;
+    }
+
+    .portal-layer {
+      position: relative;
+      inset: auto;
+      display: grid;
+      order: 2;
+      gap: 1rem;
+    }
+
+    .portal-card,
+    .profile-card,
+    .role-card,
+    .match-card {
+      position: relative;
+      inset: auto;
+      left: auto;
+      right: auto;
+      top: auto;
+      bottom: auto;
+      width: 100%;
+      transform: none;
+    }
+
+    .signal-line {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import Lenis from 'lenis';
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const root = document.querySelector<HTMLElement>('[data-portal-story]');
+
+  if (root) {
+    root.dataset.enhanced = 'true';
+
+    const frameData = document.querySelector<HTMLScriptElement>('#portal-sequence-data');
+    const frameUrls = JSON.parse(frameData?.textContent ?? '[]') as string[];
+    const canvas = root.querySelector<HTMLCanvasElement>('[data-sequence-canvas]');
+    const context = canvas?.getContext('2d', { alpha: true, desynchronized: true });
+    const fallback = root.querySelector<HTMLImageElement>('[data-sequence-fallback]');
+    const loader = root.querySelector<HTMLElement>('[data-loader]');
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const frameState = { frame: 0 };
+    let images: HTMLImageElement[] = [];
+    let lastRenderedFrame = -1;
+    let devicePixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+
+    const loadFrame = async (source: string) => {
+      const image = new Image();
+      image.decoding = 'async';
+      image.loading = 'eager';
+      image.src = source;
+
+      try {
+        await image.decode();
+      } catch {
+        await new Promise<void>((resolve) => {
+          image.onload = () => resolve();
+          image.onerror = () => resolve();
+        });
+      }
+
+      return image;
+    };
+
+    const drawCoverImage = (image: HTMLImageElement) => {
+      if (!canvas || !context) return;
+
+      const width = canvas.clientWidth;
+      const height = canvas.clientHeight;
+      const imageRatio = image.naturalWidth / image.naturalHeight;
+      const canvasRatio = width / height;
+      let drawWidth = width;
+      let drawHeight = height;
+      let offsetX = 0;
+      let offsetY = 0;
+
+      if (canvasRatio > imageRatio) {
+        drawHeight = width / imageRatio;
+        offsetY = (height - drawHeight) / 2;
+      } else {
+        drawWidth = height * imageRatio;
+        offsetX = (width - drawWidth) / 2;
+      }
+
+      context.clearRect(0, 0, width, height);
+      context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = 'high';
+      context.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
+    };
+
+    const renderFrame = () => {
+      if (!images.length) return;
+
+      const frame = Math.max(0, Math.min(images.length - 1, Math.round(frameState.frame)));
+      if (frame === lastRenderedFrame) return;
+
+      const image = images[frame] ?? images[0];
+      if (!image?.naturalWidth) return;
+
+      drawCoverImage(image);
+      lastRenderedFrame = frame;
+    };
+
+    const resizeCanvas = () => {
+      if (!canvas || !context) return;
+
+      devicePixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+      const bounds = canvas.getBoundingClientRect();
+      const width = Math.max(1, Math.round(bounds.width * devicePixelRatio));
+      const height = Math.max(1, Math.round(bounds.height * devicePixelRatio));
+
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width;
+        canvas.height = height;
+      }
+
+      context.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+      lastRenderedFrame = -1;
+      renderFrame();
+    };
+
+    const setReadyState = () => {
+      root.dataset.ready = 'true';
+      fallback?.setAttribute('loading', 'lazy');
+      loader?.setAttribute('hidden', 'true');
+    };
+
+    const initReducedOrMobile = () => {
+      frameState.frame = images.length - 1;
+      resizeCanvas();
+      gsap.set('[data-portal-story] .portal-beat, [data-portal-story] .portal-card, [data-role-dock], [data-signal-line]', {
+        autoAlpha: 1,
+        clearProps: 'transform',
+      });
+      gsap.set('[data-match-bar]', { width: '98%' });
+      gsap.set('[data-scroll-meter]', { yPercent: 0 });
+    };
+
+    const initDesktopTimeline = () => {
+      const lenis = new Lenis({
+        duration: 1.08,
+        easing: (time) => Math.min(1, 1.001 - Math.pow(2, -10 * time)),
+        smoothWheel: true,
+      });
+
+      lenis.on('scroll', ScrollTrigger.update);
+      gsap.ticker.add((time) => lenis.raf(time * 1000));
+      gsap.ticker.lagSmoothing(0);
+
+      const beats = gsap.utils.toArray<HTMLElement>('[data-portal-story] .portal-beat');
+      const pin = root.querySelector<HTMLElement>('[data-portal-pin]');
+      const cards = gsap.utils.toArray<HTMLElement>('[data-portal-story] .portal-card');
+      const roleDock = root.querySelector<HTMLElement>('[data-role-dock]');
+      const resizeObserver = canvas ? new ResizeObserver(resizeCanvas) : null;
+
+      if (canvas) resizeObserver?.observe(canvas);
+
+      gsap.set(beats, { autoAlpha: 0, y: 42 });
+      gsap.set(beats[0], { autoAlpha: 1, y: 0 });
+      gsap.set(cards, { autoAlpha: 0, y: 36, scale: 0.94 });
+      gsap.set('[data-float-card="profile"]', { x: -42, rotate: -2 });
+      gsap.set('[data-float-card="role"]', { x: 46, rotate: 2 });
+      gsap.set('[data-float-card="match"]', { y: 74, scale: 0.9 });
+      gsap.set('[data-signal-line]', { autoAlpha: 0, scaleX: 0 });
+      gsap.set(roleDock, { autoAlpha: 0, y: 48 });
+      gsap.set('[data-match-bar]', { width: '0%' });
+      gsap.set('[data-rings]', { scale: 0.78, autoAlpha: 0.2 });
+      gsap.set('[data-aurora]', { yPercent: 10, autoAlpha: 0.55 });
+      gsap.set('[data-scroll-cue]', { autoAlpha: 1 });
+      gsap.set('[data-scroll-meter]', { yPercent: -100 });
+
+      resizeCanvas();
+
+      const showBeat = (timeline: gsap.core.Timeline, index: number, label: string) => {
+        beats.forEach((beat, beatIndex) => {
+          if (beatIndex === index) {
+            timeline.to(beat, { autoAlpha: 1, y: 0, duration: 0.14, ease: 'power3.out' }, label);
+          } else {
+            timeline.to(beat, { autoAlpha: 0, y: -30, duration: 0.12, ease: 'power2.out' }, label);
+          }
+        });
+      };
+
+      const master = gsap.timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: {
+          trigger: root,
+          start: 'top top',
+          end: '+=560%',
+          scrub: 0.72,
+          pin,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      master.addLabel('arrival', 0);
+      master.to(frameState, { frame: 3, duration: 0.18, snap: { frame: 1 }, onUpdate: renderFrame }, 'arrival');
+      master.to('[data-rings]', { scale: 0.9, autoAlpha: 0.36, duration: 0.18 }, 'arrival');
+      master.to('[data-aurora]', { yPercent: -2, autoAlpha: 0.72, duration: 0.18 }, 'arrival');
+      master.to('[data-scroll-meter]', { yPercent: 20, duration: 0.18 }, 'arrival');
+
+      master.addLabel('listen', 0.2);
+      showBeat(master, 1, 'listen');
+      master.to(frameState, { frame: 10, duration: 0.22, snap: { frame: 1 }, onUpdate: renderFrame }, 'listen');
+      master.to('[data-canvas-shell]', { yPercent: -3, scale: 1.04, duration: 0.22 }, 'listen');
+      master.to('[data-rings]', { scale: 1.08, autoAlpha: 0.44, duration: 0.22 }, 'listen');
+
+      master.addLabel('signal', 0.43);
+      showBeat(master, 2, 'signal');
+      master.to(frameState, { frame: 16, duration: 0.2, snap: { frame: 1 }, onUpdate: renderFrame }, 'signal');
+      master.to('[data-float-card="profile"]', { autoAlpha: 1, x: 0, y: 0, rotate: 0, scale: 1, duration: 0.14, ease: 'power3.out' }, 'signal+=0.02');
+      master.to('[data-float-card="role"]', { autoAlpha: 1, x: 0, y: 0, rotate: 0, scale: 1, duration: 0.14, ease: 'power3.out' }, 'signal+=0.07');
+      master.to('[data-signal-line]', { autoAlpha: 1, scaleX: 1, duration: 0.18, ease: 'power2.out' }, 'signal+=0.1');
+      master.to('[data-grid]', { opacity: 0.52, duration: 0.2 }, 'signal');
+
+      master.addLabel('match', 0.65);
+      showBeat(master, 3, 'match');
+      master.to(frameState, { frame: images.length - 1, duration: 0.2, snap: { frame: 1 }, onUpdate: renderFrame }, 'match');
+      master.to('[data-float-card="match"]', { autoAlpha: 1, y: 0, scale: 1, duration: 0.14, ease: 'power3.out' }, 'match+=0.06');
+      master.to('[data-match-bar]', { width: '98%', duration: 0.16, ease: 'power3.out' }, 'match+=0.12');
+      master.to('[data-rings]', { scale: 1.2, autoAlpha: 0.58, duration: 0.2 }, 'match');
+      master.to('[data-canvas-shell]', { yPercent: -5, scale: 1.08, duration: 0.2 }, 'match');
+
+      master.addLabel('cta', 0.84);
+      showBeat(master, 4, 'cta');
+      master.to(roleDock, { autoAlpha: 1, y: 0, duration: 0.12, ease: 'power3.out' }, 'cta+=0.02');
+      master.to('[data-float-card="profile"]', { x: -18, y: 18, scale: 0.96, duration: 0.16 }, 'cta');
+      master.to('[data-float-card="role"]', { x: 18, y: 18, scale: 0.96, duration: 0.16 }, 'cta');
+      master.to('[data-float-card="match"]', { y: -18, scale: 1.04, duration: 0.16 }, 'cta');
+      master.to('[data-rings]', { scale: 1.36, autoAlpha: 0.42, duration: 0.16 }, 'cta');
+      master.to('[data-scroll-cue]', { autoAlpha: 0, y: 18, duration: 0.12 }, 'cta');
+      master.to('[data-scroll-meter]', { yPercent: 120, duration: 0.16 }, 'cta');
+
+      ScrollTrigger.refresh();
+
+      return () => {
+        resizeObserver?.disconnect();
+        master.scrollTrigger?.kill();
+        master.kill();
+        lenis.destroy();
+      };
+    };
+
+    Promise.all(frameUrls.map(loadFrame)).then((loadedImages) => {
+      images = loadedImages;
+      setReadyState();
+
+      const media = gsap.matchMedia();
+
+      if (prefersReducedMotion) {
+        initReducedOrMobile();
+        return;
+      }
+
+      media.add('(min-width: 1024px)', initDesktopTimeline);
+      media.add('(max-width: 1023px)', initReducedOrMobile);
+    });
+  }
+</script>
