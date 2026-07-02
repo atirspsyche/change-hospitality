@@ -1,0 +1,625 @@
+---
+import CircularGallery from '../components/team/CircularGallery';
+import ProfileCard from '../components/team/ProfileCard';
+import { teamGalleryItems, teamMembers, teamPassSteps } from '../data/team';
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Team Profiles | Change Hospitality"
+  description="Meet the Change Hospitality team: people-first consultants for front of house, back of house, events and commercial hospitality recruitment."
+  image="https://images.unsplash.com/photo-1559329007-40df8a9345d8?auto=format&fit=crop&w=1600&q=85"
+>
+  <main class="team-page min-h-screen overflow-hidden bg-story-black text-story-pale">
+    <section class="team-hero relative isolate min-h-screen px-5 py-8 md:px-10" aria-labelledby="team-title">
+      <div class="team-hero-bg absolute inset-0" aria-hidden="true"></div>
+      <div class="team-dot-grid absolute inset-0 opacity-25" aria-hidden="true"></div>
+
+      <header class="relative z-20 mx-auto flex max-w-7xl items-center justify-between gap-5 border-b-2 border-story-black pb-5 text-story-black" aria-label="Team page header">
+        <a href="/" class="flex items-center gap-3 font-bold uppercase" aria-label="Change Hospitality home">
+          <span class="flex h-11 w-11 items-center justify-center border-2 border-story-black bg-story-lime font-serif text-2xl">C</span>
+          <span class="hidden sm:block">Change Hospitality</span>
+        </a>
+        <nav class="hidden items-center gap-7 text-sm font-bold uppercase lg:flex" aria-label="Team navigation">
+          <a class="transition-colors hover:text-story-pale" href="#profiles">Profiles</a>
+          <a class="transition-colors hover:text-story-pale" href="#pass">Process</a>
+          <a class="transition-colors hover:text-story-pale" href="#gallery">Gallery</a>
+          <a class="transition-colors hover:text-story-pale" href="/portal/">Jobs Portal</a>
+        </nav>
+        <a class="border-2 border-story-black bg-story-black px-4 py-2 text-xs font-bold uppercase text-story-lime transition-transform hover:-translate-y-1 focus-visible:-translate-y-1" href="/">
+          Home
+        </a>
+      </header>
+
+      <div class="relative z-10 mx-auto grid max-w-7xl gap-10 pb-12 pt-14 md:pt-20 lg:min-h-[calc(100vh-7rem)] lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <div class="relative z-20 max-w-4xl text-story-black">
+          <p class="mb-6 w-fit -rotate-2 border-2 border-story-black bg-story-lime px-4 py-2 text-xs font-black uppercase text-story-black">Team profiles / service pass</p>
+          <h1 id="team-title" class="font-serif text-6xl font-semibold leading-none md:text-8xl lg:text-9xl">
+            Meet the hands that move the egg.
+          </h1>
+          <p class="mt-7 max-w-xl text-lg font-semibold leading-8 text-story-black/78 md:text-xl md:leading-9">
+            A placement is not a click. It is cracked, checked, cooked, flipped and served by people who know hospitality from the inside.
+          </p>
+          <div class="mt-9 flex flex-col gap-3 sm:flex-row">
+            <a class="team-hero-button team-hero-button-primary border-2 border-story-black bg-story-black px-6 py-4 text-center text-sm font-black uppercase text-story-lime" style="color: var(--color-story-lime)" href="#profiles">Meet the consultants</a>
+            <a class="team-hero-button border-2 border-story-black bg-story-pale px-6 py-4 text-center text-sm font-black uppercase text-story-black" href="#gallery">See the storyboard</a>
+          </div>
+        </div>
+
+        <div class="team-pass-stage relative min-h-144 lg:min-h-176" aria-label="Animated team service pass illustration">
+          <div class="team-pass-ticket team-pass-ticket-one">
+            <span>Listen</span>
+            <strong>Brief taken</strong>
+          </div>
+          <div class="team-pass-ticket team-pass-ticket-two">
+            <span>Read</span>
+            <strong>Talent checked</strong>
+          </div>
+          <div class="team-pass-ticket team-pass-ticket-three">
+            <span>Serve</span>
+            <strong>Intro landed</strong>
+          </div>
+
+          <div class="team-plate" aria-hidden="true">
+            <div class="team-egg-white"><span class="team-yolk"></span></div>
+            <div class="team-plate-note">Every role has a recipe.</div>
+          </div>
+
+          <div class="team-utensil team-fork" aria-hidden="true"></div>
+          <div class="team-utensil team-spoon" aria-hidden="true"></div>
+
+          {teamMembers.map((member, index) => (
+            <div class={`team-orbit-card team-orbit-${index + 1}`}>
+              <img src={member.miniAvatarUrl} alt="" loading="lazy" />
+              <span>{member.division}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section id="profiles" class="relative px-5 py-18 md:px-10 md:py-24" aria-labelledby="profiles-title">
+      <div class="mx-auto max-w-7xl">
+        <div class="mb-10 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+          <div>
+            <p class="mb-4 text-sm font-bold uppercase text-story-lime">Consultants</p>
+            <h2 id="profiles-title" class="font-serif text-5xl font-semibold leading-none text-story-pale md:text-7xl">Cards with a pulse.</h2>
+          </div>
+          <p class="max-w-xl text-base leading-8 text-story-pale/74">
+            Hover the cards: the logo mark picks up a soft colour wash, the portrait shifts, and the consultant signal comes forward without becoming glossy.
+          </p>
+        </div>
+
+        <div class="grid gap-8 md:grid-cols-2 xl:grid-cols-4">
+          {teamMembers.map((member) => (
+            <ProfileCard
+              client:visible
+              name={member.name}
+              title={member.title}
+              handle={member.handle}
+              status={member.status}
+              contactText={member.contactText}
+              avatarUrl={member.avatarUrl}
+              miniAvatarUrl={member.miniAvatarUrl}
+              accent={member.accent}
+              note={member.note}
+              signal={member.signal}
+              division={member.division}
+              enableTilt={true}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section id="pass" class="relative px-5 pb-18 md:px-10 md:pb-24" aria-labelledby="pass-title">
+      <div class="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[0.7fr_1.3fr] lg:items-stretch">
+        <div class="border-2 border-story-pale/30 bg-story-pink p-6 text-story-black md:p-8">
+          <p class="mb-5 text-sm font-black uppercase">How the handoff works</p>
+          <h2 id="pass-title" class="font-serif text-5xl font-semibold leading-none md:text-6xl">Not a database. A pass.</h2>
+        </div>
+        <div class="grid gap-4 md:grid-cols-3">
+          {teamPassSteps.map((step) => (
+            <article class="team-step-card border-2 border-story-pale/30 bg-story-pale p-5 text-story-black">
+              <p class="text-sm font-black uppercase text-story-black/58">{step.label}</p>
+              <p class="mt-6 text-xl font-semibold leading-7">{step.copy}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section id="gallery" class="relative bg-story-black py-18 md:py-24" aria-labelledby="gallery-title">
+      <div class="mx-auto max-w-7xl px-5 md:px-10">
+        <div class="mb-8 grid gap-6 lg:grid-cols-[0.85fr_1fr] lg:items-end">
+          <div>
+            <p class="mb-4 text-sm font-bold uppercase text-story-lime">Image gallery</p>
+            <h2 id="gallery-title" class="font-serif text-5xl font-semibold leading-none text-story-pale md:text-7xl">A few frames of the work.</h2>
+          </div>
+          <p class="max-w-2xl text-base leading-8 text-story-pale/72">
+            Real photo frames for the people side of the work: briefing tables, service floors, kitchens and the human moments around every careful handoff.
+          </p>
+        </div>
+      </div>
+
+      <div class="relative h-136 md:h-168" aria-label="Storyboard gallery">
+        <CircularGallery client:visible items={teamGalleryItems} bend={2.2} scrollEase={0.04} scrollSpeed={1.8} />
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .team-hero-bg {
+    background:
+      linear-gradient(112deg, var(--color-story-pink) 0 48%, var(--color-story-blue) 48% 74%, var(--color-story-pale) 74% 100%);
+  }
+
+  .team-dot-grid {
+    background-image: radial-gradient(var(--color-story-black) 1px, transparent 1px);
+    background-size: 18px 18px;
+  }
+
+  .team-hero-button {
+    box-shadow: 5px 5px 0 var(--color-story-black);
+    transition:
+      transform 220ms ease,
+      box-shadow 220ms ease;
+  }
+
+  .team-hero-button-primary {
+    color: var(--color-story-lime);
+  }
+
+  .team-hero-button:hover,
+  .team-hero-button:focus-visible {
+    box-shadow: 8px 8px 0 var(--color-story-lime);
+    transform: translate(-2px, -2px) rotate(-1deg);
+  }
+
+  .team-pass-stage {
+    transform: rotate(1deg);
+  }
+
+  .team-plate {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    display: grid;
+    height: min(31rem, 74vw);
+    width: min(31rem, 74vw);
+    place-items: center;
+    border: 2px solid var(--color-story-black);
+    border-radius: 999px;
+    background: var(--color-story-pale);
+    box-shadow: 14px 14px 0 var(--color-story-black);
+    transform: translate(-50%, -50%);
+    animation: team-plate-breathe 6s ease-in-out infinite;
+  }
+
+  .team-plate::before,
+  .team-plate::after {
+    position: absolute;
+    inset: 11%;
+    border: 2px solid var(--color-story-black);
+    border-radius: 999px;
+    content: '';
+  }
+
+  .team-plate::after {
+    inset: 23%;
+    border-style: dashed;
+  }
+
+  .team-egg-white {
+    position: relative;
+    height: 48%;
+    width: 56%;
+    border: 2px solid var(--color-story-black);
+    border-radius: 48% 52% 55% 45% / 58% 46% 54% 42%;
+    background: var(--color-story-pale);
+    transform: rotate(-8deg);
+    animation: team-egg-wobble 5s ease-in-out infinite;
+  }
+
+  .team-yolk {
+    position: absolute;
+    left: 46%;
+    top: 47%;
+    height: 34%;
+    width: 34%;
+    border: 2px solid var(--color-story-black);
+    border-radius: 999px;
+    background: var(--color-story-lime);
+    transform: translate(-50%, -50%);
+  }
+
+  .team-plate-note {
+    position: absolute;
+    bottom: 12%;
+    left: 50%;
+    width: max-content;
+    max-width: 14rem;
+    border: 2px solid var(--color-story-black);
+    background: var(--color-story-pink);
+    padding: 0.65rem 0.9rem;
+    font-size: 0.75rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    transform: translateX(-50%) rotate(-3deg);
+  }
+
+  .team-pass-ticket,
+  .team-orbit-card {
+    position: absolute;
+    z-index: 4;
+    border: 2px solid var(--color-story-black);
+    background: var(--color-story-pale);
+    color: var(--color-story-black);
+    box-shadow: 7px 7px 0 var(--color-story-black);
+    transform: translate3d(0, 0, 0) rotate(var(--float-rotate, 0deg));
+    will-change: transform;
+  }
+
+  .team-pass-ticket {
+    width: 12rem;
+    padding: 1rem;
+    animation: team-float 6.5s cubic-bezier(0.42, 0, 0.18, 1) infinite;
+  }
+
+  .team-pass-ticket span,
+  .team-orbit-card span {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .team-pass-ticket strong {
+    display: block;
+    margin-top: 0.45rem;
+    font-family: var(--font-serif);
+    font-size: 1.8rem;
+    line-height: 0.9;
+  }
+
+  .team-pass-ticket-one {
+    --float-rotate: -8deg;
+    left: 3%;
+    top: 13%;
+    background: var(--color-story-lime);
+  }
+
+  .team-pass-ticket-two {
+    --float-rotate: 7deg;
+    right: 0;
+    top: 10%;
+    background: var(--color-story-pink);
+    animation-delay: 700ms;
+  }
+
+  .team-pass-ticket-three {
+    --float-rotate: -3deg;
+    bottom: 9%;
+    right: 12%;
+    background: var(--color-story-blue);
+    animation-delay: 1200ms;
+  }
+
+  .team-orbit-card {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-width: 12rem;
+    padding: 0.55rem 0.75rem;
+    animation: team-float 7s cubic-bezier(0.42, 0, 0.18, 1) infinite;
+  }
+
+  .team-orbit-card img {
+    height: 3rem;
+    width: 3rem;
+    border: 2px solid var(--color-story-black);
+    border-radius: 999px;
+    object-fit: cover;
+  }
+
+  .team-orbit-1 {
+    --float-rotate: 4deg;
+    left: 10%;
+    bottom: 21%;
+  }
+
+  .team-orbit-2 {
+    --float-rotate: -5deg;
+    right: 4%;
+    top: 34%;
+    animation-delay: 500ms;
+  }
+
+  .team-orbit-3 {
+    --float-rotate: -2deg;
+    left: 1%;
+    top: 42%;
+    animation-delay: 900ms;
+  }
+
+  .team-orbit-4 {
+    --float-rotate: 5deg;
+    right: 20%;
+    bottom: 3%;
+    animation-delay: 1400ms;
+  }
+
+  .team-utensil {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    height: 26rem;
+    width: 2.1rem;
+    border: 2px solid var(--color-story-black);
+    background: var(--color-story-pale);
+  }
+
+  .team-fork {
+    left: 4%;
+    transform: translateY(-50%) rotate(-12deg);
+  }
+
+  .team-fork::before {
+    position: absolute;
+    left: -0.72rem;
+    top: -2.1rem;
+    height: 3.4rem;
+    width: 3.4rem;
+    border: 2px solid var(--color-story-black);
+    border-bottom: 0;
+    background: repeating-linear-gradient(90deg, var(--color-story-pale) 0 0.55rem, var(--color-story-black) 0.55rem 0.7rem);
+    content: '';
+  }
+
+  .team-spoon {
+    right: 5%;
+    border-radius: 999px 999px 0 0;
+    transform: translateY(-50%) rotate(13deg);
+  }
+
+  .team-spoon::before {
+    position: absolute;
+    left: 50%;
+    top: -4rem;
+    height: 5.2rem;
+    width: 4.5rem;
+    border: 2px solid var(--color-story-black);
+    border-radius: 999px;
+    background: var(--color-story-pale);
+    content: '';
+    transform: translateX(-50%);
+  }
+
+  :global(.team-card-wrap) {
+    perspective: 800px;
+  }
+
+  :global(.team-profile-card) {
+    border-radius: 10px;
+    box-shadow: 10px 10px 0 color-mix(in srgb, var(--team-accent) 85%, var(--color-story-black));
+    transform: translateZ(0) rotateX(var(--rotate-x)) rotateY(var(--rotate-y));
+    transform-style: preserve-3d;
+    transition:
+      transform 300ms ease,
+      box-shadow 300ms ease;
+  }
+
+  :global(.team-card-division),
+  :global(.team-card-handle) {
+    max-width: min(7.25rem, 44%);
+    overflow-wrap: anywhere;
+  }
+
+  :global(.team-card-handle) {
+    max-width: min(7.75rem, 48%);
+  }
+
+  :global(.team-card-wrap:hover .team-profile-card),
+  :global(.team-card-wrap:focus-within .team-profile-card) {
+    box-shadow: 16px 16px 0 var(--color-story-lime);
+  }
+
+  :global(.team-card-glow) {
+    background: radial-gradient(circle at var(--pointer-x) var(--pointer-y), color-mix(in srgb, var(--team-accent) 72%, transparent) 0%, transparent 52%);
+    filter: blur(34px);
+  }
+
+  :global(.team-card-wrap:hover .team-card-glow),
+  :global(.team-card-wrap:focus-within .team-card-glow),
+  :global(.team-card-wrap:hover .team-card-logo-aura),
+  :global(.team-card-wrap:focus-within .team-card-logo-aura) {
+    opacity: 1;
+  }
+
+  :global(.team-card-logo-aura) {
+    background: radial-gradient(circle at 58% 38%, color-mix(in srgb, var(--team-accent) 80%, transparent), transparent 62%);
+    filter: blur(18px);
+  }
+
+  :global(.team-card-mark) {
+    box-shadow: 4px 4px 0 var(--color-story-black);
+    transform: translateZ(44px) rotate(4deg);
+    transition: transform 260ms ease;
+  }
+
+  :global(.team-card-wrap:hover .team-card-mark),
+  :global(.team-card-wrap:focus-within .team-card-mark) {
+    transform: translateZ(58px) rotate(-6deg) scale(1.05);
+  }
+
+  :global(.team-card-wash) {
+    background:
+      radial-gradient(circle at var(--pointer-x) var(--pointer-y), color-mix(in srgb, var(--team-accent) 48%, transparent), transparent 42%),
+      linear-gradient(transparent 82%, color-mix(in srgb, var(--color-story-black) 18%, transparent) 82%);
+    background-size: auto, 100% 10px;
+  }
+
+  :global(.team-card-lines) {
+    background-image:
+      linear-gradient(90deg, transparent 0 48%, var(--color-story-black) 48% 49%, transparent 49% 100%),
+      linear-gradient(transparent 0 48%, var(--color-story-black) 48% 49%, transparent 49% 100%);
+    background-size: 4.5rem 4.5rem;
+  }
+
+  :global(.team-card-photo-frame) {
+    box-shadow: 7px 7px 0 var(--color-story-black);
+    transform: translateZ(24px) rotate(-2deg);
+    transition: transform 260ms ease;
+  }
+
+  :global(.team-card-wrap:hover .team-card-photo-frame),
+  :global(.team-card-wrap:focus-within .team-card-photo-frame) {
+    transform: translateZ(34px) rotate(-1deg) translateY(-2px);
+  }
+
+  :global(.team-card-avatar) {
+    filter: saturate(0.92) contrast(1.05);
+    transform: scale(1.06) translateX(calc((var(--pointer-from-left) - 0.5) * 14px)) translateY(calc((var(--pointer-from-top) - 0.5) * 10px));
+    transition: transform 260ms ease;
+  }
+
+  :global(.team-card-photo-veil) {
+    background:
+      linear-gradient(to top, color-mix(in srgb, var(--color-story-black) 24%, transparent), transparent 36%),
+      radial-gradient(circle at var(--pointer-x) var(--pointer-y), transparent 0 26%, color-mix(in srgb, var(--team-accent) 24%, transparent) 64%);
+    mix-blend-mode: multiply;
+  }
+
+  :global(.team-card-identity) {
+    box-shadow: 5px 5px 0 var(--color-story-black);
+    transform: translateZ(16px) rotate(0.35deg);
+  }
+
+  :global(.team-card-name) {
+    max-width: 100%;
+    font-size: clamp(2.35rem, 3vw, 3.05rem);
+    overflow-wrap: anywhere;
+    text-wrap: balance;
+  }
+
+  :global(.team-card-title) {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  :global(.team-card-signal) {
+    box-shadow: 5px 5px 0 var(--color-story-black);
+    transform: translateZ(18px) rotate(-1deg);
+  }
+
+  :global(.team-card-info) {
+    align-self: end;
+    box-shadow: 4px 4px 0 var(--color-story-black);
+    transform: translateZ(8px);
+  }
+
+  .team-step-card {
+    box-shadow: 7px 7px 0 var(--color-story-lime);
+    transition:
+      transform 220ms ease,
+      box-shadow 220ms ease;
+  }
+
+  .team-step-card:hover {
+    box-shadow: 11px 11px 0 var(--color-story-pink);
+    transform: translate(-2px, -2px) rotate(-1deg);
+  }
+
+  @keyframes team-float {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) rotate(var(--float-rotate, 0deg));
+    }
+
+    50% {
+      transform: translate3d(0, -0.65rem, 0) rotate(calc(var(--float-rotate, 0deg) + 1deg));
+    }
+  }
+
+  @keyframes team-plate-breathe {
+    0%,
+    100% {
+      transform: translate(-50%, -50%) rotate(0deg) scale(1);
+    }
+
+    50% {
+      transform: translate(-50%, -50%) rotate(2deg) scale(1.025);
+    }
+  }
+
+  @keyframes team-egg-wobble {
+    0%,
+    100% {
+      transform: rotate(-8deg) translate(0, 0);
+    }
+
+    50% {
+      transform: rotate(4deg) translate(0.35rem, -0.25rem);
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .team-pass-stage {
+      min-height: 42rem;
+      transform: none;
+    }
+
+    .team-utensil {
+      opacity: 0.55;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .team-pass-ticket,
+    .team-orbit-card {
+      position: relative;
+      left: auto;
+      right: auto;
+      top: auto;
+      bottom: auto;
+      margin: 0.75rem 0;
+      width: auto;
+      --float-rotate: 0deg;
+    }
+
+    .team-pass-stage {
+      display: grid;
+      min-height: auto;
+      padding-block: 2rem;
+    }
+
+    .team-plate {
+      position: relative;
+      left: auto;
+      top: auto;
+      order: 2;
+      height: min(22rem, 82vw);
+      width: min(22rem, 82vw);
+      margin: 2rem auto;
+      transform: none;
+    }
+
+    .team-utensil {
+      display: none;
+    }
+
+    :global(.team-profile-card) {
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .team-pass-ticket,
+    .team-orbit-card,
+    .team-plate,
+    .team-egg-white {
+      animation: none;
+    }
+  }
+</style>

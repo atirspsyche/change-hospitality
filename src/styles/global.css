@@ -6,6 +6,11 @@
   --color-champagne: #D4C3B3;
   --color-off-white: #FBF9F6;
   --color-bcorp-green: #2E5A44;
+  --color-story-pink: #F6B6EA;
+  --color-story-blue: #9EECF6;
+  --color-story-black: #0C0C0C;
+  --color-story-lime: #D0E86E;
+  --color-story-pale: #FEFFE0;
   --font-serif: "Cormorant Garamond", Georgia, serif;
   --font-sans: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
 }
@@ -15,6 +20,11 @@
   --color-champagne: #D4C3B3;
   --color-off-white: #FBF9F6;
   --color-bcorp-green: #2E5A44;
+  --color-story-pink: #F6B6EA;
+  --color-story-blue: #9EECF6;
+  --color-story-black: #0C0C0C;
+  --color-story-lime: #D0E86E;
+  --color-story-pale: #FEFFE0;
   --ease-luxury: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
