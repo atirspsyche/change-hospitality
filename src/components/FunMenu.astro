@@ -1,0 +1,669 @@
+---
+export interface FunMenuLink {
+  label: string;
+  href: string;
+  meta?: string;
+}
+
+interface Props {
+  links?: FunMenuLink[];
+  brand?: string;
+  cta?: { label: string; href: string };
+}
+
+const {
+  links = [
+    { label: 'Profiles', href: '#profiles', meta: 'The consultants' },
+    { label: 'Process', href: '#pass', meta: 'How the handoff works' },
+    { label: 'Gallery', href: '#gallery', meta: 'Frames of the work' },
+    { label: 'Jobs Portal', href: '/portal/', meta: 'Live opportunities' },
+    { label: 'Home', href: '/', meta: 'Back to the start' },
+  ],
+  brand = 'Change Hospitality',
+} = Astro.props;
+
+// Rotating accent colours the big links flash through on hover.
+const flashColors = [
+  'var(--color-flame)',
+  'var(--color-citron)',
+  'var(--color-mint)',
+  'var(--color-blush)',
+  'var(--color-mist)',
+];
+---
+
+<div class="funmenu" data-funmenu>
+  <!-- Floating flat cartoon bar -->
+  <div class="funmenu-bar" data-funmenu-bar>
+    <a class="funmenu-brand" href="/" aria-label={`${brand} home`}>
+      <span class="funmenu-brand-mark" aria-hidden="true">C</span>
+      <span class="funmenu-brand-word">{brand}</span>
+    </a>
+
+    <nav class="funmenu-inline" aria-label="Primary navigation">
+      {links.slice(0, 4).map((link) => (
+        <a class="funmenu-inline-link" href={link.href}>{link.label}</a>
+      ))}
+    </nav>
+
+    <div class="funmenu-actions">
+      <button
+        class="funmenu-toggle"
+        type="button"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="funmenu-overlay"
+        data-funmenu-toggle
+      >
+        <span class="funmenu-toggle-label" data-toggle-label>Menu</span>
+        <span class="funmenu-toggle-bars" aria-hidden="true">
+          <span></span>
+          <span></span>
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Partial cartoon drawer -->
+  <div
+    class="funmenu-overlay"
+    id="funmenu-overlay"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Site menu"
+    data-funmenu-overlay
+    hidden
+  >
+    <div class="funmenu-blob funmenu-blob-1" data-parallax="6" aria-hidden="true"></div>
+    <div class="funmenu-blob funmenu-blob-2" data-parallax="-10" aria-hidden="true"></div>
+    <div class="funmenu-blob funmenu-blob-3" data-parallax="14" aria-hidden="true"></div>
+    <div class="funmenu-cursor" data-funmenu-cursor aria-hidden="true"></div>
+
+    <div class="funmenu-overlay-inner">
+      <p class="funmenu-eyebrow">Change Hospitality / people first</p>
+      <nav class="funmenu-list" aria-label="Overlay navigation">
+        {links.map((link, index) => (
+          <a
+            class="funmenu-link"
+            href={link.href}
+            style={`--flash:${flashColors[index % flashColors.length]}`}
+            data-funmenu-link
+          >
+            <span class="funmenu-link-index">{String(index + 1).padStart(2, '0')}</span>
+            <span class="funmenu-link-text" data-text={link.label}>{link.label}</span>
+            {link.meta && <span class="funmenu-link-meta">{link.meta}</span>}
+          </a>
+        ))}
+      </nav>
+      <div class="funmenu-footer">
+        <span>hello@changehospitality.co.uk</span>
+        <span>Front of House · Back of House · Events &amp; Commercial</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .funmenu {
+    --menu-flash: var(--color-flame);
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 60;
+    pointer-events: none;
+  }
+
+  /* ---------- Floating cartoon bar ---------- */
+  .funmenu-bar {
+    pointer-events: auto;
+    position: relative;
+    z-index: 62;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    background: transparent;
+    padding: 1rem;
+    transition:
+      transform 500ms var(--ease-cartoon);
+  }
+
+  .funmenu-bar.is-hidden {
+    transform: translateY(-140%);
+  }
+
+  .funmenu-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    justify-self: start;
+    color: var(--color-ink);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  .funmenu-brand-mark {
+    display: grid;
+    height: 2.4rem;
+    width: 2.4rem;
+    place-items: center;
+    color: var(--color-flame);
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    transition: transform 400ms var(--ease-cartoon);
+  }
+
+  .funmenu-brand:hover .funmenu-brand-mark {
+    transform: rotate(-8deg) scale(1.05);
+  }
+
+  .funmenu-brand-word {
+    display: none;
+    font-size: 0.9rem;
+  }
+
+  .funmenu-inline {
+    display: none;
+    align-items: center;
+    justify-self: center;
+    gap: 0.45rem;
+  }
+
+  .funmenu-inline-link {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: 1.1rem;
+    background: var(--color-cream);
+    padding: 0.82rem 1.1rem;
+    font-size: 0.86rem;
+    font-weight: 900;
+    color: var(--color-ink);
+    transition:
+      color 160ms ease,
+      transform 320ms var(--ease-cartoon),
+      background-color 240ms ease;
+  }
+
+  .funmenu-inline-link::before {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    z-index: -1;
+    height: 0;
+    background: var(--color-flame);
+    transition: height 300ms var(--ease-cartoon);
+  }
+
+  .funmenu-inline-link:nth-child(2n)::before {
+    background: var(--color-mint);
+  }
+
+  .funmenu-inline-link:nth-child(3n)::before {
+    background: var(--color-citron);
+  }
+
+  .funmenu-inline-link:hover,
+  .funmenu-inline-link:focus-visible {
+    color: var(--color-cream);
+    transform: translateY(-0.25rem) rotate(-2deg) scale(1.04);
+  }
+
+  .funmenu-inline-link:nth-child(2n):hover,
+  .funmenu-inline-link:nth-child(2n):focus-visible {
+    color: var(--color-ink);
+  }
+
+  .funmenu-inline-link:hover::before,
+  .funmenu-inline-link:focus-visible::before {
+    height: 100%;
+  }
+
+  .funmenu-actions {
+    display: flex;
+    align-items: center;
+    justify-self: end;
+    gap: 0.5rem;
+  }
+
+  .funmenu-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 3.6rem;
+    border-radius: 1.2rem;
+    background: var(--color-flame);
+    padding: 0.9rem 1.25rem;
+    color: var(--color-cream);
+    font-size: 0.96rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition:
+      transform 350ms var(--ease-cartoon),
+      background-color 300ms ease;
+  }
+
+  .funmenu-toggle:hover,
+  .funmenu-toggle:focus-visible {
+    transform: translateY(-3px) rotate(2deg) scale(1.04);
+    background: var(--color-cocoa);
+  }
+
+  .funmenu-toggle-bars {
+    display: grid;
+    gap: 0.28rem;
+  }
+
+  .funmenu-toggle-bars span {
+    display: block;
+    height: 0.16rem;
+    width: 1.3rem;
+    border-radius: 999px;
+    background: currentColor;
+    transition: transform 350ms var(--ease-cartoon);
+  }
+
+  .funmenu-toggle[aria-expanded='true'] .funmenu-toggle-bars span:first-child {
+    transform: translateY(0.22rem) rotate(42deg);
+  }
+
+  .funmenu-toggle[aria-expanded='true'] .funmenu-toggle-bars span:last-child {
+    transform: translateY(-0.22rem) rotate(-42deg);
+  }
+
+  /* ---------- Partial overlay drawer ---------- */
+  .funmenu-overlay {
+    pointer-events: auto;
+    position: fixed;
+    inset: 0.75rem 0.75rem auto auto;
+    z-index: 61;
+    display: grid;
+    place-items: stretch;
+    width: min(46rem, calc(100vw - 1.5rem));
+    min-height: min(50rem, calc(100dvh - 1.5rem));
+    overflow: hidden;
+    background: var(--menu-flash);
+    border-radius: 2.3rem 1rem 2.6rem 2.1rem;
+    transform: translate3d(calc(100% + 1rem), -1rem, 0) rotate(7deg) scale(0.94);
+    transform-origin: 100% 0;
+    transition:
+      border-radius 720ms var(--ease-cartoon),
+      transform 720ms var(--ease-cartoon),
+      background-color 550ms var(--ease-cartoon);
+  }
+
+  .funmenu-overlay.is-open {
+    border-radius: 2rem 0.85rem 2.8rem 2.45rem;
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+
+  .funmenu-overlay::before {
+    position: absolute;
+    inset: 12% auto auto -1rem;
+    z-index: 1;
+    height: 68%;
+    width: 7.5rem;
+    border-radius: 999px;
+    background: var(--color-citron);
+    content: '';
+    transform: rotate(-4deg) scaleX(0.72);
+    transform-origin: right center;
+    transition: transform 620ms var(--ease-cartoon);
+  }
+
+  .funmenu-overlay.is-open::before {
+    transform: rotate(-4deg) scaleX(1);
+  }
+
+  .funmenu-overlay-inner {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    min-height: inherit;
+    width: 100%;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 6.2rem 1.65rem 1.65rem;
+  }
+
+  .funmenu-eyebrow {
+    margin-bottom: 1.1rem;
+    width: fit-content;
+    border-radius: 1rem;
+    background: var(--color-cream);
+    padding: 0.75rem 1rem;
+    font-size: 0.86rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--color-ink);
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 400ms ease,
+      transform 500ms var(--ease-cartoon);
+  }
+
+  .funmenu-list {
+    display: grid;
+    gap: 0.45rem;
+  }
+
+  .funmenu-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    min-height: 5.2rem;
+    overflow: hidden;
+    border-radius: 1.45rem;
+    background: var(--color-cream);
+    color: var(--color-ink);
+    padding: 0.75rem 1rem;
+    opacity: 0;
+    transform: translateY(28px) rotate(-2deg);
+    transition:
+      opacity 400ms ease,
+      transform 520ms var(--ease-cartoon),
+      color 80ms linear;
+  }
+
+  .funmenu-link::before {
+    position: absolute;
+    inset: auto 0 0;
+    height: 0;
+    background: var(--color-ink);
+    content: '';
+    transition: height 380ms var(--ease-cartoon);
+  }
+
+  .funmenu-link-index {
+    position: relative;
+    z-index: 1;
+    font-size: 0.85rem;
+    font-weight: 900;
+  }
+
+  .funmenu-link-text {
+    position: relative;
+    z-index: 1;
+    font-family: var(--font-serif);
+    font-size: clamp(2.2rem, 7vw, 4.8rem);
+    font-weight: 600;
+    line-height: 0.94;
+    letter-spacing: 0;
+    transition: transform 380ms var(--ease-cartoon);
+  }
+
+  .funmenu-link-text::after {
+    display: none;
+  }
+
+  .funmenu-link-meta {
+    position: relative;
+    z-index: 1;
+    margin-left: auto;
+    max-width: 9rem;
+    text-align: right;
+    font-size: 0.78rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    transform: translateX(-6px);
+    transition:
+      transform 360ms var(--ease-cartoon);
+  }
+
+  .funmenu-link:nth-child(2n) {
+    transform: translateY(28px) rotate(2deg);
+  }
+
+  .funmenu-link:hover .funmenu-link-text,
+  .funmenu-link:focus-visible .funmenu-link-text {
+    transform: translateX(0.6rem) rotate(-1.2deg) scale(1.02);
+  }
+
+  .funmenu-link:hover,
+  .funmenu-link:focus-visible {
+    color: var(--color-cream);
+    transform: rotate(-1deg) scale(1.02);
+  }
+
+  .funmenu-link:hover::before,
+  .funmenu-link:focus-visible::before {
+    height: 100%;
+  }
+
+  .funmenu-link:hover .funmenu-link-meta,
+  .funmenu-link:focus-visible .funmenu-link-meta {
+    transform: translateX(0);
+  }
+
+  .funmenu-overlay.is-open .funmenu-eyebrow,
+  .funmenu-overlay.is-open .funmenu-link {
+    opacity: 1;
+    transform: none;
+  }
+
+  .funmenu-overlay.is-open .funmenu-eyebrow {
+    transition-delay: 160ms;
+  }
+
+  .funmenu-overlay.is-open .funmenu-link:nth-child(1) { transition-delay: 220ms, 220ms, 0ms; }
+  .funmenu-overlay.is-open .funmenu-link:nth-child(2) { transition-delay: 285ms, 285ms, 0ms; }
+  .funmenu-overlay.is-open .funmenu-link:nth-child(3) { transition-delay: 350ms, 350ms, 0ms; }
+  .funmenu-overlay.is-open .funmenu-link:nth-child(4) { transition-delay: 415ms, 415ms, 0ms; }
+  .funmenu-overlay.is-open .funmenu-link:nth-child(5) { transition-delay: 480ms, 480ms, 0ms; }
+  .funmenu-overlay.is-open .funmenu-link:nth-child(6) { transition-delay: 545ms, 545ms, 0ms; }
+
+  .funmenu-overlay.is-open .funmenu-link:hover,
+  .funmenu-overlay.is-open .funmenu-link:focus-visible {
+    transition-delay: 0ms, 0ms, 0ms;
+  }
+
+  .funmenu-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: auto;
+    border-radius: 1.25rem;
+    background: var(--color-cocoa);
+    padding: 1rem;
+    font-size: 0.82rem;
+    font-weight: 900;
+    color: var(--color-cream);
+    opacity: 0;
+    transition: opacity 400ms ease 560ms;
+  }
+
+  .funmenu-overlay.is-open .funmenu-footer {
+    opacity: 1;
+  }
+
+  .funmenu-blob {
+    position: absolute;
+    border-radius: 32% 68% 58% 42% / 48% 42% 58% 52%;
+    will-change: transform;
+  }
+
+  .funmenu-blob-1 {
+    top: -6rem;
+    right: -4rem;
+    height: 26rem;
+    width: 26rem;
+    background: var(--color-story-blue);
+  }
+
+  .funmenu-blob-2 {
+    bottom: -8rem;
+    left: -6rem;
+    height: 30rem;
+    width: 30rem;
+    background: var(--color-cocoa);
+  }
+
+  .funmenu-blob-3 {
+    top: 40%;
+    left: 12%;
+    height: 12rem;
+    width: 12rem;
+    background: var(--color-citron);
+  }
+
+  .funmenu-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 4.5rem;
+    width: 4.5rem;
+    margin: -2.25rem 0 0 -2.25rem;
+    border-radius: 999px;
+    background: var(--color-citron);
+    pointer-events: none;
+    opacity: 0;
+    transform: translate3d(-50%, -50%, 0);
+    transition: opacity 300ms ease, transform 180ms ease-out;
+  }
+
+  .funmenu-overlay.is-open .funmenu-cursor {
+    opacity: 1;
+  }
+
+  body.funmenu-open {
+    overflow: hidden;
+  }
+
+  @media (min-width: 768px) {
+    .funmenu-brand-word { display: inline; }
+  }
+
+  @media (min-width: 1024px) {
+    .funmenu-inline { display: flex; }
+  }
+
+  @media (max-width: 767px) {
+    .funmenu-link-meta { display: none; }
+    .funmenu-link {
+      gap: 0.6rem;
+      min-height: 4.6rem;
+    }
+
+    .funmenu-overlay {
+      width: calc(100vw - 1rem);
+      inset: 0.5rem 0.5rem auto auto;
+    }
+
+    .funmenu-bar {
+      grid-template-columns: 1fr auto;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .funmenu-overlay,
+    .funmenu-overlay-inner *,
+    .funmenu-bar,
+    .funmenu-blob,
+    .funmenu-cursor {
+      transition-duration: 0.001ms !important;
+    }
+
+    .funmenu-overlay {
+      border-radius: 1.6rem !important;
+    }
+  }
+</style>
+
+<script>
+  function initFunMenu() {
+    const root = document.querySelector<HTMLElement>('[data-funmenu]');
+    if (!root || root.dataset.funmenuReady === 'true') return;
+    root.dataset.funmenuReady = 'true';
+
+    const toggle = root.querySelector<HTMLButtonElement>('[data-funmenu-toggle]');
+    const overlay = root.querySelector<HTMLElement>('[data-funmenu-overlay]');
+    const bar = root.querySelector<HTMLElement>('[data-funmenu-bar]');
+    const toggleLabel = root.querySelector<HTMLElement>('[data-toggle-label]');
+    const cursor = root.querySelector<HTMLElement>('[data-funmenu-cursor]');
+    const links = Array.from(root.querySelectorAll<HTMLElement>('[data-funmenu-link]'));
+    const blobs = Array.from(root.querySelectorAll<HTMLElement>('.funmenu-blob'));
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!toggle || !overlay) return;
+
+    let open = false;
+
+    const setOpen = (next: boolean) => {
+      open = next;
+      toggle.setAttribute('aria-expanded', String(next));
+      toggle.setAttribute('aria-label', next ? 'Close menu' : 'Open menu');
+      if (toggleLabel) toggleLabel.textContent = next ? 'Close' : 'Menu';
+      document.body.classList.toggle('funmenu-open', next);
+      if (next) {
+        overlay.hidden = false;
+        // allow the browser to paint the un-clipped state before animating
+        requestAnimationFrame(() => overlay.classList.add('is-open'));
+        (links[0] as HTMLElement | undefined)?.focus?.();
+      } else {
+        overlay.classList.remove('is-open');
+        overlay.style.setProperty('--menu-flash', 'var(--color-flame)');
+        window.setTimeout(() => {
+          if (!open) overlay.hidden = true;
+        }, prefersReduced ? 0 : 640);
+      }
+    };
+
+    toggle.addEventListener('click', () => setOpen(!open));
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && open) setOpen(false);
+    });
+
+    // Colour-flash: the whole overlay shifts to the link's accent on hover.
+    links.forEach((link) => {
+      const flash = link.style.getPropertyValue('--flash');
+      const apply = () => overlay.style.setProperty('--menu-flash', flash);
+      link.addEventListener('mouseenter', apply);
+      link.addEventListener('focus', apply);
+      link.addEventListener('click', () => setOpen(false));
+    });
+
+    // Reactive cursor follower + blob parallax inside the overlay.
+    if (!prefersReduced) {
+      overlay.addEventListener('pointermove', (event) => {
+        if (cursor) {
+          cursor.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
+        }
+        const cx = (event.clientX / window.innerWidth - 0.5) * 2;
+        const cy = (event.clientY / window.innerHeight - 0.5) * 2;
+        blobs.forEach((blob) => {
+          const depth = Number(blob.dataset.parallax || 0);
+          blob.style.transform = `translate3d(${cx * depth}px, ${cy * depth}px, 0)`;
+        });
+      });
+    }
+
+    // Hide the bar on scroll down, reveal on scroll up.
+    let lastScroll = window.scrollY;
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (open || !bar) return;
+        const current = window.scrollY;
+        if (current > lastScroll && current > 120) {
+          bar.classList.add('is-hidden');
+        } else {
+          bar.classList.remove('is-hidden');
+        }
+        lastScroll = current;
+      },
+      { passive: true }
+    );
+  }
+
+  initFunMenu();
+  document.addEventListener('astro:page-load', initFunMenu);
+</script>

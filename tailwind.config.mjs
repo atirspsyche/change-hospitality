@@ -15,8 +15,9 @@ export default {
         'story-pale': '#FEFFE0',
       },
       fontFamily: {
-        serif: ['Cormorant Garamond', 'Georgia', 'serif'],
-        sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
+        serif: ['Bowlby One SC', 'Arial Black', 'Helvetica', 'sans-serif'],
+        display: ['Bowlby One SC', 'Arial Black', 'Helvetica', 'sans-serif'],
+        sans: ['Helvetica', 'Arial', 'sans-serif'],
       },
       boxShadow: {
         champagne: '0 24px 80px rgba(212, 195, 179, 0.16)',
