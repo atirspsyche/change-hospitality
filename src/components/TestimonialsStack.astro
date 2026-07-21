@@ -2,29 +2,56 @@
 import { testimonials } from '../data/home';
 ---
 
-<section id="testimonials" data-testimonials-section class="relative bg-obsidian px-6 py-24 text-off-white md:px-10 lg:px-20">
+<section id="testimonials" data-testimonials-section class="home-testimonials relative isolate overflow-hidden bg-blush px-6 py-24 text-ink md:px-10 lg:px-20">
+  <div class="home-testimonial-shape" aria-hidden="true"></div>
   <div class="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
     <div class="lg:sticky lg:top-28">
-      <p class="mb-4 text-sm font-semibold uppercase text-champagne">Trusted by operators</p>
+      <p class="mb-4 w-fit rotate-2 rounded-2xl bg-flame px-4 py-2 text-xs font-black uppercase tracking-wide text-cream">Trusted by operators</p>
       <h2 class="font-serif text-5xl leading-none md:text-7xl">The room feels different when the people are right.</h2>
-      <p class="mt-7 max-w-xl text-base leading-8 text-off-white/70">
+      <p class="mt-7 max-w-xl text-base font-bold leading-8 text-cocoa">
         Hospitality leaders come back to Change because the shortlist is considered, the communication is honest and the relationship lasts beyond placement.
       </p>
     </div>
-    <div data-testimonial-stack class="relative min-h-[620px]">
+    <div data-testimonial-stack class="home-testimonial-stack relative">
       {testimonials.map((testimonial, index) => (
         <article
           data-testimonial-card
-          class="absolute inset-x-0 top-0 rounded-lg border border-off-white/10 bg-off-white/[0.05] p-8 shadow-2xl backdrop-blur md:p-10"
+          class:list={['home-testimonial-card absolute inset-x-0 top-0 rounded-[1.9rem] border-2 border-ink p-8 text-ink md:p-10', index === 0 ? 'bg-cream' : index === 1 ? 'bg-mint' : 'bg-citron']}
           style={`transform: translateY(${index * 120}px); z-index: ${testimonials.length + index};`}
         >
-          <p class="font-serif text-3xl leading-tight text-off-white md:text-4xl">&ldquo;{testimonial.quote}&rdquo;</p>
-          <div class="mt-10 border-t border-off-white/10 pt-6">
-            <p class="font-semibold text-champagne">{testimonial.name}</p>
-            <p class="mt-1 text-sm text-off-white/64">{testimonial.role}</p>
+          <p class="font-serif text-3xl leading-tight text-ink md:text-4xl">&ldquo;{testimonial.quote}&rdquo;</p>
+          <div class="mt-10 border-t-2 border-ink/20 pt-6">
+            <p class="font-black text-flame">{testimonial.name}</p>
+            <p class="mt-1 text-sm font-bold text-cocoa">{testimonial.role}</p>
           </div>
         </article>
       ))}
     </div>
   </div>
 </section>
+
+<style>
+  .home-testimonial-stack {
+    min-height: 38.75rem;
+  }
+
+  .home-testimonial-shape {
+    position: absolute;
+    left: -12rem;
+    bottom: -8rem;
+    z-index: -1;
+    height: 21rem;
+    width: 35rem;
+    border-radius: 999px;
+    background: var(--color-flame);
+    transform: rotate(12deg);
+  }
+
+  .home-testimonial-card:nth-child(2) {
+    rotate: 1deg;
+  }
+
+  .home-testimonial-card:nth-child(3) {
+    rotate: -1deg;
+  }
+</style>

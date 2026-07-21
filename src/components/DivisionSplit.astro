@@ -2,31 +2,31 @@
 import { divisions } from '../data/home';
 ---
 
-<section id="divisions" data-division-section class="relative bg-obsidian lg:h-[300vh]">
-  <div class="flex w-full flex-col overflow-hidden bg-obsidian lg:sticky lg:top-0 lg:h-screen lg:flex-row">
-    <div class="relative z-10 flex flex-col justify-center border-b border-off-white/10 px-6 py-16 md:px-10 lg:min-h-0 lg:w-[45%] lg:border-b-0 lg:border-r lg:px-20">
-      <p class="mb-5 text-sm font-semibold uppercase text-champagne">Specialist divisions</p>
+<section id="divisions" data-division-section class="home-divisions relative bg-mint lg:h-[300vh]">
+  <div class="flex w-full flex-col overflow-hidden bg-mint lg:sticky lg:top-0 lg:h-screen lg:flex-row">
+    <div class="home-divisions-copy relative z-10 flex flex-col justify-center border-b-2 border-ink px-6 py-16 text-ink md:px-10 lg:min-h-0 lg:w-[45%] lg:border-b-0 lg:border-r-2 lg:px-14 xl:px-20">
+      <p class="mb-5 w-fit rotate-2 rounded-2xl bg-flame px-4 py-2 text-xs font-black uppercase tracking-wide text-cream">Specialist divisions</p>
       <div class="space-y-7">
         {divisions.map((division, index) => (
           <article data-division-copy class:list={[
             'origin-left transition-colors duration-500',
-            index === 0 ? 'text-off-white' : 'text-off-white/42',
+            index === 0 ? 'text-ink' : 'text-ink/40',
           ]}>
-            <p class="mb-2 text-xs font-semibold uppercase text-champagne/80">0{index + 1} / {division.label}</p>
+            <p class="mb-2 text-xs font-black uppercase text-flame">0{index + 1} / {division.label}</p>
             <h2 class="font-serif text-4xl leading-none md:text-5xl">{division.name}</h2>
-            <p class="mt-4 max-w-xl text-sm leading-7 text-off-white/70 md:text-base">{division.description}</p>
+            <p class="mt-4 max-w-xl text-sm font-bold leading-7 text-cocoa md:text-base">{division.description}</p>
             <ul class="mt-5 flex flex-wrap gap-2" aria-label={`${division.name} specialisms`}>
-              {division.details.map((detail) => <li class="rounded-full border border-off-white/12 px-3 py-1 text-xs text-off-white/70">{detail}</li>)}
+              {division.details.map((detail) => <li class="rounded-xl border-2 border-ink bg-cream px-3 py-1 text-xs font-black text-ink">{detail}</li>)}
             </ul>
           </article>
         ))}
       </div>
     </div>
-    <div class="grid gap-3 px-6 pb-16 md:px-10 lg:relative lg:min-h-0 lg:flex-1 lg:overflow-hidden lg:p-0" aria-label="Division imagery">
+    <div class="grid gap-4 bg-flame px-6 pb-16 md:px-10 lg:relative lg:min-h-0 lg:flex-1 lg:overflow-hidden lg:p-0" aria-label="Division imagery">
       {divisions.map((division, index) => (
-        <figure data-division-image class="relative h-72 overflow-hidden rounded-lg md:h-96 lg:absolute lg:inset-0 lg:h-auto lg:rounded-none" style={`z-index: ${index + 1};`}>
+        <figure data-division-image class="home-division-image relative h-72 overflow-hidden rounded-[1.75rem] border-2 border-ink bg-cream md:h-96 lg:absolute lg:inset-0 lg:h-auto lg:rounded-none lg:border-0" style={`z-index: ${index + 1};`}>
           <img class="h-full w-full object-cover" src={division.image} alt={division.alt} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" />
-          <figcaption class="absolute bottom-6 left-6 rounded-lg border border-off-white/14 bg-obsidian/70 px-4 py-3 text-sm text-off-white backdrop-blur md:bottom-10 md:left-10">
+          <figcaption class="home-division-caption absolute bottom-6 left-6 rounded-2xl border-2 border-ink bg-citron px-4 py-3 text-sm font-black uppercase text-ink md:bottom-10 md:left-10">
             {division.name}
           </figcaption>
         </figure>
@@ -34,3 +34,26 @@ import { divisions } from '../data/home';
     </div>
   </div>
 </section>
+
+<style>
+  .home-divisions-copy::before {
+    position: absolute;
+    right: -3rem;
+    top: 8%;
+    z-index: -1;
+    height: 7rem;
+    width: 10rem;
+    border-radius: 999px;
+    background: var(--color-citron);
+    content: "";
+    transform: rotate(-12deg);
+  }
+
+  .home-division-image img {
+    filter: saturate(0.85) contrast(1.05);
+  }
+
+  .home-division-caption {
+    transform: rotate(-2deg);
+  }
+</style>

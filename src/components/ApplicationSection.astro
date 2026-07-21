@@ -2,53 +2,54 @@
 import { divisions } from '../data/home';
 ---
 
-<section id="apply" class="relative bg-obsidian px-6 py-24 text-off-white md:px-10 lg:px-20">
+<section id="apply" class="home-application relative overflow-hidden bg-flame px-6 py-24 text-ink md:px-10 lg:px-20">
+  <div class="home-application-shape" aria-hidden="true"></div>
   <div class="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.75fr_1.25fr] lg:items-start">
     <div class="lg:sticky lg:top-28">
-      <p class="mb-4 text-sm font-semibold uppercase text-champagne">Candidate profile</p>
+      <p class="mb-4 w-fit -rotate-2 rounded-2xl bg-citron px-4 py-2 text-xs font-black uppercase tracking-wide text-ink">Candidate profile</p>
       <h2 class="font-serif text-5xl leading-none md:text-7xl">Apply with a profile, not a portal maze.</h2>
-      <p class="mt-7 text-base leading-8 text-off-white/72">
-        Candidates can send core details and a resume in one clean flow. This build currently uses a mock upload response, with the future email handoff prepared in the Vercel function.
+      <p class="mt-7 text-base font-bold leading-8 text-ink/80">
+        Share the essentials in one clean flow. A consultant will review your experience, listen to what you want next and come back with a human response.
       </p>
-      <div class="mt-8 rounded-lg border border-off-white/10 bg-off-white/[0.04] p-5 text-sm leading-7 text-off-white/72">
-        Mock mode stores nothing, sends nothing and returns a reference number so the journey can be reviewed safely with the client.
+      <div class="mt-8 rotate-1 rounded-[1.6rem] border-2 border-ink bg-blush p-5 text-sm font-bold leading-7 text-cocoa">
+        Your profile goes to people who know hospitality and understand that the right environment matters as much as the role.
       </div>
     </div>
-    <form data-application-form class="rounded-lg border border-off-white/10 bg-off-white/[0.04] p-5 md:p-8" enctype="multipart/form-data" method="post" action="/api/apply">
+    <form data-application-form class="home-application-form rounded-4xl border-2 border-ink bg-cream p-5 md:p-8" enctype="multipart/form-data" method="post" action="/api/apply">
       <div class="grid gap-5 md:grid-cols-2">
-        <label class="field-shell rounded-lg p-4">
-          <span class="mb-2 block text-xs font-semibold uppercase text-champagne">First name</span>
+        <label class="home-field rounded-[1.2rem] border-2 border-ink bg-paper p-4">
+          <span class="mb-2 block text-xs font-black uppercase text-flame">First name</span>
           <input name="firstName" autocomplete="given-name" required />
         </label>
-        <label class="field-shell rounded-lg p-4">
-          <span class="mb-2 block text-xs font-semibold uppercase text-champagne">Last name</span>
+        <label class="home-field rounded-[1.2rem] border-2 border-ink bg-paper p-4">
+          <span class="mb-2 block text-xs font-black uppercase text-flame">Last name</span>
           <input name="lastName" autocomplete="family-name" required />
         </label>
-        <label class="field-shell rounded-lg p-4">
-          <span class="mb-2 block text-xs font-semibold uppercase text-champagne">Email</span>
+        <label class="home-field rounded-[1.2rem] border-2 border-ink bg-mint p-4">
+          <span class="mb-2 block text-xs font-black uppercase text-flame">Email</span>
           <input name="email" type="email" autocomplete="email" required />
         </label>
-        <label class="field-shell rounded-lg p-4">
-          <span class="mb-2 block text-xs font-semibold uppercase text-champagne">Phone</span>
+        <label class="home-field rounded-[1.2rem] border-2 border-ink bg-mint p-4">
+          <span class="mb-2 block text-xs font-black uppercase text-flame">Phone</span>
           <input name="phone" type="tel" autocomplete="tel" required />
         </label>
-        <label class="field-shell rounded-lg p-4 md:col-span-2">
-          <span class="mb-2 block text-xs font-semibold uppercase text-champagne">Role of interest</span>
+        <label class="home-field rounded-[1.2rem] border-2 border-ink bg-paper p-4 md:col-span-2">
+          <span class="mb-2 block text-xs font-black uppercase text-flame">Role of interest</span>
           <input id="roleInterest" name="roleInterest" placeholder="Senior Sous Chef, Event Manager, General Manager..." required />
         </label>
-        <label class="field-shell rounded-lg p-4">
-          <span class="mb-2 block text-xs font-semibold uppercase text-champagne">Division</span>
+        <label class="home-field rounded-[1.2rem] border-2 border-ink bg-blush p-4">
+          <span class="mb-2 block text-xs font-black uppercase text-flame">Division</span>
           <select name="division" required>
             <option value="">Select a division</option>
             {divisions.map((division) => <option value={division.name}>{division.name}</option>)}
           </select>
         </label>
-        <label class="field-shell rounded-lg p-4">
-          <span class="mb-2 block text-xs font-semibold uppercase text-champagne">Preferred location</span>
+        <label class="home-field rounded-[1.2rem] border-2 border-ink bg-blush p-4">
+          <span class="mb-2 block text-xs font-black uppercase text-flame">Preferred location</span>
           <input name="location" autocomplete="address-level2" placeholder="London, Manchester, remote..." required />
         </label>
-        <label class="field-shell rounded-lg p-4">
-          <span class="mb-2 block text-xs font-semibold uppercase text-champagne">Work type</span>
+        <label class="home-field rounded-[1.2rem] border-2 border-ink bg-paper p-4">
+          <span class="mb-2 block text-xs font-black uppercase text-flame">Work type</span>
           <select name="workType" required>
             <option value="">Select availability</option>
             <option>Permanent</option>
@@ -57,30 +58,80 @@ import { divisions } from '../data/home';
             <option>Open to all</option>
           </select>
         </label>
-        <label class="field-shell rounded-lg p-4">
-          <span class="mb-2 block text-xs font-semibold uppercase text-champagne">Resume</span>
+        <label class="home-field rounded-[1.2rem] border-2 border-ink bg-paper p-4">
+          <span class="mb-2 block text-xs font-black uppercase text-flame">Resume</span>
           <input name="resume" type="file" accept=".pdf,.doc,.docx" required aria-describedby="resume-help" />
-          <span id="resume-help" class="mt-2 block text-xs text-off-white/58">PDF, DOC or DOCX. Maximum 5MB in mock mode.</span>
+          <span id="resume-help" class="mt-2 block text-xs font-bold text-cocoa">PDF, DOC or DOCX. Maximum 5MB.</span>
         </label>
-        <label class="field-shell rounded-lg p-4 md:col-span-2">
-          <span class="mb-2 block text-xs font-semibold uppercase text-champagne">Profile link</span>
+        <label class="home-field rounded-[1.2rem] border-2 border-ink bg-mint p-4 md:col-span-2">
+          <span class="mb-2 block text-xs font-black uppercase text-flame">Profile link</span>
           <input name="profileLink" type="url" placeholder="LinkedIn, portfolio or personal site" />
         </label>
-        <label class="field-shell rounded-lg p-4 md:col-span-2">
-          <span class="mb-2 block text-xs font-semibold uppercase text-champagne">Short note</span>
+        <label class="home-field rounded-[1.2rem] border-2 border-ink bg-blush p-4 md:col-span-2">
+          <span class="mb-2 block text-xs font-black uppercase text-flame">Short note</span>
           <textarea name="message" rows="5" placeholder="Tell us what kind of hospitality environment suits you best." required></textarea>
         </label>
       </div>
-      <label class="mt-5 flex gap-3 text-sm leading-6 text-off-white/72">
-        <input class="mt-1 h-4 w-4 accent-champagne" name="consent" type="checkbox" required />
-        <span>I consent to Change Hospitality reviewing my profile for recruitment opportunities. Mock mode does not store or send this submission.</span>
+      <label class="mt-5 flex gap-3 text-sm font-bold leading-6 text-cocoa">
+        <input class="mt-1 h-4 w-4 accent-flame" name="consent" type="checkbox" required />
+        <span>I consent to Change Hospitality reviewing my profile for recruitment opportunities.</span>
       </label>
       <div class="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
-        <button data-submit-button class="luxury-button min-h-14 rounded-lg px-8 text-sm font-semibold uppercase text-off-white" type="submit">
+        <button data-submit-button class="home-submit min-h-14 rounded-[1.3rem] border-2 border-ink bg-citron px-8 text-sm font-black uppercase text-ink" type="submit">
           Send profile
         </button>
-        <p data-form-status class="min-h-6 text-sm text-off-white/70" role="status" aria-live="polite"></p>
+        <p data-form-status class="min-h-6 text-sm font-bold text-cocoa" role="status" aria-live="polite"></p>
       </div>
     </form>
   </div>
 </section>
+
+<style>
+  .home-application-shape {
+    position: absolute;
+    right: -11rem;
+    top: 3rem;
+    height: 16rem;
+    width: 31rem;
+    border-radius: 999px;
+    background: var(--color-citron);
+    transform: rotate(-8deg);
+  }
+
+  .home-application-form {
+    position: relative;
+    z-index: 1;
+  }
+
+  .home-field {
+    display: block;
+    transition: transform 260ms var(--ease-cartoon);
+  }
+
+  .home-field:focus-within {
+    transform: translateY(-0.2rem) rotate(-0.5deg);
+  }
+
+  .home-field input,
+  .home-field select,
+  .home-field textarea {
+    width: 100%;
+    background: transparent;
+    color: var(--color-ink);
+    font-weight: 700;
+    outline: none;
+  }
+
+  .home-submit {
+    transition:
+      transform 320ms var(--ease-cartoon),
+      background-color 240ms ease;
+  }
+
+  .home-submit:hover,
+  .home-submit:focus-visible {
+    background: var(--color-cocoa);
+    color: var(--color-cream);
+    transform: translateY(-0.3rem) rotate(-2deg) scale(1.03);
+  }
+</style>

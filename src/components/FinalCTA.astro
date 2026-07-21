@@ -1,26 +1,218 @@
 ---
-import { navigationItems } from '../data/home';
+const footerLinks = [
+  { label: 'Divisions', href: '#divisions', note: 'Three specialist desks' },
+  { label: 'Live jobs', href: '#opportunities', note: 'See what is moving' },
+  { label: 'Team', href: '/team/', note: 'Meet the consultants' },
+  { label: 'Apply', href: '#apply', note: 'Put your profile on the pass' },
+];
+
+const socialLinks = [
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/company/change-hospitality/' },
+  { label: 'Instagram', href: 'https://www.instagram.com/changehospitality/' },
+  { label: 'Email', href: 'mailto:hello@changehospitality.co.uk' },
+];
 ---
 
-<section data-inversion-section class="bg-champagne px-6 py-28 text-obsidian md:px-10 lg:px-20">
-  <div class="mx-auto max-w-5xl text-center">
-    <p class="mb-5 text-sm font-semibold uppercase">Ready to make the change?</p>
-    <h2 class="font-serif text-5xl leading-none md:text-7xl">A better shortlist starts with a better conversation.</h2>
-    <div class="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
-      <a class="flex min-h-14 items-center justify-center rounded-lg border border-obsidian px-8 text-sm font-semibold uppercase transition-colors hover:bg-obsidian hover:text-off-white" href="#apply">Send profile</a>
-      <a class="flex min-h-14 items-center justify-center rounded-lg border border-obsidian px-8 text-sm font-semibold uppercase transition-colors hover:bg-obsidian hover:text-off-white" href="mailto:hello@changehospitality.co.uk">Email the team</a>
-    </div>
-  </div>
-</section>
+<footer data-inversion-section class="home-footer relative isolate flex min-h-screen overflow-hidden bg-citron px-5 py-20 text-ink md:px-10" aria-labelledby="home-footer-title">
+  <div class="home-footer-shape home-footer-shape-one" aria-hidden="true"></div>
+  <div class="home-footer-shape home-footer-shape-two" aria-hidden="true"></div>
+  <div class="home-footer-stamp" aria-hidden="true">hi</div>
 
-<footer class="bg-champagne px-6 pb-10 text-obsidian md:px-10 lg:px-20">
-  <div class="mx-auto flex max-w-7xl flex-col gap-8 border-t border-obsidian/15 pt-8 md:flex-row md:items-center md:justify-between">
+  <div class="relative z-10 mx-auto grid w-full max-w-7xl gap-12 self-center lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
     <div>
-      <p class="font-serif text-3xl">Change Hospitality</p>
-      <p class="mt-2 max-w-xl text-sm leading-6 text-obsidian/72">Premium hospitality recruitment for people, venues and teams who care about service.</p>
+      <p class="mb-6 w-fit rotate-2 rounded-[1.2rem] bg-flame px-5 py-3 text-xs font-black uppercase tracking-wide text-cream">
+        Ready to make the change?
+      </p>
+      <h2 id="home-footer-title" class="max-w-4xl font-serif text-6xl leading-[0.9] md:text-8xl lg:text-9xl">
+        A better shortlist starts with a proper conversation.
+      </h2>
+      <div class="mt-9 flex flex-col gap-4 sm:flex-row">
+        <a class="home-footer-cta bg-flame text-cream" href="mailto:hello@changehospitality.co.uk">Start a brief</a>
+        <a class="home-footer-cta bg-cream text-ink" href="#opportunities">Find work</a>
+      </div>
     </div>
-    <nav class="flex flex-wrap gap-5 text-sm font-semibold uppercase" aria-label="Footer navigation">
-      {navigationItems.map((item) => <a class="hover:underline" href={item.href}>{item.label}</a>)}
-    </nav>
+
+    <div class="grid gap-6">
+      <nav class="home-footer-link-grid" aria-label="Footer navigation">
+        {footerLinks.map((link, index) => (
+          <a class:list={['home-footer-link', index === 1 || index === 2 ? 'bg-mint' : 'bg-cream']} href={link.href}>
+            <span>{link.label}</span>
+            <small>{link.note}</small>
+          </a>
+        ))}
+      </nav>
+      <nav class="home-footer-socials" aria-label="Social media">
+        {socialLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+      </nav>
+    </div>
   </div>
+
+  <p class="home-footer-ribbon" aria-hidden="true">
+    Front of House / Back of House / Events &amp; Commercial / People first since 2004
+  </p>
 </footer>
+
+<style>
+  .home-footer-shape,
+  .home-footer-stamp {
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .home-footer-shape {
+    border-radius: 999px;
+  }
+
+  .home-footer-shape-one {
+    left: -9rem;
+    top: 5%;
+    height: 19rem;
+    width: 34rem;
+    background: var(--color-mint);
+    transform: rotate(-13deg);
+  }
+
+  .home-footer-shape-two {
+    right: -7rem;
+    bottom: 7%;
+    height: 21rem;
+    width: 29rem;
+    background: var(--color-blush);
+    transform: rotate(11deg);
+  }
+
+  .home-footer-stamp {
+    right: 10%;
+    top: 8%;
+    z-index: 1;
+    display: grid;
+    height: 8rem;
+    width: 13rem;
+    place-items: center;
+    border-radius: 1.8rem;
+    background: var(--color-flame);
+    color: var(--color-cream);
+    font-family: var(--font-serif);
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    line-height: 1;
+    text-transform: uppercase;
+    transform: rotate(8deg);
+  }
+
+  .home-footer-cta {
+    display: inline-flex;
+    min-width: 11rem;
+    min-height: 4.4rem;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--color-ink);
+    border-radius: 1.5rem;
+    padding: 1.2rem 2rem;
+    font-size: 0.95rem;
+    font-weight: 900;
+    line-height: 1;
+    text-align: center;
+    text-transform: uppercase;
+    transition:
+      transform 320ms var(--ease-cartoon),
+      background-color 240ms ease;
+  }
+
+  .home-footer-cta:hover,
+  .home-footer-cta:focus-visible {
+    background: var(--color-cocoa);
+    color: var(--color-cream);
+    transform: translateY(-0.35rem) rotate(-2deg) scale(1.03);
+  }
+
+  .home-footer-link-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .home-footer-link {
+    display: grid;
+    min-height: 9.5rem;
+    align-content: space-between;
+    border: 2px solid var(--color-ink);
+    border-radius: 1.7rem;
+    padding: 1.1rem;
+    transition:
+      transform 320ms var(--ease-cartoon),
+      background-color 240ms ease,
+      color 240ms ease;
+  }
+
+  .home-footer-link span {
+    font-family: var(--font-serif);
+    font-size: clamp(1.7rem, 4vw, 2.8rem);
+    line-height: 0.92;
+  }
+
+  .home-footer-link small {
+    font-size: 0.76rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .home-footer-link:hover,
+  .home-footer-link:focus-visible {
+    background: var(--color-flame);
+    color: var(--color-cream);
+    transform: rotate(-2deg) scale(1.04);
+  }
+
+  .home-footer-socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+
+  .home-footer-socials a {
+    display: inline-flex;
+    min-height: 3.4rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--color-cocoa);
+    color: var(--color-cream);
+    padding: 0.9rem 1.2rem;
+    font-size: 0.82rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    transition: transform 300ms var(--ease-cartoon);
+  }
+
+  .home-footer-socials a:hover,
+  .home-footer-socials a:focus-visible {
+    transform: translateY(-0.3rem) rotate(3deg);
+  }
+
+  .home-footer-ribbon {
+    position: absolute;
+    right: -5rem;
+    bottom: 1.5rem;
+    z-index: 1;
+    width: max-content;
+    border-radius: 1.2rem;
+    background: var(--color-ink);
+    color: var(--color-cream);
+    padding: 0.9rem 1.3rem;
+    font-size: clamp(0.9rem, 2vw, 1.3rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    transform: rotate(-3deg);
+  }
+
+  @media (max-width: 767px) {
+    .home-footer-link-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .home-footer-stamp,
+    .home-footer-ribbon {
+      display: none;
+    }
+  }
+</style>

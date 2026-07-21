@@ -2,35 +2,36 @@
 import { opportunities } from '../data/home';
 ---
 
-<section id="opportunities" class="overflow-hidden bg-obsidian py-24 pl-6 text-off-white md:pl-10 lg:pl-20">
+<section id="opportunities" class="home-opportunities relative overflow-hidden bg-cocoa py-24 pl-6 text-cream md:pl-10 lg:pl-20">
+  <div class="home-jobs-shape" aria-hidden="true"></div>
   <div class="mb-10 flex max-w-7xl flex-col gap-5 pr-6 md:flex-row md:items-end md:justify-between md:pr-10 lg:pr-20">
     <div>
-      <p class="mb-4 text-sm font-semibold uppercase text-champagne">Live opportunities</p>
+      <p class="mb-4 w-fit -rotate-2 rounded-2xl bg-citron px-4 py-2 text-xs font-black uppercase tracking-wide text-ink">Live opportunities</p>
       <h2 class="font-serif text-5xl leading-none md:text-7xl">Roles with momentum.</h2>
     </div>
-    <a class="luxury-button inline-flex min-h-12 items-center justify-center rounded-lg px-6 text-sm font-semibold uppercase text-off-white" href="#apply">Register interest</a>
+    <a class="home-jobs-button inline-flex min-h-14 items-center justify-center rounded-[1.4rem] border-2 border-cream bg-flame px-6 text-sm font-black uppercase text-cream" href="#apply">Register interest</a>
   </div>
   <div data-job-carousel class="relative" tabindex="0" aria-label="Draggable opportunities carousel">
-    <div data-drag-cursor class="pointer-events-none fixed left-0 top-0 z-50 hidden -translate-x-1/2 -translate-y-1/2 rounded-full bg-champagne px-5 py-4 text-xs font-semibold uppercase text-obsidian shadow-champagne">
+    <div data-drag-cursor class="pointer-events-none fixed left-0 top-0 z-50 hidden -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-ink bg-citron px-5 py-4 text-xs font-black uppercase text-ink">
       Drag to Explore
     </div>
     <div data-job-track class="job-scrollbar flex snap-x gap-5 overflow-x-auto pb-8 pr-6 md:gap-6 md:pr-10 lg:pr-20" role="list">
-      {opportunities.map((job) => (
-        <article class="job-card relative flex min-h-80 w-[82vw] shrink-0 snap-start flex-col justify-between overflow-hidden rounded-lg border border-off-white/10 bg-off-white/[0.04] p-6 transition-transform duration-500 ease-out md:w-[390px]" role="listitem">
+      {opportunities.map((job, index) => (
+        <article class:list={['home-job-card relative flex min-h-96 w-[82vw] shrink-0 snap-start flex-col justify-between overflow-hidden rounded-[1.8rem] border-2 border-ink p-6 text-ink transition-transform duration-500 ease-out md:w-97.5', index % 3 === 0 ? 'bg-cream' : index % 3 === 1 ? 'bg-mint' : 'bg-blush']} role="listitem">
           <div class="relative z-10">
-            <p class="mb-4 text-sm font-semibold uppercase text-champagne transition-colors">{job.division}</p>
-            <h3 class="font-serif text-4xl leading-none text-off-white transition-colors">{job.role}</h3>
+            <p class="mb-4 text-sm font-black uppercase text-flame">{job.division}</p>
+            <h3 class="font-serif text-4xl leading-none text-ink">{job.role}</h3>
           </div>
-          <dl class="relative z-10 grid gap-4 text-sm text-off-white/76 transition-colors">
-            <div class="flex justify-between gap-5 border-t border-current/15 pt-4"><dt>Location</dt><dd>{job.location}</dd></div>
-            <div class="flex justify-between gap-5 border-t border-current/15 pt-4"><dt>Salary</dt><dd>{job.salary}</dd></div>
-            <div class="flex justify-between gap-5 border-t border-current/15 pt-4"><dt>Type</dt><dd>{job.type}</dd></div>
+          <dl class="relative z-10 grid gap-4 text-sm font-bold text-cocoa">
+            <div class="flex justify-between gap-5 border-t-2 border-ink/20 pt-4"><dt>Location</dt><dd class="text-right">{job.location}</dd></div>
+            <div class="flex justify-between gap-5 border-t-2 border-ink/20 pt-4"><dt>Salary</dt><dd class="text-right">{job.salary}</dd></div>
+            <div class="flex justify-between gap-5 border-t-2 border-ink/20 pt-4"><dt>Type</dt><dd class="text-right">{job.type}</dd></div>
           </dl>
           <a
             href="#apply"
             data-job-apply
             data-job-role={job.role}
-            class="relative z-10 mt-7 inline-flex min-h-11 items-center justify-center rounded-lg border border-current px-4 text-sm font-semibold uppercase transition-colors"
+            class="home-job-apply relative z-10 mt-7 inline-flex min-h-14 items-center justify-center rounded-[1.3rem] border-2 border-ink bg-citron px-4 text-sm font-black uppercase"
           >
             Apply now
           </a>
@@ -39,3 +40,38 @@ import { opportunities } from '../data/home';
     </div>
   </div>
 </section>
+
+<style>
+  .home-jobs-shape {
+    position: absolute;
+    right: -8rem;
+    top: 3rem;
+    height: 13rem;
+    width: 27rem;
+    border-radius: 999px;
+    background: var(--color-flame);
+    transform: rotate(-8deg);
+  }
+
+  .home-jobs-button,
+  .home-job-card,
+  .home-job-apply {
+    transition:
+      transform 320ms var(--ease-cartoon),
+      background-color 240ms ease;
+  }
+
+  .home-jobs-button:hover,
+  .home-jobs-button:focus-visible,
+  .home-job-apply:hover,
+  .home-job-apply:focus-visible {
+    background: var(--color-citron);
+    color: var(--color-ink);
+    transform: translateY(-0.3rem) rotate(-2deg) scale(1.03);
+  }
+
+  .home-job-card:hover,
+  .home-job-card:focus-within {
+    transform: translateY(-0.4rem) rotate(-1deg) scale(1.02);
+  }
+</style>

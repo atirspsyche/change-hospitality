@@ -6,10 +6,6 @@
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   gsap.registerPlugin(ScrollTrigger);
 
-  const rootStyles = getComputedStyle(document.documentElement);
-  const obsidian = rootStyles.getPropertyValue('--color-obsidian').trim();
-  const champagne = rootStyles.getPropertyValue('--color-champagne').trim();
-
   if (!prefersReducedMotion) {
     const lenis = new Lenis({
       duration: 1.15,
@@ -23,8 +19,6 @@
   }
 
   const setReducedMotionState = () => {
-    gsap.set('[data-hero-media], [data-hero-kicker], [data-hero-copy], [data-hero-actions]', { opacity: 1 });
-    gsap.set('[data-split-line]', { yPercent: 0 });
     gsap.set('.reveal-word', { opacity: 1 });
   };
 
@@ -128,7 +122,7 @@
       return {
         ok: true,
         reference: `CH-${Date.now().toString().slice(-6)}`,
-        message: `${firstName || 'Candidate'} profile received in mock mode.`,
+        message: `${firstName || 'Candidate'} profile received.`,
       };
     };
 
@@ -143,7 +137,7 @@
       const resume = formData.get('resume');
 
       if (resume instanceof File && resume.size > 5 * 1024 * 1024) {
-        setStatus('Please upload a resume under 5MB for mock mode.', true);
+        setStatus('Please upload a resume under 5MB.', true);
         return;
       }
 
@@ -167,7 +161,7 @@
         setStatus(`${result.message ?? 'Profile received.'} Reference ${result.reference}.`);
         form.reset();
       } catch {
-        setStatus('Something went wrong in the mock submission. Please try again.', true);
+        setStatus('Something went wrong with the submission. Please try again.', true);
       } finally {
         button.disabled = false;
         button.textContent = 'Send profile';
@@ -186,110 +180,117 @@
       path.style.strokeDashoffset = '0';
     });
   } else {
-    const media = gsap.matchMedia();
+    let scrollAnimationsReady = false;
 
-    media.add('(min-width: 1024px)', () => {
-      gsap.timeline({ defaults: { ease: 'power3.out' } })
-        .to('[data-hero-media]', { opacity: 0.4, duration: 1.5 }, 0)
-        .to('[data-split-line]', { yPercent: -100, duration: 1.1, stagger: 0.12 }, 0.18)
-        .to('[data-hero-kicker], [data-hero-copy], [data-hero-actions]', { opacity: 1, y: 0, duration: 0.9, stagger: 0.12 }, 0.68)
-        .to('[data-scroll-line]', { yPercent: 200, duration: 1.2, repeat: -1, ease: 'power2.inOut' }, 0.8);
+    const initScrollAnimations = () => {
+      if (scrollAnimationsReady) return;
+      scrollAnimationsReady = true;
+      const media = gsap.matchMedia();
 
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: '[data-hero]',
-          start: 'top top',
-          end: 'bottom top',
-          scrub: true,
-        },
-      })
-        .to('[data-hero]', { scale: 0.95, opacity: 0 }, 0)
-        .to('[data-hero-media]', { yPercent: 30 }, 0);
-
-      gsap.to('.reveal-word', {
-        opacity: 1,
-        stagger: 0.05,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: '[data-philosophy]',
-          start: 'top top',
-          end: '+=180%',
-          scrub: true,
-          pin: true,
-        },
-      });
-
-      const divisionCopies = gsap.utils.toArray<HTMLElement>('[data-division-copy]');
-      const divisionImages = gsap.utils.toArray<HTMLElement>('[data-division-image]');
-      gsap.set(divisionImages.slice(1), { clipPath: 'inset(100% 0% 0% 0%)' });
-      gsap.set(divisionCopies.slice(1), { opacity: 0.38, scale: 0.96 });
-
-      const divisionTimeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: '[data-division-section]',
-          start: 'top top',
-          end: 'bottom bottom',
-          scrub: true,
-        },
-      });
-
-      divisionImages.slice(1).forEach((image, index) => {
-        const step = (index + 1) / divisionImages.length;
-        divisionTimeline
-          .to(image, { clipPath: 'inset(0% 0% 0% 0%)', ease: 'none' }, step)
-          .to(divisionCopies[index], { opacity: 0.38, scale: 0.96, ease: 'none' }, step)
-          .to(divisionCopies[index + 1], { opacity: 1, scale: 1, ease: 'none' }, step);
-      });
-
-      const cards = gsap.utils.toArray<HTMLElement>('[data-testimonial-card]');
-      cards.forEach((card, index) => {
-        gsap.to(card, {
-          y: index * 34,
-          scale: 1 - index * 0.035,
+      media.add('(min-width: 1024px)', () => {
+        gsap.to('.reveal-word', {
+          opacity: 1,
+          stagger: 0.05,
+          ease: 'none',
           scrollTrigger: {
-            trigger: '[data-testimonials-section]',
-            start: 'top 45%',
-            end: 'bottom 55%',
+            trigger: '[data-philosophy]',
+            start: 'top top',
+            end: '+=180%',
+            scrub: true,
+            pin: true,
+          },
+        });
+
+        const divisionCopies = gsap.utils.toArray<HTMLElement>('[data-division-copy]');
+        const divisionImages = gsap.utils.toArray<HTMLElement>('[data-division-image]');
+        gsap.set(divisionImages.slice(1), { clipPath: 'inset(100% 0% 0% 0%)' });
+        gsap.set(divisionCopies.slice(1), { opacity: 0.38, scale: 0.96 });
+
+        const divisionTimeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: '[data-division-section]',
+            start: 'top top',
+            end: 'bottom bottom',
             scrub: true,
           },
         });
-      });
-    });
 
-    media.add('(max-width: 1023px)', () => {
-      gsap.to('[data-hero-media]', { opacity: 0.4, duration: 1 });
-      gsap.to('[data-split-line]', { yPercent: -100, duration: 0.8, stagger: 0.08, ease: 'power3.out' });
-      gsap.to('[data-hero-kicker], [data-hero-copy], [data-hero-actions]', { opacity: 1, duration: 0.8, stagger: 0.08 });
-      gsap.set('.reveal-word', { opacity: 1 });
-      gsap.set('[data-division-image]', { clipPath: 'inset(0% 0% 0% 0%)' });
-    });
+        divisionImages.slice(1).forEach((image, index) => {
+          const step = (index + 1) / divisionImages.length;
+          divisionTimeline
+            .to(image, { clipPath: 'inset(0% 0% 0% 0%)', ease: 'none' }, step)
+            .to(divisionCopies[index], { opacity: 0.38, scale: 0.96, ease: 'none' }, step)
+            .to(divisionCopies[index + 1], { opacity: 1, scale: 1, ease: 'none' }, step);
+        });
 
-    media.add('(min-width: 0px)', () => {
-      ScrollTrigger.create({
-        trigger: '[data-impact-section]',
-        start: 'top 80%',
-        once: true,
-        onEnter: () => {
-          animateCounters();
-          gsap.to('[data-draw-path]', { strokeDashoffset: 0, duration: 1.8, stagger: 0.18, ease: 'power3.out' });
-        },
+        const cards = gsap.utils.toArray<HTMLElement>('[data-testimonial-card]');
+        cards.forEach((card, index) => {
+          gsap.to(card, {
+            y: index * 34,
+            scale: 1 - index * 0.035,
+            scrollTrigger: {
+              trigger: '[data-testimonials-section]',
+              start: 'top 45%',
+              end: 'bottom 55%',
+              scrub: true,
+            },
+          });
+        });
+
+        gsap.utils.toArray<HTMLElement>('.home-philosophy-shape, .home-impact-leaf, .home-jobs-shape, .home-testimonial-shape, .home-application-shape, .home-footer-shape, .home-footer-stamp').forEach((shape, index) => {
+          gsap.to(shape, {
+            yPercent: index % 2 === 0 ? 24 : -20,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: shape.parentElement,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: true,
+            },
+          });
+        });
       });
 
-      gsap.to(document.body, {
-        backgroundColor: champagne,
-        scrollTrigger: {
-          trigger: '[data-inversion-section]',
-          start: 'top 82%',
-          end: 'top 20%',
-          scrub: true,
-        },
+      media.add('(max-width: 1023px)', () => {
+        gsap.set('.reveal-word', { opacity: 1 });
+        gsap.set('[data-division-image]', { clipPath: 'inset(0% 0% 0% 0%)' });
       });
 
-      ScrollTrigger.create({
-        trigger: '[data-inversion-section]',
-        start: 'bottom bottom',
-        onLeaveBack: () => gsap.to(document.body, { backgroundColor: obsidian, duration: 0.3 }),
+      media.add('(min-width: 0px)', () => {
+        ScrollTrigger.create({
+          trigger: '[data-impact-section]',
+          start: 'top 80%',
+          once: true,
+          onEnter: () => {
+            animateCounters();
+            gsap.to('[data-draw-path]', { strokeDashoffset: 0, duration: 1.8, stagger: 0.18, ease: 'power3.out' });
+          },
+        });
+
+        gsap.utils.toArray<HTMLElement>('#impact h2, #opportunities h2, #testimonials h2, #apply h2, [data-inversion-section] h2').forEach((heading) => {
+          gsap.from(heading, {
+            y: 54,
+            rotate: 1.5,
+            opacity: 0,
+            duration: 0.9,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: heading,
+              start: 'top 84%',
+              once: true,
+            },
+          });
+        });
       });
-    });
+
+      ScrollTrigger.refresh();
+    };
+
+    if (document.documentElement.dataset.homeStoryReady === 'true') {
+      initScrollAnimations();
+    } else {
+      document.addEventListener('home-story-ready', initScrollAnimations, { once: true });
+      window.setTimeout(initScrollAnimations, 8000);
+    }
   }
 </script>
