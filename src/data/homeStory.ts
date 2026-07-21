@@ -5,6 +5,8 @@ export type StoryLayout =
   | "split"
   | "center"
   | "sides"
+  | "edges"
+  | "bottom"
   | "closing";
 
 export interface StoryAction {
@@ -27,6 +29,8 @@ export interface StoryOverlay {
   body?: string;
   action?: StoryAction;
   columns?: [StoryColumn, StoryColumn];
+  topText?: string;
+  bottomText?: string;
 }
 
 export interface StoryBeat {
@@ -37,6 +41,7 @@ export interface StoryBeat {
   travelWeight: number;
   holdWeight: number;
   exitWeight: number;
+  overlayFrames?: [number, number];
   overlay?: StoryOverlay;
 }
 
@@ -54,28 +59,27 @@ export const homeStory = {
   fallbackFrame: 302,
   beats: [
     {
-      id: "carton-closed",
-      label: "Egg carton, closed",
-      frames: [1, 28],
-      holdFrame: 20,
-      travelWeight: 0.45,
+      id: "carton-open-brand",
+      label: "Carton opens to reveal Change Hospitality",
+      frames: [1, 40],
+      holdFrame: 40,
+      travelWeight: 0.8,
       holdWeight: 1.25,
-      exitWeight: 0.35,
+      exitWeight: 0,
       overlay: {
         layout: "brand",
-        eyebrow: "People first / Since 2004",
         heading: "Change Hospitality",
         body: "Hospitality recruitment, cracked differently.",
       },
     },
     {
-      id: "carton-open",
-      label: "Carton open",
-      frames: [29, 58],
-      holdFrame: 49,
-      travelWeight: 0.65,
+      id: "egg-in-hand",
+      label: "Egg held on the right",
+      frames: [41, 65],
+      holdFrame: 65,
+      travelWeight: 0.55,
       holdWeight: 1.15,
-      exitWeight: 0.4,
+      exitWeight: 0,
       overlay: {
         layout: "left",
         eyebrow: "A better way to recruit",
@@ -85,24 +89,15 @@ export const homeStory = {
       },
     },
     {
-      id: "eggs-in-carton",
-      label: "Eggs in carton",
-      frames: [59, 86],
-      holdFrame: 77,
+      id: "egg-close-up",
+      label: "Clean egg close-up",
+      frames: [66, 103],
+      holdFrame: 103,
       travelWeight: 0.75,
-      holdWeight: 0.15,
-      exitWeight: 0.55,
-    },
-    {
-      id: "egg-picked",
-      label: "Hand picks an egg",
-      frames: [87, 116],
-      holdFrame: 108,
-      travelWeight: 0.7,
-      holdWeight: 1.05,
-      exitWeight: 0.4,
+      holdWeight: 1.35,
+      exitWeight: 0,
       overlay: {
-        layout: "right",
+        layout: "center",
         eyebrow: "The right pick",
         heading: "Talent is personal.",
         body: "We meet people face to face, learn what makes them tick and introduce them to places where they can do their best work.",
@@ -110,31 +105,14 @@ export const homeStory = {
       },
     },
     {
-      id: "egg-cracking",
-      label: "Egg cracking close-up",
-      frames: [117, 143],
-      holdFrame: 136,
-      travelWeight: 0.8,
-      holdWeight: 0.1,
-      exitWeight: 0.5,
-    },
-    {
-      id: "egg-splits",
-      label: "Egg splits apart",
-      frames: [144, 170],
-      holdFrame: 164,
-      travelWeight: 0.8,
-      holdWeight: 0.1,
-      exitWeight: 0.5,
-    },
-    {
-      id: "egg-in-pan",
-      label: "Fried egg in pan",
-      frames: [171, 207],
-      holdFrame: 198,
-      travelWeight: 0.8,
-      holdWeight: 1.55,
-      exitWeight: 0.45,
+      id: "egg-transition",
+      label: "Egg transition with copy on both sides",
+      frames: [104, 175],
+      holdFrame: 132,
+      travelWeight: 0.55,
+      holdWeight: 0,
+      exitWeight: 1,
+      overlayFrames: [132, 175],
       overlay: {
         layout: "split",
         columns: [
@@ -154,27 +132,39 @@ export const homeStory = {
       },
     },
     {
-      id: "egg-tossed",
-      label: "Egg tossed from pan",
-      frames: [208, 236],
-      holdFrame: 228,
-      travelWeight: 0.75,
-      holdWeight: 1,
-      exitWeight: 0.45,
+      id: "egg-four-ways",
+      label: "Egg with copy on all four sides",
+      frames: [176, 185],
+      holdFrame: 185,
+      travelWeight: 0.35,
+      holdWeight: 1.4,
+      exitWeight: 0,
       overlay: {
-        layout: "center",
-        eyebrow: "Good chemistry matters",
-        heading: "The right match changes the whole service.",
+        layout: "edges",
+        topText: "Twenty years of hospitality instinct",
+        bottomText: "Events & Commercial / Permanent / Temporary / Contract",
+        columns: [
+          {
+            eyebrow: "Front of House",
+            heading: "People who set the tone.",
+            body: "Warm welcomes, sharp service and leaders who make every shift click.",
+          },
+          {
+            eyebrow: "Back of House",
+            heading: "Talent behind the pass.",
+            body: "Skilled kitchens, steady hands and teams built for the pace of service.",
+          },
+        ],
       },
     },
     {
-      id: "egg-on-plate",
-      label: "Egg settling on plate",
-      frames: [237, 270],
-      holdFrame: 263,
-      travelWeight: 0.75,
-      holdWeight: 1.15,
-      exitWeight: 0.4,
+      id: "plate-center",
+      label: "Plate in the middle",
+      frames: [186, 250],
+      holdFrame: 250,
+      travelWeight: 1.1,
+      holdWeight: 1.3,
+      exitWeight: 0,
       overlay: {
         layout: "sides",
         columns: [
@@ -192,19 +182,33 @@ export const homeStory = {
       },
     },
     {
-      id: "plated-breakfast",
-      label: "Final plated breakfast",
-      frames: [271, 302],
-      holdFrame: 302,
-      travelWeight: 0.9,
-      holdWeight: 1.75,
+      id: "plate-left",
+      label: "Plate on the left",
+      frames: [251, 280],
+      holdFrame: 280,
+      travelWeight: 0.65,
+      holdWeight: 1.3,
       exitWeight: 0,
       overlay: {
-        layout: "closing",
+        layout: "right",
         eyebrow: "Ready when you are",
         heading: "Your next move is on the pass.",
         body: "Explore live hospitality roles or tell us who your team needs next.",
         action: { label: "See live jobs", href: "#opportunities", tone: "flame" },
+      },
+    },
+    {
+      id: "final-plate",
+      label: "Final plated breakfast",
+      frames: [281, 302],
+      holdFrame: 302,
+      travelWeight: 0.5,
+      holdWeight: 1.5,
+      exitWeight: 0,
+      overlay: {
+        layout: "bottom",
+        heading: "Good people make great hospitality.",
+        action: { label: "Start a conversation", href: "#apply", tone: "citron" },
       },
     },
   ] satisfies StoryBeat[],

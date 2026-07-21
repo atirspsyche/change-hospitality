@@ -1,6 +1,54 @@
 @config "../../tailwind.config.mjs";
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Clash Display";
+  src: url("/fonts/ClashDisplay/WEB/fonts/ClashDisplay-Variable.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 200 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Helvetica";
+  src: url("/fonts/Helvetica/helvetica-light-587ebe5a59211.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Helvetica";
+  src: url("/fonts/Helvetica/Helvetica.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Helvetica";
+  src: url("/fonts/Helvetica/Helvetica-Bold.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 700 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Helvetica";
+  src: url("/fonts/Helvetica/Helvetica-Oblique.ttf") format("truetype");
+  font-style: oblique;
+  font-weight: 400 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Helvetica";
+  src: url("/fonts/Helvetica/Helvetica-BoldOblique.ttf") format("truetype");
+  font-style: oblique;
+  font-weight: 700 900;
+  font-display: swap;
+}
+
 @theme {
   --color-obsidian: #0D0D0D;
   --color-champagne: #D4C3B3;
@@ -21,8 +69,8 @@
   --color-mist: #B8C3CA;
   --color-paper: #F4F1EF;
   --color-ink: #1D1D1B;
-  --font-serif: "Bowlby One SC", "Arial Black", Helvetica, sans-serif;
-  --font-display: "Bowlby One SC", "Arial Black", Helvetica, sans-serif;
+  --font-serif: "Clash Display", Helvetica, Arial, sans-serif;
+  --font-display: "Clash Display", Helvetica, Arial, sans-serif;
   --font-sans: Helvetica, Arial, sans-serif;
 }
 
@@ -71,6 +119,15 @@ body {
   color: var(--color-off-white);
   font-family: var(--font-sans);
   text-rendering: geometricPrecision;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
 }
 
 .font-display {

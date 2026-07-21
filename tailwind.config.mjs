@@ -15,8 +15,8 @@ export default {
         'story-pale': '#FEFFE0',
       },
       fontFamily: {
-        serif: ['Bowlby One SC', 'Arial Black', 'Helvetica', 'sans-serif'],
-        display: ['Bowlby One SC', 'Arial Black', 'Helvetica', 'sans-serif'],
+        serif: ['Clash Display', 'Helvetica', 'Arial', 'sans-serif'],
+        display: ['Clash Display', 'Helvetica', 'Arial', 'sans-serif'],
         sans: ['Helvetica', 'Arial', 'sans-serif'],
       },
       boxShadow: {

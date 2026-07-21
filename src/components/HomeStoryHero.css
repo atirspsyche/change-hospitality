@@ -14,7 +14,6 @@
   background: var(--color-flame);
 }
 
-.story-poster,
 .story-canvas {
   position: absolute;
   inset: 0;
@@ -23,9 +22,15 @@
 }
 
 .story-poster {
+  position: absolute;
+  top: 0;
+  left: 50%;
   z-index: 0;
-  object-fit: contain;
+  width: auto;
+  max-width: none;
+  height: 100%;
   background: var(--color-flame);
+  transform: translateX(-50%);
   transition: opacity 180ms ease;
 }
 
@@ -60,6 +65,13 @@
   text-align: center;
 }
 
+.story-overlay--bottom {
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 2.25rem;
+  text-align: center;
+}
+
 .story-overlay--left {
   justify-content: flex-start;
 }
@@ -73,12 +85,26 @@
 }
 
 .story-overlay--brand .story-copy {
-  width: min(68rem, 100%);
+  width: min(46rem, 72vw);
 }
 
 .story-overlay--center .story-copy,
 .story-overlay--closing .story-copy {
   width: min(58rem, 100%);
+}
+
+.story-overlay--left .story-copy,
+.story-overlay--right .story-copy {
+  width: min(34rem, 40vw);
+}
+
+.story-overlay--bottom .story-copy {
+  display: flex;
+  width: 100%;
+  max-width: none;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1.25rem, 3vw, 3rem);
 }
 
 .story-overlay--split,
@@ -93,6 +119,13 @@
   gap: clamp(2rem, 8vw, 9rem);
 }
 
+.story-overlay--split .story-columns,
+.story-overlay--sides .story-columns {
+  grid-template-columns: repeat(2, clamp(15rem, 22vw, 23rem));
+  justify-content: space-between;
+  gap: clamp(5rem, 18vw, 22rem);
+}
+
 .story-overlay--split .story-column:last-child,
 .story-overlay--sides .story-column:last-child {
   text-align: right;
@@ -100,6 +133,55 @@
 
 .story-overlay--sides .story-columns {
   align-items: end;
+}
+
+.story-edge-layout {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.story-edge-columns {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  display: grid;
+  grid-template-columns: repeat(2, clamp(14rem, 20vw, 21rem));
+  justify-content: space-between;
+  gap: clamp(6rem, 22vw, 28rem);
+  transform: translateY(-50%);
+}
+
+.story-edge-columns .story-column:last-child {
+  text-align: right;
+}
+
+.story-edge-note {
+  position: absolute;
+  right: 0;
+  left: 0;
+  width: fit-content;
+  max-width: min(42rem, 80vw);
+  margin-inline: auto;
+  border: 2px solid var(--color-ink);
+  border-radius: 0.85rem;
+  background: var(--color-cream);
+  padding: 0.65rem 0.9rem;
+  color: var(--color-ink);
+  font-size: clamp(0.66rem, 0.9vw, 0.82rem);
+  font-weight: 900;
+  line-height: 1.15;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.story-edge-note--top {
+  top: 0;
+}
+
+.story-edge-note--bottom {
+  bottom: 0;
 }
 
 .story-eyebrow {
@@ -131,7 +213,7 @@
 .story-heading,
 .story-column-heading {
   margin: 0;
-  color: var(--color-ink);
+  color: var(--color-blush);
   font-family: var(--font-serif);
   font-weight: 400;
   letter-spacing: 0;
@@ -144,11 +226,23 @@
 }
 
 .story-overlay--brand .story-heading {
-  font-size: clamp(3.6rem, 9vw, 10rem);
+  font-size: clamp(3.2rem, 6.4vw, 7rem);
 }
 
 .story-column-heading {
   font-size: clamp(2.1rem, 4vw, 4.6rem);
+}
+
+.story-overlay--split .story-column-heading,
+.story-overlay--sides .story-column-heading,
+.story-edge-columns .story-column-heading {
+  font-size: clamp(1.8rem, 3vw, 3.4rem);
+}
+
+.story-overlay--bottom .story-heading {
+  max-width: none;
+  font-size: clamp(1.5rem, 2.5vw, 3rem);
+  white-space: nowrap;
 }
 
 .story-word-wrap {
@@ -165,7 +259,7 @@
 .story-body {
   max-width: 38rem;
   margin: 1.3rem 0 0;
-  color: var(--color-cocoa);
+  color: var(--color-paper);
   font-size: clamp(1rem, 1.7vw, 1.3rem);
   font-weight: 800;
   line-height: 1.5;
@@ -176,6 +270,12 @@
 .story-overlay--center .story-body,
 .story-overlay--closing .story-body {
   margin-inline: auto;
+}
+
+.story-overlay--brand .story-body {
+  margin-top: 0.75rem;
+  font-size: clamp(0.8rem, 1.2vw, 1rem);
+  text-transform: uppercase;
 }
 
 .story-overlay--right .story-copy,
@@ -229,6 +329,11 @@
 
 .story-button--cream {
   background: var(--color-cream);
+}
+
+.story-overlay--bottom .story-button {
+  flex: none;
+  margin-top: 0;
 }
 
 .story-button:hover,
@@ -393,6 +498,12 @@
     align-items: center;
   }
 
+  .story-overlay--brand .story-copy,
+  .story-overlay--left .story-copy,
+  .story-overlay--right .story-copy {
+    width: 100%;
+  }
+
   .story-overlay--right,
   .story-overlay--right .story-copy,
   .story-overlay--right .story-body {
@@ -406,6 +517,12 @@
   }
 
   .story-columns {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .story-overlay--split .story-columns,
+  .story-overlay--sides .story-columns {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
@@ -428,6 +545,39 @@
     margin-left: 0;
   }
 
+  .story-overlay--edges {
+    align-items: stretch;
+    padding: 5.75rem 0.75rem 4.5rem;
+  }
+
+  .story-edge-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .story-edge-columns .story-column {
+    min-width: 0;
+  }
+
+  .story-edge-columns .story-column-heading {
+    font-size: clamp(1rem, 5vw, 1.4rem);
+  }
+
+  .story-edge-columns .story-body {
+    font-size: 0.68rem;
+    line-height: 1.3;
+  }
+
+  .story-edge-columns .story-eyebrow {
+    font-size: 0.52rem;
+  }
+
+  .story-edge-note {
+    max-width: 90%;
+    padding: 0.5rem 0.65rem;
+    font-size: 0.58rem;
+  }
+
   .story-eyebrow {
     margin-bottom: 0.65rem;
     padding: 0.55rem 0.72rem;
@@ -439,7 +589,7 @@
   }
 
   .story-overlay--brand .story-heading {
-    font-size: clamp(3rem, 15vw, 5.6rem);
+    font-size: clamp(2.6rem, 12vw, 4.6rem);
   }
 
   .story-column-heading {
@@ -458,6 +608,20 @@
     border-width: 2px;
     padding: 0.8rem 1rem;
     font-size: 0.76rem;
+  }
+
+  .story-overlay--bottom {
+    padding-bottom: 1rem;
+  }
+
+  .story-overlay--bottom .story-copy {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .story-overlay--bottom .story-heading {
+    font-size: clamp(1.45rem, 7vw, 2.2rem);
+    white-space: normal;
   }
 
   .story-scroll-cue {

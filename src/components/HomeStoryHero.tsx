@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import {
   getStoryFrameUrl,
   homeStory,
@@ -17,10 +17,11 @@ interface FrameSegment {
   frameEnd: number;
 }
 
-interface BeatPlateau {
+interface OverlayWindow {
   id: string;
   progressStart: number;
   progressEnd: number;
+  hideAtEnd: boolean;
 }
 
 const clamp = (value: number, minimum: number, maximum: number) =>
@@ -33,14 +34,13 @@ function buildStoryTimeline() {
     0,
   );
   const segments: FrameSegment[] = [];
-  const plateaus: BeatPlateau[] = [];
+  const plateauWindows = new Map<string, [number, number]>();
   let cursor = 0;
 
   homeStory.beats.forEach((beat) => {
     const travelStart = cursor / totalWeight;
     cursor += beat.travelWeight;
     const travelEnd = cursor / totalWeight;
-    const plateauFrameEnd = Math.min(beat.frames[1], beat.holdFrame + 1);
 
     segments.push({
       progressStart: travelStart,
@@ -53,17 +53,15 @@ function buildStoryTimeline() {
     cursor += beat.holdWeight;
     const plateauEnd = cursor / totalWeight;
 
-    segments.push({
-      progressStart: plateauStart,
-      progressEnd: plateauEnd,
-      frameStart: beat.holdFrame,
-      frameEnd: plateauFrameEnd,
-    });
-    plateaus.push({
-      id: beat.id,
-      progressStart: plateauStart,
-      progressEnd: plateauEnd,
-    });
+    if (beat.holdWeight > 0) {
+      segments.push({
+        progressStart: plateauStart,
+        progressEnd: plateauEnd,
+        frameStart: beat.holdFrame,
+        frameEnd: beat.holdFrame,
+      });
+      plateauWindows.set(beat.id, [plateauStart, plateauEnd]);
+    }
 
     if (beat.exitWeight > 0) {
       const exitStart = cursor / totalWeight;
@@ -71,13 +69,50 @@ function buildStoryTimeline() {
       segments.push({
         progressStart: exitStart,
         progressEnd: cursor / totalWeight,
-        frameStart: plateauFrameEnd,
+        frameStart: beat.holdFrame,
         frameEnd: beat.frames[1],
       });
     }
   });
 
-  return { segments, plateaus };
+  const progressForFrame = (frame: number) => {
+    const segment = segments.find(
+      ({ frameStart, frameEnd }) =>
+        frame >= Math.min(frameStart, frameEnd) &&
+        frame <= Math.max(frameStart, frameEnd),
+    );
+    if (!segment) return 0;
+    const frameDistance = segment.frameEnd - segment.frameStart;
+    if (!frameDistance) return segment.progressStart;
+    const localProgress = (frame - segment.frameStart) / frameDistance;
+    return (
+      segment.progressStart +
+      (segment.progressEnd - segment.progressStart) * localProgress
+    );
+  };
+
+  const overlayWindows = homeStory.beats.flatMap<OverlayWindow>((beat) => {
+    if (!beat.overlay) return [];
+    if (beat.overlayFrames) {
+      return [{
+        id: beat.id,
+        progressStart: progressForFrame(beat.overlayFrames[0]),
+        progressEnd: progressForFrame(beat.overlayFrames[1]),
+        hideAtEnd: true,
+      }];
+    }
+
+    const plateau = plateauWindows.get(beat.id);
+    if (!plateau) return [];
+    return [{
+      id: beat.id,
+      progressStart: plateau[0],
+      progressEnd: plateau[1],
+      hideAtEnd: false,
+    }];
+  });
+
+  return { segments, overlayWindows };
 }
 
 const storyTimeline = buildStoryTimeline();
@@ -103,10 +138,15 @@ function frameForProgress(progress: number) {
 }
 
 function HeadingWords({ text }: { text: string }) {
-  return text.split(" ").map((word, index) => (
-    <span className="story-word-wrap" key={`${word}-${index}`}>
-      <span className="story-word">{word}</span>{" "}
-    </span>
+  const words = text.split(" ");
+
+  return words.map((word, index) => (
+    <Fragment key={`${word}-${index}`}>
+      <span className="story-word-wrap">
+        <span className="story-word">{word}</span>
+      </span>
+      {index < words.length - 1 && " "}
+    </Fragment>
   ));
 }
 
@@ -144,6 +184,28 @@ function BeatContent({ beat }: { beat: StoryBeat }) {
   const overlay = beat.overlay;
   if (!overlay) return null;
 
+  if (overlay.layout === "edges" && overlay.columns) {
+    return (
+      <div className="story-edge-layout">
+        {overlay.topText && (
+          <p className="story-edge-note story-edge-note--top" data-story-reveal>
+            {overlay.topText}
+          </p>
+        )}
+        <div className="story-edge-columns">
+          {overlay.columns.map((column) => (
+            <StoryColumnContent column={column} key={column.heading} />
+          ))}
+        </div>
+        {overlay.bottomText && (
+          <p className="story-edge-note story-edge-note--bottom" data-story-reveal>
+            {overlay.bottomText}
+          </p>
+        )}
+      </div>
+    );
+  }
+
   if (overlay.columns) {
     return (
       <div className="story-columns">
@@ -154,7 +216,7 @@ function BeatContent({ beat }: { beat: StoryBeat }) {
     );
   }
 
-  const HeadingTag = beat.id === "carton-closed" ? "h1" : "h2";
+  const HeadingTag = overlay.layout === "brand" ? "h1" : "h2";
 
   return (
     <div className="story-copy">
@@ -325,7 +387,7 @@ export default function HomeStoryHero() {
       }
     };
 
-    const decodeBlobWithImage = (blob: Blob) =>
+    const decodeBlobWithImage = (blob: Blob): Promise<HTMLImageElement> =>
       new Promise<HTMLImageElement>((resolve, reject) => {
         const url = URL.createObjectURL(blob);
         const image = new Image();
@@ -340,7 +402,7 @@ export default function HomeStoryHero() {
         image.src = url;
       });
 
-    const decodeFrame = (frame: number) => {
+    const decodeFrame = (frame: number): Promise<DecodedFrame> => {
       const cached = decodedFrames.get(frame);
       if (cached) {
         decodedFrames.delete(frame);
@@ -350,13 +412,15 @@ export default function HomeStoryHero() {
       const pending = decodeRequests.get(frame);
       if (pending) return pending;
 
-      const request = loadBlob(frame)
-        .then((blob) =>
-          "createImageBitmap" in window
-            ? window.createImageBitmap(blob)
-            : decodeBlobWithImage(blob),
-        )
-        .then((decoded) => {
+      const request = (async (): Promise<DecodedFrame> => {
+        try {
+          const blob = await loadBlob(frame);
+          let decoded: DecodedFrame;
+          if (typeof window.createImageBitmap === "function") {
+            decoded = await window.createImageBitmap(blob);
+          } else {
+            decoded = await decodeBlobWithImage(blob);
+          }
           decodeRequests.delete(frame);
           if (destroyed) {
             closeFrame(decoded);
@@ -365,11 +429,11 @@ export default function HomeStoryHero() {
           decodedFrames.set(frame, decoded);
           trimDecodedFrames();
           return decoded;
-        })
-        .catch((error) => {
+        } catch (error) {
           decodeRequests.delete(frame);
           throw error;
-        });
+        }
+      })();
       decodeRequests.set(frame, request);
       return request;
     };
@@ -381,18 +445,14 @@ export default function HomeStoryHero() {
         frame instanceof HTMLImageElement ? frame.naturalHeight : frame.height;
       if (!sourceWidth || !sourceHeight) return;
 
-      const scale = Math.min(
-        canvas.width / sourceWidth,
-        canvas.height / sourceHeight,
-      );
+      const scale = canvas.height / sourceHeight;
       const width = sourceWidth * scale;
       const height = sourceHeight * scale;
       const x = (canvas.width - width) / 2;
-      const y = (canvas.height - height) / 2;
 
       context.fillStyle = "#cf4f3a";
       context.fillRect(0, 0, canvas.width, canvas.height);
-      context.drawImage(frame, x, y, width, height);
+      context.drawImage(frame, x, 0, width, height);
       drawnFrame = frameNumber;
       hero.classList.add("has-canvas-frame");
     };
@@ -449,10 +509,10 @@ export default function HomeStoryHero() {
 
     const idleYield = () =>
       new Promise<void>((resolve) => {
-        if ("requestIdleCallback" in window) {
+        if (typeof window.requestIdleCallback === "function") {
           window.requestIdleCallback(() => resolve(), { timeout: 180 });
         } else {
-          window.setTimeout(resolve, 16);
+          globalThis.setTimeout(resolve, 16);
         }
       });
 
@@ -532,18 +592,19 @@ export default function HomeStoryHero() {
           0,
         );
 
-        storyTimeline.plateaus.forEach((plateau) => {
+        storyTimeline.overlayWindows.forEach((overlayWindow) => {
           const overlay = hero.querySelector<HTMLElement>(
-            `[data-story-overlay="${plateau.id}"]`,
+            `[data-story-overlay="${overlayWindow.id}"]`,
           );
           if (!overlay) return;
           const words = overlay.querySelectorAll<HTMLElement>(".story-word");
           const supportingCopy = overlay.querySelectorAll<HTMLElement>(
             "[data-story-reveal]",
           );
-          const plateauLength = plateau.progressEnd - plateau.progressStart;
-          const enterDuration = Math.min(0.018, plateauLength * 0.22);
-          const exitDuration = Math.min(0.014, plateauLength * 0.18);
+          const windowLength =
+            overlayWindow.progressEnd - overlayWindow.progressStart;
+          const enterDuration = Math.min(0.018, windowLength * 0.22);
+          const exitDuration = Math.min(0.014, windowLength * 0.18);
 
           timeline.fromTo(
             overlay,
@@ -554,7 +615,7 @@ export default function HomeStoryHero() {
               duration: enterDuration,
               ease: "power3.out",
             },
-            plateau.progressStart,
+            overlayWindow.progressStart,
           );
           timeline.fromTo(
             words,
@@ -566,7 +627,7 @@ export default function HomeStoryHero() {
               stagger: 0.0025,
               ease: "power3.out",
             },
-            plateau.progressStart + enterDuration * 0.25,
+            overlayWindow.progressStart + enterDuration * 0.25,
           );
           timeline.fromTo(
             supportingCopy,
@@ -578,10 +639,16 @@ export default function HomeStoryHero() {
               stagger: 0.003,
               ease: "power2.out",
             },
-            plateau.progressStart + enterDuration * 0.6,
+            overlayWindow.progressStart + enterDuration * 0.6,
           );
 
-          if (plateau.progressEnd < 0.999) {
+          if (overlayWindow.hideAtEnd) {
+            timeline.set(
+              overlay,
+              { autoAlpha: 0, y: -22 },
+              overlayWindow.progressEnd,
+            );
+          } else if (overlayWindow.progressEnd < 0.999) {
             timeline.to(
               overlay,
               {
@@ -590,7 +657,7 @@ export default function HomeStoryHero() {
                 duration: exitDuration,
                 ease: "power2.in",
               },
-              plateau.progressEnd - exitDuration,
+              overlayWindow.progressEnd - exitDuration,
             );
           }
         });
