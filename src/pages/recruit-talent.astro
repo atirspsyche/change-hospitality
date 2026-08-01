@@ -1,0 +1,472 @@
+---
+import FunMenu from '../components/FunMenu.astro';
+import RecruitTalentHero from '../components/RecruitTalentHero.astro';
+import RecruitmentDivisions from '../components/RecruitmentDivisions.astro';
+import RecruitmentForm from '../components/RecruitmentForm.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const menuLinks = [
+  { label: 'Staffing brief', href: '#staffing-brief', meta: 'Tell us what you need' },
+  { label: 'The handoff', href: '#how-it-works', meta: 'What happens next' },
+  { label: 'Divisions', href: '#divisions', meta: 'Where we recruit' },
+  { label: 'Jobs Portal', href: '/portal/', meta: 'Looking for work?' },
+  { label: 'Home', href: '/', meta: 'Back to the start' },
+];
+
+const handoffSteps = [
+  {
+    number: '01',
+    title: 'Send the brief',
+    copy: 'Share the role, location and shape of the team. Just the useful detail, all in one place.',
+  },
+  {
+    number: '02',
+    title: 'Talk to a specialist',
+    copy: 'A consultant calls to understand the culture, timing and judgement the role really needs.',
+  },
+  {
+    number: '03',
+    title: 'Meet the right people',
+    copy: 'We search our network, qualify candidates face to face and manage every introduction.',
+  },
+];
+---
+
+<BaseLayout
+  title="Recruit Hospitality Talent | Change Hospitality"
+  description="Submit a staffing brief to Change Hospitality for temporary and permanent front of house, back of house, events and commercial recruitment."
+>
+  <FunMenu links={menuLinks} />
+
+  <main class="recruit-page" data-recruit-page>
+    <RecruitTalentHero />
+
+    <section id="how-it-works" class="recruit-handoff" aria-labelledby="handoff-title" data-section-reveal>
+      <div class="recruit-handoff-inner">
+        <div class="recruit-handoff-heading">
+          <p>The handoff</p>
+          <h2 id="handoff-title">A clear brief in.<br />A human search out.</h2>
+        </div>
+        <div class="recruit-handoff-steps">
+          {handoffSteps.map((step) => (
+            <article class="recruit-handoff-step">
+              <span>{step.number}</span>
+              <h3>{step.title}</h3>
+              <p>{step.copy}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="recruit-form-section" aria-label="Submit a staffing requirement">
+      <div class="recruit-form-shape" aria-hidden="true"></div>
+      <div class="recruit-form-layout">
+        <aside class="recruit-form-intro" data-section-reveal>
+          <p class="recruit-form-eyebrow">Recruit talent</p>
+          <h2>Put the order on the pass.</h2>
+          <p>
+            Permanent hire, casual cover or a whole opening team: give us the starting point and the right consultant will take it from there.
+          </p>
+          <div class="recruit-form-note">
+            <span>Prefer to talk?</span>
+            <a href="tel:02080506312">020 8050 6312</a>
+            <a href="mailto:info@changehospitality.co.uk">info@changehospitality.co.uk</a>
+          </div>
+        </aside>
+
+        <div class="recruit-form-wrap" data-section-reveal>
+          <RecruitmentForm id="staffing-brief" />
+        </div>
+      </div>
+    </section>
+
+    <RecruitmentDivisions />
+
+    <footer class="recruit-footer">
+      <div class="recruit-footer-shape" aria-hidden="true"><span></span></div>
+      <div class="recruit-footer-inner">
+        <p>Still shaping the role?</p>
+        <h2>We can take it<br />from a conversation.</h2>
+        <div class="recruit-footer-actions">
+          <a href="tel:02080506312">Call the team</a>
+          <a href="mailto:info@changehospitality.co.uk">Send an email</a>
+        </div>
+        <div class="recruit-footer-base">
+          <a href="/">Change Hospitality</a>
+          <span>Front of House / Back of House / Events &amp; Commercial</span>
+        </div>
+      </div>
+    </footer>
+  </main>
+</BaseLayout>
+
+<style>
+  .recruit-page {
+    min-height: 100vh;
+    overflow: hidden;
+    background: var(--color-paper);
+    color: var(--color-ink);
+  }
+
+  .recruit-handoff {
+    background: var(--color-mint);
+    padding: 5rem 1.25rem;
+  }
+
+  .recruit-handoff-inner {
+    width: min(100%, 80rem);
+    margin: 0 auto;
+  }
+
+  .recruit-handoff-heading > p,
+  .recruit-form-eyebrow,
+  .recruit-footer-inner > p {
+    margin-bottom: 1rem;
+    color: var(--color-flame);
+    font-size: 0.75rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .recruit-handoff-heading h2,
+  .recruit-form-intro h2,
+  .recruit-footer h2 {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 650;
+    line-height: 0.92;
+    text-wrap: balance;
+  }
+
+  .recruit-handoff-steps {
+    display: grid;
+    margin-top: 3rem;
+    border-top: 1px solid color-mix(in srgb, var(--color-ink) 28%, transparent);
+  }
+
+  .recruit-handoff-step {
+    display: grid;
+    grid-template-columns: 2.4rem 1fr;
+    gap: 0.5rem 1rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-ink) 28%, transparent);
+    padding: 1.5rem 0;
+  }
+
+  .recruit-handoff-step > span {
+    grid-row: span 2;
+    color: var(--color-flame);
+    font-size: 0.75rem;
+    font-weight: 900;
+  }
+
+  .recruit-handoff-step h3 {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    font-weight: 650;
+    line-height: 1;
+  }
+
+  .recruit-handoff-step p {
+    max-width: 31rem;
+    color: var(--color-cocoa);
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.55;
+  }
+
+  .recruit-form-section {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-flame);
+    padding: 5rem 1.25rem;
+  }
+
+  .recruit-form-shape {
+    position: absolute;
+    top: 4rem;
+    right: -16rem;
+    width: 34rem;
+    height: 18rem;
+    border-radius: 999px;
+    background: var(--color-citron);
+    transform: rotate(-9deg);
+  }
+
+  .recruit-form-layout {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    width: min(100%, 80rem);
+    margin: 0 auto;
+    gap: 2.5rem;
+    align-items: start;
+  }
+
+  .recruit-form-intro {
+    color: var(--color-ink);
+  }
+
+  .recruit-form-intro > p:not(.recruit-form-eyebrow) {
+    max-width: 31rem;
+    margin-top: 1.5rem;
+    color: var(--color-ink);
+    font-size: 1.05rem;
+    font-weight: 800;
+    line-height: 1.6;
+  }
+
+  .recruit-form-eyebrow {
+    width: fit-content;
+    border-radius: 999px;
+    background: var(--color-citron);
+    color: var(--color-ink);
+    padding: 0.65rem 0.9rem;
+    transform: rotate(-2deg);
+  }
+
+  .recruit-form-note {
+    display: grid;
+    width: min(100%, 28rem);
+    margin-top: 2rem;
+    gap: 0.35rem;
+    border-radius: 1.2rem;
+    background: var(--color-blush);
+    padding: 1rem;
+    transform: rotate(1deg);
+  }
+
+  .recruit-form-note span {
+    margin-bottom: 0.25rem;
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .recruit-form-note a {
+    width: fit-content;
+    font-weight: 900;
+    overflow-wrap: anywhere;
+  }
+
+  .recruit-form-wrap {
+    min-width: 0;
+  }
+
+  [data-section-reveal] {
+    opacity: 0;
+    translate: 0 2rem;
+    transition: opacity 600ms ease, translate 750ms var(--ease-cartoon);
+  }
+
+  [data-section-reveal].is-visible {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  .recruit-footer {
+    position: relative;
+    min-height: 43rem;
+    overflow: hidden;
+    background: var(--color-cream);
+    color: var(--color-ink);
+    padding: 5rem 1.25rem 2rem;
+  }
+
+  .recruit-footer::before {
+    position: absolute;
+    left: -12rem;
+    bottom: -8rem;
+    width: 32rem;
+    height: 22rem;
+    border-radius: 999px;
+    background: var(--color-mint);
+    content: '';
+    transform: rotate(13deg);
+  }
+
+  .recruit-footer-shape {
+    position: absolute;
+    top: 2rem;
+    right: -4rem;
+    width: 18rem;
+    height: 15rem;
+    border-radius: 46% 54% 58% 42% / 51% 44% 56% 49%;
+    background: var(--color-paper);
+    transform: rotate(-9deg);
+  }
+
+  .recruit-footer-shape span {
+    position: absolute;
+    left: 42%;
+    top: 36%;
+    width: 5.5rem;
+    height: 5.5rem;
+    border-radius: 50%;
+    background: var(--color-flame);
+  }
+
+  .recruit-footer-inner {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    width: min(100%, 80rem);
+    min-height: 36rem;
+    margin: 0 auto;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .recruit-footer h2 {
+    max-width: 54rem;
+    font-size: 3.8rem;
+  }
+
+  .recruit-footer-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    margin-top: 2rem;
+  }
+
+  .recruit-footer-actions a {
+    display: inline-flex;
+    min-height: 3.8rem;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 1.2rem;
+    background: var(--color-citron);
+    padding: 0.9rem 1.3rem;
+    font-size: 0.85rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    transition: transform 280ms var(--ease-cartoon), background-color 220ms ease;
+  }
+
+  .recruit-footer-actions a:last-child {
+    background: var(--color-blush);
+  }
+
+  .recruit-footer-actions a:hover,
+  .recruit-footer-actions a:focus-visible {
+    background: var(--color-flame);
+    color: var(--color-cream);
+    transform: translateY(-0.25rem) rotate(-1deg);
+  }
+
+  .recruit-footer-base {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: auto;
+    border-top: 1px solid color-mix(in srgb, var(--color-ink) 28%, transparent);
+    padding-top: 1rem;
+    font-size: 0.72rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  @media (min-width: 640px) {
+    .recruit-handoff,
+    .recruit-form-section,
+    .recruit-footer {
+      padding-inline: 2.5rem;
+    }
+
+    .recruit-handoff-heading h2,
+    .recruit-form-intro h2 {
+      font-size: 4.6rem;
+    }
+
+    .recruit-footer h2 {
+      font-size: 5.5rem;
+    }
+
+    .recruit-footer-actions {
+      flex-direction: row;
+    }
+
+    .recruit-footer-actions a {
+      min-width: 13rem;
+    }
+
+    .recruit-footer-base {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .recruit-handoff,
+    .recruit-form-section {
+      padding-block: 7rem;
+    }
+
+    .recruit-handoff-inner {
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 6rem;
+      align-items: start;
+    }
+
+    .recruit-handoff-steps {
+      margin-top: 0;
+    }
+
+    .recruit-form-layout {
+      grid-template-columns: minmax(19rem, 0.72fr) minmax(0, 1.28fr);
+      gap: 4rem;
+    }
+
+    .recruit-form-intro {
+      position: sticky;
+      top: 7rem;
+    }
+
+    .recruit-footer h2 {
+      font-size: 7rem;
+    }
+
+    .recruit-footer-shape {
+      right: 3%;
+      width: 25rem;
+      height: 21rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-section-reveal] {
+      opacity: 1;
+      translate: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  function initRecruitmentPage() {
+    const page = document.querySelector<HTMLElement>('[data-recruit-page]');
+    if (!page || page.dataset.ready === 'true') return;
+    page.dataset.ready = 'true';
+
+    const reveals = Array.from(page.querySelectorAll<HTMLElement>('[data-section-reveal]'));
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      reveals.forEach((item) => item.classList.add('is-visible'));
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        (entry.target as HTMLElement).classList.add('is-visible');
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -8% 0px' });
+
+    reveals.forEach((item) => observer.observe(item));
+  }
+
+  initRecruitmentPage();
+  document.addEventListener('astro:page-load', initRecruitmentPage);
+</script>

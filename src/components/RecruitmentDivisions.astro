@@ -1,0 +1,436 @@
+---
+const divisions = [
+  {
+    name: 'Front of House',
+    index: '01',
+    tone: 'var(--color-mint)',
+    description: 'Guest-facing people with the judgement, pace and personality to make every service feel considered.',
+    roles: ['General managers', 'Reception', 'Food & beverage', 'Casual teams'],
+  },
+  {
+    name: 'Back of House',
+    index: '02',
+    tone: 'var(--color-blush)',
+    description: 'Kitchen talent at every level, from trusted casual cover to permanent leaders who shape the pass.',
+    roles: ['Executive chefs', 'Sous chefs', 'Kitchen porters', 'Production teams'],
+  },
+  {
+    name: 'Events & Commercial',
+    index: '03',
+    tone: 'var(--color-citron)',
+    description: 'The people behind the room: commercial, operational and support specialists who keep hospitality businesses moving.',
+    roles: ['Sales & marketing', 'Events', 'HR', 'Finance & administration'],
+  },
+];
+---
+
+<section id="divisions" class="division-flow" aria-labelledby="division-flow-title" data-division-flow>
+  <div class="division-flow-heading">
+    <p>Where we recruit</p>
+    <h2 id="division-flow-title">Every side of hospitality,<br />handled by specialists.</h2>
+    <p class="division-flow-intro">Move through the divisions to see the teams we recruit. Hover or tap any row.</p>
+  </div>
+
+  <div class="division-flow-list">
+    {divisions.map((division, index) => (
+      <article
+        class="division-flow-item"
+        style={`--item-tone:${division.tone};--item-index:${index}`}
+        data-division-item
+        data-expanded="false"
+      >
+        <button
+          class="division-flow-trigger"
+          type="button"
+          aria-expanded="false"
+          aria-controls={`division-panel-${index}`}
+          data-division-trigger
+        >
+          <span class="division-flow-index">{division.index}</span>
+          <span class="division-flow-name">{division.name}</span>
+          <span class="division-flow-action" aria-hidden="true">+</span>
+          <span class="division-flow-marquee" aria-hidden="true">
+            <span class="division-flow-track">
+              {[0, 1].map(() => (
+                <span class="division-flow-track-group">
+                  {[0, 1, 2].map(() => (
+                    <span>{division.name}<i></i></span>
+                  ))}
+                </span>
+              ))}
+            </span>
+          </span>
+        </button>
+
+        <div
+          id={`division-panel-${index}`}
+          class="division-flow-panel"
+          role="region"
+          aria-label={`${division.name} recruitment details`}
+          aria-hidden="true"
+        >
+          <div class="division-flow-panel-inner">
+            <p>{division.description}</p>
+            <ul aria-label={`${division.name} example roles`}>
+              {division.roles.map((role) => <li>{role}</li>)}
+            </ul>
+          </div>
+        </div>
+      </article>
+    ))}
+  </div>
+</section>
+
+<style>
+  .division-flow {
+    overflow: hidden;
+    background: var(--color-cocoa);
+    color: var(--color-cream);
+    padding: 5rem 0 0;
+  }
+
+  .division-flow-heading {
+    width: min(100% - 2.5rem, 80rem);
+    margin: 0 auto;
+    padding-bottom: 3rem;
+  }
+
+  .division-flow-heading > p:first-child {
+    margin-bottom: 1rem;
+    color: var(--color-citron);
+    font-size: 0.75rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .division-flow-heading h2 {
+    max-width: 62rem;
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 650;
+    line-height: 0.92;
+    text-wrap: balance;
+  }
+
+  .division-flow-intro {
+    max-width: 35rem;
+    margin-top: 1.5rem;
+    color: color-mix(in srgb, var(--color-cream) 78%, transparent);
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.6;
+  }
+
+  .division-flow-list {
+    border-top: 1px solid color-mix(in srgb, var(--color-cream) 45%, transparent);
+  }
+
+  .division-flow-item {
+    border-bottom: 1px solid color-mix(in srgb, var(--color-ink) 24%, transparent);
+    background: var(--item-tone);
+    color: var(--color-ink);
+    opacity: 0;
+    translate: 0 1.5rem;
+    transition: opacity 500ms ease, translate 650ms var(--ease-cartoon);
+    transition-delay: calc(var(--item-index) * 80ms);
+  }
+
+  .division-flow.is-visible .division-flow-item {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  .division-flow-trigger {
+    position: relative;
+    display: grid;
+    width: 100%;
+    min-height: 7rem;
+    grid-template-columns: 2.5rem minmax(0, 1fr) 2.5rem;
+    align-items: center;
+    gap: 0.75rem;
+    overflow: hidden;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    padding: 1rem 1.25rem;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .division-flow-trigger:focus-visible {
+    z-index: 3;
+    outline-color: var(--color-ink);
+    outline-offset: -0.45rem;
+  }
+
+  .division-flow-index {
+    font-size: 0.75rem;
+    font-weight: 900;
+  }
+
+  .division-flow-name {
+    font-family: var(--font-display);
+    font-size: 2.2rem;
+    font-weight: 650;
+    line-height: 0.9;
+    transition: opacity 180ms ease;
+  }
+
+  .division-flow-action {
+    display: grid;
+    width: 2.3rem;
+    height: 2.3rem;
+    place-items: center;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--color-cream) 72%, transparent);
+    font-size: 1.7rem;
+    line-height: 1;
+    transition: transform 350ms var(--ease-cartoon), background-color 220ms ease, color 220ms ease;
+  }
+
+  .division-flow-marquee {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background: var(--color-ink);
+    color: var(--color-cream);
+    opacity: 0;
+    transform: translateY(100%);
+    transition: transform 450ms var(--ease-luxury), opacity 200ms ease;
+  }
+
+  .division-flow-track {
+    display: flex;
+    width: max-content;
+    animation: division-marquee 16s linear infinite;
+    animation-play-state: paused;
+  }
+
+  .division-flow-track-group {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+  }
+
+  .division-flow-track-group > span {
+    display: flex;
+    align-items: center;
+    gap: 1.3rem;
+    padding-right: 1.3rem;
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 650;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .division-flow-track-group i {
+    display: block;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background: var(--item-tone);
+  }
+
+  .division-flow-item[data-expanded="true"] .division-flow-marquee {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .division-flow-item[data-expanded="true"] .division-flow-track {
+    animation-play-state: running;
+  }
+
+  .division-flow-item[data-expanded="true"] .division-flow-name {
+    opacity: 0;
+  }
+
+  .division-flow-item[data-expanded="true"] .division-flow-action {
+    background: var(--color-cream);
+    color: var(--color-ink);
+    transform: rotate(45deg);
+  }
+
+  .division-flow-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 500ms var(--ease-luxury);
+  }
+
+  .division-flow-panel-inner {
+    display: grid;
+    width: min(100% - 2.5rem, 77.5rem);
+    min-height: 0;
+    margin: 0 auto;
+    gap: 1.5rem;
+    overflow: hidden;
+  }
+
+  .division-flow-item[data-expanded="true"] .division-flow-panel {
+    grid-template-rows: 1fr;
+  }
+
+  .division-flow-item[data-expanded="true"] .division-flow-panel-inner {
+    padding-block: 2rem 2.5rem;
+  }
+
+  .division-flow-panel-inner > p {
+    max-width: 42rem;
+    font-size: 1.15rem;
+    font-weight: 800;
+    line-height: 1.55;
+  }
+
+  .division-flow-panel ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .division-flow-panel li {
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-cream) 86%, transparent);
+    padding: 0.6rem 0.85rem;
+    font-size: 0.75rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  @keyframes division-marquee {
+    to { transform: translateX(-50%); }
+  }
+
+  @media (min-width: 640px) {
+    .division-flow-heading {
+      width: min(100% - 5rem, 80rem);
+    }
+
+    .division-flow-heading h2 {
+      font-size: 4.8rem;
+    }
+
+    .division-flow-trigger {
+      min-height: 8.5rem;
+      grid-template-columns: 4rem minmax(0, 1fr) 3rem;
+      gap: 1.5rem;
+      padding-inline: max(2.5rem, calc((100vw - 80rem) / 2));
+    }
+
+    .division-flow-name {
+      font-size: 4rem;
+    }
+
+    .division-flow-panel-inner {
+      grid-template-columns: 1.1fr 0.9fr;
+      align-items: start;
+    }
+
+    .division-flow-track-group > span {
+      font-size: 5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .division-flow {
+      padding-top: 7rem;
+    }
+
+    .division-flow-heading h2 {
+      font-size: 6rem;
+    }
+
+    .division-flow-trigger {
+      min-height: 10rem;
+    }
+
+    .division-flow-name {
+      font-size: 5.5rem;
+    }
+
+    .division-flow-panel-inner > p {
+      font-size: 1.35rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .division-flow-item,
+    .division-flow-marquee,
+    .division-flow-action,
+    .division-flow-panel {
+      transition: none;
+    }
+
+    .division-flow-track {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  function initDivisionFlow() {
+    const section = document.querySelector<HTMLElement>('[data-division-flow]');
+    if (!section || section.dataset.ready === 'true') return;
+    section.dataset.ready = 'true';
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry?.isIntersecting) return;
+      section.classList.add('is-visible');
+      observer.disconnect();
+    }, { threshold: 0.12 });
+    observer.observe(section);
+
+    const items = Array.from(section.querySelectorAll<HTMLElement>('[data-division-item]'));
+
+    const setExpanded = (item: HTMLElement, expanded: boolean) => {
+      const trigger = item.querySelector<HTMLButtonElement>('[data-division-trigger]');
+      const panelId = trigger?.getAttribute('aria-controls');
+      const panel = panelId ? document.getElementById(panelId) : null;
+      item.dataset.expanded = String(expanded);
+      trigger?.setAttribute('aria-expanded', String(expanded));
+      panel?.setAttribute('aria-hidden', String(!expanded));
+    };
+
+    const closeOthers = (activeItem: HTMLElement) => {
+      items.forEach((item) => {
+        if (item !== activeItem) setExpanded(item, false);
+      });
+    };
+
+    items.forEach((item) => {
+      const trigger = item.querySelector<HTMLButtonElement>('[data-division-trigger]');
+      if (!trigger) return;
+
+      trigger.addEventListener('click', (event) => {
+        const openedByMouseHover = event.detail > 0 && item.matches(':hover') && item.dataset.expanded === 'true';
+        const shouldExpand = openedByMouseHover || item.dataset.expanded !== 'true';
+        closeOthers(item);
+        setExpanded(item, shouldExpand);
+      });
+
+      item.addEventListener('focusout', (event) => {
+        const nextTarget = event.relatedTarget;
+        if (nextTarget instanceof Node && item.contains(nextTarget)) return;
+        if (!item.matches(':hover')) setExpanded(item, false);
+      });
+
+      item.addEventListener('pointerenter', (event) => {
+        if (event.pointerType !== 'mouse') return;
+        closeOthers(item);
+        setExpanded(item, true);
+      });
+      item.addEventListener('pointerleave', (event) => {
+        if (event.pointerType !== 'mouse') return;
+        if (!item.contains(document.activeElement)) setExpanded(item, false);
+      });
+    });
+  }
+
+  initDivisionFlow();
+  document.addEventListener('astro:page-load', initDivisionFlow);
+</script>

@@ -1,0 +1,568 @@
+---
+interface Props {
+  action?: string;
+  id?: string;
+}
+
+const {
+  action = '/api/recruit-talent',
+  id = 'staffing-brief',
+} = Astro.props;
+
+const staffingTypes = [
+  'FOH Casual',
+  'FOH Permanent',
+  'BOH Casual',
+  'BOH Permanent',
+];
+
+const specialistDepartments = [
+  'Sales',
+  'Marketing',
+  'Events',
+  'HR',
+  'Finance and Administration',
+];
+---
+
+<form
+  id={id}
+  class="recruit-form"
+  method="post"
+  action={action}
+  data-recruitment-form
+>
+  <div class="recruit-form-heading">
+    <div>
+      <p class="recruit-form-kicker">Your staffing brief</p>
+      <h2>Tell us what the team needs.</h2>
+    </div>
+    <p>Usually takes 3 minutes</p>
+  </div>
+
+  <fieldset class="recruit-form-section">
+    <legend><span>01</span> Your details</legend>
+    <div class="recruit-field-grid">
+      <label class="recruit-field recruit-field-paper">
+        <span>Your name</span>
+        <input name="submitterName" autocomplete="name" required maxlength="160" />
+      </label>
+      <label class="recruit-field recruit-field-paper">
+        <span>Company name</span>
+        <input name="companyName" autocomplete="organization" required maxlength="160" />
+      </label>
+      <label class="recruit-field recruit-field-mint">
+        <span>Email</span>
+        <input name="email" type="email" autocomplete="email" required maxlength="254" />
+      </label>
+      <label class="recruit-field recruit-field-mint">
+        <span>Contact number</span>
+        <input name="phone" type="tel" autocomplete="tel" required maxlength="40" />
+      </label>
+    </div>
+  </fieldset>
+
+  <fieldset class="recruit-form-section">
+    <legend><span>02</span> The role</legend>
+    <div class="recruit-field-grid">
+      <label class="recruit-field recruit-field-blush recruit-field-wide">
+        <span>Location</span>
+        <input name="location" autocomplete="address-level2" placeholder="Free text, e.g. Shoreditch, London" required maxlength="180" />
+      </label>
+      <label class="recruit-field recruit-field-paper">
+        <span>Number of positions</span>
+        <input name="numberPositions" type="number" inputmode="numeric" min="1" max="999" value="1" required />
+      </label>
+      <label class="recruit-field recruit-field-paper">
+        <span>Job title</span>
+        <input name="jobTitle" placeholder="e.g. Restaurant Manager" required maxlength="180" />
+      </label>
+    </div>
+  </fieldset>
+
+  <fieldset class="recruit-form-section recruit-choice-group" data-choice-group="jobTypes">
+    <legend><span>03</span> Staffing type</legend>
+    <p id={`${id}-staffing-help`} class="recruit-field-help">Choose all that apply.</p>
+    <div class="recruit-option-grid" aria-describedby={`${id}-staffing-help`}>
+      {staffingTypes.map((type) => (
+        <label class="recruit-option">
+          <input name="jobTypes" type="checkbox" value={type} />
+          <span class="recruit-option-box" aria-hidden="true"></span>
+          <strong>{type}</strong>
+        </label>
+      ))}
+    </div>
+    <p class="recruit-group-error" data-group-error aria-live="polite"></p>
+  </fieldset>
+
+  <fieldset class="recruit-form-section recruit-choice-group">
+    <legend><span>04</span> Specialist departments</legend>
+    <p id={`${id}-department-help`} class="recruit-field-help">Add any back-office or commercial teams involved.</p>
+    <div class="recruit-option-grid recruit-option-grid-departments" aria-describedby={`${id}-department-help`}>
+      {specialistDepartments.map((department) => (
+        <label class="recruit-option">
+          <input name="departments" type="checkbox" value={department} />
+          <span class="recruit-option-box" aria-hidden="true"></span>
+          <strong>{department}</strong>
+        </label>
+      ))}
+    </div>
+  </fieldset>
+
+  <label class="recruit-field recruit-field-mint recruit-note-field">
+    <span>Anything else we should know?</span>
+    <textarea name="message" rows="5" maxlength="2000" placeholder="Opening date, shift pattern, salary range or the shape of the team..."></textarea>
+  </label>
+
+  <div class="recruit-honeypot" aria-hidden="true">
+    <label>Website<input name="website" tabindex="-1" autocomplete="off" /></label>
+  </div>
+
+  <label class="recruit-consent">
+    <input name="consent" type="checkbox" required />
+    <span>I agree that Change Hospitality may contact me about this staffing requirement.</span>
+  </label>
+
+  <div class="recruit-form-actions">
+    <button class="recruit-submit" type="submit" data-submit-button data-default-label="Send staffing brief">
+      <span>Send staffing brief</span>
+      <span aria-hidden="true">&rarr;</span>
+    </button>
+    <p class="recruit-form-status" role="status" aria-live="polite" data-form-status></p>
+  </div>
+</form>
+
+<style>
+  .recruit-form {
+    position: relative;
+    scroll-margin-top: 6.5rem;
+    border-radius: 1.8rem;
+    background: var(--color-cream);
+    color: var(--color-ink);
+    padding: clamp(1.25rem, 4vw, 2.5rem);
+  }
+
+  .recruit-form-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-bottom: 2rem;
+  }
+
+  .recruit-form-kicker,
+  .recruit-form-heading > p,
+  .recruit-field > span,
+  .recruit-field-help {
+    font-size: 0.75rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .recruit-form-kicker {
+    margin-bottom: 0.6rem;
+    color: var(--color-flame);
+  }
+
+  .recruit-form-heading h2 {
+    max-width: 38rem;
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 6vw, 4.8rem);
+    font-weight: 650;
+    line-height: 0.92;
+    text-wrap: balance;
+  }
+
+  .recruit-form-heading > p {
+    flex: 0 0 auto;
+    border-radius: 999px;
+    background: var(--color-citron);
+    padding: 0.75rem 1rem;
+    transform: rotate(2deg);
+  }
+
+  .recruit-form-section {
+    margin: 0;
+    padding: 2rem 0 0;
+    border: 0;
+  }
+
+  .recruit-form-section + .recruit-form-section {
+    margin-top: 2rem;
+    border-top: 1px solid color-mix(in srgb, var(--color-ink) 12%, transparent);
+  }
+
+  .recruit-form-section legend {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    margin-bottom: 1rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-weight: 650;
+  }
+
+  .recruit-form-section legend span {
+    display: grid;
+    width: 2.3rem;
+    height: 2.3rem;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--color-flame);
+    color: var(--color-cream);
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 900;
+  }
+
+  .recruit-field-grid {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .recruit-field {
+    display: block;
+    border-radius: 1.2rem;
+    padding: 1rem;
+    transition: transform 260ms var(--ease-cartoon), background-color 220ms ease;
+  }
+
+  .recruit-field:focus-within {
+    background: var(--color-citron);
+    transform: translateY(-0.2rem) rotate(-0.4deg);
+  }
+
+  .recruit-field-paper {
+    background: var(--color-paper);
+  }
+
+  .recruit-field-mint {
+    background: var(--color-mint);
+  }
+
+  .recruit-field-blush {
+    background: var(--color-blush);
+  }
+
+  .recruit-field > span {
+    display: block;
+    margin-bottom: 0.65rem;
+    color: var(--color-flame);
+  }
+
+  .recruit-field input,
+  .recruit-field textarea {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: var(--color-ink);
+    font-size: 1rem;
+    font-weight: 700;
+    outline: 0;
+  }
+
+  .recruit-field textarea {
+    resize: vertical;
+  }
+
+  .recruit-field input::placeholder,
+  .recruit-field textarea::placeholder {
+    color: color-mix(in srgb, var(--color-cocoa) 56%, transparent);
+  }
+
+  .recruit-choice-group .recruit-field-help {
+    margin: -0.25rem 0 1rem;
+    color: var(--color-cocoa);
+  }
+
+  .recruit-option-grid {
+    display: grid;
+    gap: 0.65rem;
+  }
+
+  .recruit-option {
+    position: relative;
+    display: flex;
+    min-height: 4.4rem;
+    align-items: center;
+    gap: 0.8rem;
+    border-radius: 1.1rem;
+    background: var(--color-paper);
+    padding: 0.9rem 1rem;
+    cursor: pointer;
+    transition: transform 220ms var(--ease-cartoon), background-color 220ms ease;
+  }
+
+  .recruit-option:hover {
+    transform: translateY(-0.15rem) rotate(-0.35deg);
+  }
+
+  .recruit-option:has(input:checked) {
+    background: var(--color-citron);
+  }
+
+  .recruit-option:focus-within {
+    outline: 3px solid var(--color-flame);
+    outline-offset: 3px;
+  }
+
+  .recruit-option input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  .recruit-option-box {
+    position: relative;
+    flex: 0 0 auto;
+    width: 1.45rem;
+    height: 1.45rem;
+    border-radius: 0.35rem;
+    background: color-mix(in srgb, var(--color-ink) 12%, var(--color-cream));
+  }
+
+  .recruit-option input:checked + .recruit-option-box::after {
+    position: absolute;
+    inset: 0.18rem;
+    border-radius: 0.15rem;
+    background: var(--color-flame);
+    content: "";
+  }
+
+  .recruit-option strong {
+    font-size: 0.92rem;
+    line-height: 1.2;
+  }
+
+  .recruit-group-error {
+    min-height: 1.3rem;
+    margin-top: 0.55rem;
+    color: var(--color-flame);
+    font-size: 0.82rem;
+    font-weight: 900;
+  }
+
+  .recruit-note-field {
+    margin-top: 2.5rem;
+  }
+
+  .recruit-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    color: var(--color-cocoa);
+    font-size: 0.9rem;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  .recruit-consent input {
+    flex: 0 0 auto;
+    width: 1.1rem;
+    height: 1.1rem;
+    margin-top: 0.1rem;
+    accent-color: var(--color-flame);
+  }
+
+  .recruit-honeypot {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .recruit-form-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .recruit-submit {
+    display: inline-flex;
+    min-height: 4rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    border: 0;
+    border-radius: 1.25rem;
+    background: var(--color-flame);
+    color: var(--color-cream);
+    padding: 1rem 1.35rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    transition: transform 280ms var(--ease-cartoon), background-color 220ms ease;
+  }
+
+  .recruit-submit:hover,
+  .recruit-submit:focus-visible {
+    background: var(--color-cocoa);
+    transform: translateY(-0.3rem) rotate(-1deg);
+  }
+
+  .recruit-submit:disabled {
+    cursor: wait;
+    opacity: 0.68;
+  }
+
+  .recruit-submit span:last-child {
+    font-size: 1.6rem;
+    line-height: 0;
+  }
+
+  .recruit-form-status {
+    min-height: 1.5rem;
+    color: var(--color-cocoa);
+    font-size: 0.9rem;
+    font-weight: 900;
+    line-height: 1.5;
+  }
+
+  .recruit-form-status[data-state="error"] {
+    color: var(--color-flame);
+  }
+
+  .recruit-form-status[data-state="success"] {
+    color: var(--color-cocoa);
+  }
+
+  @media (min-width: 640px) {
+    .recruit-field-grid,
+    .recruit-option-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .recruit-option-grid-departments {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .recruit-option-grid-departments .recruit-option:last-child {
+      grid-column: span 2;
+    }
+
+    .recruit-field-wide {
+      grid-column: span 2;
+    }
+
+    .recruit-form-actions {
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .recruit-submit {
+      min-width: 19rem;
+    }
+  }
+
+  @media (max-width: 639px) {
+    .recruit-form-heading {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .recruit-field,
+    .recruit-option,
+    .recruit-submit {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  function initRecruitmentForms() {
+    document.querySelectorAll<HTMLFormElement>('[data-recruitment-form]').forEach((form) => {
+      if (form.dataset.ready === 'true') return;
+      form.dataset.ready = 'true';
+
+      const button = form.querySelector<HTMLButtonElement>('[data-submit-button]');
+      const buttonLabel = button?.querySelector('span');
+      const status = form.querySelector<HTMLElement>('[data-form-status]');
+      const staffingGroup = form.querySelector<HTMLElement>('[data-choice-group="jobTypes"]');
+      const staffingError = staffingGroup?.querySelector<HTMLElement>('[data-group-error]');
+      const staffingInputs = Array.from(form.querySelectorAll<HTMLInputElement>('input[name="jobTypes"]'));
+
+      if (!button || !buttonLabel || !status || !staffingGroup || !staffingError) return;
+
+      const setStatus = (message: string, state: 'idle' | 'error' | 'success' = 'idle') => {
+        status.textContent = message;
+        status.dataset.state = state;
+      };
+
+      const validateStaffingTypes = () => {
+        const isValid = staffingInputs.some((input) => input.checked);
+        staffingGroup.setAttribute('aria-invalid', String(!isValid));
+        staffingError.textContent = isValid ? '' : 'Choose at least one staffing type.';
+        return isValid;
+      };
+
+      staffingInputs.forEach((input) => input.addEventListener('change', validateStaffingTypes));
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        setStatus('');
+
+        const staffingTypesAreValid = validateStaffingTypes();
+        if (!form.checkValidity() || !staffingTypesAreValid) {
+          form.reportValidity();
+          if (!staffingTypesAreValid) staffingInputs[0]?.focus();
+          return;
+        }
+
+        const formData = new FormData(form);
+        const payload = {
+          submitterName: formData.get('submitterName'),
+          companyName: formData.get('companyName'),
+          email: formData.get('email'),
+          phone: formData.get('phone'),
+          location: formData.get('location'),
+          numberPositions: Number(formData.get('numberPositions')),
+          jobTitle: formData.get('jobTitle'),
+          jobTypes: formData.getAll('jobTypes'),
+          departments: formData.getAll('departments'),
+          message: formData.get('message'),
+          consent: formData.has('consent'),
+          website: formData.get('website'),
+        };
+
+        button.disabled = true;
+        buttonLabel.textContent = 'Sending brief...';
+        setStatus('Passing your brief to the recruitment team.');
+
+        try {
+          const response = await fetch(form.action, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          const result = await response.json().catch(() => ({}));
+
+          if (!response.ok) {
+            throw new Error(result.message || 'We could not send your brief. Please try again.');
+          }
+
+          form.reset();
+          validateStaffingTypes();
+          staffingError.textContent = '';
+          staffingGroup.setAttribute('aria-invalid', 'false');
+          setStatus(`${result.message} Reference ${result.reference}.`, 'success');
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'We could not send your brief. Please try again.';
+          setStatus(message, 'error');
+        } finally {
+          button.disabled = false;
+          buttonLabel.textContent = button.dataset.defaultLabel || 'Send staffing brief';
+        }
+      });
+    });
+  }
+
+  initRecruitmentForms();
+  document.addEventListener('astro:page-load', initRecruitmentForms);
+</script>

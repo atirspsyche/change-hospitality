@@ -1,0 +1,689 @@
+<section class="recruit-hero" aria-labelledby="recruit-hero-title" data-recruit-hero>
+  <div class="recruit-hero-oval recruit-hero-oval-one" data-hero-parallax="-14" aria-hidden="true"></div>
+  <div class="recruit-hero-oval recruit-hero-oval-two" data-hero-parallax="20" aria-hidden="true"></div>
+
+  <div class="recruit-hero-inner">
+    <div class="recruit-hero-copy">
+      <p class="recruit-hero-kicker">Recruit talent / take a seat</p>
+      <h1 id="recruit-hero-title">Bring us the brief.<br />We'll bring the people.</h1>
+      <p class="recruit-hero-intro">
+        Tell us who your hospitality team needs next. Our consultants will pick up the detail, call you back and manage the search face to face.
+      </p>
+      <div class="recruit-hero-actions">
+        <a class="recruit-hero-button recruit-hero-button-primary" href="#staffing-brief">Start your brief <span aria-hidden="true">&darr;</span></a>
+        <a class="recruit-hero-button recruit-hero-button-secondary" href="tel:02080506312">Call 020 8050 6312</a>
+      </div>
+      <dl class="recruit-hero-proof" aria-label="Change Hospitality recruitment approach">
+        <div><dt>20+</dt><dd>years of hospitality networks</dd></div>
+        <div><dt>1:1</dt><dd>consultant-led, face-to-face service</dd></div>
+      </dl>
+    </div>
+
+    <div class="recruit-brief-stage" role="img" aria-label="A fried egg place setting surrounded by a new hospitality staffing brief">
+      <div class="recruit-stage-oval" data-hero-parallax="10" aria-hidden="true"></div>
+      <div class="recruit-cutlery" data-hero-parallax="-7" aria-hidden="true">
+        <span class="recruit-plate">
+          <span class="recruit-egg-white"><i class="recruit-yolk"></i></span>
+        </span>
+        <!-- <span class="recruit-fork">
+          <span class="recruit-fork-head"><i></i><i></i><i></i><i></i></span>
+          <span class="recruit-utensil-handle"></span>
+        </span>
+        <span class="recruit-knife">
+          <span class="recruit-knife-blade"></span>
+          <span class="recruit-utensil-handle"></span>
+        </span> -->
+      </div>
+      <div class="recruit-ticket recruit-ticket-main" data-hero-parallax="18" aria-hidden="true">
+        <span>New opening</span>
+        <strong>3 people<br />London</strong>
+        <i>Ready for the pass</i>
+      </div>
+      <div class="recruit-ticket recruit-ticket-note" data-hero-parallax="-22" aria-hidden="true">
+        Brief taken<br />by a human
+      </div>
+      <p class="recruit-stage-caption">Every good hire starts with a clear order.</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .recruit-hero {
+    position: relative;
+    isolation: isolate;
+    box-sizing: border-box;
+    height: 92svh;
+    overflow: hidden;
+    background: var(--color-cream);
+    color: var(--color-ink);
+    padding: 7.5rem 1.25rem 4rem;
+  }
+
+  .recruit-hero-inner {
+    position: relative;
+    z-index: 2;
+    display: block;
+    width: min(100%, 80rem);
+    height: 100%;
+    margin: 0 auto;
+    gap: 2.5rem;
+    align-items: center;
+  }
+
+  .recruit-hero-copy {
+    position: relative;
+    z-index: 3;
+    max-width: 48rem;
+  }
+
+  .recruit-hero-kicker {
+    width: fit-content;
+    margin-bottom: 1.25rem;
+    border-radius: 1.2rem;
+    background: var(--color-citron);
+    padding: 0.7rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    transform: rotate(-2deg);
+  }
+
+  .recruit-hero h1 {
+    max-width: 48rem;
+    font-family: var(--font-display);
+    font-size: 3.6rem;
+    font-weight: 650;
+    line-height: 0.88;
+    text-wrap: balance;
+  }
+
+  .recruit-hero-intro {
+    max-width: 39rem;
+    margin-top: 1.75rem;
+    color: var(--color-cocoa);
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.6;
+  }
+
+  .recruit-hero-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .recruit-hero-button {
+    display: inline-flex;
+    min-height: 3.8rem;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    border: 0;
+    border-radius: 1.2rem;
+    padding: 0.9rem 1.3rem;
+    font-size: 0.88rem;
+    font-weight: 900;
+    text-align: center;
+    text-transform: uppercase;
+    transition: transform 280ms var(--ease-cartoon), background-color 220ms ease;
+  }
+
+  .recruit-hero-button-primary {
+    background: var(--color-flame);
+    color: var(--color-cream);
+  }
+
+  .recruit-hero-button-secondary {
+    background: var(--color-mint);
+    color: var(--color-ink);
+  }
+
+  .recruit-hero-button:hover,
+  .recruit-hero-button:focus-visible {
+    transform: translateY(-0.25rem) rotate(-1deg);
+  }
+
+  .recruit-hero-proof {
+    display: grid;
+    max-width: 37rem;
+    margin-top: 2rem;
+    gap: 0.7rem;
+  }
+
+  .recruit-hero-proof div {
+    display: grid;
+    grid-template-columns: 4.25rem 1fr;
+    align-items: center;
+    gap: 1rem;
+    border-top: 1px solid color-mix(in srgb, var(--color-ink) 34%, transparent);
+    padding-top: 0.75rem;
+  }
+
+  .recruit-hero-proof dt {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    font-weight: 600;
+  }
+
+  .recruit-hero-proof dd {
+    color: var(--color-cocoa);
+    font-size: 0.75rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .recruit-hero-oval,
+  .recruit-stage-oval {
+    position: absolute;
+    border-radius: 999px;
+    pointer-events: none;
+    transform: translate3d(var(--parallax-x, 0), var(--parallax-y, 0), 0) rotate(var(--oval-rotate, 0deg));
+    will-change: transform;
+  }
+
+  .recruit-hero-oval-one {
+    --oval-rotate: -10deg;
+    top: 6rem;
+    right: -15rem;
+    width: 34rem;
+    height: 20rem;
+    background: var(--color-blush);
+  }
+
+  .recruit-hero-oval-two {
+    --oval-rotate: 13deg;
+    bottom: -9rem;
+    left: -15rem;
+    width: 36rem;
+    height: 21rem;
+    background: var(--color-blush);
+  }
+
+  .recruit-brief-stage {
+    position: relative;
+    min-height: 31rem;
+  }
+
+  .recruit-stage-oval {
+    --oval-rotate: -8deg;
+    inset: 8% -12% auto auto;
+    width: 100%;
+    height: 82%;
+    background: var(--color-citron);
+  }
+
+  .recruit-cutlery {
+    position: absolute;
+    z-index: 2;
+    left: -4%;
+    top: 15%;
+    width: 27rem;
+    height: 24rem;
+    transform: translate3d(var(--parallax-x, 0), var(--parallax-y, 0), 0) rotate(-4deg);
+    transform-origin: center;
+    will-change: transform;
+  }
+
+  .recruit-plate {
+    position: absolute;
+    left: 74%;
+    top: 49%;
+    display: grid;
+    width: 17.5rem;
+    aspect-ratio: 1;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--color-blush);
+    transform: translate(-50%, -50%) rotate(-5deg);
+  }
+
+  .recruit-plate::before {
+    position: absolute;
+    inset: 8%;
+    border-radius: inherit;
+    background: color-mix(in srgb, var(--color-blush) 42%, var(--color-cream));
+    content: '';
+  }
+
+  .recruit-egg-white {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 58%;
+    aspect-ratio: 1.15;
+    border-radius: 46% 54% 58% 42% / 60% 43% 57% 40%;
+    background: var(--color-cream);
+    transform: rotate(-9deg);
+    animation: recruit-egg-wobble 5s ease-in-out infinite;
+  }
+
+  .recruit-yolk {
+    position: absolute;
+    left: 47%;
+    top: 45%;
+    display: block;
+    width: 35%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--color-blush);
+    transform: translate(-50%, -50%);
+  }
+
+  .recruit-fork,
+  .recruit-knife {
+    position: absolute;
+    z-index: 2;
+    bottom: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform-origin: 50% 82%;
+    transition: transform 700ms var(--ease-cartoon);
+  }
+
+  .recruit-fork {
+    left: 0.35rem;
+    transform: rotate(-9deg);
+  }
+
+  .recruit-knife {
+    right: 0.55rem;
+    transform: rotate(8deg);
+  }
+
+  .recruit-fork-head {
+    position: relative;
+    display: flex;
+    width: 3.7rem;
+    height: 6.6rem;
+    justify-content: space-between;
+    padding-inline: 0.35rem;
+  }
+
+  .recruit-fork-head::after {
+    position: absolute;
+    inset: auto 0.5rem 0;
+    height: 3.25rem;
+    border-radius: 0.85rem 0.85rem 1.6rem 1.6rem;
+    background: var(--color-ink);
+    clip-path: polygon(0 0, 100% 0, 68% 100%, 32% 100%);
+    content: '';
+  }
+
+  .recruit-fork-head i {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 0.48rem;
+    height: 4.35rem;
+    border-radius: 999px 999px 0 0;
+    background: var(--color-ink);
+  }
+
+  .recruit-utensil-handle {
+    position: relative;
+    display: block;
+    width: 1.2rem;
+    height: 8.9rem;
+    margin-top: -0.1rem;
+    border-radius: 0.6rem 0.6rem 999px 999px;
+    background: var(--color-flame);
+  }
+
+  .recruit-utensil-handle::after {
+    position: absolute;
+    left: 50%;
+    bottom: 0.65rem;
+    width: 0.34rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--color-ink);
+    content: '';
+    transform: translateX(-50%);
+  }
+
+  .recruit-knife-blade {
+    position: relative;
+    display: block;
+    width: 3.4rem;
+    height: 10.6rem;
+    border-radius: 78% 18% 22% 48% / 14% 10% 17% 86%;
+    background: var(--color-ink);
+    transform: skewY(-1deg);
+  }
+
+  .recruit-knife-blade::after {
+    position: absolute;
+    top: 1rem;
+    right: 0.55rem;
+    bottom: 1.35rem;
+    width: 0.22rem;
+    border-radius: 999px;
+    background: var(--color-cream);
+    content: '';
+    transform: rotate(3deg);
+  }
+
+  .recruit-knife .recruit-utensil-handle {
+    height: 8.4rem;
+    margin-top: 0.2rem;
+  }
+
+  .recruit-brief-stage:hover .recruit-fork {
+    transform: translate3d(-0.6rem, -0.45rem, 0) rotate(-13deg);
+  }
+
+  .recruit-brief-stage:hover .recruit-knife {
+    transform: translate3d(0.6rem, -0.45rem, 0) rotate(12deg);
+  }
+
+  .recruit-ticket {
+    position: absolute;
+    z-index: 4;
+    color: var(--color-ink);
+    transform: translate3d(var(--parallax-x, 0), var(--parallax-y, 0), 0) rotate(var(--ticket-rotate));
+    will-change: transform;
+  }
+
+  .recruit-ticket-main {
+    --ticket-rotate: 5deg;
+    top: -2%;
+    right: 2%;
+    width: 13.5rem;
+    border-radius: 0.45rem;
+    background: var(--color-paper);
+    padding: 1.2rem;
+  }
+
+  .recruit-ticket-main span,
+  .recruit-ticket-main i {
+    display: block;
+    font-size: 0.68rem;
+    font-style: normal;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .recruit-ticket-main strong {
+    display: block;
+    margin: 1rem 0 1.6rem;
+    font-family: var(--font-display);
+    font-size: 2.1rem;
+    line-height: 0.9;
+  }
+
+  .recruit-ticket-main i {
+    padding-top: 0.25rem;
+    color: var(--color-flame);
+  }
+
+  .recruit-ticket-note {
+    --ticket-rotate: -7deg;
+    right: 8%;
+    bottom: 10%;
+    border-radius: 1rem;
+    background: var(--color-blush);
+    padding: 0.85rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 900;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  .recruit-stage-caption {
+    position: absolute;
+    z-index: 5;
+    left: 4%;
+    bottom: 3%;
+    width: 13rem;
+    border-radius: 1rem;
+    background: var(--color-flame);
+    color: var(--color-cream);
+    padding: 0.8rem 1rem;
+    font-size: 0.72rem;
+    font-weight: 900;
+    line-height: 1.35;
+    text-transform: uppercase;
+    transform: rotate(-3deg);
+  }
+
+  .recruit-hero-copy > *,
+  .recruit-brief-stage > * {
+    opacity: 0;
+    transition: opacity 600ms ease, translate 700ms var(--ease-cartoon);
+    translate: 0 1.5rem;
+  }
+
+  .recruit-hero.is-ready .recruit-hero-copy > *,
+  .recruit-hero.is-ready .recruit-brief-stage > * {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  .recruit-hero.is-ready .recruit-hero-copy > :nth-child(2) { transition-delay: 80ms; }
+  .recruit-hero.is-ready .recruit-hero-copy > :nth-child(3) { transition-delay: 140ms; }
+  .recruit-hero.is-ready .recruit-hero-copy > :nth-child(4) { transition-delay: 200ms; }
+  .recruit-hero.is-ready .recruit-hero-copy > :nth-child(5) { transition-delay: 260ms; }
+  .recruit-hero.is-ready .recruit-brief-stage > :nth-child(2) { transition-delay: 170ms; }
+  .recruit-hero.is-ready .recruit-brief-stage > :nth-child(3) { transition-delay: 250ms; }
+  .recruit-hero.is-ready .recruit-brief-stage > :nth-child(4) { transition-delay: 320ms; }
+  .recruit-hero.is-ready .recruit-brief-stage > :nth-child(5) { transition-delay: 390ms; }
+
+  @keyframes recruit-egg-wobble {
+    0%,
+    100% {
+      transform: rotate(-9deg) translate(0, 0);
+    }
+
+    50% {
+      transform: rotate(2deg) translate(0.2rem, -0.15rem);
+    }
+  }
+
+  @media (min-width: 640px) {
+    .recruit-hero {
+      padding-inline: 2.5rem;
+    }
+
+    .recruit-hero h1 {
+      font-size: 4.4rem;
+    }
+
+    .recruit-hero-actions {
+      flex-direction: row;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .recruit-hero-inner {
+      display: grid;
+      height: auto;
+      min-height: calc(92svh - 11.5rem);
+      grid-template-columns: minmax(0, 1.04fr) minmax(26rem, 0.96fr);
+    }
+
+    .recruit-hero h1 {
+      font-size: 6.7rem;
+    }
+
+    .recruit-brief-stage {
+      min-height: 39rem;
+    }
+
+    .recruit-cutlery {
+      left: -5%;
+      top: 17%;
+      scale: 1.05;
+    }
+
+    .recruit-ticket-main {
+      right: -1%;
+      width: 15rem;
+    }
+  }
+
+  @media (max-width: 639px) {
+    .recruit-hero {
+      padding: 5.7rem 1.25rem 1.5rem;
+    }
+
+    .recruit-hero h1 {
+      font-size: 2.9rem;
+    }
+
+    .recruit-hero-intro {
+      max-width: 21rem;
+      margin-top: 1rem;
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .recruit-hero-actions {
+      margin-top: 1.15rem;
+    }
+
+    .recruit-hero-button {
+      min-height: 3.4rem;
+    }
+
+    .recruit-hero-button-secondary,
+    .recruit-hero-proof {
+      display: none;
+    }
+
+    .recruit-brief-stage {
+      right: -1.5rem;
+      bottom: -0.4rem;
+      width: 16rem;
+      min-height: 11.5rem;
+    }
+
+    .recruit-cutlery {
+      left: 0;
+      top: 10%;
+      scale: 0.42;
+      transform-origin: top left;
+    }
+
+    .recruit-ticket-main {
+      top: -3.1rem;
+      right: 0;
+      width: 7.8rem;
+      padding: 0.65rem;
+    }
+
+    .recruit-ticket-main strong {
+      margin: 0.5rem 0 0.7rem;
+      font-size: 1.15rem;
+    }
+
+    .recruit-ticket-main span,
+    .recruit-ticket-main i {
+      font-size: 0.48rem;
+    }
+
+    .recruit-ticket-note,
+    .recruit-stage-caption {
+      display: none;
+    }
+  }
+
+  @media (min-width: 640px) and (max-width: 1023px) {
+    .recruit-hero-copy {
+      max-width: 70%;
+    }
+
+    .recruit-hero-proof {
+      display: none;
+    }
+
+    .recruit-brief-stage {
+      right: -4rem;
+      bottom: -2rem;
+      width: 25rem;
+      min-height: 28rem;
+    }
+
+    .recruit-cutlery {
+      left: 0;
+      top: 22%;
+      scale: 0.75;
+      transform-origin: top left;
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .recruit-brief-stage {
+      position: absolute;
+      pointer-events: none;
+    }
+
+    .recruit-stage-oval {
+      inset: 8% -5% auto auto;
+      width: 100%;
+      height: 88%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .recruit-hero-copy > *,
+    .recruit-brief-stage > * {
+      opacity: 1;
+      transition: none;
+      translate: none;
+    }
+
+    .recruit-fork,
+    .recruit-knife,
+    .recruit-egg-white {
+      transition: none;
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  function initRecruitHero() {
+    const hero = document.querySelector<HTMLElement>('[data-recruit-hero]');
+    if (!hero || hero.dataset.ready === 'true') return;
+    hero.dataset.ready = 'true';
+    window.requestAnimationFrame(() => hero.classList.add('is-ready'));
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const desktop = window.matchMedia('(min-width: 1024px)');
+    if (reduceMotion.matches || !desktop.matches) return;
+
+    const layers = Array.from(hero.querySelectorAll<HTMLElement>('[data-hero-parallax]'));
+    let pointerX = 0;
+    let pointerY = 0;
+    let frame = 0;
+
+    const render = () => {
+      frame = 0;
+      const heroRect = hero.getBoundingClientRect();
+      const scrollProgress = Math.max(-1, Math.min(1, -heroRect.top / window.innerHeight));
+
+      layers.forEach((layer) => {
+        const depth = Number(layer.dataset.heroParallax || 0);
+        layer.style.setProperty('--parallax-x', `${(pointerX * depth).toFixed(1)}px`);
+        layer.style.setProperty('--parallax-y', `${(pointerY * depth + scrollProgress * depth * 1.8).toFixed(1)}px`);
+      });
+    };
+
+    const requestRender = () => {
+      if (!frame) frame = window.requestAnimationFrame(render);
+    };
+
+    hero.addEventListener('pointermove', (event) => {
+      pointerX = event.clientX / window.innerWidth - 0.5;
+      pointerY = event.clientY / window.innerHeight - 0.5;
+      requestRender();
+    }, { passive: true });
+    window.addEventListener('scroll', requestRender, { passive: true });
+    requestRender();
+  }
+
+  initRecruitHero();
+  document.addEventListener('astro:page-load', initRecruitHero);
+</script>
