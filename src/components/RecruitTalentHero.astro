@@ -1,3 +1,7 @@
+---
+import EggIllustration from './EggIllustration.astro';
+---
+
 <section class="recruit-hero" aria-labelledby="recruit-hero-title" data-recruit-hero>
   <div class="recruit-hero-oval recruit-hero-oval-one" data-hero-parallax="-14" aria-hidden="true"></div>
   <div class="recruit-hero-oval recruit-hero-oval-two" data-hero-parallax="20" aria-hidden="true"></div>
@@ -19,20 +23,10 @@
       </dl>
     </div>
 
-    <div class="recruit-brief-stage" role="img" aria-label="A fried egg place setting surrounded by a new hospitality staffing brief">
+    <div class="recruit-brief-stage" role="img" aria-label="A fried egg surrounded by a new hospitality staffing brief">
       <div class="recruit-stage-oval" data-hero-parallax="10" aria-hidden="true"></div>
-      <div class="recruit-cutlery" data-hero-parallax="-7" aria-hidden="true">
-        <span class="recruit-plate">
-          <span class="recruit-egg-white"><i class="recruit-yolk"></i></span>
-        </span>
-        <!-- <span class="recruit-fork">
-          <span class="recruit-fork-head"><i></i><i></i><i></i><i></i></span>
-          <span class="recruit-utensil-handle"></span>
-        </span>
-        <span class="recruit-knife">
-          <span class="recruit-knife-blade"></span>
-          <span class="recruit-utensil-handle"></span>
-        </span> -->
+      <div class="recruit-hero-egg-anchor" data-hero-parallax="-7" aria-hidden="true">
+        <EggIllustration class="recruit-hero-egg" />
       </div>
       <div class="recruit-ticket recruit-ticket-main" data-hero-parallax="18" aria-hidden="true">
         <span>New opening</span>
@@ -52,7 +46,8 @@
     position: relative;
     isolation: isolate;
     box-sizing: border-box;
-    height: 92svh;
+    height: 100svh;
+    min-height: 100vh;
     overflow: hidden;
     background: var(--color-cream);
     color: var(--color-ink);
@@ -205,177 +200,28 @@
     min-height: 31rem;
   }
 
+  .recruit-hero-egg-anchor {
+    position: absolute;
+    z-index: 2;
+    inset: 8% -12% auto auto;
+    display: grid;
+    width: 100%;
+    height: 82%;
+    place-items: center;
+    transform: translate3d(var(--parallax-x, 0), var(--parallax-y, 0), 0);
+    will-change: transform;
+  }
+
+  :global(.recruit-hero-egg) {
+    --egg-width: 17.5rem;
+  }
+
   .recruit-stage-oval {
     --oval-rotate: -8deg;
     inset: 8% -12% auto auto;
     width: 100%;
     height: 82%;
     background: var(--color-citron);
-  }
-
-  .recruit-cutlery {
-    position: absolute;
-    z-index: 2;
-    left: -4%;
-    top: 15%;
-    width: 27rem;
-    height: 24rem;
-    transform: translate3d(var(--parallax-x, 0), var(--parallax-y, 0), 0) rotate(-4deg);
-    transform-origin: center;
-    will-change: transform;
-  }
-
-  .recruit-plate {
-    position: absolute;
-    left: 74%;
-    top: 49%;
-    display: grid;
-    width: 17.5rem;
-    aspect-ratio: 1;
-    place-items: center;
-    border-radius: 50%;
-    background: var(--color-blush);
-    transform: translate(-50%, -50%) rotate(-5deg);
-  }
-
-  .recruit-plate::before {
-    position: absolute;
-    inset: 8%;
-    border-radius: inherit;
-    background: color-mix(in srgb, var(--color-blush) 42%, var(--color-cream));
-    content: '';
-  }
-
-  .recruit-egg-white {
-    position: relative;
-    z-index: 1;
-    display: block;
-    width: 58%;
-    aspect-ratio: 1.15;
-    border-radius: 46% 54% 58% 42% / 60% 43% 57% 40%;
-    background: var(--color-cream);
-    transform: rotate(-9deg);
-    animation: recruit-egg-wobble 5s ease-in-out infinite;
-  }
-
-  .recruit-yolk {
-    position: absolute;
-    left: 47%;
-    top: 45%;
-    display: block;
-    width: 35%;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: var(--color-blush);
-    transform: translate(-50%, -50%);
-  }
-
-  .recruit-fork,
-  .recruit-knife {
-    position: absolute;
-    z-index: 2;
-    bottom: 0.8rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transform-origin: 50% 82%;
-    transition: transform 700ms var(--ease-cartoon);
-  }
-
-  .recruit-fork {
-    left: 0.35rem;
-    transform: rotate(-9deg);
-  }
-
-  .recruit-knife {
-    right: 0.55rem;
-    transform: rotate(8deg);
-  }
-
-  .recruit-fork-head {
-    position: relative;
-    display: flex;
-    width: 3.7rem;
-    height: 6.6rem;
-    justify-content: space-between;
-    padding-inline: 0.35rem;
-  }
-
-  .recruit-fork-head::after {
-    position: absolute;
-    inset: auto 0.5rem 0;
-    height: 3.25rem;
-    border-radius: 0.85rem 0.85rem 1.6rem 1.6rem;
-    background: var(--color-ink);
-    clip-path: polygon(0 0, 100% 0, 68% 100%, 32% 100%);
-    content: '';
-  }
-
-  .recruit-fork-head i {
-    position: relative;
-    z-index: 1;
-    display: block;
-    width: 0.48rem;
-    height: 4.35rem;
-    border-radius: 999px 999px 0 0;
-    background: var(--color-ink);
-  }
-
-  .recruit-utensil-handle {
-    position: relative;
-    display: block;
-    width: 1.2rem;
-    height: 8.9rem;
-    margin-top: -0.1rem;
-    border-radius: 0.6rem 0.6rem 999px 999px;
-    background: var(--color-flame);
-  }
-
-  .recruit-utensil-handle::after {
-    position: absolute;
-    left: 50%;
-    bottom: 0.65rem;
-    width: 0.34rem;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: var(--color-ink);
-    content: '';
-    transform: translateX(-50%);
-  }
-
-  .recruit-knife-blade {
-    position: relative;
-    display: block;
-    width: 3.4rem;
-    height: 10.6rem;
-    border-radius: 78% 18% 22% 48% / 14% 10% 17% 86%;
-    background: var(--color-ink);
-    transform: skewY(-1deg);
-  }
-
-  .recruit-knife-blade::after {
-    position: absolute;
-    top: 1rem;
-    right: 0.55rem;
-    bottom: 1.35rem;
-    width: 0.22rem;
-    border-radius: 999px;
-    background: var(--color-cream);
-    content: '';
-    transform: rotate(3deg);
-  }
-
-  .recruit-knife .recruit-utensil-handle {
-    height: 8.4rem;
-    margin-top: 0.2rem;
-  }
-
-  .recruit-brief-stage:hover .recruit-fork {
-    transform: translate3d(-0.6rem, -0.45rem, 0) rotate(-13deg);
-  }
-
-  .recruit-brief-stage:hover .recruit-knife {
-    transform: translate3d(0.6rem, -0.45rem, 0) rotate(12deg);
   }
 
   .recruit-ticket {
@@ -470,17 +316,6 @@
   .recruit-hero.is-ready .recruit-brief-stage > :nth-child(4) { transition-delay: 320ms; }
   .recruit-hero.is-ready .recruit-brief-stage > :nth-child(5) { transition-delay: 390ms; }
 
-  @keyframes recruit-egg-wobble {
-    0%,
-    100% {
-      transform: rotate(-9deg) translate(0, 0);
-    }
-
-    50% {
-      transform: rotate(2deg) translate(0.2rem, -0.15rem);
-    }
-  }
-
   @media (min-width: 640px) {
     .recruit-hero {
       padding-inline: 2.5rem;
@@ -499,7 +334,7 @@
     .recruit-hero-inner {
       display: grid;
       height: auto;
-      min-height: calc(92svh - 11.5rem);
+      min-height: calc(100svh - 11.5rem);
       grid-template-columns: minmax(0, 1.04fr) minmax(26rem, 0.96fr);
     }
 
@@ -509,12 +344,6 @@
 
     .recruit-brief-stage {
       min-height: 39rem;
-    }
-
-    .recruit-cutlery {
-      left: -5%;
-      top: 17%;
-      scale: 1.05;
     }
 
     .recruit-ticket-main {
@@ -559,13 +388,6 @@
       min-height: 11.5rem;
     }
 
-    .recruit-cutlery {
-      left: 0;
-      top: 10%;
-      scale: 0.42;
-      transform-origin: top left;
-    }
-
     .recruit-ticket-main {
       top: -3.1rem;
       right: 0;
@@ -605,12 +427,6 @@
       min-height: 28rem;
     }
 
-    .recruit-cutlery {
-      left: 0;
-      top: 22%;
-      scale: 0.75;
-      transform-origin: top left;
-    }
   }
 
   @media (max-width: 1023px) {
@@ -634,11 +450,12 @@
       translate: none;
     }
 
-    .recruit-fork,
-    .recruit-knife,
-    .recruit-egg-white {
-      transition: none;
-      animation: none;
+    :global(.recruit-hero-egg) {
+      will-change: auto;
+    }
+
+    .recruit-hero-egg-anchor {
+      will-change: auto;
     }
   }
 </style>

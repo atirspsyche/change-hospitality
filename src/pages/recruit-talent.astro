@@ -1,16 +1,16 @@
 ---
 import FunMenu from '../components/FunMenu.astro';
+import EggIllustration from '../components/EggIllustration.astro';
 import RecruitTalentHero from '../components/RecruitTalentHero.astro';
 import RecruitmentDivisions from '../components/RecruitmentDivisions.astro';
 import RecruitmentForm from '../components/RecruitmentForm.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const menuLinks = [
-  { label: 'Staffing brief', href: '#staffing-brief', meta: 'Tell us what you need' },
-  { label: 'The handoff', href: '#how-it-works', meta: 'What happens next' },
+const showHandoff = false;
+
+const sectionLinks = [
   { label: 'Divisions', href: '#divisions', meta: 'Where we recruit' },
-  { label: 'Jobs Portal', href: '/portal/', meta: 'Looking for work?' },
-  { label: 'Home', href: '/', meta: 'Back to the start' },
+  { label: 'Staffing brief', href: '#staffing-brief', meta: 'Tell us what you need' },
 ];
 
 const handoffSteps = [
@@ -36,28 +36,37 @@ const handoffSteps = [
   title="Recruit Hospitality Talent | Change Hospitality"
   description="Submit a staffing brief to Change Hospitality for temporary and permanent front of house, back of house, events and commercial recruitment."
 >
-  <FunMenu links={menuLinks} />
+  <FunMenu
+    sectionLinks={sectionLinks}
+    menuButtonBackground="var(--color-flame)"
+    menuButtonBorderColor="var(--color-ink)"
+    menuButtonTextColor="var(--color-cream)"
+  />
 
   <main class="recruit-page" data-recruit-page>
     <RecruitTalentHero />
 
-    <section id="how-it-works" class="recruit-handoff" aria-labelledby="handoff-title" data-section-reveal>
-      <div class="recruit-handoff-inner">
-        <div class="recruit-handoff-heading">
-          <p>The handoff</p>
-          <h2 id="handoff-title">A clear brief in.<br />A human search out.</h2>
+    {showHandoff && (
+      <section id="how-it-works" class="recruit-handoff" aria-labelledby="handoff-title" data-section-reveal>
+        <div class="recruit-handoff-inner">
+          <div class="recruit-handoff-heading">
+            <p>The handoff</p>
+            <h2 id="handoff-title">A clear brief in.<br />A human search out.</h2>
+          </div>
+          <div class="recruit-handoff-steps">
+            {handoffSteps.map((step) => (
+              <article class="recruit-handoff-step">
+                <span>{step.number}</span>
+                <h3>{step.title}</h3>
+                <p>{step.copy}</p>
+              </article>
+            ))}
+          </div>
         </div>
-        <div class="recruit-handoff-steps">
-          {handoffSteps.map((step) => (
-            <article class="recruit-handoff-step">
-              <span>{step.number}</span>
-              <h3>{step.title}</h3>
-              <p>{step.copy}</p>
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
+      </section>
+    )}
+
+    <RecruitmentDivisions />
 
     <section class="recruit-form-section" aria-label="Submit a staffing requirement">
       <div class="recruit-form-shape" aria-hidden="true"></div>
@@ -81,10 +90,8 @@ const handoffSteps = [
       </div>
     </section>
 
-    <RecruitmentDivisions />
-
     <footer class="recruit-footer">
-      <div class="recruit-footer-shape" aria-hidden="true"><span></span></div>
+      <EggIllustration class="recruit-footer-egg" />
       <div class="recruit-footer-inner">
         <p>Still shaping the role?</p>
         <h2>We can take it<br />from a conversation.</h2>
@@ -285,25 +292,11 @@ const handoffSteps = [
     transform: rotate(13deg);
   }
 
-  .recruit-footer-shape {
-    position: absolute;
-    top: 2rem;
+  :global(.recruit-footer-egg) {
+    --egg-position: absolute;
+    --egg-width: 18rem;
+    top: 6rem;
     right: -4rem;
-    width: 18rem;
-    height: 15rem;
-    border-radius: 46% 54% 58% 42% / 51% 44% 56% 49%;
-    background: var(--color-paper);
-    transform: rotate(-9deg);
-  }
-
-  .recruit-footer-shape span {
-    position: absolute;
-    left: 42%;
-    top: 36%;
-    width: 5.5rem;
-    height: 5.5rem;
-    border-radius: 50%;
-    background: var(--color-flame);
   }
 
   .recruit-footer-inner {
@@ -428,10 +421,9 @@ const handoffSteps = [
       font-size: 7rem;
     }
 
-    .recruit-footer-shape {
-      right: 3%;
-      width: 25rem;
-      height: 21rem;
+    :global(.recruit-footer-egg) {
+      right: 5%;
+      --egg-width: 25rem;
     }
   }
 

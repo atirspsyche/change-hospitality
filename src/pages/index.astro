@@ -1,27 +1,31 @@
 ---
 import ApplicationSection from '../components/ApplicationSection.astro';
 import DivisionSplit from '../components/DivisionSplit.astro';
-import FinalCTA from '../components/FinalCTA.astro';
 import FunMenu from '../components/FunMenu.astro';
 import HomeStoryHero from '../components/HomeStoryHero';
 import HomeExperience from '../components/HomeExperience.astro';
 import ImpactTracker from '../components/ImpactTracker.astro';
 import OpportunitiesStream from '../components/OpportunitiesStream.astro';
 import PhilosophyReveal from '../components/PhilosophyReveal.astro';
+import SiteFooter from '../components/SiteFooter.astro';
 import TestimonialsStack from '../components/TestimonialsStack.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const homeMenuLinks = [
+const homeSectionLinks = [
   { label: 'Our approach', href: '#approach', meta: 'People before databases' },
   { label: 'Divisions', href: '#divisions', meta: 'Where we specialise' },
   { label: 'Live jobs', href: '#opportunities', meta: 'Open opportunities' },
   { label: 'Apply', href: '#apply', meta: 'Join the pass' },
-  { label: 'Team', href: '/team/', meta: 'Meet the consultants' },
 ];
 ---
 
 <BaseLayout>
-  <FunMenu links={homeMenuLinks} />
+  <FunMenu
+    sectionLinks={homeSectionLinks}
+    menuButtonBackground="var(--color-cream)"
+    menuButtonBorderColor="var(--color-ink)"
+    menuButtonTextColor="var(--color-ink)"
+  />
   <main class="home-page bg-cream text-ink">
     <HomeStoryHero client:load />
     <PhilosophyReveal />
@@ -30,7 +34,7 @@ const homeMenuLinks = [
     <OpportunitiesStream />
     <TestimonialsStack />
     <ApplicationSection />
-    <FinalCTA />
+    <SiteFooter />
   </main>
   <HomeExperience />
 </BaseLayout>

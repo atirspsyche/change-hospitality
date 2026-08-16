@@ -9,19 +9,26 @@ const {
   id = 'staffing-brief',
 } = Astro.props;
 
-const staffingTypes = [
-  'FOH Casual',
-  'FOH Permanent',
-  'BOH Casual',
-  'BOH Permanent',
-];
-
-const specialistDepartments = [
-  'Sales',
-  'Marketing',
-  'Events',
-  'HR',
-  'Finance and Administration',
+const staffingGroups = [
+  {
+    label: 'A',
+    title: 'Temporary Staffing',
+    options: [
+      { label: 'Front of House Casual', value: 'Temporary Staffing - Front of House Casual' },
+      { label: 'Back of House Casual', value: 'Temporary Staffing - Back of House Casual' },
+    ],
+  },
+  {
+    label: 'B',
+    title: 'Permanent Placements',
+    options: [
+      { label: 'Front of House', value: 'Permanent Placements - Front of House' },
+      { label: 'Back of House', value: 'Permanent Placements - Back of House' },
+      { label: 'Sales, Marketing & Events', value: 'Permanent Placements - Sales, Marketing & Events' },
+      { label: 'HR', value: 'Permanent Placements - HR' },
+      { label: 'Finance and Administration', value: 'Permanent Placements - Finance and Administration' },
+    ],
+  },
 ];
 ---
 
@@ -82,31 +89,24 @@ const specialistDepartments = [
 
   <fieldset class="recruit-form-section recruit-choice-group" data-choice-group="jobTypes">
     <legend><span>03</span> Staffing type</legend>
-    <p id={`${id}-staffing-help`} class="recruit-field-help">Choose all that apply.</p>
-    <div class="recruit-option-grid" aria-describedby={`${id}-staffing-help`}>
-      {staffingTypes.map((type) => (
-        <label class="recruit-option">
-          <input name="jobTypes" type="checkbox" value={type} />
-          <span class="recruit-option-box" aria-hidden="true"></span>
-          <strong>{type}</strong>
-        </label>
+    <p id={`${id}-staffing-help`} class="recruit-field-help">Choose at least one option across either group.</p>
+    <div class="recruit-staffing-groups" aria-describedby={`${id}-staffing-help`}>
+      {staffingGroups.map((group) => (
+        <div class="recruit-staffing-group">
+          <h3><span>{group.label}</span>{group.title}</h3>
+          <div class="recruit-option-grid">
+            {group.options.map((option) => (
+              <label class="recruit-option">
+                <input name="jobTypes" type="checkbox" value={option.value} />
+                <span class="recruit-option-box" aria-hidden="true"></span>
+                <strong>{option.label}</strong>
+              </label>
+            ))}
+          </div>
+        </div>
       ))}
     </div>
     <p class="recruit-group-error" data-group-error aria-live="polite"></p>
-  </fieldset>
-
-  <fieldset class="recruit-form-section recruit-choice-group">
-    <legend><span>04</span> Specialist departments</legend>
-    <p id={`${id}-department-help`} class="recruit-field-help">Add any back-office or commercial teams involved.</p>
-    <div class="recruit-option-grid recruit-option-grid-departments" aria-describedby={`${id}-department-help`}>
-      {specialistDepartments.map((department) => (
-        <label class="recruit-option">
-          <input name="departments" type="checkbox" value={department} />
-          <span class="recruit-option-box" aria-hidden="true"></span>
-          <strong>{department}</strong>
-        </label>
-      ))}
-    </div>
   </fieldset>
 
   <label class="recruit-field recruit-field-mint recruit-note-field">
@@ -282,6 +282,34 @@ const specialistDepartments = [
     gap: 0.65rem;
   }
 
+  .recruit-staffing-groups {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .recruit-staffing-group h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 0.75rem;
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 650;
+  }
+
+  .recruit-staffing-group h3 span {
+    display: grid;
+    width: 1.8rem;
+    height: 1.8rem;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--color-cocoa);
+    color: var(--color-cream);
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    font-weight: 900;
+  }
+
   .recruit-option {
     position: relative;
     display: flex;
@@ -437,14 +465,6 @@ const specialistDepartments = [
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .recruit-option-grid-departments {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .recruit-option-grid-departments .recruit-option:last-child {
-      grid-column: span 2;
-    }
-
     .recruit-field-wide {
       grid-column: span 2;
     }
@@ -525,7 +545,6 @@ const specialistDepartments = [
           numberPositions: Number(formData.get('numberPositions')),
           jobTitle: formData.get('jobTitle'),
           jobTypes: formData.getAll('jobTypes'),
-          departments: formData.getAll('departments'),
           message: formData.get('message'),
           consent: formData.has('consent'),
           website: formData.get('website'),

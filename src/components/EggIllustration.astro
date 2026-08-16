@@ -1,0 +1,41 @@
+---
+interface Props {
+  class?: string;
+  "data-parallax"?: string | number;
+  "data-hero-parallax"?: string | number;
+}
+
+const { class: className, ...attributes } = Astro.props;
+---
+
+<div
+  class:list={["egg-illustration", className]}
+  aria-hidden="true"
+  {...attributes}
+>
+  <span></span>
+</div>
+
+<style>
+  .egg-illustration {
+    position: var(--egg-position, relative);
+    width: var(--egg-width, 18rem);
+    aspect-ratio: 6 / 5;
+    border-radius: 46% 54% 58% 42% / 51% 44% 56% 49%;
+    background: var(--color-paper);
+    transform: translate3d(var(--parallax-x, 0), var(--parallax-y, 0), 0)
+      rotate(var(--egg-rotate, -9deg));
+    transform-origin: center;
+    will-change: transform;
+  }
+
+  .egg-illustration span {
+    position: absolute;
+    left: 42%;
+    top: 36%;
+    width: 30.5%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--color-flame);
+  }
+</style>

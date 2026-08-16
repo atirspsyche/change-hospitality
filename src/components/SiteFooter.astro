@@ -1,0 +1,326 @@
+---
+const footerLinks = [
+  { label: 'Home', href: '/', note: 'Back to the start' },
+  { label: 'Team', href: '/team/', note: 'Meet the room' },
+  { label: 'Recruit talent', href: '/recruit-talent/', note: 'Build your team' },
+  {
+    label: 'Contact',
+    href: 'mailto:hello@changehospitality.co.uk',
+    note: 'Start a conversation',
+  },
+];
+
+const socialLinks = [
+  {
+    label: 'LinkedIn',
+    href: 'https://www.linkedin.com/company/change-hospitality/',
+  },
+  { label: 'Instagram', href: 'https://www.instagram.com/changehospitality/' },
+  { label: 'Email', href: 'mailto:hello@changehospitality.co.uk' },
+];
+---
+
+<footer
+  class="site-footer relative isolate flex min-h-screen overflow-hidden px-5 py-20 text-ink md:px-10"
+  aria-labelledby="site-footer-title"
+  data-inversion-section
+  data-site-footer
+>
+  <div
+    class="site-footer-egg"
+    data-footer-parallax="18"
+    aria-hidden="true"
+  >
+    <span></span>
+  </div>
+
+  <div
+    class="relative z-10 mx-auto grid w-full max-w-7xl gap-10 self-center lg:grid-cols-[1.05fr_0.95fr] lg:items-end"
+  >
+    <div>
+      <p
+        class="mb-6 w-fit rotate-2 rounded-[1.25rem] bg-flame px-5 py-3 text-sm font-black uppercase tracking-wide text-cream"
+      >
+        Ready to make the change?
+      </p>
+      <h2
+        id="site-footer-title"
+        class="max-w-4xl font-serif text-6xl font-semibold leading-[0.9] md:text-8xl lg:text-9xl"
+      >
+        Put a brilliant person on the pass.
+      </h2>
+      <div class="mt-9 flex flex-col gap-4 sm:flex-row">
+        <a class="site-footer-cta site-footer-cta-primary" href="/recruit-talent/">
+          Start a brief
+        </a>
+        <a class="site-footer-cta bg-cream text-ink" href="/#opportunities">
+          Find work
+        </a>
+      </div>
+    </div>
+
+    <div class="grid gap-6">
+      <nav class="site-footer-link-grid" aria-label="Footer navigation">
+        {
+          footerLinks.map((link, index) => (
+            <a
+              class={`site-footer-link site-footer-link-${index + 1}`}
+              href={link.href}
+            >
+              <span>{link.label}</span>
+              <small>{link.note}</small>
+            </a>
+          ))
+        }
+      </nav>
+
+      <nav class="site-footer-socials" aria-label="Social media">
+        {socialLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+      </nav>
+    </div>
+  </div>
+
+  <p class="site-footer-ribbon" aria-hidden="true">
+    Front of House / Back of House / Events &amp; Commercial / Twenty years of
+    people first recruitment
+  </p>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--color-citron);
+  }
+
+  .site-footer::before {
+    position: absolute;
+    inset: 6% auto auto -8%;
+    height: 20rem;
+    width: 32rem;
+    border-radius: 999px;
+    background: var(--color-mint);
+    content: '';
+    transform: rotate(-14deg);
+  }
+
+  .site-footer::after {
+    position: absolute;
+    right: -7%;
+    bottom: 9%;
+    height: 22rem;
+    width: 28rem;
+    border-radius: 38% 62% 62% 38% / 44% 34% 66% 56%;
+    background: var(--color-blush);
+    content: '';
+    transform: rotate(10deg);
+  }
+
+  .site-footer-egg {
+    position: absolute;
+    right: 7%;
+    top: 20%;
+    z-index: 1;
+    height: 13rem;
+    width: 16rem;
+    border-radius: 56% 44% 47% 53% / 58% 45% 55% 42%;
+    background: var(--color-cream);
+    transform: rotate(-14deg);
+    will-change: transform;
+  }
+
+  .site-footer-egg span {
+    position: absolute;
+    inset: 32% auto auto 38%;
+    height: 4.6rem;
+    width: 4.6rem;
+    border-radius: 999px;
+    background: var(--color-flame);
+  }
+
+  .site-footer-cta {
+    position: relative;
+    z-index: 12;
+    display: inline-flex;
+    min-width: 11rem;
+    min-height: 4.4rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 1.65rem;
+    padding: 1.25rem 2rem;
+    font-size: 1rem;
+    font-weight: 900;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    text-transform: uppercase;
+    transition:
+      transform 320ms var(--ease-cartoon),
+      background-color 240ms ease;
+  }
+
+  .site-footer-cta-primary {
+    background: var(--color-flame);
+    color: var(--color-cream);
+  }
+
+  .site-footer-cta:hover,
+  .site-footer-cta:focus-visible {
+    transform: translateY(-0.35rem) rotate(-2deg) scale(1.03);
+  }
+
+  .site-footer-link-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .site-footer-link {
+    display: grid;
+    min-height: 9.5rem;
+    align-content: space-between;
+    border-radius: 1.7rem;
+    background: var(--color-cream);
+    padding: 1.1rem;
+    transition:
+      transform 320ms var(--ease-cartoon),
+      background-color 240ms ease;
+  }
+
+  .site-footer-link span {
+    font-family: var(--font-serif);
+    font-size: clamp(1.9rem, 4vw, 3rem);
+    line-height: 0.9;
+    overflow-wrap: anywhere;
+  }
+
+  .site-footer-link small {
+    font-size: 0.82rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .site-footer-link-2,
+  .site-footer-link-3 {
+    background: var(--color-mint);
+  }
+
+  .site-footer-link:hover,
+  .site-footer-link:focus-visible {
+    background: var(--color-flame);
+    color: var(--color-cream);
+    transform: rotate(-2deg) scale(1.04);
+  }
+
+  .site-footer-socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+
+  .site-footer-socials a {
+    display: inline-flex;
+    min-height: 3.5rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--color-cocoa);
+    color: var(--color-cream);
+    padding: 0.95rem 1.25rem;
+    font-size: 0.92rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    transition:
+      transform 300ms var(--ease-cartoon),
+      background-color 240ms ease;
+  }
+
+  .site-footer-socials a:hover,
+  .site-footer-socials a:focus-visible {
+    background: var(--color-flame);
+    transform: translateY(-0.3rem) rotate(3deg);
+  }
+
+  .site-footer-ribbon {
+    position: absolute;
+    right: -6rem;
+    bottom: 2rem;
+    z-index: 1;
+    width: max-content;
+    border-radius: 1.35rem;
+    background: var(--color-ink);
+    color: var(--color-cream);
+    padding: 1rem 1.4rem;
+    font-size: clamp(1rem, 2vw, 1.45rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    transform: rotate(-3deg);
+  }
+
+  @media (max-width: 767px) {
+    .site-footer-link-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .site-footer-egg,
+    .site-footer-ribbon {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-footer-egg,
+    .site-footer-cta,
+    .site-footer-link,
+    .site-footer-socials a {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  function initSiteFooter() {
+    document.querySelectorAll<HTMLElement>('[data-site-footer]').forEach((footer) => {
+      if (footer.dataset.footerReady === 'true') return;
+      footer.dataset.footerReady = 'true';
+
+      const item = footer.querySelector<HTMLElement>('[data-footer-parallax]');
+      if (!item || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      const baseTransform = window.getComputedStyle(item).transform;
+      let pointerX = 0;
+      let pointerY = 0;
+      let frame = 0;
+
+      const render = () => {
+        frame = 0;
+        const rect = footer.getBoundingClientRect();
+        const depth = Number(item.dataset.footerParallax || 0);
+        const scrollOffset =
+          ((rect.top + rect.height / 2 - window.innerHeight / 2) / window.innerHeight) *
+          depth *
+          -0.42;
+        item.style.transform = `${baseTransform} translate3d(${(pointerX * depth).toFixed(1)}px, ${(pointerY * depth + scrollOffset).toFixed(1)}px, 0)`;
+      };
+
+      const requestRender = () => {
+        if (frame) return;
+        frame = window.requestAnimationFrame(render);
+      };
+
+      window.addEventListener(
+        'pointermove',
+        (event) => {
+          pointerX = (event.clientX / window.innerWidth - 0.5) * 2;
+          pointerY = (event.clientY / window.innerHeight - 0.5) * 2;
+          requestRender();
+        },
+        { passive: true },
+      );
+      window.addEventListener('scroll', requestRender, { passive: true });
+      window.addEventListener('resize', requestRender, { passive: true });
+      requestRender();
+    });
+  }
+
+  initSiteFooter();
+  document.addEventListener('astro:page-load', initSiteFooter);
+</script>

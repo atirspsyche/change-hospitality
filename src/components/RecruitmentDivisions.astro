@@ -6,6 +6,7 @@ const divisions = [
     tone: 'var(--color-mint)',
     description: 'Guest-facing people with the judgement, pace and personality to make every service feel considered.',
     roles: ['General managers', 'Reception', 'Food & beverage', 'Casual teams'],
+    images: ['/recruit-talent-images/foh.png', '/recruit-talent-images/foh2.png'],
   },
   {
     name: 'Back of House',
@@ -13,6 +14,7 @@ const divisions = [
     tone: 'var(--color-blush)',
     description: 'Kitchen talent at every level, from trusted casual cover to permanent leaders who shape the pass.',
     roles: ['Executive chefs', 'Sous chefs', 'Kitchen porters', 'Production teams'],
+    images: ['/recruit-talent-images/boh.png', '/recruit-talent-images/boh2.png'],
   },
   {
     name: 'Events & Commercial',
@@ -20,6 +22,7 @@ const divisions = [
     tone: 'var(--color-citron)',
     description: 'The people behind the room: commercial, operational and support specialists who keep hospitality businesses moving.',
     roles: ['Sales & marketing', 'Events', 'HR', 'Finance & administration'],
+    images: ['/recruit-talent-images/event1.png', '/recruit-talent-images/event2.png'],
   },
 ];
 ---
@@ -53,9 +56,10 @@ const divisions = [
             <span class="division-flow-track">
               {[0, 1].map(() => (
                 <span class="division-flow-track-group">
-                  {[0, 1, 2].map(() => (
-                    <span>{division.name}<i></i></span>
-                  ))}
+                  <span>{division.name}</span>
+                  <img src={division.images[0]} alt="" loading="lazy" decoding="async" />
+                  <span>{division.name}</span>
+                  <img src={division.images[1]} alt="" loading="lazy" decoding="async" />
                 </span>
               ))}
             </span>
@@ -213,13 +217,11 @@ const divisions = [
     display: flex;
     flex: 0 0 auto;
     align-items: center;
+    gap: 1.3rem;
+    padding-right: 1.3rem;
   }
 
   .division-flow-track-group > span {
-    display: flex;
-    align-items: center;
-    gap: 1.3rem;
-    padding-right: 1.3rem;
     font-family: var(--font-display);
     font-size: 3rem;
     font-weight: 650;
@@ -227,12 +229,12 @@ const divisions = [
     white-space: nowrap;
   }
 
-  .division-flow-track-group i {
-    display: block;
-    width: 1rem;
-    height: 1rem;
-    border-radius: 50%;
-    background: var(--item-tone);
+  .division-flow-track-group img {
+    flex: 0 0 auto;
+    width: clamp(7rem, 11vw, 10rem);
+    height: clamp(3.5rem, 6vw, 5.5rem);
+    border-radius: 999px;
+    object-fit: cover;
   }
 
   .division-flow-item[data-expanded="true"] .division-flow-marquee {

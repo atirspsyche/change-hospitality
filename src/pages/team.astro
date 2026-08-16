@@ -1,24 +1,17 @@
 ---
 import CircularGallery from "../components/team/CircularGallery";
 import ProfileCard from "../components/team/ProfileCard";
+import EggIllustration from "../components/EggIllustration.astro";
 import FunMenu from "../components/FunMenu.astro";
+import SiteFooter from "../components/SiteFooter.astro";
 import { teamGalleryItems, teamMembers, teamPassSteps } from "../data/team";
 import BaseLayout from "../layouts/BaseLayout.astro";
 
-const footerLinks = [
-  { label: "Team", href: "#profiles", note: "Meet the room" },
-  { label: "Process", href: "#pass", note: "How roles move" },
-  { label: "Jobs", href: "/portal/", note: "Open opportunities" },
-  { label: "Home", href: "/", note: "Back to the start" },
-];
+const showTeamPass = false;
 
-const socialLinks = [
-  {
-    label: "LinkedIn",
-    href: "https://www.linkedin.com/company/change-hospitality/",
-  },
-  { label: "Instagram", href: "https://www.instagram.com/changehospitality/" },
-  { label: "Email", href: "mailto:hello@changehospitality.co.uk" },
+const teamSectionLinks = [
+  { label: "Profiles", href: "#profiles", meta: "Meet the consultants" },
+  { label: "Gallery", href: "#gallery", meta: "Frames of the work" },
 ];
 ---
 
@@ -27,14 +20,19 @@ const socialLinks = [
   description="Meet the Change Hospitality team: people-first consultants for front of house, back of house, events and commercial hospitality recruitment."
   image="https://images.unsplash.com/photo-1559329007-40df8a9345d8?auto=format&fit=crop&w=1600&q=85"
 >
-  <FunMenu />
+  <FunMenu
+    sectionLinks={teamSectionLinks}
+    menuButtonBackground="var(--color-cocoa)"
+    menuButtonBorderColor="var(--color-ink)"
+    menuButtonTextColor="var(--color-cream)"
+  />
 
   <main
     class="team-page min-h-screen overflow-hidden bg-paper text-ink"
     data-team-page
   >
     <section
-      class="team-hero relative isolate min-h-screen overflow-hidden bg-cream px-5 pb-14 pt-28 md:px-10 md:pt-32"
+      class="team-hero relative isolate h-svh overflow-hidden bg-cream px-5 pb-8 pt-20 md:px-10 md:pt-24"
       aria-labelledby="team-title"
     >
       <div
@@ -63,19 +61,19 @@ const socialLinks = [
       </div>
 
       <div
-        class="relative z-10 mx-auto grid max-w-7xl gap-12 pt-6 md:pt-10 lg:min-h-[calc(100vh-9rem)] lg:grid-cols-[0.95fr_1.05fr] lg:items-center"
+        class="relative z-10 mx-auto grid h-full max-w-7xl gap-6 lg:-translate-y-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center"
       >
         <div class="relative z-20 max-w-4xl">
           <p
             class="mb-6 w-fit -rotate-2 rounded-[1.35rem] bg-citron px-6 py-3 text-sm font-black uppercase tracking-wide text-ink"
           >
-            Team profiles / service pass
+            Team profiles
           </p>
           <h1
             id="team-title"
-            class="font-serif text-6xl font-semibold leading-[0.92] text-ink md:text-8xl lg:text-9xl"
+            class="font-serif text-6xl font-semibold leading-[0.92] text-ink md:text-8xl"
           >
-            Meet the people who make the handoff.
+            Meet the team.
           </h1>
           <p
             class="mt-7 max-w-xl text-xl font-black leading-8 text-cocoa md:text-2xl md:leading-9"
@@ -94,42 +92,23 @@ const socialLinks = [
         </div>
 
         <div
-          class="team-pass-stage relative min-h-144 lg:min-h-176"
-          aria-label="Animated team service pass illustration"
+          class="team-pass-stage relative min-h-144 lg:h-full lg:min-h-0"
+          role="img"
+          aria-label="A fried egg representing people-first recruitment"
         >
-          <div class="team-plate" data-parallax="10" aria-hidden="true">
-            <div class="team-egg-white"><span class="team-yolk"></span></div>
-            <div class="team-plate-note">Every role has a recipe.</div>
+          <div class="team-hero-composition" data-parallax="10">
+            <EggIllustration class="team-hero-egg" />
+            <p class="team-hero-tag" aria-hidden="true">
+              People make the placement.
+            </p>
           </div>
-
-          <div class="team-pass-ticket team-pass-ticket-one">
-            <span>Listen</span>
-            <strong>Brief taken</strong>
-          </div>
-          <div class="team-pass-ticket team-pass-ticket-two">
-            <span>Read</span>
-            <strong>Talent checked</strong>
-          </div>
-          <div class="team-pass-ticket team-pass-ticket-three">
-            <span>Serve</span>
-            <strong>Intro landed</strong>
-          </div>
-
-          {
-            teamMembers.map((member, index) => (
-              <div class={`team-orbit-card team-orbit-${index + 1}`}>
-                <img src={member.miniAvatarUrl} alt="" loading="lazy" />
-                <span>{member.division}</span>
-              </div>
-            ))
-          }
         </div>
       </div>
     </section>
 
     <section
       id="profiles"
-      class="team-profiles-section relative overflow-hidden px-5 py-18 md:px-10 md:py-24"
+      class="team-profiles-section relative overflow-hidden bg-paper px-5 py-18 md:px-10 md:py-24"
       aria-labelledby="profiles-title"
     >
       <div
@@ -160,14 +139,14 @@ const socialLinks = [
             >
               Cards with a pulse.
             </h2>
+            <p class="max-w-xl mt-5 text-lg font-bold leading-8 text-cocoa">
+              Four consultants, one close-knit team. Hover a card and each flat
+              storyboard panel comes to life.
+            </p>
           </div>
-          <p class="max-w-xl text-lg font-bold leading-8 text-cocoa">
-            Hover the cards: they scoot, wobble and react like flat storyboard
-            panels. Big blocks, loud colour, no gloss.
-          </p>
         </div>
 
-        <div class="team-card-grid grid gap-8 md:grid-cols-2">
+        <div class="team-card-grid grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {
             teamMembers.map((member) => (
               <ProfileCard
@@ -179,7 +158,6 @@ const socialLinks = [
                 contactText={member.contactText}
                 avatarUrl={member.avatarUrl}
                 miniAvatarUrl={member.miniAvatarUrl}
-                accent={member.accent}
                 note={member.note}
                 signal={member.signal}
                 division={member.division}
@@ -191,48 +169,52 @@ const socialLinks = [
       </div>
     </section>
 
-    <section
-      id="pass"
-      class="team-pass-section relative overflow-hidden px-5 py-18 md:px-10 md:py-24 bg-flame"
-      aria-labelledby="pass-title"
-    >
-      <div
-        class="team-section-oval team-section-oval-three"
-        data-parallax="38"
-        aria-hidden="true"
-      >
-      </div>
-      <div
-        class="relative z-10 mx-auto grid max-w-7xl gap-6 lg:grid-cols-[0.7fr_1.3fr] lg:items-stretch"
-      >
-        <div
-          class="team-process-poster rounded-[30px] bg-blush p-6 text-ink md:p-8"
-          data-parallax="26"
+    {
+      /* Temporarily disabled; set showTeamPass to true to restore this section. */
+    }
+    {
+      showTeamPass && (
+        <section
+          id="pass"
+          class="team-pass-section relative overflow-hidden bg-flame px-5 py-18 md:px-10 md:py-24"
+          aria-labelledby="pass-title"
         >
-          <p class="mb-5 text-sm font-black uppercase tracking-wide">
-            How the handoff works
-          </p>
-          <h2
-            id="pass-title"
-            class="font-serif text-5xl font-semibold leading-none md:text-6xl"
-          >
-            Not a database. A pass.
-          </h2>
-        </div>
-        <div class="grid gap-4 md:grid-cols-3">
-          {
-            teamPassSteps.map((step) => (
-              <article class="team-step-card rounded-[30px] bg-cream p-5 text-ink">
-                <p class="text-sm font-black uppercase text-flame">
-                  {step.label}
-                </p>
-                <p class="mt-6 text-xl font-semibold leading-7">{step.copy}</p>
-              </article>
-            ))
-          }
-        </div>
-      </div>
-    </section>
+          <div
+            class="team-section-oval team-section-oval-three"
+            data-parallax="38"
+            aria-hidden="true"
+          />
+          <div class="relative z-10 mx-auto grid max-w-7xl gap-6 lg:grid-cols-[0.7fr_1.3fr] lg:items-stretch">
+            <div
+              class="team-process-poster rounded-[30px] bg-blush p-6 text-ink md:p-8"
+              data-parallax="26"
+            >
+              <p class="mb-5 text-sm font-black uppercase tracking-wide">
+                How the handoff works
+              </p>
+              <h2
+                id="pass-title"
+                class="font-serif text-5xl font-semibold leading-none md:text-6xl"
+              >
+                Not a database. A pass.
+              </h2>
+            </div>
+            <div class="grid gap-4 md:grid-cols-3">
+              {teamPassSteps.map((step) => (
+                <article class="team-step-card rounded-[30px] bg-cream p-5 text-ink">
+                  <p class="text-sm font-black uppercase text-flame">
+                    {step.label}
+                  </p>
+                  <p class="mt-6 text-xl font-semibold leading-7">
+                    {step.copy}
+                  </p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )
+    }
 
     <section
       id="gallery"
@@ -276,80 +258,7 @@ const socialLinks = [
       </div>
     </section>
 
-    <footer
-      class="team-footer relative isolate flex min-h-screen overflow-hidden px-5 py-20 text-ink md:px-10"
-      aria-labelledby="team-footer-title"
-    >
-      <div
-        class="team-footer-stamp team-footer-stamp-one"
-        data-parallax="30"
-        aria-hidden="true"
-      >
-        hi
-      </div>
-      <div
-        class="team-footer-stamp team-footer-stamp-two"
-        data-parallax="-24"
-        aria-hidden="true"
-      >
-        jobs
-      </div>
-      <div class="team-footer-egg" data-parallax="18" aria-hidden="true">
-        <span></span>
-      </div>
-
-      <div
-        class="relative z-10 mx-auto grid w-full max-w-7xl gap-10 self-center lg:grid-cols-[1.05fr_0.95fr] lg:items-end"
-      >
-        <div>
-          <p
-            class="mb-6 w-fit rotate-2 rounded-[1.25rem] bg-flame px-5 py-3 text-sm font-black uppercase tracking-wide text-cream"
-          >
-            The non-normal footer
-          </p>
-          <h2
-            id="team-footer-title"
-            class="max-w-4xl font-serif text-6xl font-semibold leading-[0.9] md:text-8xl lg:text-9xl"
-          >
-            Put a brilliant person on the pass.
-          </h2>
-          <div class="mt-9 flex flex-col gap-4 sm:flex-row">
-            <a
-              class="team-footer-cta team-footer-cta-primary"
-              href="mailto:hello@changehospitality.co.uk">Start a brief</a
-            >
-            <a class="team-footer-cta bg-cream text-ink" href="/portal/"
-              >Find work</a
-            >
-          </div>
-        </div>
-
-        <div class="grid gap-6">
-          <nav class="team-footer-link-grid" aria-label="Footer navigation">
-            {
-              footerLinks.map((link, index) => (
-                <a
-                  class={`team-footer-link team-footer-link-${index + 1}`}
-                  href={link.href}
-                >
-                  <span>{link.label}</span>
-                  <small>{link.note}</small>
-                </a>
-              ))
-            }
-          </nav>
-
-          <nav class="team-footer-socials" aria-label="Social media">
-            {socialLinks.map((link) => <a href={link.href}>{link.label}</a>)}
-          </nav>
-        </div>
-      </div>
-
-      <p class="team-footer-ribbon" aria-hidden="true">
-        Front of House / Back of House / Events &amp; Commercial / Twenty years
-        of people first recruitment
-      </p>
-    </footer>
+    <SiteFooter />
   </main>
 </BaseLayout>
 
@@ -395,7 +304,7 @@ const socialLinks = [
     right: -15rem;
     height: 24rem;
     width: 38rem;
-    background: var(--color-citron);
+    background: var(--color-mint);
     transform: rotate(-10deg);
   }
 
@@ -409,7 +318,7 @@ const socialLinks = [
   }
 
   .team-profiles-section {
-    background: var(--color-mint);
+    background: var(--color-paper);
   }
 
   .team-pass-section {
@@ -481,63 +390,36 @@ const socialLinks = [
     place-items: center;
   }
 
-  .team-plate {
+  .team-hero-composition {
     position: relative;
     display: grid;
-    height: min(30rem, 74vw);
-    width: min(30rem, 74vw);
+    width: min(38rem, 100%);
+    aspect-ratio: 1.28;
     place-items: center;
-    border-radius: 999px;
-    background: var(--color-blush);
-    will-change: transform;
     transition: transform 220ms ease-out;
+    will-change: transform;
   }
 
-  .team-plate::before {
-    position: absolute;
-    inset: 9%;
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--color-blush) 45%, var(--color-cream));
-    content: "";
-  }
-
-  .team-egg-white {
-    position: relative;
+  :global(.team-hero-egg) {
+    --egg-width: min(30rem, 74vw);
     z-index: 2;
-    height: 48%;
-    width: 56%;
-    border-radius: 48% 52% 55% 45% / 58% 46% 54% 42%;
-    background: var(--color-cream);
-    transform: rotate(-8deg);
-    animation: team-egg-wobble 5s ease-in-out infinite;
   }
 
-  .team-yolk {
-    position: absolute;
-    left: 46%;
-    top: 47%;
-    height: 34%;
-    width: 34%;
-    border-radius: 999px;
-    background: var(--color-citron);
-    transform: translate(-50%, -50%);
-  }
-
-  .team-plate-note {
+  .team-hero-tag {
     position: absolute;
     z-index: 3;
-    bottom: 11%;
-    left: 50%;
-    width: max-content;
-    max-width: 13rem;
-    border-radius: 999px;
-    background: var(--color-flame);
-    color: var(--color-cream);
-    padding: 0.55rem 0.9rem;
-    font-size: 0.72rem;
+    right: 10%;
+    bottom: 10%;
+    width: 10.5rem;
+    border-radius: 0.45rem;
+    background: var(--color-blush);
+    color: var(--color-ink);
+    padding: 0.75rem 0.85rem;
+    font-size: 0.68rem;
     font-weight: 900;
+    line-height: 1.35;
     text-transform: uppercase;
-    transform: translateX(-50%) rotate(-3deg);
+    transform: rotate(5deg);
   }
 
   .team-pass-ticket,
@@ -658,6 +540,19 @@ const socialLinks = [
 
   :global(.team-card-wrap) {
     perspective: none;
+    animation: team-card-arrive 700ms var(--ease-cartoon) both;
+  }
+
+  :global(.team-card-wrap:nth-child(2)) {
+    animation-delay: 80ms;
+  }
+
+  :global(.team-card-wrap:nth-child(3)) {
+    animation-delay: 160ms;
+  }
+
+  :global(.team-card-wrap:nth-child(4)) {
+    animation-delay: 240ms;
   }
 
   :global(.team-profile-card) {
@@ -667,11 +562,24 @@ const socialLinks = [
         0
       )
       rotate(var(--card-tilt, 0deg));
-    transition: transform 320ms var(--ease-cartoon);
+    transition:
+      transform 320ms var(--ease-cartoon),
+      border-radius 320ms var(--ease-cartoon);
+  }
+
+  :global(.team-card-wrap:hover .team-profile-card),
+  :global(.team-card-wrap:focus-within .team-profile-card) {
+    border-radius: 1.8rem 1.2rem 1.8rem 1.35rem;
+    transform: translate3d(
+        calc((var(--pointer-from-left, 0.5) - 0.5) * 14px),
+        calc((var(--pointer-from-top, 0.5) - 0.5) * 10px - 0.45rem),
+        0
+      )
+      rotate(var(--card-tilt, 0deg)) scale(1.015);
   }
 
   :global(.team-card-name) {
-    font-size: clamp(2.45rem, 4vw, 3.8rem);
+    font-size: clamp(1.8rem, 2.5vw, 2.5rem);
     overflow-wrap: anywhere;
     text-wrap: balance;
   }
@@ -690,7 +598,7 @@ const socialLinks = [
 
   :global(.team-card-wrap:hover .team-card-photo-frame),
   :global(.team-card-wrap:focus-within .team-card-photo-frame) {
-    transform: rotate(1.5deg) scale(0.98);
+    transform: rotate(1.5deg) scale(0.985);
   }
 
   :global(.team-card-wrap:hover .team-card-info),
@@ -704,12 +612,21 @@ const socialLinks = [
   }
 
   :global(.team-card-avatar) {
-    transform: scale(1.05)
+    transform: scale(1.04)
       translate(
         calc((var(--pointer-from-left, 0.5) - 0.5) * 14px),
         calc((var(--pointer-from-top, 0.5) - 0.5) * 10px)
       );
     transition: transform 300ms ease;
+  }
+
+  :global(.team-card-wrap:hover .team-card-avatar),
+  :global(.team-card-wrap:focus-within .team-card-avatar) {
+    transform: scale(1.12)
+      translate(
+        calc((var(--pointer-from-left, 0.5) - 0.5) * 14px),
+        calc((var(--pointer-from-top, 0.5) - 0.5) * 10px)
+      );
   }
 
   /* ---------- Process step cards ---------- */
@@ -744,206 +661,6 @@ const socialLinks = [
       background-color 260ms ease;
   }
 
-  .team-footer {
-    background: var(--color-citron);
-  }
-
-  .team-footer::before {
-    position: absolute;
-    inset: 6% auto auto -8%;
-    height: 20rem;
-    width: 32rem;
-    border-radius: 999px;
-    background: var(--color-mint);
-    content: "";
-    transform: rotate(-14deg);
-  }
-
-  .team-footer::after {
-    position: absolute;
-    right: -7%;
-    bottom: 9%;
-    height: 22rem;
-    width: 28rem;
-    border-radius: 38% 62% 62% 38% / 44% 34% 66% 56%;
-    background: var(--color-blush);
-    content: "";
-    transform: rotate(10deg);
-  }
-
-  .team-footer-stamp {
-    position: absolute;
-    z-index: 1;
-    display: grid;
-    place-items: center;
-    border-radius: 2rem;
-    font-family: var(--font-serif);
-    font-size: clamp(2.5rem, 7vw, 6rem);
-    line-height: 1;
-    text-transform: uppercase;
-    will-change: transform;
-  }
-
-  .team-footer-stamp-one {
-    top: 10%;
-    right: 12%;
-    height: 9rem;
-    width: 14rem;
-    background: var(--color-flame);
-    color: var(--color-cream);
-    transform: rotate(8deg);
-  }
-
-  .team-footer-stamp-two {
-    left: 7%;
-    bottom: 18%;
-    height: 8rem;
-    width: 18rem;
-    background: var(--color-mint);
-    color: var(--color-ink);
-    transform: rotate(-7deg);
-  }
-
-  .team-footer-egg {
-    position: absolute;
-    right: 7%;
-    top: 38%;
-    z-index: 1;
-    height: 13rem;
-    width: 16rem;
-    border-radius: 56% 44% 47% 53% / 58% 45% 55% 42%;
-    background: var(--color-cream);
-    transform: rotate(-14deg);
-    will-change: transform;
-  }
-
-  .team-footer-egg span {
-    position: absolute;
-    inset: 32% auto auto 38%;
-    height: 4.6rem;
-    width: 4.6rem;
-    border-radius: 999px;
-    background: var(--color-flame);
-  }
-
-  .team-footer-cta {
-    position: relative;
-    z-index: 12;
-    display: inline-flex;
-    min-width: 11rem;
-    min-height: 4.4rem;
-    align-items: center;
-    justify-content: center;
-    border-radius: 1.65rem;
-    padding: 1.25rem 2rem;
-    font-size: 1rem;
-    font-weight: 900;
-    line-height: 1;
-    text-align: center;
-    white-space: nowrap;
-    text-transform: uppercase;
-    transition:
-      transform 320ms var(--ease-cartoon),
-      background-color 240ms ease;
-  }
-
-  .team-footer-cta-primary {
-    background: var(--color-flame);
-    color: var(--color-cream);
-  }
-
-  .team-footer-cta:hover,
-  .team-footer-cta:focus-visible {
-    transform: translateY(-0.35rem) rotate(-2deg) scale(1.03);
-  }
-
-  .team-footer-link-grid {
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .team-footer-link {
-    display: grid;
-    min-height: 9.5rem;
-    align-content: space-between;
-    border-radius: 1.7rem;
-    background: var(--color-cream);
-    padding: 1.1rem;
-    transition:
-      transform 320ms var(--ease-cartoon),
-      background-color 240ms ease;
-  }
-
-  .team-footer-link span {
-    font-family: var(--font-serif);
-    font-size: clamp(1.9rem, 4vw, 3rem);
-    line-height: 0.9;
-  }
-
-  .team-footer-link small {
-    font-size: 0.82rem;
-    font-weight: 900;
-    text-transform: uppercase;
-  }
-
-  .team-footer-link-2,
-  .team-footer-link-3 {
-    background: var(--color-mint);
-  }
-
-  .team-footer-link:hover,
-  .team-footer-link:focus-visible {
-    background: var(--color-flame);
-    color: var(--color-cream);
-    transform: rotate(-2deg) scale(1.04);
-  }
-
-  .team-footer-socials {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.8rem;
-  }
-
-  .team-footer-socials a {
-    display: inline-flex;
-    min-height: 3.5rem;
-    align-items: center;
-    justify-content: center;
-    border-radius: 999px;
-    background: var(--color-cocoa);
-    color: var(--color-cream);
-    padding: 0.95rem 1.25rem;
-    font-size: 0.92rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    transition:
-      transform 300ms var(--ease-cartoon),
-      background-color 240ms ease;
-  }
-
-  .team-footer-socials a:hover,
-  .team-footer-socials a:focus-visible {
-    background: var(--color-flame);
-    transform: translateY(-0.3rem) rotate(3deg);
-  }
-
-  .team-footer-ribbon {
-    position: absolute;
-    right: -6rem;
-    bottom: 2rem;
-    z-index: 1;
-    width: max-content;
-    border-radius: 1.35rem;
-    background: var(--color-ink);
-    color: var(--color-cream);
-    padding: 1rem 1.4rem;
-    font-size: clamp(1rem, 2vw, 1.45rem);
-    font-weight: 900;
-    text-transform: uppercase;
-    transform: rotate(-3deg);
-  }
-
   @keyframes team-float {
     0%,
     100% {
@@ -956,47 +673,51 @@ const socialLinks = [
     }
   }
 
-  @keyframes team-egg-wobble {
-    0%,
-    100% {
-      transform: rotate(-8deg) translate(0, 0);
+  @keyframes team-card-arrive {
+    from {
+      opacity: 0;
+      transform: translateY(2rem) rotate(2deg);
     }
 
-    50% {
-      transform: rotate(4deg) translate(0.35rem, -0.25rem);
+    to {
+      opacity: 1;
+      transform: translateY(0) rotate(0);
     }
   }
 
   @media (max-width: 1023px) {
     .team-pass-stage {
-      min-height: 40rem;
+      position: absolute;
+      right: -7rem;
+      bottom: -9rem;
+      height: 32rem;
+      width: 32rem;
+      min-height: 0;
     }
   }
 
   @media (max-width: 767px) {
     .team-pass-stage {
-      display: grid;
-      min-height: auto;
-      padding-block: 2rem;
+      right: -4rem;
+      bottom: -1rem;
+      height: 18rem;
+      width: 18rem;
     }
 
-    .team-pass-ticket,
-    .team-orbit-card {
-      position: relative;
-      left: auto;
-      right: auto;
-      top: auto;
-      bottom: auto;
-      margin: 0.75rem 0;
-      width: auto;
-      --float-rotate: 0deg;
+    .team-hero-composition {
+      width: 18rem;
     }
 
-    .team-plate {
-      order: 2;
-      height: min(20rem, 82vw);
-      width: min(20rem, 82vw);
-      margin: 1.5rem auto;
+    :global(.team-hero-egg) {
+      --egg-width: 16rem;
+    }
+
+    .team-hero-tag {
+      right: 0;
+      bottom: 1%;
+      width: 8rem;
+      padding: 0.55rem 0.7rem;
+      font-size: 0.55rem;
     }
 
     :global(.team-profile-card) {
@@ -1007,14 +728,12 @@ const socialLinks = [
   @media (prefers-reduced-motion: reduce) {
     .team-pass-ticket,
     .team-orbit-card,
-    .team-plate,
-    .team-egg-white,
+    .team-hero-composition,
     .team-cloud,
     .team-hero-oval,
     .team-section-oval,
     .team-gallery-oval,
-    .team-footer-stamp,
-    .team-footer-egg {
+    :global(.team-card-wrap) {
       animation: none;
       transition: none;
     }
@@ -1043,9 +762,7 @@ const socialLinks = [
       }
     });
 
-    let raf = 0;
     const render = () => {
-      raf = 0;
       items.forEach((el) => {
         const rect = el.getBoundingClientRect();
         const depth = Number(el.getAttribute("data-parallax") || 0);
@@ -1062,8 +779,7 @@ const socialLinks = [
     };
 
     const requestRender = () => {
-      if (raf) return;
-      raf = window.requestAnimationFrame(render);
+      render();
     };
 
     const onMove = (event: PointerEvent) => {

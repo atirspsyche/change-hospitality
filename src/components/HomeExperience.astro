@@ -237,7 +237,7 @@
           });
         });
 
-        gsap.utils.toArray<HTMLElement>('.home-philosophy-shape, .home-impact-leaf, .home-jobs-shape, .home-testimonial-shape, .home-application-shape, .home-footer-shape, .home-footer-stamp').forEach((shape, index) => {
+        gsap.utils.toArray<HTMLElement>('.home-philosophy-shape, .home-impact-leaf, .home-jobs-shape, .home-testimonial-shape, .home-application-shape').forEach((shape, index) => {
           gsap.to(shape, {
             yPercent: index % 2 === 0 ? 24 : -20,
             ease: 'none',

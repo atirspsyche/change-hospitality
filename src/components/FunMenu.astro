@@ -6,21 +6,24 @@ export interface FunMenuLink {
 }
 
 interface Props {
-  links?: FunMenuLink[];
-  brand?: string;
-  cta?: { label: string; href: string };
+  sectionLinks?: FunMenuLink[];
+  menuButtonBackground?: string;
+  menuButtonBorderColor?: string;
+  menuButtonTextColor?: string;
 }
 
 const {
-  links = [
-    { label: 'Profiles', href: '#profiles', meta: 'The consultants' },
-    { label: 'Process', href: '#pass', meta: 'How the handoff works' },
-    { label: 'Gallery', href: '#gallery', meta: 'Frames of the work' },
-    { label: 'Jobs Portal', href: '/portal/', meta: 'Live opportunities' },
-    { label: 'Home', href: '/', meta: 'Back to the start' },
-  ],
-  brand = 'Change Hospitality',
+  sectionLinks = [],
+  menuButtonBackground = 'var(--color-flame)',
+  menuButtonBorderColor = 'var(--color-ink)',
+  menuButtonTextColor = 'var(--color-cream)',
 } = Astro.props;
+
+const siteLinks: FunMenuLink[] = [
+  { label: 'Home', href: '/', meta: 'Back to the start' },
+  { label: 'Team', href: '/team/', meta: 'Meet the consultants' },
+  { label: 'Recruit talent', href: '/recruit-talent/', meta: 'Build your team' },
+];
 
 // Rotating accent colours the big links flash through on hover.
 const flashColors = [
@@ -32,16 +35,19 @@ const flashColors = [
 ];
 ---
 
-<div class="funmenu" data-funmenu>
+<div
+  class="funmenu"
+  data-funmenu
+  style={`--menu-toggle-background: ${menuButtonBackground}; --menu-toggle-border: ${menuButtonBorderColor}; --menu-toggle-text: ${menuButtonTextColor};`}
+>
   <!-- Floating flat cartoon bar -->
   <div class="funmenu-bar" data-funmenu-bar>
-    <a class="funmenu-brand" href="/" aria-label={`${brand} home`}>
-      <span class="funmenu-brand-mark" aria-hidden="true">C</span>
-      <span class="funmenu-brand-word">{brand}</span>
+    <a class="funmenu-brand" href="/" aria-label="Change Hospitality home">
+      <img src="/change-hospitality-logo.png" alt="Change Hospitality" />
     </a>
 
-    <nav class="funmenu-inline" aria-label="Primary navigation">
-      {links.slice(0, 4).map((link) => (
+    <nav class="funmenu-inline" aria-label="Page sections">
+      {sectionLinks.map((link) => (
         <a class="funmenu-inline-link" href={link.href}>{link.label}</a>
       ))}
     </nav>
@@ -81,8 +87,8 @@ const flashColors = [
 
     <div class="funmenu-overlay-inner">
       <p class="funmenu-eyebrow">Change Hospitality / people first</p>
-      <nav class="funmenu-list" aria-label="Overlay navigation">
-        {links.map((link, index) => (
+      <nav class="funmenu-list" aria-label="Site navigation">
+        {siteLinks.map((link, index) => (
           <a
             class="funmenu-link"
             href={link.href}
@@ -137,32 +143,20 @@ const flashColors = [
   .funmenu-brand {
     display: flex;
     align-items: center;
-    gap: 0.65rem;
     justify-self: start;
-    color: var(--color-ink);
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
   }
 
-  .funmenu-brand-mark {
-    display: grid;
-    height: 2.4rem;
-    width: 2.4rem;
-    place-items: center;
-    color: var(--color-flame);
-    font-family: var(--font-serif);
-    font-size: 2rem;
+  .funmenu-brand img {
+    height: 3.6rem;
+    width: 8.5rem;
+    object-fit: contain;
+    object-position: left center;
     transition: transform 400ms var(--ease-cartoon);
   }
 
-  .funmenu-brand:hover .funmenu-brand-mark {
+  .funmenu-brand:hover img,
+  .funmenu-brand:focus-visible img {
     transform: rotate(-8deg) scale(1.05);
-  }
-
-  .funmenu-brand-word {
-    display: none;
-    font-size: 0.9rem;
   }
 
   .funmenu-inline {
@@ -235,11 +229,11 @@ const flashColors = [
     align-items: center;
     gap: 0.6rem;
     min-height: 3.6rem;
-    border: 2px solid var(--color-ink);
+    border: 2px solid var(--menu-toggle-border);
     border-radius: 1.2rem;
-    background: var(--color-flame);
+    background: var(--menu-toggle-background);
     padding: 0.9rem 1.25rem;
-    color: var(--color-cream);
+    color: var(--menu-toggle-text);
     font-size: 0.96rem;
     font-weight: 900;
     text-transform: uppercase;
@@ -253,7 +247,6 @@ const flashColors = [
   .funmenu-toggle:hover,
   .funmenu-toggle:focus-visible {
     transform: translateY(-3px) rotate(2deg) scale(1.04);
-    background: var(--color-cocoa);
   }
 
   .funmenu-toggle-bars {
@@ -538,10 +531,6 @@ const flashColors = [
 
   body.funmenu-open {
     overflow: hidden;
-  }
-
-  @media (min-width: 768px) {
-    .funmenu-brand-word { display: inline; }
   }
 
   @media (min-width: 1024px) {

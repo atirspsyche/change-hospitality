@@ -1,16 +1,11 @@
 const JOB_TYPES = new Set([
-  'FOH Casual',
-  'FOH Permanent',
-  'BOH Casual',
-  'BOH Permanent',
-]);
-
-const DEPARTMENTS = new Set([
-  'Sales',
-  'Marketing',
-  'Events',
-  'HR',
-  'Finance and Administration',
+  'Temporary Staffing - Front of House Casual',
+  'Temporary Staffing - Back of House Casual',
+  'Permanent Placements - Front of House',
+  'Permanent Placements - Back of House',
+  'Permanent Placements - Sales, Marketing & Events',
+  'Permanent Placements - HR',
+  'Permanent Placements - Finance and Administration',
 ]);
 
 const MAX_BODY_SIZE = 24_000;
@@ -67,7 +62,6 @@ export function validateRecruitmentBrief(payload) {
     numberPositions,
     jobTitle: cleanString(payload.jobTitle, 180),
     jobTypes: cleanList(payload.jobTypes, JOB_TYPES),
-    departments: cleanList(payload.departments, DEPARTMENTS),
     message: cleanString(payload.message, 2_000),
     consent: payload.consent === true,
     website: cleanString(payload.website, 200),
@@ -99,7 +93,6 @@ function renderRows(data) {
     ['Positions', String(data.numberPositions)],
     ['Job title', data.jobTitle],
     ['Staffing types', data.jobTypes.join(', ')],
-    ['Specialist departments', data.departments.join(', ') || 'None selected'],
     ['Additional detail', data.message || 'None provided'],
   ];
 
@@ -119,7 +112,6 @@ export function renderRecruitmentEmail(data, reference) {
     `Positions: ${data.numberPositions}`,
     `Job title: ${data.jobTitle}`,
     `Staffing types: ${data.jobTypes.join(', ')}`,
-    `Specialist departments: ${data.departments.join(', ') || 'None selected'}`,
     `Additional detail: ${data.message || 'None provided'}`,
   ].join('\n');
 

@@ -14,11 +14,11 @@ export interface TeamMember {
 
 export const teamMembers: TeamMember[] = [
   {
-    name: 'Sarah Hamilton',
+    name: 'Isha More',
     title: 'Founder & Managing Director',
     handle: 'change-leadership',
     status: 'Twenty years of hospitality relationships',
-    contactText: 'Meet Sarah',
+    contactText: 'Meet Isha',
     avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=900&q=85',
     miniAvatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=180&q=85',
     accent: 'pink',
