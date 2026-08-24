@@ -13,7 +13,6 @@ interface CircularGalleryProps {
   borderRadius?: number;
   font?: string;
   fontUrl?: string;
-  scrollSpeed?: number;
   scrollEase?: number;
 }
 
@@ -27,7 +26,6 @@ export default function CircularGallery({
   items,
   textColor = 'var(--color-cream)',
   borderColor = 'var(--color-blush)',
-  scrollSpeed = 1.8,
 }: CircularGalleryProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const dragState = useRef({ active: false, startX: 0, scrollLeft: 0 });
@@ -40,15 +38,7 @@ export default function CircularGallery({
 
     const startOffset = Math.max(0, (track.scrollWidth - track.clientWidth) / 4);
     track.scrollLeft = startOffset;
-
-    const onWheel = (event: WheelEvent) => {
-      event.preventDefault();
-      track.scrollBy({ left: event.deltaY * scrollSpeed, behavior: 'smooth' });
-    };
-
-    track.addEventListener('wheel', onWheel, { passive: false });
-    return () => track.removeEventListener('wheel', onWheel);
-  }, [scrollSpeed]);
+  }, []);
 
   const moveBy = (direction: -1 | 1) => {
     const track = trackRef.current;
@@ -95,7 +85,7 @@ export default function CircularGallery({
         ref={trackRef}
         role="region"
         tabIndex={0}
-        aria-label="Image gallery. Use buttons, drag, or horizontal scrolling to explore."
+        aria-label="Image gallery. Use buttons, drag, or a horizontal trackpad gesture to explore."
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}

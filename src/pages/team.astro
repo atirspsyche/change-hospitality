@@ -4,10 +4,19 @@ import ProfileCard from "../components/team/ProfileCard";
 import EggIllustration from "../components/EggIllustration.astro";
 import FunMenu from "../components/FunMenu.astro";
 import SiteFooter from "../components/SiteFooter.astro";
-import { teamGalleryItems, teamMembers, teamPassSteps } from "../data/team";
+import {
+  teamCategories,
+  teamGalleryItems,
+  teamMembers,
+  teamPassSteps,
+} from "../data/team";
 import BaseLayout from "../layouts/BaseLayout.astro";
 
 const showTeamPass = false;
+const teamGroups = teamCategories.map((category) => ({
+  ...category,
+  members: teamMembers.filter((member) => member.division === category.label),
+}));
 
 const teamSectionLinks = [
   { label: "Profiles", href: "#profiles", meta: "Meet the consultants" },
@@ -32,21 +41,21 @@ const teamSectionLinks = [
     data-team-page
   >
     <section
-      class="team-hero relative isolate h-svh overflow-hidden bg-cream px-5 pb-8 pt-20 md:px-10 md:pt-24"
+      class="team-hero relative isolate overflow-hidden bg-blush px-5 pb-8 pt-20 md:px-10 md:pt-24"
       aria-labelledby="team-title"
     >
-      <div
+      <!-- <div
         class="team-cloud team-cloud-1"
         data-parallax="18"
         aria-hidden="true"
       >
-      </div>
-      <div
+      </div> -->
+      <!-- <div
         class="team-cloud team-cloud-2"
         data-parallax="-26"
         aria-hidden="true"
       >
-      </div>
+      </div> -->
       <div
         class="team-hero-oval team-hero-oval-1"
         data-parallax="56"
@@ -59,33 +68,47 @@ const teamSectionLinks = [
         aria-hidden="true"
       >
       </div>
+      <!-- <div class="team-hero-confetti" aria-hidden="true">
+        <span data-parallax="12"></span>
+        <span data-parallax="-18"></span>
+        <span data-parallax="24"></span>
+        <span data-parallax="-14"></span>
+      </div> -->
 
       <div
-        class="relative z-10 mx-auto grid h-full max-w-7xl gap-6 lg:-translate-y-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center"
+        class="relative z-10 mx-auto grid h-full max-w-7xl gap-6 lg:-translate-y-4 lg:grid-cols-[1.02fr_0.98fr] lg:items-center"
       >
-        <div class="relative z-20 max-w-4xl">
-          <p
-            class="mb-6 w-fit -rotate-2 rounded-[1.35rem] bg-citron px-6 py-3 text-sm font-black uppercase tracking-wide text-ink"
-          >
-            Team profiles
+        <div class="team-hero-copy relative z-20 max-w-4xl">
+          <p class="team-hero-kicker mb-6">
+            <span>Team profiles</span>
           </p>
           <h1
             id="team-title"
-            class="font-serif text-6xl font-semibold leading-[0.92] text-ink md:text-8xl"
+            class="team-hero-title font-hero text-6xl font-semibold leading-[0.88] text-ink md:text-8xl"
           >
-            Meet the team.
+            Meet our<br />
+            <span>good eggs.</span>
           </h1>
           <p
-            class="mt-7 max-w-xl text-xl font-black leading-8 text-cocoa md:text-2xl md:leading-9"
+            class="team-hero-intro mt-7 max-w-xl text-xl font-black leading-8 text-cocoa md:text-2xl md:leading-9"
           >
-            A placement is not a click. It is cracked, checked, cooked, flipped
-            and served by people who know hospitality from the inside.
+            Hospitality people, through and through. We listen properly, know
+            the room and make introductions with a human read on both sides.
           </p>
+          <ul
+            class="team-hero-specialisms mt-7"
+            aria-label="Our specialist teams"
+          >
+            <li>Front of House</li>
+            <li>Back of House</li>
+            <li>Events &amp; Management</li>
+            <li>HR &amp; Finance</li>
+          </ul>
           <div class="mt-9 flex flex-col gap-3 sm:flex-row">
-            <a class="team-hero-button bg-flame text-cream" href="#profiles"
+            <a class="team-hero-button bg-cocoa text-cream" href="#profiles"
               >Meet the consultants</a
             >
-            <a class="team-hero-button bg-mint text-ink" href="#gallery"
+            <a class="team-hero-button bg-citron text-ink" href="#gallery"
               >See the storyboard</a
             >
           </div>
@@ -97,9 +120,14 @@ const teamSectionLinks = [
           aria-label="A fried egg representing people-first recruitment"
         >
           <div class="team-hero-composition" data-parallax="10">
+            <span class="team-hero-egg-backdrop" aria-hidden="true"></span>
             <EggIllustration class="team-hero-egg" />
-            <p class="team-hero-tag" aria-hidden="true">
-              People make the placement.
+            <!-- <p class="team-hero-tag">
+              Good people.<br />Great instincts.
+            </p> -->
+            <p class="team-hero-stamp">
+              <strong>20+</strong>
+              <span>years of people first</span>
             </p>
           </div>
         </div>
@@ -108,7 +136,7 @@ const teamSectionLinks = [
 
     <section
       id="profiles"
-      class="team-profiles-section relative overflow-hidden bg-paper px-5 py-18 md:px-10 md:py-24"
+      class="team-profiles-section relative overflow-hidden bg-cream px-5 py-18 md:px-10 md:py-24"
       aria-labelledby="profiles-title"
     >
       <div
@@ -137,33 +165,103 @@ const teamSectionLinks = [
               id="profiles-title"
               class="font-serif text-5xl font-semibold leading-none text-ink md:text-7xl"
             >
-              Cards with a pulse.
+              Meet our team.
             </h2>
             <p class="max-w-xl mt-5 text-lg font-bold leading-8 text-cocoa">
-              Four consultants, one close-knit team. Hover a card and each flat
-              storyboard panel comes to life.
+              A close-knit team of hospitality specialists, organised around the
+              people and roles they know best.
             </p>
           </div>
         </div>
 
-        <div class="team-card-grid grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="team-accordion" data-team-accordion>
           {
-            teamMembers.map((member) => (
-              <ProfileCard
-                client:visible
-                name={member.name}
-                title={member.title}
-                handle={member.handle}
-                status={member.status}
-                contactText={member.contactText}
-                avatarUrl={member.avatarUrl}
-                miniAvatarUrl={member.miniAvatarUrl}
-                note={member.note}
-                signal={member.signal}
-                division={member.division}
-                enableTilt={true}
-              />
-            ))
+            teamGroups.map((category, categoryIndex) => {
+              const isOpen = categoryIndex === 0;
+              const buttonId = `team-category-${category.id}`;
+              const panelId = `team-panel-${category.id}`;
+
+              return (
+                <article
+                  class:list={[
+                    "team-accordion-item",
+                    `team-accordion-${category.accent}`,
+                  ]}
+                  data-accordion-item
+                  data-open={isOpen ? "true" : "false"}
+                >
+                  <div
+                    class="team-accordion-shape"
+                    data-parallax={categoryIndex % 2 === 0 ? "16" : "-16"}
+                    aria-hidden="true"
+                  />
+                  <h3>
+                    <button
+                      id={buttonId}
+                      class="team-accordion-trigger"
+                      type="button"
+                      aria-expanded={isOpen ? "true" : "false"}
+                      aria-controls={panelId}
+                      data-accordion-trigger
+                    >
+                      <span class="team-accordion-heading">
+                        <span class="team-accordion-index">
+                          {String(categoryIndex + 1).padStart(2, "0")}
+                        </span>
+                        <span>
+                          <span class="team-accordion-title">
+                            {category.label}
+                          </span>
+                          <span class="team-accordion-description">
+                            {category.description}
+                          </span>
+                        </span>
+                      </span>
+                      <span class="team-accordion-meta" aria-hidden="true">
+                        <span class="team-accordion-count">
+                          {String(category.members.length).padStart(2, "0")}
+                        </span>
+                        <span class="team-accordion-toggle">
+                          <span />
+                          <span />
+                        </span>
+                      </span>
+                    </button>
+                  </h3>
+                  <div
+                    id={panelId}
+                    class="team-accordion-panel"
+                    role="region"
+                    aria-labelledby={buttonId}
+                    aria-hidden={isOpen ? "false" : "true"}
+                    data-accordion-panel
+                  >
+                    <div class="team-accordion-panel-inner">
+                      {category.members.length > 0 ? (
+                        <div class="team-card-grid grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-3">
+                          {category.members.map((member) => (
+                            <ProfileCard
+                              client:visible
+                              name={member.name}
+                              title={member.title}
+                              avatarUrl={member.avatarUrl}
+                              accent={member.accent}
+                              note={member.note}
+                              signal={member.signal}
+                              enableTilt={true}
+                            />
+                          ))}
+                        </div>
+                      ) : (
+                        <p class="team-accordion-empty">
+                          New profiles are joining this division soon.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </article>
+              );
+            })
           }
         </div>
       </div>
@@ -252,7 +350,6 @@ const teamSectionLinks = [
           items={teamGalleryItems}
           bend={2.2}
           scrollEase={0.04}
-          scrollSpeed={1.8}
           textColor="var(--color-cream)"
         />
       </div>
@@ -266,6 +363,7 @@ const teamSectionLinks = [
   /* ---------- Decorative flat shapes (parallax) ---------- */
   .team-cloud,
   .team-hero-oval,
+  .team-hero-confetti span,
   .team-section-oval,
   .team-gallery-oval {
     position: absolute;
@@ -280,17 +378,20 @@ const teamSectionLinks = [
   }
 
   .team-cloud-1 {
-    top: 12%;
-    left: 4%;
-    height: 5rem;
-    width: 12rem;
+    top: 8%;
+    left: -5rem;
+    height: 7rem;
+    width: 19rem;
+    transform: rotate(-8deg);
   }
 
   .team-cloud-2 {
-    top: 26%;
-    right: 6%;
-    height: 4rem;
-    width: 9rem;
+    top: 12%;
+    right: 30%;
+    height: 3.5rem;
+    width: 8rem;
+    background: var(--color-citron);
+    transform: rotate(18deg);
   }
 
   .team-hero-oval,
@@ -300,25 +401,145 @@ const teamSectionLinks = [
   }
 
   .team-hero-oval-1 {
-    top: 9%;
-    right: -15rem;
-    height: 24rem;
-    width: 38rem;
+    top: 3%;
+    right: -13rem;
+    height: 31rem;
+    width: 45rem;
     background: var(--color-mint);
     transform: rotate(-10deg);
   }
 
   .team-hero-oval-2 {
-    bottom: -9rem;
-    left: -16rem;
-    height: 26rem;
-    width: 42rem;
+    bottom: -16rem;
+    left: -12rem;
+    height: 27rem;
+    width: 48rem;
+    background: var(--color-paper);
+    transform: rotate(8deg);
+  }
+
+  .team-hero {
+    height: calc(100svh - 2rem);
+    min-height: 100vh;
     background: var(--color-blush);
-    transform: rotate(12deg);
+  }
+
+  /* .team-hero::after {
+    position: absolute;
+    right: 3%;
+    bottom: 5%;
+    z-index: 0;
+    height: 8rem;
+    width: 8rem;
+    /* border-radius: 50% 50% 46% 54% / 58% 42% 58% 42%; */
+    /* background: var(--color-citron); 
+    content: "";
+    transform: rotate(18deg);
+  } */
+
+  .team-hero-confetti span {
+    z-index: 1;
+    height: 1.1rem;
+    width: 4.8rem;
+    border-radius: 999px;
+    background: var(--color-cocoa);
+  }
+
+  .team-hero-confetti span:nth-child(1) {
+    top: 19%;
+    left: 39%;
+    transform: rotate(55deg);
+  }
+
+  .team-hero-confetti span:nth-child(2) {
+    top: 45%;
+    left: 3%;
+    width: 3.6rem;
+    background: var(--color-mint);
+    transform: rotate(-38deg);
+  }
+
+  .team-hero-confetti span:nth-child(3) {
+    right: 4%;
+    bottom: 36%;
+    width: 3.2rem;
+    background: var(--color-cream);
+    transform: rotate(68deg);
+  }
+
+  .team-hero-confetti span:nth-child(4) {
+    left: 43%;
+    bottom: 12%;
+    background: var(--color-citron);
+    transform: rotate(-18deg);
+  }
+
+  .team-hero-copy {
+    animation: team-hero-copy-in 800ms var(--ease-luxury) both;
+  }
+
+  .team-hero-kicker {
+    display: grid;
+    height: 5.6rem;
+    width: 7.2rem;
+    place-items: center;
+    border: 2px solid var(--color-ink);
+    border-radius: 55% 45% 49% 51% / 62% 44% 56% 38%;
+    background: var(--color-citron);
+    transform: rotate(-7deg);
+  }
+
+  .team-hero-kicker span {
+    max-width: 5rem;
+    font-size: 0.72rem;
+    font-weight: 900;
+    line-height: 1.15;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .team-hero-title span {
+    position: relative;
+    display: inline-block;
+    z-index: 1;
+  }
+
+  .team-hero-title span::before {
+    position: absolute;
+    inset: 12% -3% -2%;
+    z-index: -1;
+    /* border-radius: 48% 52% 45% 55% / 57% 42% 58% 43%; */
+    background: var(--color-cream);
+    content: "";
+    transform: rotate(-2deg);
+  }
+
+  .team-hero-specialisms {
+    display: flex;
+    max-width: 38rem;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+  }
+
+  .team-hero-specialisms li {
+    border: 2px solid var(--color-ink);
+    /* border-radius: 52% 48% 44% 56% / 55% 42% 58% 45%; */
+    background: var(--color-cream);
+    padding: 0.65rem 1rem;
+    font-size: 0.72rem;
+    font-weight: 900;
+    line-height: 1;
+    text-transform: uppercase;
+    transform: rotate(-1deg);
+  }
+
+  .team-hero-specialisms li:nth-child(even) {
+    background: var(--color-mint);
+    transform: rotate(1.5deg);
   }
 
   .team-profiles-section {
-    background: var(--color-paper);
+    background: var(--color-cream);
   }
 
   .team-pass-section {
@@ -396,30 +617,96 @@ const teamSectionLinks = [
     width: min(38rem, 100%);
     aspect-ratio: 1.28;
     place-items: center;
+    animation: team-hero-egg-in 900ms 120ms var(--ease-cartoon) both;
     transition: transform 220ms ease-out;
     will-change: transform;
   }
 
+  .team-hero-egg-backdrop {
+    position: absolute;
+    z-index: 0;
+    height: 92%;
+    width: 92%;
+    border: 3px solid var(--color-ink);
+    border-radius: 46% 54% 62% 38% / 56% 44% 56% 44%;
+    background: var(--color-citron);
+    transform: rotate(8deg);
+  }
+
   :global(.team-hero-egg) {
-    --egg-width: min(30rem, 74vw);
+    --egg-width: min(31rem, 74vw);
+    --egg-rotate: -12deg;
     z-index: 2;
   }
 
   .team-hero-tag {
     position: absolute;
     z-index: 3;
-    right: 10%;
-    bottom: 10%;
-    width: 10.5rem;
-    border-radius: 0.45rem;
-    background: var(--color-blush);
+    right: 3%;
+    bottom: 4%;
+    display: grid;
+    height: 8.4rem;
+    width: 10.6rem;
+    place-items: center;
+    border: 2px solid var(--color-ink);
+    border-radius: 54% 46% 48% 52% / 61% 42% 58% 39%;
+    background: var(--color-cream);
     color: var(--color-ink);
-    padding: 0.75rem 0.85rem;
-    font-size: 0.68rem;
+    padding: 1rem;
+    font-size: 0.78rem;
     font-weight: 900;
-    line-height: 1.35;
+    line-height: 1.2;
+    text-align: center;
     text-transform: uppercase;
-    transform: rotate(5deg);
+    transform: rotate(7deg);
+  }
+
+  .team-hero-tag::after {
+    position: absolute;
+    inset: 35% auto auto 42%;
+    z-index: -1;
+    height: 2.9rem;
+    width: 2.9rem;
+    border-radius: 999px;
+    background: var(--color-citron);
+    content: "";
+  }
+
+  .team-hero-stamp {
+    position: absolute;
+    z-index: 4;
+    top: 1%;
+    left: 2%;
+    display: grid;
+    height: 8rem;
+    width: 8rem;
+    align-content: center;
+    border: 3px solid var(--color-ink);
+    border-radius: 999px;
+    background: var(--color-cocoa);
+    color: var(--color-cream);
+    padding: 0.8rem;
+    text-align: center;
+    transform: rotate(-9deg);
+  }
+
+  .team-hero-stamp strong,
+  .team-hero-stamp span {
+    display: block;
+  }
+
+  .team-hero-stamp strong {
+    font-family: var(--font-serif);
+    font-size: 2.5rem;
+    line-height: 0.9;
+  }
+
+  .team-hero-stamp span {
+    margin-top: 0.35rem;
+    font-size: 0.58rem;
+    font-weight: 900;
+    line-height: 1.15;
+    text-transform: uppercase;
   }
 
   .team-pass-ticket,
@@ -527,9 +814,212 @@ const teamSectionLinks = [
     animation-delay: 1400ms;
   }
 
+  /* ---------- Team category accordion ---------- */
+  .team-accordion {
+    border-top: 3px solid var(--color-ink);
+  }
+
+  .team-accordion-item {
+    --accordion-accent: var(--color-cream);
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-bottom: 3px solid var(--color-ink);
+    /* background: var(--color-paper); */
+    transition: background-color 500ms var(--ease-luxury);
+  }
+
+  .team-accordion-citron {
+    --accordion-accent: var(--color-citron);
+  }
+
+  .team-accordion-mint {
+    --accordion-accent: var(--color-mint);
+  }
+
+  .team-accordion-flame {
+    --accordion-accent: var(--color-flame);
+  }
+
+  .team-accordion-blush {
+    --accordion-accent: var(--color-blush);
+  }
+
+  .team-accordion-item[data-open="true"] {
+    background: var(--accordion-accent);
+  }
+
+  .team-accordion-shape {
+    position: absolute;
+    z-index: -1;
+    top: -6.5rem;
+    right: 8%;
+    height: 10rem;
+    width: 22rem;
+    border-radius: 999px;
+    background: var(--accordion-accent);
+    pointer-events: none;
+    transform: rotate(-7deg);
+    transition:
+      transform 220ms ease-out,
+      top 500ms var(--ease-cartoon);
+    will-change: transform;
+  }
+
+  .team-accordion-item[data-open="true"] .team-accordion-shape {
+    top: -3rem;
+    background: var(--color-cream);
+  }
+
+  .team-accordion-trigger {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    border: 0;
+    background: transparent;
+    padding: 1.5rem 0.25rem;
+    color: var(--color-ink);
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .team-accordion-trigger:focus-visible {
+    outline-color: var(--color-ink);
+    outline-offset: -0.4rem;
+  }
+
+  .team-accordion-heading {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .team-accordion-heading > span:last-child {
+    min-width: 0;
+  }
+
+  .team-accordion-index {
+    display: grid;
+    height: 2.7rem;
+    width: 2.7rem;
+    flex: none;
+    place-items: center;
+    border: 2px solid var(--color-ink);
+    border-radius: 999px;
+    background: var(--color-cream);
+    font-size: 0.72rem;
+    font-weight: 900;
+  }
+
+  .team-accordion-title,
+  .team-accordion-description {
+    display: block;
+  }
+
+  .team-accordion-title {
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    /* font-weight: 600; */
+    line-height: 0.95;
+  }
+
+  .team-accordion-description {
+    margin-top: 0.55rem;
+    max-width: 42rem;
+    color: var(--color-cocoa);
+    font-size: 0.85rem;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+
+  .team-accordion-meta {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .team-accordion-count {
+    min-width: 2ch;
+    font-size: 0.75rem;
+    font-weight: 900;
+    font-family: Helvetica, Arial, sans-serif;
+  }
+
+  .team-accordion-toggle {
+    position: relative;
+    display: grid;
+    height: 3rem;
+    width: 3rem;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--color-ink);
+    transition: transform 420ms var(--ease-cartoon);
+  }
+
+  .team-accordion-toggle span {
+    position: absolute;
+    height: 2px;
+    width: 1rem;
+    background: var(--color-cream);
+  }
+
+  .team-accordion-toggle span:last-child {
+    transform: rotate(90deg);
+  }
+
+  .team-accordion-item[data-open="true"] .team-accordion-toggle {
+    transform: rotate(45deg);
+  }
+
+  .team-accordion-panel {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    transition:
+      grid-template-rows 560ms var(--ease-luxury),
+      visibility 560ms;
+  }
+
+  .team-accordion-item[data-open="true"] .team-accordion-panel {
+    grid-template-rows: 1fr;
+    visibility: visible;
+  }
+
+  .team-accordion-panel-inner {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .team-card-grid,
+  .team-accordion-empty {
+    margin: 0 0.25rem 2.5rem;
+  }
+
+  .team-accordion-empty {
+    border-left: 3px solid var(--color-ink);
+    padding: 1rem 1.25rem;
+    color: var(--color-cocoa);
+    font-size: 1rem;
+    font-weight: 900;
+  }
+
   /* ---------- Equal-height profile card grid ---------- */
   .team-card-grid {
     align-items: stretch;
+  }
+
+  :global(.team-card-grid astro-island) {
+    display: block;
+    width: 100%;
+    min-width: 0;
   }
 
   @media (min-width: 768px) {
@@ -540,6 +1030,10 @@ const teamSectionLinks = [
 
   :global(.team-card-wrap) {
     perspective: none;
+    animation: none;
+  }
+
+  .team-accordion-item[data-open="true"] :global(.team-card-wrap) {
     animation: team-card-arrive 700ms var(--ease-cartoon) both;
   }
 
@@ -584,16 +1078,10 @@ const teamSectionLinks = [
     text-wrap: balance;
   }
 
-  :global(.team-card-mark),
   :global(.team-card-photo-frame),
   :global(.team-card-info) {
     transform: translate3d(0, 0, 0);
     transition: transform 320ms var(--ease-cartoon);
-  }
-
-  :global(.team-card-wrap:hover .team-card-mark),
-  :global(.team-card-wrap:focus-within .team-card-mark) {
-    transform: translate3d(-0.35rem, 0.2rem, 0) rotate(-8deg);
   }
 
   :global(.team-card-wrap:hover .team-card-photo-frame),
@@ -685,7 +1173,35 @@ const teamSectionLinks = [
     }
   }
 
+  @keyframes team-hero-copy-in {
+    from {
+      opacity: 0;
+      transform: translateY(1.5rem);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes team-hero-egg-in {
+    from {
+      opacity: 0;
+      transform: translateY(2rem) rotate(4deg) scale(0.92);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) rotate(0) scale(1);
+    }
+  }
+
   @media (max-width: 1023px) {
+    .team-hero-copy {
+      max-width: 40rem;
+    }
+
     .team-pass-stage {
       position: absolute;
       right: -7rem;
@@ -696,32 +1212,175 @@ const teamSectionLinks = [
     }
   }
 
+  @media (min-width: 768px) {
+    .team-accordion-trigger {
+      padding: 1.8rem 0.5rem;
+    }
+
+    .team-accordion-heading {
+      gap: 1.4rem;
+    }
+
+    .team-accordion-index {
+      height: 3.25rem;
+      width: 3.25rem;
+    }
+
+    .team-accordion-title {
+      font-size: 3rem;
+    }
+
+    .team-accordion-description {
+      font-size: 1rem;
+    }
+
+    .team-accordion-toggle {
+      height: 3.5rem;
+      width: 3.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .team-accordion-title {
+      font-size: 3.75rem;
+    }
+  }
+
   @media (max-width: 767px) {
+    .team-hero {
+      height: calc(100svh - 1.25rem);
+      min-height: 46rem;
+      padding-top: 5rem;
+    }
+
+    .team-cloud-1 {
+      top: 5%;
+      left: -8rem;
+    }
+
+    .team-cloud-2,
+    .team-hero-confetti span:nth-child(1),
+    .team-hero-confetti span:nth-child(4) {
+      display: none;
+    }
+
+    .team-hero-oval-1 {
+      top: auto;
+      right: -13rem;
+      bottom: -2rem;
+      height: 22rem;
+      width: 31rem;
+    }
+
+    .team-hero-oval-2 {
+      bottom: -19rem;
+      left: -11rem;
+      height: 24rem;
+      width: 31rem;
+    }
+
+    .team-hero-kicker {
+      height: 4.5rem;
+      width: 5.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .team-hero-kicker span {
+      font-size: 0.6rem;
+    }
+
+    .team-hero-title {
+      font-size: 3.55rem;
+    }
+
+    .team-hero-intro {
+      max-width: 21rem;
+      margin-top: 1rem;
+      font-size: 1rem;
+      line-height: 1.45;
+    }
+
+    .team-hero-specialisms {
+      max-width: 19rem;
+      margin-top: 1rem;
+      gap: 0.35rem;
+    }
+
+    .team-hero-specialisms li {
+      padding: 0.5rem 0.72rem;
+      font-size: 0.58rem;
+    }
+
+    .team-hero-copy > div:last-child {
+      max-width: 12rem;
+      margin-top: 1.25rem;
+    }
+
+    .team-hero-button {
+      min-height: 3.25rem;
+      padding: 0.8rem 1rem;
+      font-size: 0.72rem;
+    }
+
     .team-pass-stage {
-      right: -4rem;
-      bottom: -1rem;
-      height: 18rem;
-      width: 18rem;
+      right: -5rem;
+      bottom: -3rem;
+      height: 17rem;
+      width: 17rem;
     }
 
     .team-hero-composition {
-      width: 18rem;
+      width: 17rem;
     }
 
     :global(.team-hero-egg) {
-      --egg-width: 16rem;
+      --egg-width: 13.5rem;
     }
 
     .team-hero-tag {
-      right: 0;
-      bottom: 1%;
-      width: 8rem;
-      padding: 0.55rem 0.7rem;
-      font-size: 0.55rem;
+      right: 2.75rem;
+      bottom: 1.75rem;
+      height: 5.6rem;
+      width: 6.8rem;
+      padding: 0.65rem;
+      font-size: 0.52rem;
+    }
+
+    .team-hero-stamp {
+      top: -2%;
+      left: 32%;
+      height: 5.4rem;
+      width: 5.4rem;
+      padding: 0.55rem;
+    }
+
+    .team-hero-stamp strong {
+      font-size: 1.7rem;
+    }
+
+    .team-hero-stamp span {
+      font-size: 0.45rem;
     }
 
     :global(.team-profile-card) {
       transform: none;
+    }
+
+    .team-accordion-description {
+      max-width: 15rem;
+    }
+
+    .team-accordion-title {
+      font-size: 1.65rem;
+      overflow-wrap: normal;
+    }
+
+    .team-accordion-shape {
+      right: -13rem;
+    }
+
+    .team-accordion-count {
+      display: none;
     }
   }
 
@@ -737,10 +1396,86 @@ const teamSectionLinks = [
       animation: none;
       transition: none;
     }
+
+    .team-hero-copy,
+    .team-hero-composition {
+      animation: none;
+    }
+
+    .team-accordion-item,
+    .team-accordion-shape,
+    .team-accordion-toggle,
+    .team-accordion-panel {
+      transition: none;
+    }
   }
 </style>
 
 <script>
+  function initTeamAccordion() {
+    document
+      .querySelectorAll<HTMLElement>("[data-team-accordion]")
+      .forEach((accordion) => {
+        if (accordion.dataset.accordionReady === "true") return;
+        accordion.dataset.accordionReady = "true";
+
+        const items = Array.from(
+          accordion.querySelectorAll<HTMLElement>("[data-accordion-item]"),
+        );
+        const triggers = items
+          .map((item) =>
+            item.querySelector<HTMLButtonElement>("[data-accordion-trigger]"),
+          )
+          .filter((trigger): trigger is HTMLButtonElement => Boolean(trigger));
+
+        const setOpen = (item: HTMLElement, open: boolean) => {
+          const trigger = item.querySelector<HTMLButtonElement>(
+            "[data-accordion-trigger]",
+          );
+          const panel = item.querySelector<HTMLElement>(
+            "[data-accordion-panel]",
+          );
+          if (!trigger || !panel) return;
+
+          item.dataset.open = String(open);
+          trigger.setAttribute("aria-expanded", String(open));
+          panel.setAttribute("aria-hidden", String(!open));
+          panel.toggleAttribute("inert", !open);
+        };
+
+        items.forEach((item, index) => {
+          const trigger = triggers[index];
+          if (!trigger) return;
+          setOpen(item, item.dataset.open === "true");
+
+          trigger.addEventListener("click", () => {
+            const shouldOpen = item.dataset.open !== "true";
+            items.forEach((candidate) =>
+              setOpen(candidate, shouldOpen && candidate === item),
+            );
+          });
+
+          trigger.addEventListener("keydown", (event) => {
+            const keys = ["ArrowDown", "ArrowUp", "Home", "End"];
+            if (!keys.includes(event.key)) return;
+            event.preventDefault();
+
+            let targetIndex = index;
+            if (event.key === "ArrowDown") {
+              targetIndex = (index + 1) % triggers.length;
+            } else if (event.key === "ArrowUp") {
+              targetIndex = (index - 1 + triggers.length) % triggers.length;
+            } else if (event.key === "Home") {
+              targetIndex = 0;
+            } else if (event.key === "End") {
+              targetIndex = triggers.length - 1;
+            }
+            triggers[targetIndex]?.focus();
+          });
+        });
+      });
+  }
+
   function initTeamParallax() {
     const page = document.querySelector<HTMLElement>("[data-team-page]");
     if (!page || page.dataset.parallaxReady === "true") return;
@@ -799,6 +1534,8 @@ const teamSectionLinks = [
     requestRender();
   }
 
+  initTeamAccordion();
   initTeamParallax();
+  document.addEventListener("astro:page-load", initTeamAccordion);
   document.addEventListener("astro:page-load", initTeamParallax);
 </script>

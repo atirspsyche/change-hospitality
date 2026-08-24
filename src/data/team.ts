@@ -1,39 +1,65 @@
 export interface TeamMember {
   name: string;
   title: string;
-  handle: string;
-  status: string;
-  contactText: string;
   avatarUrl?: string;
-  miniAvatarUrl?: string;
   accent: 'pink' | 'blue' | 'lime' | 'pale';
   note: string;
   signal: string;
-  division: string;
+  division: TeamDivision;
 }
+
+export type TeamDivision =
+  | 'Front of House'
+  | 'Back of House'
+  | 'Events and Management'
+  | 'HR & Finance';
+
+export const teamCategories: Array<{
+  id: string;
+  label: TeamDivision;
+  description: string;
+  accent: 'flame' | 'mint' | 'citron' | 'blush';
+}> = [
+  {
+    id: 'front-of-house',
+    label: 'Front of House',
+    description: 'Guest experience, restaurants, clubs and service teams.',
+    accent: 'citron',
+  },
+  {
+    id: 'back-of-house',
+    label: 'Back of House',
+    description: 'Chefs, kitchens, production and every role behind the pass.',
+    accent: 'mint',
+  },
+  {
+    id: 'events-and-management',
+    label: 'Events and Management',
+    description: 'Venues, leadership, launches and commercial hospitality.',
+    accent: 'flame',
+  },
+  {
+    id: 'hr-and-finance',
+    label: 'HR & Finance',
+    description: 'People, culture, operations and hospitality finance.',
+    accent: 'blush',
+  },
+];
 
 export const teamMembers: TeamMember[] = [
   {
     name: 'Isha More',
     title: 'Founder & Managing Director',
-    handle: 'change-leadership',
-    status: 'Twenty years of hospitality relationships',
-    contactText: 'Meet Isha',
     avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=900&q=85',
-    miniAvatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=180&q=85',
     accent: 'pink',
     note: 'Keeps the agency close to the people, not just the roles.',
     signal: 'Founder energy / calm brief control',
-    division: 'Leadership',
+    division: 'Events and Management',
   },
   {
     name: 'Amelia Grant',
     title: 'Front of House Consultant',
-    handle: 'front-of-house',
-    status: 'Restaurants, clubs and guest experience teams',
-    contactText: 'Meet Amelia',
     avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=900&q=85',
-    miniAvatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=180&q=85',
     accent: 'blue',
     note: 'Looks for the small service instincts that make a room feel calm.',
     signal: 'Guest experience / polished pace',
@@ -42,11 +68,7 @@ export const teamMembers: TeamMember[] = [
   {
     name: 'Marcus Reed',
     title: 'Back of House Consultant',
-    handle: 'kitchen-desk',
-    status: 'Chefs, kitchen teams and production roles',
-    contactText: 'Meet Marcus',
     avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=900&q=85',
-    miniAvatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=180&q=85',
     accent: 'blue',
     note: 'Understands pressure, pace and the craft behind the pass.',
     signal: 'Kitchen pressure / sharp read',
@@ -55,15 +77,11 @@ export const teamMembers: TeamMember[] = [
   {
     name: 'Priya Shah',
     title: 'Events & Commercial Consultant',
-    handle: 'events-commercial',
-    status: 'Venues, launches and commercial hospitality',
-    contactText: 'Meet Priya',
     avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=900&q=85',
-    miniAvatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=180&q=85',
     accent: 'pink',
     note: 'Matches high-energy briefs with people who keep the moment composed.',
     signal: 'Event tempo / commercial instinct',
-    division: 'Events & Commercial',
+    division: 'Events and Management',
   },
 ];
 

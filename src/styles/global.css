@@ -1,7 +1,6 @@
 @config "../../tailwind.config.mjs";
 @import "tailwindcss";
 
-/* Temporarily disabled while Cherry Cream Soda is being tested.
 @font-face {
   font-family: "Clash Display";
   src: url("/fonts/ClashDisplay/WEB/fonts/ClashDisplay-Variable.woff2") format("woff2");
@@ -9,7 +8,6 @@
   font-weight: 200 700;
   font-display: swap;
 }
-*/
 
 @font-face {
   font-family: "Cherry Cream Soda";
@@ -79,8 +77,9 @@
   --color-mist: #B8C3CA;
   --color-paper: #F4F1EF;
   --color-ink: #1D1D1B;
-  --font-serif: "Cherry Cream Soda", Helvetica, Arial, sans-serif;
-  --font-display: "Cherry Cream Soda", Helvetica, Arial, sans-serif;
+  --font-serif: "Clash Display", Helvetica, Arial, sans-serif;
+  --font-display: "Clash Display", Helvetica, Arial, sans-serif;
+  --font-hero: "Cherry Cream Soda", "Clash Display", Helvetica, Arial, sans-serif;
   --font-sans: Helvetica, Arial, sans-serif;
 }
 
@@ -142,6 +141,10 @@ h6 {
 
 .font-display {
   font-family: var(--font-display);
+}
+
+.font-hero {
+  font-family: var(--font-hero);
 }
 
 body::selection {
