@@ -397,7 +397,7 @@ export default function HomeStoryHero() {
         };
         image.onerror = () => {
           URL.revokeObjectURL(url);
-          reject(new Error("The browser could not decode an AVIF story frame."));
+          reject(new Error("The browser could not decode a story frame."));
         };
         image.src = url;
       });

@@ -46,17 +46,17 @@ export interface StoryBeat {
 }
 
 export const homeStory = {
-  frameCount: 302,
-  framePadding: 3,
-  extension: "avif",
-  scrollScreens: 17,
+  frameCount: 340,
+  framePadding: 4,
+  extension: "webp",
+  scrollScreens: 20,
   initialChunkSize: 24,
   streamChunkSize: 16,
-  desktopFramePrefix: "/story_sequence/frame_",
+  desktopFramePrefix: "/story_sequence/",
   mobileFramePrefix: "/story_sequence/mobile/frame_",
   mobileFramesAvailable: false,
   posterFrame: 1,
-  fallbackFrame: 302,
+  fallbackFrame: 340,
   beats: [
     {
       id: "carton-open-brand",
@@ -75,8 +75,8 @@ export const homeStory = {
     {
       id: "egg-in-hand",
       label: "Egg held on the right",
-      frames: [41, 65],
-      holdFrame: 65,
+      frames: [41, 80],
+      holdFrame: 80,
       travelWeight: 0.55,
       holdWeight: 1.15,
       exitWeight: 0,
@@ -91,8 +91,8 @@ export const homeStory = {
     {
       id: "egg-close-up",
       label: "Clean egg close-up",
-      frames: [66, 103],
-      holdFrame: 103,
+      frames: [81, 120],
+      holdFrame: 120,
       travelWeight: 0.75,
       holdWeight: 1.35,
       exitWeight: 0,
@@ -107,12 +107,12 @@ export const homeStory = {
     {
       id: "egg-transition",
       label: "Egg transition with copy on both sides",
-      frames: [104, 175],
+      frames: [121, 194],
       holdFrame: 132,
       travelWeight: 0.55,
       holdWeight: 0,
       exitWeight: 1,
-      overlayFrames: [132, 175],
+      overlayFrames: [132, 194],
       overlay: {
         layout: "split",
         columns: [
@@ -134,8 +134,8 @@ export const homeStory = {
     {
       id: "egg-four-ways",
       label: "Egg with copy on all four sides",
-      frames: [176, 185],
-      holdFrame: 185,
+      frames: [195, 225],
+      holdFrame: 225,
       travelWeight: 0.35,
       holdWeight: 1.4,
       exitWeight: 0,
@@ -160,8 +160,8 @@ export const homeStory = {
     {
       id: "plate-center",
       label: "Plate in the middle",
-      frames: [186, 250],
-      holdFrame: 250,
+      frames: [226, 267],
+      holdFrame: 267,
       travelWeight: 1.1,
       holdWeight: 1.3,
       exitWeight: 0,
@@ -184,8 +184,8 @@ export const homeStory = {
     {
       id: "plate-left",
       label: "Plate on the left",
-      frames: [251, 280],
-      holdFrame: 280,
+      frames: [268, 300],
+      holdFrame: 300,
       travelWeight: 0.65,
       holdWeight: 1.3,
       exitWeight: 0,
@@ -200,8 +200,8 @@ export const homeStory = {
     {
       id: "final-plate",
       label: "Final plated breakfast",
-      frames: [281, 302],
-      holdFrame: 302,
+      frames: [300, 340],
+      holdFrame: 340,
       travelWeight: 0.5,
       holdWeight: 1.5,
       exitWeight: 0,
