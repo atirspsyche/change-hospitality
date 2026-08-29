@@ -7,7 +7,11 @@ export default async function handler(request, response) {
   const reference = `CH-${Date.now().toString().slice(-6)}`;
 
   /*
-   * Future production email flow:
+    * The job application form sends multipart fields including jobId, jobSlug,
+    * role, jobLocation and consultantId. This mock acknowledges the request but
+    * intentionally does not parse or retain candidate data or CV contents.
+    *
+    * Future production email flow:
    * 1. Parse multipart form data with a package such as busboy or formidable.
    * 2. Validate required candidate fields and file type/size on the server.
    * 3. Upload the resume to private storage or attach it to the email.
@@ -27,6 +31,6 @@ export default async function handler(request, response) {
   return response.status(202).json({
     ok: true,
     reference,
-    message: 'Candidate profile received in mock mode.',
+    message: 'Application received in mock mode.',
   });
 }

@@ -1,0 +1,106 @@
+---
+import FunMenu from '../../components/FunMenu.astro';
+import JobApplicationForm from '../../components/JobApplicationForm.astro';
+import JobDetail from '../../components/JobDetail.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { jobs, type JobPosting } from '../../data/jobs';
+import { getTeamMemberById, type TeamMember } from '../../data/team';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+interface Props {
+  job: JobPosting;
+  consultant: TeamMember;
+}
+
+export function getStaticPaths() {
+  return jobs.map((job) => {
+    const consultant = getTeamMemberById(job.consultant._ref);
+    if (!consultant) {
+      throw new Error(`Consultant ${job.consultant._ref} was not found for ${job.slug.current}`);
+    }
+
+    return {
+      params: { slug: job.slug.current },
+      props: { job, consultant },
+    };
+  });
+}
+
+const { job, consultant } = Astro.props;
+const employmentType = {
+  Permanent: 'FULL_TIME',
+  Temporary: 'TEMPORARY',
+  Contract: 'CONTRACTOR',
+}[job.jobType];
+const salaryValue = {
+  '@type': 'QuantitativeValue',
+  ...(job.salary.min && { minValue: job.salary.min }),
+  ...(job.salary.max && { maxValue: job.salary.max }),
+  unitText: job.salary.unit === 'hour' ? 'HOUR' : 'YEAR',
+};
+const jobSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'JobPosting',
+  title: job.role,
+  description: [job.overview, job.roleDetails, ...job.responsibilities].join(' '),
+  identifier: {
+    '@type': 'PropertyValue',
+    name: 'Change Hospitality',
+    value: job.jobId,
+  },
+  datePosted: job.publishedAt,
+  employmentType,
+  hiringOrganization: {
+    '@type': 'Organization',
+    name: 'Change Hospitality',
+    sameAs: 'https://www.changehospitality.co.uk',
+    logo: 'https://www.changehospitality.co.uk/CH_LOGO.svg',
+  },
+  jobLocation: {
+    '@type': 'Place',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: job.location,
+      addressCountry: 'GB',
+    },
+  },
+  baseSalary: {
+    '@type': 'MonetaryAmount',
+    currency: job.salary.currency,
+    value: salaryValue,
+  },
+};
+
+const sectionLinks = [
+  { label: 'Job details', href: '#job-detail-title', meta: job.role },
+  { label: 'Apply', href: '#job-application', meta: 'Send your application' },
+];
+---
+
+<BaseLayout
+  title={`${job.role} | Change Hospitality Jobs`}
+  description={`${job.role} in ${job.location}. ${job.description}`}
+  image={consultant.avatarUrl}
+  structuredData={jobSchema}
+>
+  <FunMenu
+    sectionLinks={sectionLinks}
+    menuButtonBackground="var(--color-cocoa)"
+    menuButtonBorderColor="var(--color-ink)"
+    menuButtonTextColor="var(--color-cream)"
+  />
+  <main class="job-page">
+    <JobDetail {job} {consultant} />
+    <JobApplicationForm {job} {consultant} />
+    <SiteFooter />
+  </main>
+</BaseLayout>
+
+<style>
+  .job-page {
+    min-height: 100vh;
+    overflow: clip;
+    background: var(--color-blush);
+    color: var(--color-ink);
+  }
+</style>

@@ -1,19 +1,33 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import '../styles/global.css';
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
+  structuredData?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 const {
   title = 'Change Hospitality | People-First Hospitality Recruitment',
   description = 'Premium hospitality recruitment for front of house, back of house, events and commercial teams, built on 20 years of trusted relationships.',
   image = 'https://images.unsplash.com/photo-1559329007-40df8a9345d8?auto=format&fit=crop&w=1600&q=85',
+  structuredData = [],
 } = Astro.props;
 
 const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : Astro.url.href;
+const agencySchema = {
+  '@context': 'https://schema.org',
+  '@type': 'EmploymentAgency',
+  name: 'Change Hospitality',
+  url: 'https://www.changehospitality.co.uk',
+  areaServed: 'United Kingdom',
+  foundingDate: '2004',
+  description,
+  knowsAbout: ['Hospitality recruitment', 'Front of house staffing', 'Back of house staffing', 'Events recruitment'],
+};
+const pageSchemas = Array.isArray(structuredData) ? structuredData : [structuredData];
 ---
 
 <!doctype html>
@@ -37,16 +51,10 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString(
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={image} />
-    <script type="application/ld+json" set:html={JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'EmploymentAgency',
-      name: 'Change Hospitality',
-      url: 'https://www.changehospitality.co.uk',
-      areaServed: 'United Kingdom',
-      foundingDate: '2004',
-      description,
-      knowsAbout: ['Hospitality recruitment', 'Front of house staffing', 'Back of house staffing', 'Events recruitment'],
-    })}></script>
+    {[agencySchema, ...pageSchemas].map((schema) => (
+      <script type="application/ld+json" set:html={JSON.stringify(schema)}></script>
+    ))}
+    <ClientRouter />
   </head>
   <body class="bg-obsidian text-off-white antialiased">
     <slot />

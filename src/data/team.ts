@@ -1,6 +1,10 @@
 export interface TeamMember {
+  _id: string;
+  _type: 'consultant';
   name: string;
   title: string;
+  email: string;
+  phone: string;
   avatarUrl?: string;
   accent: 'pink' | 'blue' | 'lime' | 'pale';
   note: string;
@@ -48,8 +52,12 @@ export const teamCategories: Array<{
 
 export const teamMembers: TeamMember[] = [
   {
+    _id: 'consultant-isha-more',
+    _type: 'consultant',
     name: 'Isha More',
     title: 'Founder & Managing Director',
+    email: 'isha@changehospitality.co.uk',
+    phone: '020 8050 6312',
     avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=900&q=85',
     accent: 'pink',
     note: 'Keeps the agency close to the people, not just the roles.',
@@ -57,8 +65,12 @@ export const teamMembers: TeamMember[] = [
     division: 'Events and Management',
   },
   {
+    _id: 'consultant-amelia-grant',
+    _type: 'consultant',
     name: 'Amelia Grant',
     title: 'Front of House Consultant',
+    email: 'amelia@changehospitality.co.uk',
+    phone: '020 8050 6312',
     avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=900&q=85',
     accent: 'blue',
     note: 'Looks for the small service instincts that make a room feel calm.',
@@ -66,8 +78,12 @@ export const teamMembers: TeamMember[] = [
     division: 'Front of House',
   },
   {
+    _id: 'consultant-marcus-reed',
+    _type: 'consultant',
     name: 'Marcus Reed',
     title: 'Back of House Consultant',
+    email: 'marcus@changehospitality.co.uk',
+    phone: '020 8050 6312',
     avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=900&q=85',
     accent: 'blue',
     note: 'Understands pressure, pace and the craft behind the pass.',
@@ -75,8 +91,12 @@ export const teamMembers: TeamMember[] = [
     division: 'Back of House',
   },
   {
+    _id: 'consultant-priya-shah',
+    _type: 'consultant',
     name: 'Priya Shah',
     title: 'Events & Commercial Consultant',
+    email: 'priya@changehospitality.co.uk',
+    phone: '020 8050 6312',
     avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=900&q=85',
     accent: 'pink',
     note: 'Matches high-energy briefs with people who keep the moment composed.',
@@ -84,6 +104,9 @@ export const teamMembers: TeamMember[] = [
     division: 'Events and Management',
   },
 ];
+
+export const getTeamMemberById = (id: string) =>
+  teamMembers.find((member) => member._id === id);
 
 export const teamPassSteps = [
   { label: '01 / Listen', copy: 'The brief is heard properly before anyone is moved.' },

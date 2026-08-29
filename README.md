@@ -9,6 +9,7 @@ Premium Astro website concept for Change Hospitality, focused on editorial luxur
 - GSAP + ScrollTrigger effects wrapped in responsive `matchMedia()` rules, with simplified mobile motion and reduced-motion support.
 - Lenis smooth scrolling for desktop polish.
 - Mock candidate profile upload flow with resume validation and a Vercel `/api/apply` function stub ready for real email integration.
+- Static job listings and shareable `/jobs/[slug]/` detail routes with assigned consultant contacts and role-specific stepped applications.
 - Reusable recruiter staffing brief with accessible multi-select controls, responsive motion and a production Resend email function.
 - SEO metadata, Open Graph tags, JSON-LD and sitemap generation.
 
@@ -23,9 +24,17 @@ Premium Astro website concept for Change Hospitality, focused on editorial luxur
 
 ## Mock Application Flow
 
-The candidate form posts to `/api/apply`. In local Astro development, the client gracefully falls back to a mock response if that Vercel function is unavailable. On Vercel, `api/apply.js` returns a mock success response and includes commented production email logic for parsing multipart data, validating the resume and sending the profile to the recruitment inbox.
+The candidate forms post to `/api/apply`. Role-specific applications include `jobId`, `jobSlug`, `role`, `position`, `jobLocation` and `consultantId` alongside the candidate fields and CV. In local Astro development, the client uses a mock response because the Astro server does not execute root-level Vercel functions. On Vercel, `api/apply.js` returns a mock success response and includes commented production email logic for parsing multipart data, validating the resume and routing the application to the assigned consultant.
+
+Job content currently comes from typed, Sanity-shaped dummy documents in `src/data/jobs.ts`. Each document generates a static `/jobs/[slug]/` page. The later CMS phase will replace this source with Sanity queries and mount Sanity Studio at `/admin` without changing the page-level data contract.
 
 Before going live, wire the function to a real email provider and move inbox credentials into Vercel environment variables.
+
+The mock handler contract can be checked with:
+
+```sh
+node --test api/apply.test.js
+```
 
 ## Recruit Talent Email Flow
 

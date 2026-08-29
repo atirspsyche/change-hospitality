@@ -1,0 +1,474 @@
+---
+import type { JobPosting } from '../data/jobs';
+import type { TeamMember } from '../data/team';
+
+interface Props {
+  job: JobPosting;
+  consultant: TeamMember;
+}
+
+const { job, consultant } = Astro.props;
+const phoneHref = `tel:${consultant.phone.replace(/[^+\d]/g, '')}`;
+---
+
+<section class="job-detail" data-job-detail>
+  <div class="job-detail-inner">
+    <a class="job-detail-back" href="/jobs/#jobs" data-job-back aria-label="Back to all jobs">
+      <span aria-hidden="true">&#8592;</span>
+      <span>All jobs</span>
+    </a>
+
+    <article
+      class="job-detail-shell"
+      transition:name={`job-shell-${job.slug.current}`}
+      aria-labelledby="job-detail-title"
+    >
+      <header class="job-detail-hero">
+        <div class="job-detail-heading">
+          <div class="job-detail-eyebrow">
+            <span>{job.position}</span>
+            {job.isNew && <span class="job-detail-new">New role</span>}
+          </div>
+          <h1 id="job-detail-title" transition:name={`job-title-${job.slug.current}`}>
+            {job.role}
+          </h1>
+          <p>{job.description}</p>
+        </div>
+
+        <dl class="job-detail-meta" aria-label="Job information">
+          <div>
+            <dt>Salary</dt>
+            <dd>{job.salary.display}</dd>
+          </div>
+          <div>
+            <dt>Location</dt>
+            <dd>{job.location}</dd>
+          </div>
+          <div>
+            <dt>Job type</dt>
+            <dd>{job.jobType}</dd>
+          </div>
+          <div>
+            <dt>Reference</dt>
+            <dd>{job.jobId}</dd>
+          </div>
+        </dl>
+      </header>
+
+      <div class="job-detail-layout">
+        <div class="job-detail-copy">
+          <section aria-labelledby="job-overview-title">
+            <p class="job-detail-section-label">The opportunity</p>
+            <h2 id="job-overview-title">A role with room to make an impact.</h2>
+            <p>{job.overview}</p>
+            <p>{job.roleDetails}</p>
+          </section>
+
+          <section aria-labelledby="job-responsibilities-title">
+            <p class="job-detail-section-label">The role</p>
+            <h2 id="job-responsibilities-title">What you will bring to the pass.</h2>
+            <ul>
+              {job.responsibilities.map((item) => <li>{item}</li>)}
+            </ul>
+          </section>
+
+          <section aria-labelledby="job-candidate-title">
+            <p class="job-detail-section-label">About you</p>
+            <h2 id="job-candidate-title">Good instincts, backed by experience.</h2>
+            <ul>
+              {job.idealCandidate.map((item) => <li>{item}</li>)}
+            </ul>
+          </section>
+
+          <section aria-labelledby="job-offer-title">
+            <p class="job-detail-section-label">What is on offer</p>
+            <h2 id="job-offer-title">The useful details.</h2>
+            <ul>
+              {job.offer.map((item) => <li>{item}</li>)}
+            </ul>
+          </section>
+
+          <button class="job-detail-apply" type="button" data-open-job-application>
+            Apply for this role <span aria-hidden="true">&#8595;</span>
+          </button>
+        </div>
+
+        <aside class="job-consultant" aria-labelledby="job-consultant-title" data-job-consultant>
+          <p class="job-detail-section-label">Your consultant</p>
+          {consultant.avatarUrl && (
+            <img src={consultant.avatarUrl} alt="" width="480" height="480" loading="eager" />
+          )}
+          <h2 id="job-consultant-title">{consultant.name}</h2>
+          <p class="job-consultant-title">{consultant.title}</p>
+          <p class="job-consultant-note">{consultant.note}</p>
+          <div class="job-consultant-actions">
+            <a href={`mailto:${consultant.email}?subject=${encodeURIComponent(`${job.jobId}: ${job.role}`)}`}>
+              Email {consultant.name.split(' ')[0]}
+            </a>
+            <a href={phoneHref}>{consultant.phone}</a>
+          </div>
+          <p class="job-consultant-reference">Quote <strong>{job.jobId}</strong> when enquiring.</p>
+        </aside>
+      </div>
+    </article>
+  </div>
+</section>
+
+<style>
+  .job-detail {
+    min-height: 100vh;
+    overflow: hidden;
+    background: var(--color-blush);
+    color: var(--color-ink);
+    padding: 6.5rem 1rem 4rem;
+  }
+
+  .job-detail-inner {
+    width: min(100%, 80rem);
+    margin: 0 auto;
+  }
+
+  .job-detail-back {
+    display: inline-flex;
+    min-height: 3.4rem;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 1rem;
+    border-radius: 0.8rem;
+    background: var(--color-cocoa);
+    color: var(--color-cream);
+    padding: 0.8rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    transition: transform 280ms var(--ease-cartoon), background-color 200ms ease;
+  }
+
+  .job-detail-back span:first-child {
+    font-size: 1.3rem;
+  }
+
+  .job-detail-back:hover,
+  .job-detail-back:focus-visible {
+    background: var(--color-ink);
+    transform: translateX(-0.2rem) rotate(-1deg);
+  }
+
+  .job-detail-shell {
+    overflow: hidden;
+    border-radius: 1.35rem;
+    background: var(--color-cream);
+  }
+
+  .job-detail-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding: clamp(1.4rem, 4vw, 3.5rem);
+  }
+
+  .job-detail-hero::after {
+    position: absolute;
+    top: -8rem;
+    right: -6rem;
+    z-index: -1;
+    width: 18rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--color-flame);
+    content: '';
+  }
+
+  .job-detail-heading {
+    max-width: 58rem;
+  }
+
+  .job-detail-eyebrow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-bottom: 1.4rem;
+  }
+
+  .job-detail-eyebrow span {
+    border-radius: 999px;
+    background: var(--color-mint);
+    padding: 0.55rem 0.75rem;
+    font-size: 0.72rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .job-detail-eyebrow .job-detail-new {
+    background: var(--color-citron);
+  }
+
+  .job-detail h1 {
+    max-width: 55rem;
+    font-family: var(--font-hero);
+    font-size: clamp(3.2rem, 8vw, 7.3rem);
+    font-weight: 400;
+    line-height: 0.88;
+    overflow-wrap: anywhere;
+  }
+
+  .job-detail-heading > p {
+    max-width: 48rem;
+    margin-top: 1.5rem;
+    color: var(--color-cocoa);
+    font-size: clamp(1.05rem, 2vw, 1.3rem);
+    font-weight: 800;
+    line-height: 1.55;
+  }
+
+  .job-detail-meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem;
+    margin-top: 2.5rem;
+  }
+
+  .job-detail-meta div {
+    min-width: 0;
+    border-radius: 0.85rem;
+    background: var(--color-paper);
+    padding: 1rem;
+  }
+
+  .job-detail-meta div:nth-child(2) { background: var(--color-blush); }
+  .job-detail-meta div:nth-child(3) { background: var(--color-mint); }
+  .job-detail-meta div:nth-child(4) { background: var(--color-citron); }
+
+  .job-detail-meta dt,
+  .job-detail-section-label {
+    color: var(--color-flame);
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .job-detail-meta dd {
+    margin-top: 0.35rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.15rem, 2vw, 1.55rem);
+    font-weight: 650;
+    overflow-wrap: anywhere;
+  }
+
+  .job-detail-layout {
+    display: grid;
+    gap: 1rem;
+    background: var(--color-paper);
+    padding: 1rem;
+  }
+
+  .job-detail-copy {
+    border-radius: 1rem;
+    background: var(--color-cream);
+    padding: clamp(1.4rem, 4vw, 3rem);
+  }
+
+  .job-detail-copy section + section {
+    margin-top: 3.5rem;
+  }
+
+  .job-detail-copy h2,
+  .job-consultant h2 {
+    margin-top: 0.55rem;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3.3rem);
+    font-weight: 650;
+    line-height: 0.98;
+    text-wrap: balance;
+  }
+
+  .job-detail-copy section > p:not(.job-detail-section-label) {
+    margin-top: 1.2rem;
+    color: var(--color-cocoa);
+    font-size: 1.02rem;
+    font-weight: 700;
+    line-height: 1.72;
+  }
+
+  .job-detail-copy ul {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1.35rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .job-detail-copy li {
+    position: relative;
+    border-radius: 0.75rem;
+    background: var(--color-paper);
+    padding: 1rem 1rem 1rem 3rem;
+    color: var(--color-cocoa);
+    font-weight: 750;
+    line-height: 1.5;
+  }
+
+  .job-detail-copy li::before {
+    position: absolute;
+    top: 0.85rem;
+    left: 0.9rem;
+    display: grid;
+    width: 1.35rem;
+    aspect-ratio: 1;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--color-citron);
+    content: '✓';
+    color: var(--color-ink);
+    font-size: 0.75rem;
+    font-weight: 900;
+  }
+
+  .job-detail-apply {
+    display: flex;
+    width: 100%;
+    min-height: 4.4rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 3.5rem;
+    border: 0;
+    border-radius: 0.9rem;
+    background: var(--color-flame);
+    color: var(--color-cream);
+    padding: 1rem 1.25rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 300ms var(--ease-cartoon), background-color 220ms ease;
+  }
+
+  .job-detail-apply:hover,
+  .job-detail-apply:focus-visible {
+    background: var(--color-cocoa);
+    transform: translateY(-0.2rem) rotate(-0.5deg);
+  }
+
+  .job-detail-apply span { font-size: 1.3rem; }
+
+  .job-consultant {
+    align-self: start;
+    border-radius: 1rem;
+    background: var(--color-mint);
+    padding: 1.25rem;
+  }
+
+  .job-consultant img {
+    width: 100%;
+    aspect-ratio: 1;
+    margin-top: 1rem;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .job-consultant-title {
+    margin-top: 0.45rem;
+    color: var(--color-cocoa);
+    font-weight: 900;
+  }
+
+  .job-consultant-note {
+    margin-top: 1rem;
+    color: var(--color-cocoa);
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.55;
+  }
+
+  .job-consultant-actions {
+    display: grid;
+    gap: 0.55rem;
+    margin-top: 1.2rem;
+  }
+
+  .job-consultant-actions a {
+    display: flex;
+    min-height: 3.6rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.75rem;
+    background: var(--color-ink);
+    color: var(--color-cream);
+    padding: 0.8rem;
+    text-align: center;
+    font-size: 0.82rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    transition: transform 280ms var(--ease-cartoon), background-color 200ms ease;
+  }
+
+  .job-consultant-actions a:hover,
+  .job-consultant-actions a:focus-visible {
+    background: var(--color-flame);
+    transform: translateY(-0.15rem);
+  }
+
+  .job-consultant-reference {
+    margin-top: 1rem;
+    color: var(--color-cocoa);
+    font-size: 0.78rem;
+    line-height: 1.5;
+  }
+
+  @media (min-width: 720px) {
+    .job-detail-meta { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+
+  @media (min-width: 1024px) {
+    .job-detail { padding: 7rem 2.5rem 5rem; }
+    .job-detail-layout { grid-template-columns: minmax(0, 1fr) 18rem; }
+    .job-consultant { position: sticky; top: 6.5rem; }
+  }
+
+  @media (max-width: 639px) {
+    .job-detail-hero::after { top: -10rem; right: -10rem; }
+    .job-detail h1 { font-size: clamp(3rem, 15vw, 4.7rem); }
+  }
+</style>
+
+<script>
+  function initJobDetail() {
+    const root = document.querySelector<HTMLElement>('[data-job-detail]');
+    if (!root || root.dataset.detailReady === 'true') return;
+    root.dataset.detailReady = 'true';
+
+    const back = root.querySelector<HTMLAnchorElement>('[data-job-back]');
+    back?.addEventListener('click', (event) => {
+      const returnState = sessionStorage.getItem('jobs-return-state');
+      if (!returnState || history.length <= 1) return;
+      try {
+        const state = JSON.parse(returnState) as { focusHref?: string };
+        if (state.focusHref !== window.location.pathname) return;
+        event.preventDefault();
+        sessionStorage.setItem('jobs-restore-pending', 'true');
+        history.back();
+      } catch {
+        sessionStorage.removeItem('jobs-return-state');
+      }
+    });
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce), (max-width: 1023px)').matches) return;
+    const consultant = root.querySelector<HTMLElement>('[data-job-consultant]');
+    if (!consultant) return;
+    let frame = 0;
+    const render = () => {
+      frame = 0;
+      const rect = consultant.getBoundingClientRect();
+      const offset = Math.max(-7, Math.min(7, (rect.top / window.innerHeight - 0.5) * -9));
+      consultant.style.translate = `0 ${offset.toFixed(1)}px`;
+    };
+    const requestRender = () => {
+      if (!frame) frame = requestAnimationFrame(render);
+    };
+    window.addEventListener('scroll', requestRender, { passive: true });
+    requestRender();
+  }
+
+  initJobDetail();
+  document.addEventListener('astro:page-load', initJobDetail);
+</script>

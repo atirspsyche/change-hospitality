@@ -1,0 +1,744 @@
+---
+import type { JobPosting } from '../data/jobs';
+import type { TeamMember } from '../data/team';
+
+interface Props {
+  job: JobPosting;
+  consultant: TeamMember;
+}
+
+const { job, consultant } = Astro.props;
+---
+
+<section
+  id="job-application"
+  class="job-application"
+  aria-labelledby="job-application-title"
+  data-job-application
+  hidden
+>
+  <div class="job-application-inner">
+    <header class="job-application-header">
+      <p>Application / {job.jobId}</p>
+      <h2 id="job-application-title" tabindex="-1">Put your name on the pass.</h2>
+      <p>
+        Three short steps for <strong>{job.role}</strong>. Your application goes to {consultant.name}, not an anonymous inbox.
+      </p>
+    </header>
+
+    <div class="job-application-layout">
+      <ol class="job-step-progress" aria-label="Application progress">
+        <li aria-current="step" data-progress-step="0">
+          <span>01</span>
+          <strong>Contact</strong>
+        </li>
+        <li data-progress-step="1">
+          <span>02</span>
+          <strong>Eligibility</strong>
+        </li>
+        <li data-progress-step="2">
+          <span>03</span>
+          <strong>CV &amp; review</strong>
+        </li>
+      </ol>
+
+      <form
+        class="job-step-form"
+        action="/api/apply"
+        method="post"
+        enctype="multipart/form-data"
+        data-job-application-form
+      >
+        <input type="hidden" name="jobId" value={job.jobId} />
+        <input type="hidden" name="jobSlug" value={job.slug.current} />
+        <input type="hidden" name="role" value={job.role} />
+        <input type="hidden" name="position" value={job.position} />
+        <input type="hidden" name="jobLocation" value={job.location} />
+        <input type="hidden" name="consultantId" value={consultant._id} />
+
+        <fieldset class="job-form-step" data-form-step="0">
+          <legend>
+            <span>Step one</span>
+            Tell us who you are.
+          </legend>
+          <div class="job-form-grid">
+            <label class="job-form-field job-form-field-wide">
+              <span>Your name</span>
+              <input name="name" autocomplete="name" required />
+            </label>
+            <label class="job-form-field">
+              <span>Your email</span>
+              <input name="email" type="email" autocomplete="email" required />
+            </label>
+            <label class="job-form-field">
+              <span>Contact number</span>
+              <input name="phone" type="tel" autocomplete="tel" inputmode="tel" required />
+            </label>
+          </div>
+          <div class="job-form-actions">
+            <button type="button" class="job-form-next" data-step-next>
+              Eligibility <span aria-hidden="true">&#8594;</span>
+            </button>
+          </div>
+        </fieldset>
+
+        <fieldset class="job-form-step" data-form-step="1" hidden>
+          <legend>
+            <span>Step two</span>
+            Your working details.
+          </legend>
+          <div class="job-form-grid">
+            <fieldset class="job-form-choice job-form-field-wide">
+              <legend>Nationality</legend>
+              <div>
+                <label><input type="radio" name="nationality" value="British" required /> British</label>
+                <label><input type="radio" name="nationality" value="EU" /> EU</label>
+                <label><input type="radio" name="nationality" value="Other" /> Other</label>
+              </div>
+            </fieldset>
+            <label class="job-form-field job-form-field-wide" data-visa-field hidden>
+              <span>If a non-EU citizen, what is your visa status?</span>
+              <input name="visaStatus" autocomplete="off" data-visa-input />
+            </label>
+            <label class="job-form-field job-form-field-wide">
+              <span>Ideal location for working</span>
+              <input name="idealLocation" autocomplete="address-level2" value={job.location} required />
+            </label>
+          </div>
+          <div class="job-form-actions job-form-actions-split">
+            <button type="button" class="job-form-back" data-step-back>
+              <span aria-hidden="true">&#8592;</span> Contact
+            </button>
+            <button type="button" class="job-form-next" data-step-next>
+              CV &amp; review <span aria-hidden="true">&#8594;</span>
+            </button>
+          </div>
+        </fieldset>
+
+        <fieldset class="job-form-step" data-form-step="2" hidden>
+          <legend>
+            <span>Final step</span>
+            Add your CV and review.
+          </legend>
+          <div class="job-form-grid">
+            <label class="job-form-field job-form-file job-form-field-wide">
+              <span>Upload your CV</span>
+              <input
+                name="resume"
+                type="file"
+                accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                aria-describedby="job-resume-help job-resume-name"
+                required
+                data-resume-input
+              />
+              <small id="job-resume-help">PDF, DOC or DOCX. Maximum 5MB.</small>
+              <strong id="job-resume-name" data-resume-name>No file selected</strong>
+            </label>
+
+            <div class="job-form-review job-form-field-wide">
+              <p>Applying for</p>
+              <h3>{job.role}</h3>
+              <dl>
+                <div><dt>Location</dt><dd>{job.location}</dd></div>
+                <div><dt>Salary</dt><dd>{job.salary.display}</dd></div>
+                <div><dt>Consultant</dt><dd>{consultant.name}</dd></div>
+                <div><dt>Reference</dt><dd>{job.jobId}</dd></div>
+              </dl>
+            </div>
+
+            <label class="job-form-consent job-form-field-wide">
+              <input name="consent" type="checkbox" required />
+              <span>I consent to Change Hospitality reviewing my details and CV for this role.</span>
+            </label>
+          </div>
+          <div class="job-form-actions job-form-actions-split">
+            <button type="button" class="job-form-back" data-step-back>
+              <span aria-hidden="true">&#8592;</span> Eligibility
+            </button>
+            <button type="submit" class="job-form-submit" data-job-submit>
+              Send application <span aria-hidden="true">&#8599;</span>
+            </button>
+          </div>
+        </fieldset>
+
+        <p class="job-form-status" role="status" aria-live="polite" data-job-form-status></p>
+      </form>
+
+      <div class="job-form-success" data-job-form-success hidden tabindex="-1">
+        <span aria-hidden="true">&#10003;</span>
+        <p>Application received</p>
+        <h3>It is with {consultant.name} now.</h3>
+        <p data-job-success-message></p>
+        <a href="/jobs/#jobs">Explore more jobs</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .job-application {
+    background: var(--color-mint);
+    color: var(--color-ink);
+    padding: 5rem 1rem 6rem;
+  }
+
+  .job-application-inner {
+    width: min(100%, 80rem);
+    margin: 0 auto;
+  }
+
+  .job-application-header > p:first-child {
+    color: var(--color-flame);
+    font-size: 0.72rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .job-application-header h2 {
+    max-width: 52rem;
+    margin-top: 0.75rem;
+    font-family: var(--font-hero);
+    font-size: clamp(3rem, 7vw, 6rem);
+    font-weight: 400;
+    line-height: 0.92;
+  }
+
+  .job-application-header > p:last-child {
+    max-width: 43rem;
+    margin-top: 1.2rem;
+    color: var(--color-cocoa);
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.6;
+  }
+
+  .job-application-layout {
+    display: grid;
+    gap: 1rem;
+    margin-top: 2.5rem;
+  }
+
+  .job-step-progress {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .job-step-progress li {
+    display: grid;
+    min-width: 0;
+    gap: 0.25rem;
+    border-radius: 0.75rem;
+    background: color-mix(in srgb, var(--color-cream) 72%, var(--color-mint));
+    padding: 0.8rem;
+    color: var(--color-cocoa);
+    transition: background-color 220ms ease, transform 280ms var(--ease-cartoon);
+  }
+
+  .job-step-progress li[aria-current='step'] {
+    background: var(--color-citron);
+    color: var(--color-ink);
+    transform: translateY(-0.18rem) rotate(-1deg);
+  }
+
+  .job-step-progress span {
+    font-size: 0.68rem;
+    font-weight: 900;
+  }
+
+  .job-step-progress strong {
+    font-size: clamp(0.72rem, 2vw, 0.86rem);
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+  }
+
+  .job-step-form,
+  .job-form-success {
+    border-radius: 1.1rem;
+    background: var(--color-cream);
+    padding: clamp(1.25rem, 4vw, 2.5rem);
+  }
+
+  .job-form-step {
+    min-width: 0;
+    margin: 0;
+    border: 0;
+    padding: 0;
+  }
+
+  .job-form-step > legend {
+    display: grid;
+    gap: 0.3rem;
+    margin-bottom: 1.6rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.9rem, 4vw, 2.8rem);
+    font-weight: 650;
+    line-height: 1;
+  }
+
+  .job-form-step > legend span {
+    color: var(--color-flame);
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .job-form-grid {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .job-form-field,
+  .job-form-choice,
+  .job-form-review {
+    display: grid;
+    min-width: 0;
+    gap: 0.6rem;
+    border-radius: 0.8rem;
+    background: var(--color-paper);
+    padding: 1rem;
+    transition: background-color 200ms ease, transform 260ms var(--ease-cartoon);
+  }
+
+  .job-form-field:focus-within,
+  .job-form-choice:focus-within {
+    background: var(--color-blush);
+    transform: translateY(-0.12rem);
+  }
+
+  .job-form-field > span,
+  .job-form-choice > legend,
+  .job-form-file > span {
+    color: var(--color-flame);
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .job-form-field input:not([type='file']) {
+    width: 100%;
+    min-height: 2.4rem;
+    border: 0;
+    background: transparent;
+    color: var(--color-ink);
+    font-size: 1rem;
+    font-weight: 800;
+    outline: 0;
+  }
+
+  .job-form-choice {
+    margin: 0;
+    border: 0;
+  }
+
+  .job-form-choice > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+  }
+
+  .job-form-choice label {
+    display: flex;
+    min-height: 2.9rem;
+    align-items: center;
+    gap: 0.45rem;
+    border-radius: 999px;
+    background: var(--color-cream);
+    padding: 0.65rem 0.85rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .job-form-choice input,
+  .job-form-consent input {
+    width: 1.1rem;
+    height: 1.1rem;
+    flex: 0 0 auto;
+    accent-color: var(--color-flame);
+  }
+
+  .job-form-file input {
+    width: 100%;
+    min-width: 0;
+    color: var(--color-cocoa);
+    font-weight: 750;
+  }
+
+  .job-form-file input::file-selector-button {
+    margin-right: 0.75rem;
+    border: 0;
+    border-radius: 0.6rem;
+    background: var(--color-cocoa);
+    color: var(--color-cream);
+    padding: 0.75rem 0.9rem;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .job-form-file small {
+    color: var(--color-cocoa);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .job-form-file strong {
+    color: var(--color-ink);
+    font-size: 0.82rem;
+    overflow-wrap: anywhere;
+  }
+
+  .job-form-review {
+    background: var(--color-blush);
+  }
+
+  .job-form-review > p {
+    color: var(--color-flame);
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .job-form-review h3 {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 650;
+    line-height: 1;
+  }
+
+  .job-form-review dl {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+
+  .job-form-review dl div {
+    min-width: 0;
+    border-radius: 0.55rem;
+    background: var(--color-cream);
+    padding: 0.7rem;
+  }
+
+  .job-form-review dt {
+    color: var(--color-flame);
+    font-size: 0.62rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .job-form-review dd {
+    margin-top: 0.25rem;
+    font-size: 0.86rem;
+    font-weight: 850;
+    overflow-wrap: anywhere;
+  }
+
+  .job-form-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    border-radius: 0.8rem;
+    background: var(--color-citron);
+    padding: 1rem;
+    color: var(--color-cocoa);
+    font-size: 0.88rem;
+    font-weight: 800;
+    line-height: 1.45;
+  }
+
+  .job-form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.65rem;
+    margin-top: 1.5rem;
+  }
+
+  .job-form-actions-split {
+    justify-content: space-between;
+  }
+
+  .job-form-actions button {
+    display: inline-flex;
+    min-height: 3.8rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border: 0;
+    border-radius: 0.75rem;
+    padding: 0.9rem 1.05rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 280ms var(--ease-cartoon), background-color 200ms ease;
+  }
+
+  .job-form-next,
+  .job-form-submit {
+    background: var(--color-flame);
+    color: var(--color-cream);
+  }
+
+  .job-form-back {
+    background: var(--color-paper);
+    color: var(--color-ink);
+  }
+
+  .job-form-actions button:hover,
+  .job-form-actions button:focus-visible {
+    background: var(--color-cocoa);
+    color: var(--color-cream);
+    transform: translateY(-0.15rem) rotate(-1deg);
+  }
+
+  .job-form-actions button:disabled {
+    cursor: wait;
+    opacity: 0.65;
+    transform: none;
+  }
+
+  .job-form-status {
+    min-height: 1.5rem;
+    margin-top: 0.8rem;
+    color: var(--color-cocoa);
+    font-size: 0.84rem;
+    font-weight: 800;
+  }
+
+  .job-form-status.is-error { color: var(--color-flame); }
+
+  .job-form-success {
+    text-align: center;
+  }
+
+  .job-form-success > span {
+    display: grid;
+    width: 4.5rem;
+    aspect-ratio: 1;
+    margin: 0 auto 1rem;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--color-citron);
+    font-size: 2rem;
+    font-weight: 900;
+  }
+
+  .job-form-success > p:first-of-type {
+    color: var(--color-flame);
+    font-size: 0.72rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .job-form-success h3 {
+    margin-top: 0.5rem;
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    font-weight: 650;
+    line-height: 1;
+  }
+
+  .job-form-success p:last-of-type {
+    margin: 1rem auto 0;
+    color: var(--color-cocoa);
+    font-weight: 750;
+  }
+
+  .job-form-success a {
+    display: inline-flex;
+    min-height: 3.6rem;
+    align-items: center;
+    margin-top: 1.5rem;
+    border-radius: 0.75rem;
+    background: var(--color-ink);
+    color: var(--color-cream);
+    padding: 0.9rem 1.1rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  @media (min-width: 720px) {
+    .job-form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .job-form-field-wide { grid-column: 1 / -1; }
+  }
+
+  @media (min-width: 1024px) {
+    .job-application { padding: 6rem 2.5rem 7rem; }
+    .job-application-layout { grid-template-columns: 13rem minmax(0, 1fr); align-items: start; }
+    .job-step-progress { position: sticky; top: 6.5rem; grid-template-columns: 1fr; }
+    .job-form-success { grid-column: 2; }
+  }
+
+  @media (max-width: 479px) {
+    .job-step-progress strong { font-size: 0.66rem; }
+    .job-form-actions button { width: 100%; }
+    .job-form-review dl { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  function initJobApplication() {
+    document.querySelectorAll<HTMLElement>('[data-job-application]').forEach((root) => {
+      if (root.dataset.applicationReady === 'true') return;
+      root.dataset.applicationReady = 'true';
+
+      const form = root.querySelector<HTMLFormElement>('[data-job-application-form]');
+      const steps = Array.from(root.querySelectorAll<HTMLFieldSetElement>('[data-form-step]'));
+      const progress = Array.from(root.querySelectorAll<HTMLElement>('[data-progress-step]'));
+      const status = root.querySelector<HTMLElement>('[data-job-form-status]');
+      const submit = root.querySelector<HTMLButtonElement>('[data-job-submit]');
+      const success = root.querySelector<HTMLElement>('[data-job-form-success]');
+      const successMessage = root.querySelector<HTMLElement>('[data-job-success-message]');
+      const visaField = root.querySelector<HTMLElement>('[data-visa-field]');
+      const visaInput = root.querySelector<HTMLInputElement>('[data-visa-input]');
+      const resumeInput = root.querySelector<HTMLInputElement>('[data-resume-input]');
+      const resumeName = root.querySelector<HTMLElement>('[data-resume-name]');
+      const title = root.querySelector<HTMLElement>('#job-application-title');
+      if (!form || !steps.length || !status || !submit || !success) return;
+
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let currentStep = 0;
+
+      const setStatus = (message: string, isError = false) => {
+        status.textContent = message;
+        status.classList.toggle('is-error', isError);
+      };
+
+      const showStep = (index: number, focus = true) => {
+        currentStep = Math.max(0, Math.min(index, steps.length - 1));
+        steps.forEach((step, stepIndex) => {
+          step.hidden = stepIndex !== currentStep;
+        });
+        progress.forEach((item, stepIndex) => {
+          if (stepIndex === currentStep) item.setAttribute('aria-current', 'step');
+          else item.removeAttribute('aria-current');
+        });
+        setStatus('');
+        if (focus) {
+          const legend = steps[currentStep]?.querySelector<HTMLElement>('legend');
+          legend?.setAttribute('tabindex', '-1');
+          legend?.focus({ preventScroll: true });
+        }
+      };
+
+      const validateStep = () => {
+        const invalid = steps[currentStep]?.querySelector<HTMLInputElement>(':invalid');
+        if (!invalid) return true;
+        invalid.reportValidity();
+        invalid.focus();
+        return false;
+      };
+
+      const updateVisaField = () => {
+        const nationality = form.querySelector<HTMLInputElement>('input[name="nationality"]:checked')?.value;
+        const needsVisaDetails = nationality === 'Other';
+        if (visaField) visaField.hidden = !needsVisaDetails;
+        if (visaInput) {
+          visaInput.required = needsVisaDetails;
+          if (!needsVisaDetails) visaInput.value = '';
+        }
+      };
+
+      form.querySelectorAll<HTMLInputElement>('input[name="nationality"]').forEach((radio) => {
+        radio.addEventListener('change', updateVisaField);
+      });
+
+      resumeInput?.addEventListener('change', () => {
+        const file = resumeInput.files?.[0];
+        if (resumeName) resumeName.textContent = file?.name || 'No file selected';
+        setStatus('');
+      });
+
+      root.querySelectorAll<HTMLButtonElement>('[data-step-next]').forEach((button) => {
+        button.addEventListener('click', () => {
+          if (validateStep()) showStep(currentStep + 1);
+        });
+      });
+
+      root.querySelectorAll<HTMLButtonElement>('[data-step-back]').forEach((button) => {
+        button.addEventListener('click', () => showStep(currentStep - 1));
+      });
+
+      document.querySelectorAll<HTMLButtonElement>('[data-open-job-application]').forEach((button) => {
+        button.addEventListener('click', () => {
+          root.hidden = false;
+          root.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' });
+          window.setTimeout(() => title?.focus({ preventScroll: true }), reducedMotion ? 0 : 650);
+        });
+      });
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (!validateStep() || !form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+
+        const formData = new FormData(form);
+        const resume = formData.get('resume');
+        if (!(resume instanceof File) || !resume.name) {
+          setStatus('Please choose your CV before sending.', true);
+          resumeInput?.focus();
+          return;
+        }
+
+        const allowedExtensions = ['pdf', 'doc', 'docx'];
+        const extension = resume.name.split('.').pop()?.toLowerCase() || '';
+        if (!allowedExtensions.includes(extension)) {
+          setStatus('Please upload a PDF, DOC or DOCX file.', true);
+          resumeInput?.focus();
+          return;
+        }
+        if (resume.size > 5 * 1024 * 1024) {
+          setStatus('Please upload a CV under 5MB.', true);
+          resumeInput?.focus();
+          return;
+        }
+
+        submit.disabled = true;
+        submit.textContent = 'Sending...';
+        setStatus('Sending your application...');
+
+        try {
+          let result: { ok?: boolean; reference?: string; message?: string };
+          const useLocalMock = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+          if (useLocalMock) {
+            await new Promise((resolve) => window.setTimeout(resolve, 700));
+            result = {
+              ok: true,
+              reference: `CH-${Date.now().toString().slice(-6)}`,
+              message: 'Your application has been received.',
+            };
+          } else {
+            const response = await fetch(form.action, { method: 'POST', body: formData });
+            const payload = await response.json();
+            if (!response.ok || !payload.ok) throw new Error(payload.message || 'Submission failed');
+            result = payload;
+          }
+
+          form.hidden = true;
+          progress.forEach((item) => item.removeAttribute('aria-current'));
+          success.hidden = false;
+          if (successMessage) {
+            successMessage.textContent = `${result.message || 'Application received.'} Reference ${result.reference}.`;
+          }
+          success.focus();
+          form.reset();
+        } catch {
+          setStatus('Something went wrong. Please check your connection and try again.', true);
+        } finally {
+          submit.disabled = false;
+          submit.innerHTML = 'Send application <span aria-hidden="true">&#8599;</span>';
+        }
+      });
+
+      showStep(0, false);
+      updateVisaField();
+    });
+  }
+
+  initJobApplication();
+  document.addEventListener('astro:page-load', initJobApplication);
+</script>
