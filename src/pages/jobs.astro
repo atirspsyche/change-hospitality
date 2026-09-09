@@ -3,9 +3,10 @@ import FunMenu from '../components/FunMenu.astro';
 import JobListings from '../components/JobListings.astro';
 import JobsHero from '../components/JobsHero.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import { jobs } from '../data/jobs';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getJobs } from '../sanity/queries';
 
+const jobs = await getJobs();
 const locations = [...new Set(jobs.map((job) => job.location))].sort();
 const positions = [...new Set(jobs.map((job) => job.position))].sort();
 const jobTypes = [...new Set(jobs.map((job) => job.jobType))].sort();

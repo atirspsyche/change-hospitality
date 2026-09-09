@@ -7,12 +7,13 @@ import SiteFooter from "../components/SiteFooter.astro";
 import {
   teamCategories,
   teamGalleryItems,
-  teamMembers,
   teamPassSteps,
 } from "../data/team";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { getTeamMembers } from "../sanity/queries";
 
 const showTeamPass = false;
+const teamMembers = await getTeamMembers();
 const teamGroups = teamCategories.map((category) => ({
   ...category,
   members: teamMembers.filter((member) => member.division === category.label),

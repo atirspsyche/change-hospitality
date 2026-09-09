@@ -3,18 +3,21 @@ import FunMenu from '../../components/FunMenu.astro';
 import JobApplicationForm from '../../components/JobApplicationForm.astro';
 import JobDetail from '../../components/JobDetail.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
-import { jobs, type JobPosting } from '../../data/jobs';
-import { getTeamMemberById, type TeamMember } from '../../data/team';
+import type { JobPosting } from '../../data/jobs';
+import type { TeamMember } from '../../data/team';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getJobs, getTeamMembers } from '../../sanity/queries';
 
 interface Props {
   job: JobPosting;
   consultant: TeamMember;
 }
 
-export function getStaticPaths() {
+export async function getStaticPaths() {
+  const [jobs, teamMembers] = await Promise.all([getJobs(), getTeamMembers()]);
+
   return jobs.map((job) => {
-    const consultant = getTeamMemberById(job.consultant._ref);
+    const consultant = teamMembers.find((member) => member._id === job.consultant._ref);
     if (!consultant) {
       throw new Error(`Consultant ${job.consultant._ref} was not found for ${job.slug.current}`);
     }

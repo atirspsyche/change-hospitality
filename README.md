@@ -9,7 +9,8 @@ Premium Astro website concept for Change Hospitality, focused on editorial luxur
 - GSAP + ScrollTrigger effects wrapped in responsive `matchMedia()` rules, with simplified mobile motion and reduced-motion support.
 - Lenis smooth scrolling for desktop polish.
 - Mock candidate profile upload flow with resume validation and a Vercel `/api/apply` function stub ready for real email integration.
-- Static job listings and shareable `/jobs/[slug]/` detail routes with assigned consultant contacts and role-specific stepped applications.
+- Sanity-managed job listings and team profiles, with a standalone Studio in `studio/`.
+- Shareable `/jobs/[slug]/` detail routes with assigned consultant contacts and role-specific stepped applications.
 - Reusable recruiter staffing brief with accessible multi-select controls, responsive motion and a production Resend email function.
 - SEO metadata, Open Graph tags, JSON-LD and sitemap generation.
 
@@ -26,7 +27,7 @@ Premium Astro website concept for Change Hospitality, focused on editorial luxur
 
 The candidate forms post to `/api/apply`. Role-specific applications include `jobId`, `jobSlug`, `role`, `position`, `jobLocation` and `consultantId` alongside the candidate fields and CV. In local Astro development, the client uses a mock response because the Astro server does not execute root-level Vercel functions. On Vercel, `api/apply.js` returns a mock success response and includes commented production email logic for parsing multipart data, validating the resume and routing the application to the assigned consultant.
 
-Job content currently comes from typed, Sanity-shaped dummy documents in `src/data/jobs.ts`. Each document generates a static `/jobs/[slug]/` page. The later CMS phase will replace this source with Sanity queries and mount Sanity Studio at `/admin` without changing the page-level data contract.
+Job and team content is loaded from the Sanity `production` dataset during each static build. Each published job generates a static `/jobs/[slug]/` page.
 
 Before going live, wire the function to a real email provider and move inbox credentials into Vercel environment variables.
 
@@ -35,6 +36,29 @@ The mock handler contract can be checked with:
 ```sh
 node --test api/apply.test.js
 ```
+
+## Sanity Studio
+
+Sanity Studio is maintained as an independent project in `studio/` and is configured for project `3z2hqf8g`, dataset `production`. Editors can create, publish, update and remove jobs and team members there. A job must reference a team member, so Sanity will prevent deleting a team member while a published job still uses them.
+
+Install and run the Studio locally:
+
+```sh
+cd studio
+npm install
+npm run dev
+```
+
+Deploy it on Sanity hosting after authenticating with an administrator account:
+
+```sh
+cd studio
+npm run deploy
+```
+
+The deployed `*.sanity.studio` URL uses Sanity login and project roles. Uploaded team portraits are preferred; the external portrait URL field remains available for the imported starter content.
+
+Because the site is statically generated, publishing in Studio requires a new Vercel deployment before the public pages change. Configure a Vercel Deploy Hook and a Sanity webhook for document creates, updates and deletes on `job` and `consultant` documents.
 
 ## Recruit Talent Email Flow
 
