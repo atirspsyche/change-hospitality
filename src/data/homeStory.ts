@@ -85,7 +85,7 @@ export const homeStory = {
         eyebrow: "A better way to recruit",
         heading: "Start with the people, not the database.",
         body: "For more than twenty years, we have built hospitality teams through proper conversations, sharp instincts and relationships that last.",
-        action: { label: "Find talent", href: "#divisions", tone: "citron" },
+        action: { label: "Find talent", href: "/recruit-talent/", tone: "citron" },
       },
     },
     {
@@ -120,13 +120,13 @@ export const homeStory = {
             eyebrow: "For businesses",
             heading: "Build a brilliant service.",
             body: "Permanent, temporary and contract talent across front of house, back of house, events and commercial roles.",
-            action: { label: "Find talent", href: "#divisions", tone: "cream" },
+            action: { label: "Find talent", href: "/recruit-talent/", tone: "cream" },
           },
           {
             eyebrow: "For people",
             heading: "Find work that fits.",
             body: "Straight-talking support, roles worth moving for and consultants who know your corner of hospitality.",
-            action: { label: "Find work", href: "#opportunities", tone: "citron" },
+            action: { label: "Find work", href: "/jobs/", tone: "citron" },
           },
         ],
       },
@@ -194,7 +194,7 @@ export const homeStory = {
         eyebrow: "Ready when you are",
         heading: "Your next move is on the pass.",
         body: "Explore live hospitality roles or tell us who your team needs next.",
-        action: { label: "See live jobs", href: "#opportunities", tone: "flame" },
+        action: { label: "See live jobs", href: "/jobs/", tone: "flame" },
       },
     },
     {
@@ -208,7 +208,7 @@ export const homeStory = {
       overlay: {
         layout: "bottom",
         heading: "Good people make great hospitality.",
-        action: { label: "Start a conversation", href: "#apply", tone: "citron" },
+        action: { label: "Start a conversation", href: "/recruit-talent/", tone: "citron" },
       },
     },
   ] satisfies StoryBeat[],

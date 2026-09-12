@@ -1,3 +1,5 @@
+import { MailConfigurationError, sendEmail } from '../server/mail.js';
+
 const JOB_TYPES = new Set([
   'Temporary Staffing - Front of House Casual',
   'Temporary Staffing - Back of House Casual',
@@ -9,6 +11,7 @@ const JOB_TYPES = new Set([
 ]);
 
 const MAX_BODY_SIZE = 24_000;
+const EMAIL_PATTERN = /^\S+@\S+\.\S+$/;
 
 function cleanString(value, maxLength = 160) {
   if (typeof value !== 'string') return '';
@@ -70,7 +73,7 @@ export function validateRecruitmentBrief(payload) {
   const errors = {};
   if (!data.submitterName) errors.submitterName = 'Enter your name.';
   if (!data.companyName) errors.companyName = 'Enter the company name.';
-  if (!/^\S+@\S+\.\S+$/.test(data.email)) errors.email = 'Enter a valid email address.';
+  if (!EMAIL_PATTERN.test(data.email)) errors.email = 'Enter a valid email address.';
   if (!data.phone) errors.phone = 'Enter a contact number.';
   if (!data.location) errors.location = 'Enter the role location.';
   if (!Number.isInteger(numberPositions) || numberPositions < 1 || numberPositions > 999) {
@@ -120,7 +123,7 @@ export function renderRecruitmentEmail(data, reference) {
   return { html, text };
 }
 
-export default async function handler(request, response) {
+export default async function handler(request, response, dependencies = {}) {
   response.setHeader('Cache-Control', 'no-store');
 
   if (request.method !== 'POST') {
@@ -156,48 +159,33 @@ export default async function handler(request, response) {
     return response.status(202).json({ ok: true, reference, message: 'Your staffing brief has been received.' });
   }
 
-  const apiKey = process.env.RESEND_API_KEY;
-  const inbox = process.env.RECRUITMENT_INBOX;
-  const from = process.env.RECRUITMENT_FROM_EMAIL;
-
-  if (!apiKey || !inbox || !from) {
-    console.error('Recruitment email configuration is incomplete.');
-    return response.status(503).json({
-      ok: false,
-      message: 'Email delivery is temporarily unavailable. Please contact the recruitment team directly.',
-    });
-  }
-
+  const inbox = cleanString(process.env.RECRUITMENT_INBOX, 254).toLowerCase();
   const email = renderRecruitmentEmail(data, reference);
-  let resendResponse;
+  const mailer = dependencies.sendMail || sendEmail;
 
   try {
-    resendResponse = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from,
-        to: [inbox],
-        reply_to: data.email,
-        subject: `New staffing brief: ${data.jobTitle} - ${data.companyName}`,
-        html: email.html,
-        text: email.text,
-      }),
+    if (!EMAIL_PATTERN.test(inbox)) {
+      throw new MailConfigurationError('RECRUITMENT_INBOX is missing or invalid.');
+    }
+
+    await mailer({
+      to: inbox,
+      replyTo: data.email,
+      subject: `New staffing brief: ${data.jobTitle} - ${data.companyName}`,
+      html: email.html,
+      text: email.text,
+      headers: { 'X-Change-Hospitality-Reference': reference },
     });
   } catch (error) {
-    console.error('Resend request failed for a recruitment brief:', error);
-    return response.status(502).json({
-      ok: false,
-      message: 'We could not deliver your brief. Please try again or contact the recruitment team directly.',
-    });
-  }
+    if (error instanceof MailConfigurationError) {
+      console.error('Recruitment email configuration is incomplete:', error.message);
+      return response.status(503).json({
+        ok: false,
+        message: 'Email delivery is temporarily unavailable. Please contact the recruitment team directly.',
+      });
+    }
 
-  if (!resendResponse.ok) {
-    const providerMessage = await resendResponse.text();
-    console.error('Resend rejected a recruitment brief:', resendResponse.status, providerMessage);
+    console.error('SMTP delivery failed for a recruitment brief:', error);
     return response.status(502).json({
       ok: false,
       message: 'We could not deliver your brief. Please try again or contact the recruitment team directly.',

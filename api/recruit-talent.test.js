@@ -17,15 +17,11 @@ const validPayload = {
   website: '',
 };
 
-const originalFetch = globalThis.fetch;
 const originalEnvironment = {
-  RESEND_API_KEY: process.env.RESEND_API_KEY,
   RECRUITMENT_INBOX: process.env.RECRUITMENT_INBOX,
-  RECRUITMENT_FROM_EMAIL: process.env.RECRUITMENT_FROM_EMAIL,
 };
 
 afterEach(() => {
-  globalThis.fetch = originalFetch;
   Object.assign(process.env, originalEnvironment);
 });
 
@@ -70,15 +66,9 @@ test('accepts one choice from either staffing subgroup', () => {
 });
 
 test('sends a sanitized valid brief to the configured inbox', async () => {
-  process.env.RESEND_API_KEY = 'test-key';
   process.env.RECRUITMENT_INBOX = 'team@example.com';
-  process.env.RECRUITMENT_FROM_EMAIL = 'web@example.com';
 
   let emailPayload;
-  globalThis.fetch = async (_url, options) => {
-    emailPayload = JSON.parse(options.body);
-    return { ok: true };
-  };
 
   const request = {
     method: 'POST',
@@ -87,24 +77,23 @@ test('sends a sanitized valid brief to the configured inbox', async () => {
   };
   const response = createResponse();
 
-  await handler(request, response);
+  await handler(request, response, {
+    sendMail: async (payload) => {
+      emailPayload = payload;
+      return { accepted: [payload.to] };
+    },
+  });
 
   assert.equal(response.statusCode, 202);
   assert.equal(response.body.ok, true);
-  assert.equal(emailPayload.to[0], 'team@example.com');
-  assert.equal(emailPayload.reply_to, validPayload.email);
+  assert.equal(emailPayload.to, 'team@example.com');
+  assert.equal(emailPayload.replyTo, validPayload.email);
   assert.match(emailPayload.text, /The Test Hotel/);
   assert.doesNotMatch(emailPayload.html, /<script>/);
 });
 
 test('returns a controlled error when the email provider is unavailable', async () => {
-  process.env.RESEND_API_KEY = 'test-key';
   process.env.RECRUITMENT_INBOX = 'team@example.com';
-  process.env.RECRUITMENT_FROM_EMAIL = 'web@example.com';
-
-  globalThis.fetch = async () => {
-    throw new Error('Network unavailable');
-  };
 
   const request = {
     method: 'POST',
@@ -116,7 +105,11 @@ test('returns a controlled error when the email provider is unavailable', async 
   console.error = () => {};
 
   try {
-    await handler(request, response);
+    await handler(request, response, {
+      sendMail: async () => {
+        throw new Error('SMTP unavailable');
+      },
+    });
   } finally {
     console.error = originalConsoleError;
   }

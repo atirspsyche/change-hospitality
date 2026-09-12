@@ -8,10 +8,10 @@ Premium Astro website concept for Change Hospitality, focused on editorial luxur
 - Tailwind tokens for Obsidian, Champagne, Off-White and B-Corp Green.
 - GSAP + ScrollTrigger effects wrapped in responsive `matchMedia()` rules, with simplified mobile motion and reduced-motion support.
 - Lenis smooth scrolling for desktop polish.
-- Mock candidate profile upload flow with resume validation and a Vercel `/api/apply` function stub ready for real email integration.
+- Role-specific candidate applications with server-validated CV attachments and consultant email routing.
 - Sanity-managed job listings and team profiles, with a standalone Studio in `studio/`.
 - Shareable `/jobs/[slug]/` detail routes with assigned consultant contacts and role-specific stepped applications.
-- Reusable recruiter staffing brief with accessible multi-select controls, responsive motion and a production Resend email function.
+- Reusable recruiter staffing brief with accessible multi-select controls, responsive motion and SMTP delivery.
 - SEO metadata, Open Graph tags, JSON-LD and sitemap generation.
 
 ## Commands
@@ -21,20 +21,38 @@ Premium Astro website concept for Change Hospitality, focused on editorial luxur
 | `npm install` | Install dependencies |
 | `npm run dev` | Start local development at `localhost:4321` |
 | `npm run build` | Build the production site to `dist/` |
+| `npm test` | Run the Vercel function and SMTP configuration tests |
 | `npm run preview` | Preview the built site locally |
 
-## Mock Application Flow
+## Email Flows
 
-The candidate forms post to `/api/apply`. Role-specific applications include `jobId`, `jobSlug`, `role`, `position`, `jobLocation` and `consultantId` alongside the candidate fields and CV. In local Astro development, the client uses a mock response because the Astro server does not execute root-level Vercel functions. On Vercel, `api/apply.js` returns a mock success response and includes commented production email logic for parsing multipart data, validating the resume and routing the application to the assigned consultant.
+The job application form posts multipart data to the Vercel function at `/api/apply`. The function validates the candidate fields and CV, confirms the published job and assigned consultant in Sanity, then sends the application to that consultant with the CV attached. If `APPLICATIONS_INBOX` is configured, it receives a blind copy and acts as a fallback when a consultant has no valid email. CVs are limited to 4 MB so the complete multipart request stays below Vercel's function payload limit.
 
 Job and team content is loaded from the Sanity `production` dataset during each static build. Each published job generates a static `/jobs/[slug]/` page.
 
-Before going live, wire the function to a real email provider and move inbox credentials into Vercel environment variables.
+The recruiter experience lives at `/recruit-talent/`. Its form posts JSON to `/api/recruit-talent`, which validates and sanitizes the staffing brief before sending it to `RECRUITMENT_INBOX`.
 
-The mock handler contract can be checked with:
+Both functions use the shared Nodemailer transport in `server/mail.js`. They wait for the SMTP server to accept the message before returning success. Set these variables in the Vercel project for Production, Preview and Development as required:
+
+| Variable | Purpose |
+| :-- | :-- |
+| `SMTP_SERVER` | SMTP hostname supplied by the mail provider |
+| `SMTP_PORT` | Usually `587` for STARTTLS or `465` for implicit TLS |
+| `SMTP_SECURE` | Optional override; normally `false` for `587` and `true` for `465` |
+| `SMTP_LOGIN` | SMTP account username |
+| `SMTP_PASSWORD` | SMTP account password or app password |
+| `SMTP_FROM` | Verified sender, for example `Change Hospitality <website@example.com>` |
+| `RECRUITMENT_INBOX` | Destination for company staffing briefs |
+| `APPLICATIONS_INBOX` | Optional archive and fallback destination for job applications |
+
+`SMTP_HOST`, `SMTP_USER` and `SMTP_PASS` are accepted as aliases for `SMTP_SERVER`, `SMTP_LOGIN` and `SMTP_PASSWORD`. Keep all credentials in Vercel environment variables and never expose them through `PUBLIC_` variables or browser code.
+
+No separate backend application is required for these flows. Files under `api/` are deployed as serverless Vercel functions alongside the static Astro site. A cold start can add latency but does not skip an awaited SMTP operation. An HTTP success means the SMTP server accepted the message; final mailbox delivery still depends on the mail provider, DNS authentication and bounce handling. Configure SPF, DKIM and DMARC for the sender domain, and use port `465` or `587` rather than port `25`.
+
+Astro's local server does not execute root-level Vercel functions. Use `npx vercel dev` to exercise the complete form and SMTP path locally, or deploy a Preview build with Preview environment variables configured. Run the endpoint tests without sending real email using:
 
 ```sh
-node --test api/apply.test.js
+npm test
 ```
 
 ## Sanity Studio
@@ -59,26 +77,6 @@ npm run deploy
 The deployed `*.sanity.studio` URL uses Sanity login and project roles. Uploaded team portraits are preferred; the external portrait URL field remains available for the imported starter content.
 
 Because the site is statically generated, publishing in Studio requires a new Vercel deployment before the public pages change. Configure a Vercel Deploy Hook and a Sanity webhook for document creates, updates and deletes on `job` and `consultant` documents.
-
-## Recruit Talent Email Flow
-
-The recruiter experience lives at `/recruit-talent/`. Its reusable form posts JSON to the Vercel function at `/api/recruit-talent`, which validates and sanitizes the staffing brief before emailing the recruitment team through Resend.
-
-Configure these variables in the Vercel project for Production, Preview and Development as required:
-
-| Variable | Purpose |
-| :-- | :-- |
-| `RESEND_API_KEY` | Resend API key with permission to send from the verified domain |
-| `RECRUITMENT_INBOX` | Private destination address for new staffing briefs |
-| `RECRUITMENT_FROM_EMAIL` | Verified sender, for example `Change Hospitality <website@example.com>` |
-
-No separate backend application is required for this volume: `api/recruit-talent.js` is deployed as a serverless function alongside the static Astro site. Keep the API key and inbox in Vercel environment variables, never in browser code.
-
-Astro's local dev server serves the form UI but does not execute root-level Vercel functions. Use `vercel dev` when testing the complete local email path, or deploy a Preview build with the Development/Preview variables configured. The API behavior itself can be checked without sending email:
-
-```sh
-node --test api/recruit-talent.test.js
-```
 
 ## Deployment
 

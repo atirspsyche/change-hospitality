@@ -1,0 +1,620 @@
+---
+const locations = [
+  {
+    name: 'Manchester',
+    region: 'The North',
+    detail: 'Hospitality teams with northern energy and local knowledge.',
+    x: 47,
+    y: 30,
+    tooltipSide: 'right',
+  },
+  {
+    name: 'Birmingham',
+    region: 'The Midlands',
+    detail: 'Connecting ambitious venues with people who make service sing.',
+    x: 50,
+    y: 49,
+    tooltipSide: 'left',
+  },
+  {
+    name: 'Bristol',
+    region: 'The South West',
+    detail: 'Independent spirit, brilliant operators and growing teams.',
+    x: 37,
+    y: 66,
+    tooltipSide: 'right',
+  },
+  {
+    name: 'London',
+    region: 'London & the South East',
+    detail: 'Our home ground for remarkable hospitality careers and talent.',
+    x: 59,
+    y: 69,
+    tooltipSide: 'left',
+  },
+];
+---
+
+<section
+  class="franchise-map"
+  id="locations"
+  aria-labelledby="franchise-map-title"
+  data-franchise-map
+>
+  <div class="franchise-map__grid" aria-hidden="true"></div>
+
+  <header class="franchise-map__intro" data-map-copy>
+    <p class="franchise-map__eyebrow">Across England</p>
+    <h2 id="franchise-map-title">
+      Local feel.<br />
+      <span>National reach.</span>
+    </h2>
+    <p class="franchise-map__lede">
+      We know the streets, the venues and the people behind the pass. Find the
+      Change team closest to you.
+    </p>
+  </header>
+
+  <div class="franchise-map__stage" data-map-stage>
+    <div class="franchise-map__halo franchise-map__halo--one" aria-hidden="true"></div>
+    <div class="franchise-map__halo franchise-map__halo--two" aria-hidden="true"></div>
+
+    <div class="franchise-map__art" data-map-art>
+      <!-- Replace this provisional silhouette with the final supplied map SVG. -->
+      <svg
+        class="franchise-map__silhouette"
+        viewBox="0 0 540 820"
+        role="img"
+        aria-label="Illustrated map of England"
+      >
+        <path
+          class="franchise-map__outline"
+          d="M279 25c-24 16-25 53-15 82-29 26-43 65-30 101-29 14-57 38-69 71-8 23-3 51-19 70-19 23-54 29-70 55-13 21-7 48 8 66 17 20 42 31 55 55 14 25 8 54-2 80-12 33-22 72-3 102 17 28 54 37 86 32 34-5 65-24 99-31 42-9 89-2 121-32 27-26 35-67 16-100-13-23-37-39-47-64-11-29-1-64-14-91-13-28-47-41-61-68-18-34-3-73 0-110 3-39-14-84-48-103-34-18-75 2-83 41-8-32-7-68-28-90-18-19-47-16-64-2Z"
+        ></path>
+        <path
+          class="franchise-map__route"
+          d="M254 149c-11 70 28 105 10 169-13 47-42 79-37 135 5 54 50 75 54 132 3 38-12 74-31 105"
+        ></path>
+        <path
+          class="franchise-map__route franchise-map__route--short"
+          d="M177 410c53-16 91 14 137 44 34 22 66 34 108 22"
+        ></path>
+      </svg>
+
+      {
+        locations.map((location, index) => (
+          <div
+            class={`map-location map-location--${location.tooltipSide}`}
+            style={`--marker-x: ${location.x}%; --marker-y: ${location.y}%; --marker-delay: ${index * 110}ms;`}
+          >
+            <button
+              class="map-location__button"
+              type="button"
+              aria-label={`Explore our ${location.name} location`}
+              aria-expanded="false"
+              aria-controls={`location-${index}`}
+              data-map-marker
+            >
+              <span class="map-location__pulse" aria-hidden="true"></span>
+              <span class="map-location__pin" aria-hidden="true">
+                <span></span>
+              </span>
+            </button>
+            <div
+              class="map-location__tooltip"
+              id={`location-${index}`}
+              role="tooltip"
+            >
+              <p>{location.region}</p>
+              <h3>{location.name}</h3>
+              <span>{location.detail}</span>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <p class="franchise-map__note" data-map-note>
+    <span>20+</span>
+    years of knowing hospitality by name
+  </p>
+</section>
+
+<style>
+  .franchise-map {
+    --map-x: 0px;
+    --map-y: 0px;
+    --copy-x: 0px;
+    --copy-y: 0px;
+    position: relative;
+    isolation: isolate;
+    width: 100%;
+    height: 100svh;
+    min-height: 44rem;
+    overflow: hidden;
+    background: var(--color-cream);
+    color: var(--color-ink);
+  }
+
+  .franchise-map__grid {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    opacity: 0.18;
+    background-image:
+      linear-gradient(var(--color-cocoa) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-cocoa) 1px, transparent 1px);
+    background-size: clamp(3.5rem, 7vw, 7rem) clamp(3.5rem, 7vw, 7rem);
+    mask-image: linear-gradient(90deg, black, transparent 84%);
+  }
+
+  .franchise-map__intro {
+    position: absolute;
+    top: clamp(4.5rem, 11vh, 7.5rem);
+    left: clamp(1.25rem, 5vw, 5rem);
+    z-index: 5;
+    width: min(35rem, 42vw);
+    transform: translate3d(var(--copy-x), var(--copy-y), 0);
+    transition: transform 500ms var(--ease-luxury);
+  }
+
+  .franchise-map__eyebrow {
+    width: fit-content;
+    margin: 0 0 1.25rem;
+    border: 2px solid var(--color-ink);
+    border-radius: 0.7rem;
+    background: var(--color-citron);
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 900;
+    line-height: 1;
+    text-transform: uppercase;
+    transform: rotate(-2deg);
+  }
+
+  .franchise-map__intro h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(3.4rem, 7.2vw, 8rem);
+    font-weight: 500;
+    line-height: 0.82;
+  }
+
+  .franchise-map__intro h2 span {
+    color: var(--color-flame);
+  }
+
+  .franchise-map__lede {
+    max-width: 29rem;
+    margin: clamp(1.5rem, 3vh, 2.5rem) 0 0 clamp(0rem, 5vw, 5rem);
+    font-size: clamp(1rem, 1.35vw, 1.2rem);
+    font-weight: 600;
+    line-height: 1.45;
+  }
+
+  .franchise-map__stage {
+    position: absolute;
+    inset: 0;
+  }
+
+  .franchise-map__art {
+    position: absolute;
+    top: 50%;
+    right: clamp(-4rem, 4vw, 4rem);
+    width: min(57vw, 46rem);
+    aspect-ratio: 540 / 820;
+    transform: translate3d(var(--map-x), calc(-50% + var(--map-y)), 0) rotate(3deg);
+    will-change: transform;
+  }
+
+  .franchise-map__silhouette {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    filter: drop-shadow(0.9rem 1rem 0 var(--color-cocoa));
+  }
+
+  .franchise-map__outline {
+    fill: var(--color-mint);
+    stroke: var(--color-ink);
+    stroke-width: 7;
+    stroke-linejoin: round;
+  }
+
+  .franchise-map__route {
+    fill: none;
+    stroke: var(--color-cream);
+    stroke-dasharray: 8 16;
+    stroke-linecap: round;
+    stroke-width: 6;
+  }
+
+  .franchise-map__route--short {
+    stroke: var(--color-flame);
+    stroke-width: 4;
+  }
+
+  .franchise-map__halo {
+    position: absolute;
+    z-index: -1;
+    border: 3px solid var(--color-ink);
+    background: var(--color-blush);
+  }
+
+  .franchise-map__halo--one {
+    top: 12%;
+    right: 5%;
+    width: clamp(8rem, 15vw, 13rem);
+    aspect-ratio: 1;
+    border-radius: 48% 52% 61% 39% / 42% 45% 55% 58%;
+    transform: rotate(14deg);
+  }
+
+  .franchise-map__halo--two {
+    right: 39%;
+    bottom: 4%;
+    width: clamp(6rem, 11vw, 10rem);
+    aspect-ratio: 1.3;
+    border-radius: 56% 44% 38% 62% / 49% 34% 66% 51%;
+    background: var(--color-citron);
+    transform: rotate(-17deg);
+  }
+
+  .map-location {
+    position: absolute;
+    top: var(--marker-y);
+    left: var(--marker-x);
+    z-index: 4;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.4);
+    transition:
+      opacity 500ms ease var(--marker-delay),
+      transform 600ms var(--ease-cartoon) var(--marker-delay);
+  }
+
+  .franchise-map.is-visible .map-location {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .map-location__button {
+    position: relative;
+    display: grid;
+    width: 3.75rem;
+    height: 3.75rem;
+    cursor: pointer;
+    place-items: center;
+    border: 0;
+    background: transparent;
+  }
+
+  .map-location__pin {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    width: 2.35rem;
+    height: 2.35rem;
+    place-items: center;
+    border: 3px solid var(--color-ink);
+    border-radius: 50% 50% 50% 0;
+    background: var(--color-flame);
+    transform: rotate(-45deg);
+    transition: transform 350ms var(--ease-cartoon);
+  }
+
+  .map-location__pin span {
+    width: 0.65rem;
+    height: 0.65rem;
+    border: 2px solid var(--color-ink);
+    border-radius: 50%;
+    background: var(--color-cream);
+  }
+
+  .map-location__pulse {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: 2.8rem;
+    height: 2.8rem;
+    border: 2px solid var(--color-flame);
+    border-radius: 50%;
+    animation: marker-pulse 2.2s ease-out infinite;
+  }
+
+  .map-location__button:hover .map-location__pin,
+  .map-location__button:focus-visible .map-location__pin,
+  .map-location.is-open .map-location__pin {
+    transform: rotate(-45deg) scale(1.26) translate(0.1rem, -0.1rem);
+  }
+
+  .map-location__tooltip {
+    position: absolute;
+    top: 50%;
+    z-index: 5;
+    width: clamp(13rem, 18vw, 17rem);
+    border: 2px solid var(--color-ink);
+    border-radius: 0.75rem;
+    background: var(--color-cocoa);
+    color: var(--color-cream);
+    padding: 1rem 1.1rem 1.15rem;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-50%) scale(0.86) rotate(-2deg);
+    transform-origin: center left;
+    transition:
+      opacity 180ms ease,
+      transform 350ms var(--ease-cartoon);
+  }
+
+  .map-location--right .map-location__tooltip {
+    left: calc(100% + 0.4rem);
+  }
+
+  .map-location--left .map-location__tooltip {
+    right: calc(100% + 0.4rem);
+    transform-origin: center right;
+  }
+
+  .map-location:hover .map-location__tooltip,
+  .map-location:focus-within .map-location__tooltip,
+  .map-location.is-open .map-location__tooltip {
+    opacity: 1;
+    transform: translateY(-50%) scale(1) rotate(-2deg);
+  }
+
+  .map-location__tooltip p,
+  .map-location__tooltip h3,
+  .map-location__tooltip span {
+    display: block;
+    margin: 0;
+  }
+
+  .map-location__tooltip p {
+    margin-bottom: 0.35rem;
+    color: var(--color-citron);
+    font-size: 0.68rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .map-location__tooltip h3 {
+    font-size: clamp(1.55rem, 2.4vw, 2.1rem);
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  .map-location__tooltip span {
+    margin-top: 0.65rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  .franchise-map__note {
+    position: absolute;
+    bottom: clamp(1.25rem, 5vh, 3.5rem);
+    left: clamp(1.25rem, 5vw, 5rem);
+    z-index: 4;
+    display: flex;
+    width: min(24rem, 38vw);
+    align-items: center;
+    gap: 1rem;
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 900;
+    line-height: 1.2;
+    text-transform: uppercase;
+    transform: rotate(2deg);
+  }
+
+  .franchise-map__note span {
+    display: grid;
+    flex: 0 0 auto;
+    width: 4.6rem;
+    height: 4.6rem;
+    place-items: center;
+    border: 2px solid var(--color-ink);
+    border-radius: 50%;
+    background: var(--color-flame);
+    color: var(--color-cream);
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+  }
+
+  @keyframes marker-pulse {
+    0% {
+      opacity: 0.75;
+      transform: translate(-50%, -50%) scale(0.45);
+    }
+    75%,
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(1.5);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .franchise-map {
+      min-height: 47rem;
+    }
+
+    .franchise-map__grid {
+      mask-image: linear-gradient(180deg, black, transparent 75%);
+    }
+
+    .franchise-map__intro {
+      top: 3rem;
+      right: 1.25rem;
+      left: 1.25rem;
+      width: auto;
+    }
+
+    .franchise-map__intro h2 {
+      font-size: clamp(3.15rem, 15vw, 5rem);
+    }
+
+    .franchise-map__lede {
+      max-width: 22rem;
+      margin-top: 1rem;
+      margin-left: 0;
+      font-size: 0.92rem;
+    }
+
+    .franchise-map__art {
+      top: auto;
+      right: -5rem;
+      bottom: -5rem;
+      width: min(105vw, 35rem);
+      transform: translate3d(var(--map-x), var(--map-y), 0) rotate(3deg);
+    }
+
+    .franchise-map__note {
+      bottom: 1.2rem;
+      width: 12rem;
+      font-size: 0.64rem;
+    }
+
+    .franchise-map__note span {
+      width: 3.6rem;
+      height: 3.6rem;
+      font-size: 1.25rem;
+    }
+
+    .map-location__tooltip {
+      top: auto;
+      right: auto;
+      bottom: calc(100% + 0.35rem);
+      left: 50%;
+      width: 11.5rem;
+      transform: translateX(-50%) scale(0.86) rotate(-2deg);
+      transform-origin: center bottom;
+    }
+
+    .map-location--right .map-location__tooltip,
+    .map-location--left .map-location__tooltip {
+      right: auto;
+      left: 50%;
+    }
+
+    .map-location:last-child .map-location__tooltip {
+      left: calc(50% - 0.75rem);
+    }
+
+    .map-location:hover .map-location__tooltip,
+    .map-location:focus-within .map-location__tooltip,
+    .map-location.is-open .map-location__tooltip {
+      transform: translateX(-50%) scale(1) rotate(-2deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .franchise-map__intro,
+    .franchise-map__art,
+    .map-location,
+    .map-location__pin,
+    .map-location__tooltip {
+      transition: none;
+    }
+
+    .map-location {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .map-location__pulse {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  let destroyFranchiseMap: (() => void) | undefined;
+
+  function initFranchiseMap() {
+    destroyFranchiseMap?.();
+
+    const section = document.querySelector<HTMLElement>('[data-franchise-map]');
+    if (!section) return;
+
+    const controller = new AbortController();
+    const { signal } = controller;
+    const markers = Array.from(section.querySelectorAll<HTMLButtonElement>('[data-map-marker]'));
+    const canMove = window.matchMedia('(min-width: 768px) and (prefers-reduced-motion: no-preference)').matches;
+    let frame = 0;
+    let pointerX = 0;
+    let pointerY = 0;
+
+    const closeMarkers = (except?: HTMLButtonElement) => {
+      markers.forEach((marker) => {
+        if (marker === except) return;
+        marker.setAttribute('aria-expanded', 'false');
+        marker.closest('.map-location')?.classList.remove('is-open');
+      });
+    };
+
+    markers.forEach((marker) => {
+      marker.addEventListener('click', () => {
+        const willOpen = marker.getAttribute('aria-expanded') !== 'true';
+        closeMarkers(marker);
+        marker.setAttribute('aria-expanded', String(willOpen));
+        marker.closest('.map-location')?.classList.toggle('is-open', willOpen);
+      }, { signal });
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!section.contains(event.target as Node)) closeMarkers();
+    }, { signal });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeMarkers();
+    }, { signal });
+
+    const revealObserver = new IntersectionObserver(([entry]) => {
+      if (!entry?.isIntersecting) return;
+      section.classList.add('is-visible');
+      revealObserver.disconnect();
+    }, { threshold: 0.18 });
+    revealObserver.observe(section);
+
+    const renderParallax = () => {
+      frame = 0;
+      const rect = section.getBoundingClientRect();
+      const scrollProgress = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
+      const scrollShift = (scrollProgress - 0.5) * 48;
+      section.style.setProperty('--map-x', `${pointerX * 22}px`);
+      section.style.setProperty('--map-y', `${scrollShift + pointerY * 18}px`);
+      section.style.setProperty('--copy-x', `${pointerX * -8}px`);
+      section.style.setProperty('--copy-y', `${scrollShift * -0.18 + pointerY * -6}px`);
+    };
+
+    const requestRender = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(renderParallax);
+    };
+
+    if (canMove) {
+      section.addEventListener('pointermove', (event) => {
+        const rect = section.getBoundingClientRect();
+        pointerX = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
+        pointerY = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
+        requestRender();
+      }, { signal });
+      section.addEventListener('pointerleave', () => {
+        pointerX = 0;
+        pointerY = 0;
+        requestRender();
+      }, { signal });
+      window.addEventListener('scroll', requestRender, { passive: true, signal });
+      requestRender();
+    }
+
+    destroyFranchiseMap = () => {
+      controller.abort();
+      revealObserver.disconnect();
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }
+
+  initFranchiseMap();
+  document.addEventListener('astro:page-load', initFranchiseMap);
+</script>

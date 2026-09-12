@@ -324,7 +324,37 @@ export default function HomeStoryHero() {
     let canStream = false;
     let streamCursor = homeStory.initialChunkSize + 1;
     let destroyed = false;
+    let parallaxFrame = 0;
+    let parallaxX = 0;
+    let parallaxY = 0;
     let gsapCleanup: (() => void) | undefined;
+
+    const renderParallax = () => {
+      parallaxFrame = 0;
+      hero.style.setProperty("--story-image-x", `${parallaxX * 12}px`);
+      hero.style.setProperty("--story-image-y", `${parallaxY * 8}px`);
+      hero.style.setProperty("--story-copy-x", `${parallaxX * -5}px`);
+      hero.style.setProperty("--story-copy-y", `${parallaxY * -3}px`);
+    };
+
+    const requestParallaxRender = () => {
+      if (parallaxFrame) return;
+      parallaxFrame = window.requestAnimationFrame(renderParallax);
+    };
+
+    if (window.innerWidth >= 1024) {
+      hero.addEventListener("pointermove", (event) => {
+        const bounds = hero.getBoundingClientRect();
+        parallaxX = ((event.clientX - bounds.left) / bounds.width - 0.5) * 2;
+        parallaxY = ((event.clientY - bounds.top) / bounds.height - 0.5) * 2;
+        requestParallaxRender();
+      }, { signal: abortController.signal });
+      hero.addEventListener("pointerleave", () => {
+        parallaxX = 0;
+        parallaxY = 0;
+        requestParallaxRender();
+      }, { signal: abortController.signal });
+    }
 
     const updateLoadingProgress = () => {
       const progress = Math.round(
@@ -726,6 +756,7 @@ export default function HomeStoryHero() {
       resizeObserver.disconnect();
       visibilityObserver.disconnect();
       gsapCleanup?.();
+      if (parallaxFrame) window.cancelAnimationFrame(parallaxFrame);
       decodedFrames.forEach(closeFrame);
       decodedFrames.clear();
     };

@@ -1,15 +1,19 @@
 ---
-import ApplicationSection from '../components/ApplicationSection.astro';
-import DivisionSplit from '../components/DivisionSplit.astro';
+import FranchiseMap from '../components/FranchiseMap.astro';
 import FunMenu from '../components/FunMenu.astro';
 import HomeStoryHero from '../components/HomeStoryHero';
+import SiteFooter from '../components/SiteFooter.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+/*
+import ApplicationSection from '../components/ApplicationSection.astro';
+import DivisionSplit from '../components/DivisionSplit.astro';
 import HomeExperience from '../components/HomeExperience.astro';
 import ImpactTracker from '../components/ImpactTracker.astro';
 import OpportunitiesStream from '../components/OpportunitiesStream.astro';
 import PhilosophyReveal from '../components/PhilosophyReveal.astro';
-import SiteFooter from '../components/SiteFooter.astro';
 import TestimonialsStack from '../components/TestimonialsStack.astro';
-import BaseLayout from '../layouts/BaseLayout.astro';
+*/
 
 const homeSectionLinks = [
   { label: 'Our approach', href: '#approach', meta: 'People before databases' },
@@ -28,13 +32,16 @@ const homeSectionLinks = [
   />
   <main class="home-page bg-cream text-ink">
     <HomeStoryHero client:load />
-    <PhilosophyReveal />
-    <DivisionSplit />
-    <ImpactTracker />
-    <OpportunitiesStream />
-    <TestimonialsStack />
-    <ApplicationSection />
+    <FranchiseMap />
+    <!--
+      <PhilosophyReveal />
+      <DivisionSplit />
+      <ImpactTracker />
+      <OpportunitiesStream />
+      <TestimonialsStack />
+      <ApplicationSection />
+    -->
     <SiteFooter />
   </main>
-  <HomeExperience />
+  <!-- <HomeExperience /> -->
 </BaseLayout>

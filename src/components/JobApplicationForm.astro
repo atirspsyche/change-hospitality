@@ -56,6 +56,10 @@ const { job, consultant } = Astro.props;
         <input type="hidden" name="jobLocation" value={job.location} />
         <input type="hidden" name="consultantId" value={consultant._id} />
 
+        <div class="job-honeypot" aria-hidden="true">
+          <label>Website<input name="website" tabindex="-1" autocomplete="off" /></label>
+        </div>
+
         <fieldset class="job-form-step" data-form-step="0">
           <legend>
             <span>Step one</span>
@@ -131,7 +135,7 @@ const { job, consultant } = Astro.props;
                 required
                 data-resume-input
               />
-              <small id="job-resume-help">PDF, DOC or DOCX. Maximum 5MB.</small>
+              <small id="job-resume-help">PDF, DOC or DOCX. Maximum 4MB.</small>
               <strong id="job-resume-name" data-resume-name>No file selected</strong>
             </label>
 
@@ -358,6 +362,14 @@ const { job, consultant } = Astro.props;
     height: 1.1rem;
     flex: 0 0 auto;
     accent-color: var(--color-flame);
+  }
+
+  .job-honeypot {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
   }
 
   .job-form-file input {
@@ -691,8 +703,8 @@ const { job, consultant } = Astro.props;
           resumeInput?.focus();
           return;
         }
-        if (resume.size > 5 * 1024 * 1024) {
-          setStatus('Please upload a CV under 5MB.', true);
+        if (resume.size > 4 * 1024 * 1024) {
+          setStatus('Please upload a CV no larger than 4MB.', true);
           resumeInput?.focus();
           return;
         }
@@ -702,20 +714,10 @@ const { job, consultant } = Astro.props;
         setStatus('Sending your application...');
 
         try {
-          let result: { ok?: boolean; reference?: string; message?: string };
-          const useLocalMock = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-          if (useLocalMock) {
-            await new Promise((resolve) => window.setTimeout(resolve, 700));
-            result = {
-              ok: true,
-              reference: `CH-${Date.now().toString().slice(-6)}`,
-              message: 'Your application has been received.',
-            };
-          } else {
-            const response = await fetch(form.action, { method: 'POST', body: formData });
-            const payload = await response.json();
-            if (!response.ok || !payload.ok) throw new Error(payload.message || 'Submission failed');
-            result = payload;
+          const response = await fetch(form.action, { method: 'POST', body: formData });
+          const result: { ok?: boolean; reference?: string; message?: string } = await response.json().catch(() => ({}));
+          if (!response.ok || !result.ok) {
+            throw new Error(result.message || 'We could not send your application. Please try again.');
           }
 
           form.hidden = true;
@@ -726,8 +728,11 @@ const { job, consultant } = Astro.props;
           }
           success.focus();
           form.reset();
-        } catch {
-          setStatus('Something went wrong. Please check your connection and try again.', true);
+        } catch (error) {
+          const message = error instanceof Error
+            ? error.message
+            : 'Something went wrong. Please check your connection and try again.';
+          setStatus(message, true);
         } finally {
           submit.disabled = false;
           submit.innerHTML = 'Send application <span aria-hidden="true">&#8599;</span>';
