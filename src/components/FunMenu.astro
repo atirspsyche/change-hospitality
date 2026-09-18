@@ -44,7 +44,7 @@ const flashColors = [
   <!-- Floating flat cartoon bar -->
   <div class="funmenu-bar" data-funmenu-bar>
     <a class="funmenu-brand" href="/" aria-label="Change Hospitality home">
-      <img src="/change-hospitality-logo.png" alt="Change Hospitality" />
+      <img src="/change-hospitality-logo-new.svg" alt="Change Hospitality" />
     </a>
 
     <nav class="funmenu-inline" aria-label="Page sections">
@@ -142,22 +142,32 @@ const flashColors = [
   }
 
   .funmenu-brand {
-    display: flex;
-    align-items: center;
+    position: relative;
+    isolation: isolate;
+    display: block;
+    width: 8.5rem;
+    height: 3.6rem;
+    overflow: hidden;
     justify-self: start;
   }
 
   .funmenu-brand img {
-    height: 3.6rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    height: 8.5rem;
     width: 8.5rem;
     object-fit: contain;
-    object-position: left center;
+    transform: translate(-50%, -50%);
+    filter:
+      drop-shadow(2px 2px 0 var(--color-cocoa))
+      drop-shadow(0 3px 4px color-mix(in srgb, var(--color-cocoa) 32%, transparent));
     transition: transform 400ms var(--ease-cartoon);
   }
 
   .funmenu-brand:hover img,
   .funmenu-brand:focus-visible img {
-    transform: rotate(-8deg) scale(1.05);
+    transform: translate(-50%, -50%) rotate(-8deg) scale(1.05);
   }
 
   .funmenu-inline {
