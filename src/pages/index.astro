@@ -33,6 +33,10 @@ const homeSectionLinks = [
   <main class="home-page bg-cream text-ink">
     <HomeStoryHero client:load />
     <FranchiseMap />
+    <div class="home-policy-link">
+      <p>People first. Planet too.</p>
+      <a href="/environmental-policy/">Our environmental policy <span aria-hidden="true">↗</span></a>
+    </div>
     <!--
       <PhilosophyReveal />
       <DivisionSplit />
@@ -45,3 +49,22 @@ const homeSectionLinks = [
   </main>
   <!-- <HomeExperience /> -->
 </BaseLayout>
+
+<style>
+  .home-policy-link {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem 3rem;
+    padding: 2rem 1.25rem;
+    border-top: 2px solid var(--color-bcorp-green);
+    background: var(--color-mint);
+    color: var(--color-bcorp-green);
+  }
+
+  .home-policy-link p { font-family: var(--font-hero); font-size: clamp(1.1rem, 2vw, 1.6rem); }
+  .home-policy-link a { display: inline-flex; align-items: center; gap: 2rem; border: 2px solid currentColor; border-radius: 3rem; padding: 1rem 1.5rem; font-size: 0.85rem; font-weight: 700; }
+  .home-policy-link a:hover { background: var(--color-bcorp-green); color: var(--color-cream); border-color: var(--color-bcorp-green); }
+  .home-policy-link a:focus-visible { outline: 2px solid var(--color-bcorp-green); outline-offset: 4px; }
+</style>

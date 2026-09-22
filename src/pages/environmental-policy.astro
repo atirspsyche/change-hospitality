@@ -1,0 +1,19 @@
+---
+import EnvironmentalPolicy from '../components/EnvironmentalPolicy.astro';
+import FunMenu from '../components/FunMenu.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Environmental Policy | Change Hospitality"
+  description="A letter from our CEO, Jim O’Brien, on our environmental commitments, our B Corp certification and building a better kind of business."
+>
+  <FunMenu
+    menuButtonBackground="var(--color-cream)"
+    menuButtonBorderColor="var(--color-bcorp-green)"
+    menuButtonTextColor="var(--color-bcorp-green)"
+  />
+  <main>
+    <EnvironmentalPolicy />
+  </main>
+</BaseLayout>
