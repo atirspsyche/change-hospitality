@@ -1,899 +1,243 @@
 ---
-import "@fontsource/courier-prime/latin-400.css";
-import "@fontsource/courier-prime/latin-700.css";
+import StoryIllustration from './StoryIllustration.astro';
 
-const paragraphs = [
-  "At Change Hospitality, we are deeply committed to reducing our environmental impact and integrating sustainability into every aspect of our operations. As a certified B Corporation, we are proud to meet high standards of social and environmental performance, accountability, and transparency, demonstrating our belief that business should be a force for good.",
-  "We are also working toward ISO 14001:2015 certification – the internationally recognised standard for Environmental Management Systems. This will provide us with a structured framework to manage our environmental responsibilities, ensure legal compliance, and drive continuous improvement in our sustainability efforts.",
-  "As a people-first recruitment agency, we connect exceptional talent with the UK’s leading hospitality and catering brands. But our mission goes beyond recruitment – we are here to build lasting, meaningful relationships that support our clients, empower our candidates, and positively impact the wider community. Our environmental commitment is a vital part of this mission.",
+// Text identifiers are intentional: replace with approved artwork when supplied.
+// Do not manufacture certification seals or imply these are official logos.
+const partners = [
+  { name: 'ISO 14001', detail: 'Environmental management' },
+  { name: 'ISO 9001', detail: 'Quality management' },
+  { name: 'Ecologi', detail: 'Climate & nature' },
+  { name: 'UNDO', detail: 'Carbon removal' },
+  { name: 'Living Wage', detail: 'Recognised service provider' },
+  { name: 'The Good Apple Effect', detail: 'A safer hospitality industry' },
+  { name: 'Beyond Food', detail: 'Opening doors' },
+];
+const impact = [
+  { number: '498', label: 'trees funded', shape: 'tree' },
+  { number: '15', label: 'projects worldwide', shape: 'round' },
+  { number: '9', unit: 'tCO₂e', label: 'carbon avoidance', shape: 'soft' },
+  { number: '3.09', unit: 'tCO₂e', label: 'carbon removal', shape: 'round' },
+  { number: '34', unit: 'm²', label: 'habitat restoration', shape: 'soft' },
+];
+const social = [
+  {
+    title: 'Living Wage',
+    note: 'Good work deserves fair pay.',
+    illustration: 'chef' as const,
+    text: 'As a recognised Living Wage service provider, accredited by the Living Wage Foundation, we advocate for fair pay across every business we work with because paying a real living wage isn’t just the fair thing to do, it’s also the smart thing to do. When people feel valued, they show up with pride and passion, and that’s the heart of great hospitality.',
+  },
+  {
+    title: 'The Good Apple Effect',
+    note: 'A little kinder. A lot better.',
+    illustration: 'apple' as const,
+    text: 'We’re incredibly proud to support The Good Apple Effect, a movement working to stamp out bullying and the misuse of power in hospitality. It’s an issue the industry has too often stayed quiet about, and one we think matters deeply — everyone deserves to work somewhere they feel safe and respected. We’re constantly using our voice within the industry to help push the conversation forward.',
+  },
+  {
+    title: 'Beyond Food',
+    note: 'Room at the table for everyone.',
+    illustration: 'plate' as const,
+    text: 'Our volunteering work with Beyond Food focuses on helping people facing barriers build careers in hospitality. Through mentoring and kitchen sessions, our team is working directly with people to share experience, build confidence and open a way into an industry we love.',
+  },
 ];
 ---
 
-<section class="policy" aria-labelledby="policy-title" data-policy>
-  <div class="policy-frame">
-    <div class="policy-topline" aria-hidden="true">
-      <span>People first. Planet too.</span>
-      <span>A note on what matters.</span>
-    </div>
-
-    <div class="policy-intro">
-      <p class="policy-kicker" data-intro-reveal>
-        Good people. Positive change.
-      </p>
-      <h1 id="policy-title">
-        <span class="policy-title-line"
-          ><span data-title-word>Environmental</span></span
-        >
-        <span class="policy-title-line"
-          ><span data-title-word>Policy</span></span
-        >
-      </h1>
-      <p class="policy-intro-note" data-intro-reveal>
-        A better future is everybody’s business.<br />Here’s our commitment to
-        it.
-      </p>
-      <a class="policy-flow-scroll" href="#policy-letter"
-        >Scroll down <span aria-hidden="true">↓</span></a
-      >
-    </div>
-
-    <aside
-      class="policy-seal"
-      aria-label="Proud to be a certified B Corporation"
-    >
-      <span class="policy-seal-label">Proud to be</span>
-      <img
-        src="/bcorp-logo.webp"
-        width="771"
-        height="905"
-        alt="Certified B Corporation"
-        fetchpriority="high"
-      />
-      <span class="policy-seal-caption">Business as a<br />force for good.</span
-      >
+<div class="impact-page">
+  <section class="impact-hero" aria-labelledby="impact-title">
+    <div class="hero-puddle" aria-hidden="true"></div>
+    <p class="eyebrow sticker">People first. Planet too.</p>
+    <h1 id="impact-title">Sustainability<br />&amp; Impact</h1>
+    <p class="hero-note">Good business should<br />do a little good.</p>
+    <div class="hero-sprout" aria-hidden="true"><StoryIllustration kind="sprout" /></div>
+    <a href="#our-commitment" class="hero-scroll">Small changes. Lasting impact. <span aria-hidden="true">↓</span></a>
+    <aside class="bcorp-badge" aria-label="Certified B Corporation since October 2025">
+      <span>Proud to be</span>
+      <img src="/bcorp-logo.webp" width="771" height="905" alt="Certified B Corporation" fetchpriority="high" />
+      <span>A force for good.<br />Since October 2025.</span>
     </aside>
+  </section>
 
-    <div class="policy-sprout" aria-hidden="true">
-      <svg viewBox="0 0 240 260" fill="none">
-        <path
-          class="sprout-ground"
-          d="M25 218c35-19 153-23 193 1-26 29-164 31-193-1Z"></path>
-        <path
-          class="sprout-leaf"
-          d="M122 150C62 162 22 120 28 69c57-9 104 19 94 81Z"></path>
-        <path
-          class="sprout-leaf"
-          d="M124 118c-12-58 29-101 89-99 5 55-24 98-89 99Z"></path>
-        <path
-          class="sprout-stem"
-          d="M122 217c3-51 6-91 49-150M123 167c-5-26-25-49-56-67"></path>
-        <path class="sprout-face" d="M151 66v9m25-19v9m-25 27c9 5 19 0 23-8"
-        ></path>
-        <path
-          class="sprout-rays"
-          d="m17 36 12 12M65 12l5 18M225 131l-18 1M221 162l-15-9"></path>
-      </svg>
-      <span>A little change.<br />A lasting difference.</span>
+  <section class="impact-intro section-pad" id="our-commitment" aria-labelledby="commitment-title">
+    <div class="intro-heading">
+      <p class="eyebrow">Not an add-on. Part of who we are.</p>
+      <h2 id="commitment-title">A better way<br />to do business.</h2>
+      <span class="intro-flower" aria-hidden="true">✳</span>
     </div>
-
-    <article
-      class="policy-letter"
-      aria-labelledby="policy-letter-title"
-      id="policy-letter"
-      tabindex="-1"
-    >
-      <header class="policy-letter-header">
-        <div>
-          <p>From the desk of</p>
-          <h2 id="policy-letter-title">Jim O’Brien</h2>
-        </div>
-        <span class="policy-letter-subject"
-          >Our environmental<br />commitment</span
-        >
-      </header>
-      <div class="policy-letter-window">
-        <div class="policy-letter-body" data-letter-source>
-          {paragraphs.map((paragraph) => <p>{paragraph}</p>)}
-          <p class="policy-signature">
-            <strong>Jim O’Brien</strong><br />CEO and Founder
-          </p>
-        </div>
-      </div>
-      <footer class="policy-letter-footer">
-        <span>Change Hospitality</span>
-        <span>People. Planet. Possibility.</span>
-      </footer>
-    </article>
-
-    <div class="policy-bottomline">
-      <a class="policy-scroll" href="#policy-letter" data-scroll-letter>
-        <span class="policy-scroll-icon" aria-hidden="true">↓</span>
-        <span
-          ><span data-scroll-label>Scroll down</span><small data-scroll-note
-            >A letter from our CEO</small
-          ></span
-        >
-      </a>
-      <div class="policy-progress" aria-hidden="true">
-        <span data-progress-label>Our commitment, in our words</span>
-        <span class="policy-progress-track"
-          ><span data-progress-bar></span></span
-        >
-      </div>
-      <button class="policy-read" type="button" data-read-letter hidden
-        >Read full letter <span aria-hidden="true">↗</span></button
-      >
-      <a class="policy-home" href="/"
-        >Back to home <span aria-hidden="true">↗</span></a
-      >
+    <div class="copy intro-copy">
+      <p>For more than two decades, we’ve held onto a simple idea: recruitment is more than just about filling roles. It's about creating workplaces where people can thrive. Recruitment may not leave much of a physical footprint, but that's never been our excuse for complacency. We're firm believers that companies have a duty to do right by their teams, their clients, and the environment. Getting certified as a B Corp was the natural next step for us. It keeps us honest, holds us accountable, and proves these values are baked into everything we do.</p>
     </div>
-  </div>
-</section>
+    <div class="partner-garden" role="list" aria-label="Our certifications and partners">
+      <div class="partner-bcorp" role="listitem"><img src="/bcorp-logo.webp" width="771" height="905" alt="Certified B Corporation" loading="lazy" /></div>
+      {partners.map((partner) => <div class="partner-name" role="listitem"><span>{partner.name}</span><small>{partner.detail}</small></div>)}
+    </div>
+  </section>
+
+  <section class="certifications section-pad wave-section" id="certifications" aria-labelledby="certifications-title">
+    <div class="certification-copy">
+      <p class="eyebrow">Good intentions. Independently checked.</p>
+      <h2 id="certifications-title">Our<br />certifications.</h2>
+      <div class="copy">
+        <p>In October 2025, Change became a certified B Corp - joining a global movement of businesses measured not just on profit, but on their impact on people and the planet. To get there, we were independently assessed on how we treat our team, our candidates, our community and the environment, against standards we have to keep re-earning. It's the certification we're proudest of, because you can't talk your way into it.</p>
+        <p>Behind it sit two more independent standards that keep us honest day to day: ISO 14001 for how we manage our environmental impact, and ISO 9001 for the quality and consistency of how we work. Together they mean the way we operate isn't just well-intentioned - it's audited, documented and checked.</p>
+      </div>
+    </div>
+    <div class="certification-scrapbook">
+      <div class="certification-seal"><img src="/bcorp-logo.webp" width="771" height="905" alt="Certified B Corporation" loading="lazy" /><span>People.<br />Planet.<br />Purpose.</span></div>
+      <figure class="certification-photo photo-one"><img src="/recruit-talent-images/boh.png" width="309" height="150" loading="lazy" alt="A chef cooking over flames in a professional kitchen" /><figcaption>For the people behind the pass.</figcaption></figure>
+      <div class="iso-badges"><span><strong>ISO 14001</strong>Environmental<br />management</span><span><strong>ISO 9001</strong>Quality &amp;<br />consistency</span></div>
+      <figure class="certification-photo photo-two"><img src="/recruit-talent-images/event1.png" width="309" height="150" loading="lazy" alt="A hospitality table setting with flowers, plates and glassware" /><figcaption>And the moments they make.</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="environment section-pad wave-section" id="environment" aria-labelledby="environment-title">
+    <div class="environment-header">
+      <div><p class="eyebrow">Our environmental impact</p><h2 id="environment-title">A little greener.<br />Together.</h2><h3>Partnering with Ecologi and UNDO</h3></div>
+      <div class="environment-sprout" aria-hidden="true"><StoryIllustration kind="sprout" /></div>
+    </div>
+    <div class="copy environment-copy">
+      <p>Our main environmental work is through our partnerships with Ecologi and Undo, who deliver climate and nature projects around the world. Through them, we fund reforestation, carbon avoidance, carbon removal and habitat restoration - supporting projects in places where the impact is greatest. To date, we've funded 498 trees, contributed to 15 projects worldwide, and supported 9 tCO₂e of carbon avoidance, 3.09 tCO₂e of carbon removal and 34 m² of habitat restoration.</p>
+    </div>
+    <dl class="impact-numbers">
+      {impact.map((item) => <div class={`impact-number shape-${item.shape}`}><dt>{item.label}</dt><dd>{item.number}{item.unit && <span>{item.unit}</span>}</dd></div>)}
+    </dl>
+    <div class="office-note">
+      <p class="office-sticker"><span aria-hidden="true">☀</span>Our office runs on<br /><strong>renewable electricity</strong></p>
+      <p class="copy">Closer to home, we run our office entirely on renewable electricity, and we look at our own footprint the same way we ask our partners to look at theirs - honestly, and with room to improve. We keep these commitments under regular review, tracking what we fund and looking for where we can do more.</p>
+    </div>
+  </section>
+
+  <section class="social section-pad wave-section" id="social-impact" aria-labelledby="social-title">
+    <header class="social-header"><p class="eyebrow">Our social impact</p><h2 id="social-title">Fair pay, safe workplaces,<br />and open doors.</h2><p>Hospitality is about people. So are we.</p></header>
+    <div class="social-cards">
+      {social.map((item, index) => <article class={`social-card social-card-${index + 1}`}>
+        <div class="social-illustration"><StoryIllustration kind={item.illustration} /></div>
+        <p class="social-note">{item.note}</p>
+        <h3>{item.title}</h3>
+        <p class="copy">{item.text}</p>
+      </article>)}
+    </div>
+  </section>
+
+</div>
 
 <style>
-  .policy {
-    --policy-type: "Courier Prime", "Courier New", monospace;
-    background: var(--color-cream);
-    color: var(--color-bcorp-green);
+  .impact-page { background: var(--color-cream); color: var(--color-bcorp-green); font-family: var(--font-sans); overflow: clip; }
+  .impact-page h2, .impact-page h3 { font-family: var(--font-display); font-weight: 600; text-wrap: balance; }
+  .impact-page h2 { font-size: clamp(2.5rem, 5.3vw, 5.5rem); line-height: 1.04; letter-spacing: -0.04em; }
+  .impact-page h3 { font-size: clamp(1.35rem, 2.3vw, 2rem); line-height: 1.15; }
+  .section-pad { padding: clamp(4rem, 8vw, 8rem) max(1.5rem, calc((100vw - 1280px) / 2)); }
+  .eyebrow { font-family: var(--font-display); font-weight: 600; font-size: 0.85rem; line-height: 1.4; margin-bottom: 1.5rem; }
+  .copy { font-size: clamp(1rem, 1.25vw, 1.16rem); line-height: 1.8; }
+  .copy p + p { margin-top: 1.5rem; }
+  .wave-section { position: relative; margin-top: 0; }
+  .wave-section::before { content: ''; position: absolute; left: 0; right: 0; top: -2rem; height: 2.1rem; background: inherit; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 40' preserveAspectRatio='none'%3E%3Cpath d='M0 20Q75 0 150 20T300 20T450 20T600 20T750 20T900 20T1050 20T1200 20V40H0Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat; }
+  .impact-hero { position: relative; isolation: isolate; min-height: min(900px, 100svh); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 9rem 1.5rem 5rem; text-align: center; }
+  .hero-puddle { position: absolute; z-index: -1; inset: 18% 14% 14%; border-radius: 48% 52% 44% 56% / 46% 38% 62% 54%; background: var(--color-mint); transform: rotate(-6deg); }
+  .sticker { padding: 0.9rem 1.5rem; border-radius: 50%; background: var(--color-citron); transform: rotate(-5deg); }
+  h1 { position: relative; z-index: 1; font-family: var(--font-hero); font-size: clamp(2.2rem, 7.8vw, 8rem); line-height: 1.15; letter-spacing: -0.055em; }
+  .hero-note { margin-top: 1.75rem; font-family: var(--font-display); font-size: clamp(1rem, 1.6vw, 1.4rem); font-weight: 500; }
+  .hero-scroll { display: inline-flex; align-items: center; gap: 1.5rem; margin-top: 2rem; font-family: var(--font-display); font-size: 0.8rem; font-weight: 500; }
+  .hero-scroll span { display: grid; place-items: center; background: var(--color-cream); width: 2.5rem; height: 2.5rem; border-radius: 50%; font-size: 1.4rem; }
+  .hero-sprout { position: absolute; width: clamp(8rem, 19vw, 17rem); bottom: 8%; left: 3%; transform: rotate(-9deg); }
+  .bcorp-badge { position: absolute; right: 5%; bottom: 11%; display: flex; flex-direction: column; align-items: center; gap: 0.8rem; background: var(--color-blush); border-radius: 48% 48% 42% 42% / 30% 30% 23% 23%; padding: 1.75rem 1.5rem; width: 10rem; transform: rotate(9deg); font-family: var(--font-display); font-size: 0.7rem; font-weight: 600; }
+  .bcorp-badge img { width: 4.6rem; height: auto; mix-blend-mode: multiply; }
+  .impact-intro { display: grid; grid-template-columns: 0.9fr 1.1fr; align-items: start; gap: 3rem; padding-top: 4rem; }
+  .intro-flower { display: block; width: fit-content; font-size: 7rem; line-height: 1; margin-top: 1rem; transform: rotate(10deg); }
+  .partner-garden { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin-top: 1rem; padding-bottom: 1.5rem; }
+  .partner-garden > div { display: flex; min-height: 9rem; flex-direction: column; align-items: center; justify-content: center; padding: 1.2rem; border-radius: 48% 52% 43% 57% / 42% 39% 61% 58%; background: var(--color-mint); text-align: center; }
+  .partner-garden > div:nth-child(3n) { background: var(--color-blush); transform: rotate(3deg); }
+  .partner-garden > div:nth-child(3n + 2) { background: var(--color-citron); transform: rotate(-3deg); }
+  .partner-bcorp img { width: 4rem; height: auto; mix-blend-mode: multiply; }
+  .partner-name span { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.15rem, 2vw, 1.8rem); line-height: 1.1; }
+  .partner-name small { font-size: 0.7rem; margin-top: 0.6rem; }
+  .certifications { background: var(--color-mint); display: grid; grid-template-columns: 1.15fr 0.85fr; gap: clamp(2rem, 7vw, 7rem); align-items: center; }
+  .certification-copy h2 { margin-bottom: 2rem; }
+  .certification-scrapbook { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
+  .certification-seal { display: flex; align-items: center; justify-content: center; gap: 2rem; width: 100%; padding: 2rem; background: var(--color-cream); border-radius: 48% 52% 47% 53%; transform: rotate(4deg); }
+  .certification-seal img { width: 5.5rem; height: auto; mix-blend-mode: multiply; }
+  .certification-seal span { font-family: var(--font-display); font-size: clamp(1.3rem, 2.5vw, 2rem); line-height: 1.1; font-weight: 600; }
+  .certification-photo { width: min(100%, 21rem); padding: 0.75rem 0.75rem 1rem; border-radius: 2rem; background: var(--color-paper); text-align: center; }
+  .certification-photo img { width: 100%; height: auto; border-radius: 1.5rem; }
+  .certification-photo figcaption { padding-top: 0.7rem; font-family: var(--font-display); font-size: 0.8rem; font-weight: 500; }
+  .photo-one { transform: rotate(-5deg); align-self: flex-start; }
+  .photo-two { transform: rotate(5deg); align-self: flex-end; }
+  .iso-badges { width: 100%; display: flex; justify-content: center; gap: 1rem; }
+  .iso-badges > span { display: grid; place-content: center; background: var(--color-citron); border-radius: 50%; width: 9rem; height: 9rem; font-size: 0.75rem; text-align: center; }
+  .iso-badges > span:last-child { background: var(--color-blush); transform: rotate(7deg); }
+  .iso-badges strong { font-family: var(--font-display); font-weight: 600; font-size: 1.3rem; margin-bottom: 0.5rem; }
+  .environment { background: var(--color-cream); }
+  .environment-header { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+  .environment-header h3 { margin-top: 1.75rem; }
+  .environment-sprout { width: min(22%, 14rem); flex-shrink: 0; transform: rotate(8deg); }
+  .environment-copy { max-width: 58rem; margin-top: 2rem; }
+  .impact-numbers { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1rem; margin: 3rem 0; }
+  .impact-number { display: flex; flex-direction: column-reverse; justify-content: center; text-align: center; background: var(--color-mint); min-height: 12rem; padding: 1.5rem 0.75rem; }
+  .shape-tree { border-radius: 48% 48% 20% 20%; background: var(--color-citron); transform: rotate(-4deg); }
+  .shape-round { border-radius: 50%; }
+  .shape-soft { border-radius: 43% 57% 35% 65% / 54% 37% 63% 46%; background: var(--color-blush); transform: rotate(4deg); }
+  .impact-number dd { font-family: var(--font-display); font-weight: 600; font-size: clamp(2.5rem, 4.5vw, 4.5rem); line-height: 1; }
+  .impact-number dd span { display: block; margin-top: 0.3rem; font-size: 1rem; }
+  .impact-number dt { margin-top: 0.9rem; font-size: 0.85rem; }
+  .office-note { display: grid; grid-template-columns: 0.8fr 1.7fr; align-items: center; gap: 3rem; margin-top: 4rem; }
+  .office-sticker { background: var(--color-citron); border-radius: 45% 55% 52% 48% / 42% 39% 61% 58%; padding: 1.75rem 1.5rem 2.5rem; font-family: var(--font-display); font-size: 1rem; text-align: center; transform: rotate(-4deg); }
+  .office-sticker > span { display: block; font-size: 3rem; line-height: 1.3; }
+  .office-sticker strong { font-weight: 600; }
+  .social { background: var(--color-blush); padding-bottom: 8rem; }
+  .social-header { text-align: center; }
+  .social-header > p:last-child { font-family: var(--font-display); font-size: 1.15rem; margin-top: 1.5rem; }
+  .social-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; gap: 1.5rem; margin-top: 4rem; }
+  .social-card { padding: 1.5rem 1.7rem 2.5rem; background: var(--color-cream); border-radius: 3rem 3rem 2rem 4rem; }
+  .social-card-2 { background: var(--color-mint); margin-top: 3rem; border-radius: 4rem 2rem 4rem 2rem; }
+  .social-card-3 { margin-top: 1rem; border-radius: 2rem 4rem 2rem 4rem; }
+  .social-illustration { width: 10rem; margin: 0 auto 1rem; }
+  .social-note { font-family: var(--font-display); font-size: 0.75rem; font-weight: 500; margin-bottom: 0.75rem; }
+  .social-card h3 { margin-bottom: 1.5rem; }
+  .social-card .copy { font-size: 1rem; line-height: 1.75; }
+  .impact-page a:hover { transform: rotate(-2deg); }
+  .impact-page :focus-visible { outline: 3px solid currentColor; outline-offset: 5px; }
+  .impact-page section[id] { scroll-margin-top: 6rem; }
+  @media (min-width: 1024px) and (max-height: 750px) { .impact-hero { min-height: 48rem; } }
+  @media (max-width: 1023px) {
+    .impact-hero { min-height: 48rem; padding-bottom: 14rem; }
+    .hero-puddle { inset: 20% 4% 28%; }
+    .hero-sprout { bottom: 2rem; left: 12%; width: 10rem; }
+    .bcorp-badge { bottom: 2rem; right: 14%; width: 8rem; padding: 1rem; font-size: 0.6rem; }
+    .bcorp-badge img { width: 3.5rem; }
+    .impact-intro, .certifications { grid-template-columns: 1fr; gap: 2rem; }
+    .intro-flower { display: none; }
+    .partner-garden { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .certification-scrapbook { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; max-width: 46rem; margin: 1rem auto; }
+    .impact-numbers { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .social-cards { grid-template-columns: 1fr; max-width: 44rem; margin-inline: auto; }
+    .social-card { display: grid; grid-template-columns: 9rem 1fr; gap: 0 1.5rem; margin-top: 0; padding: 2rem; }
+    .social-illustration { width: 9rem; grid-row: 1 / 4; align-self: center; }
+    .social-card .copy { grid-column: 2; }
   }
-
-  .policy-frame {
-    position: relative;
-    isolation: isolate;
-    min-height: 100svh;
-    padding: 7.5rem clamp(1.25rem, 4vw, 4rem) 2rem;
+  @media (max-width: 600px) {
+    .impact-hero { min-height: 44rem; padding-top: 8rem; }
+    .hero-puddle { inset: 19% -15% 29%; }
+    .hero-sprout { left: 6%; }
+    .bcorp-badge { right: 9%; }
+    .partner-garden { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+    .partner-garden > div { min-height: 8rem; padding: 1rem; }
+    .certification-scrapbook { gap: 1rem; }
+    .certification-seal { flex-direction: column; gap: 0.75rem; padding: 1.25rem; text-align: center; }
+    .certification-seal span { font-size: 1.1rem; }
+    .certification-seal img { width: 3.5rem; }
+    .certification-photo { padding: 0.5rem 0.5rem 1rem; border-radius: 1.2rem; }
+    .certification-photo figcaption { font-size: 0.65rem; }
+    .iso-badges { flex-direction: column; align-items: center; gap: 0.75rem; }
+    .iso-badges > span { width: 7.5rem; height: 7.5rem; font-size: 0.65rem; }
+    .iso-badges strong { font-size: 1rem; }
+    .environment-header { position: relative; }
+    .environment-header > div:first-child { position: relative; z-index: 1; }
+    .environment-sprout { display: none; }
+    .impact-numbers { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+    .impact-number { min-height: 10rem; }
+    .impact-number:last-child { grid-column: 1 / -1; width: 65%; justify-self: center; }
+    .office-note { grid-template-columns: 1fr; gap: 2rem; }
+    .office-sticker { max-width: 20rem; justify-self: center; width: 100%; }
+    .social-card { display: block; padding: 1.5rem 1.5rem 2rem; }
+    .social-illustration { width: 10rem; }
   }
-
-  .policy-topline,
-  .policy-bottomline {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1.5rem;
-  }
-
-  .policy-topline {
-    border-top: 1.5px solid var(--color-bcorp-green);
-    padding-top: 1rem;
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-  }
-
-  .policy-intro {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 60svh;
-    padding: 3rem 0;
-    text-align: center;
-  }
-
-  .policy-kicker {
-    margin-bottom: 1.6rem;
-    border: 1.5px solid currentColor;
-    border-radius: 100%;
-    background: var(--color-mint);
-    padding: 0.75rem 1.5rem;
-    font-family: var(--font-display);
-    font-weight: 500;
-    font-size: 0.85rem;
-    transform: rotate(-3deg);
-  }
-
-  .policy h1 {
-    font-family: var(--font-hero);
-    font-size: clamp(2.2rem, 7.8vw, 9.5rem);
-    line-height: 1.1;
-    letter-spacing: -0.055em;
-  }
-
-  .policy-title-line {
-    display: block;
-    overflow: clip;
-    padding: 0.04em 0.1em;
-  }
-  .policy-title-line > span {
-    display: block;
-  }
-  .policy-title-dot {
-    color: var(--color-flame);
-  }
-
-  .policy-intro-note {
-    margin-top: 1.6rem;
-    font-family: var(--font-display);
-    font-weight: 500;
-    font-size: clamp(0.95rem, 1.2vw, 1.15rem);
-    line-height: 1.6;
-  }
-
-  .policy-flow-scroll {
-    display: inline-flex;
-    align-items: center;
-    gap: 1.5rem;
-    margin-top: 2rem;
-    font-family: var(--font-display);
-    font-size: 0.8rem;
-  }
-  .policy-flow-scroll span {
-    font-size: 1.4rem;
-    font-family: var(--font-display);
-  }
-
-  .policy-seal {
-    position: relative;
-    z-index: 3;
-    display: flex;
-    width: 10rem;
-    margin: 0 auto 3rem;
-    padding: 1rem 1.25rem;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.8rem;
-    border: 2px solid var(--color-bcorp-green);
-    border-radius: 5rem 5rem 0.4rem 0.4rem;
-    background: var(--color-mint);
-    text-align: center;
-    transform: rotate(7deg);
-  }
-
-  .policy-seal img {
-    width: 5.1rem;
-    height: auto;
-    mix-blend-mode: multiply;
-  }
-  .policy-seal-label {
-    font-size: 0.65rem;
-    font-family: var(--font-display);
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-  .policy-seal-caption {
-    font-family: var(--font-display);
-    font-size: 0.75rem;
-    line-height: 1.15;
-  }
-
-  .policy-sprout {
-    display: none;
-    position: absolute;
-    left: 5%;
-    bottom: 17%;
-    width: clamp(8rem, 14vw, 14rem);
-    transform: rotate(-9deg);
-    text-align: center;
-  }
-
-  .policy-sprout svg {
-    width: 100%;
-    overflow: visible;
-    stroke: var(--color-bcorp-green);
-    stroke-width: 3.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-  .sprout-ground {
-    fill: var(--color-blush);
-  }
-  .sprout-leaf {
-    fill: var(--color-citron);
-  }
-  .sprout-stem {
-    stroke-width: 5;
-  }
-  .policy-sprout span {
-    display: block;
-    margin-top: 0.6rem;
-    font-family: var(--policy-type);
-    font-size: 0.85rem;
-  }
-
-  .policy-letter {
-    position: relative;
-    z-index: 2;
-    scroll-margin-top: 6rem;
-    width: min(100%, 51rem);
-    margin: 0 auto 3rem;
-    border: 1.5px solid var(--color-bcorp-green);
-    background: var(--color-paper);
-    padding: clamp(1.25rem, 3vw, 2.75rem);
-  }
-
-  .policy-letter::before {
-    position: absolute;
-    top: -0.8rem;
-    left: 42%;
-    width: 16%;
-    height: 1.6rem;
-    background: var(--color-blush);
-    border: 1px solid var(--color-cocoa);
-    transform: rotate(-4deg);
-    content: "";
-  }
-
-  .policy-letter-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    border-bottom: 1px solid currentColor;
-    padding-bottom: 1rem;
-    margin-bottom: 1.25rem;
-  }
-
-  .policy-letter-header p,
-  .policy-letter-subject {
-    font-family: var(--policy-type);
-    font-size: 0.75rem;
-    line-height: 1.4;
-  }
-  .policy-letter-header h2 {
-    margin-top: 0.15rem;
-    font-family: var(--font-hero);
-    font-size: 1.45rem;
-    letter-spacing: -0.04em;
-  }
-  .policy-letter-subject {
-    text-align: right;
-  }
-  .policy-letter-body {
-    font-family: var(--policy-type);
-    font-size: clamp(1rem, 1.23vw, 1.15rem);
-    line-height: 1.55;
-    color: var(--color-ink);
-  }
-  .policy-letter-body p {
-    margin: 0 0 1.25em;
-  }
-  .policy-letter-body p:last-child {
-    margin-bottom: 0;
-  }
-  .policy-signature {
-    color: var(--color-bcorp-green);
-  }
-  .policy-signature strong {
-    font-weight: 700;
-  }
-  .policy-letter-footer {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    border-top: 1px solid currentColor;
-    padding-top: 0.85rem;
-    margin-top: 1.25rem;
-    font-size: 0.6rem;
-    font-weight: 700;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-  }
-
-  .policy-bottomline {
-    flex-wrap: wrap;
-    border-top: 1.5px solid currentColor;
-    padding-top: 1.1rem;
-  }
-  .policy-scroll {
-    display: flex;
-    align-items: center;
-    gap: 0.85rem;
-    font-size: 0.85rem;
-    font-weight: 700;
-  }
-  .policy-scroll-icon {
-    display: grid;
-    place-items: center;
-    width: 2.7rem;
-    height: 2.7rem;
-    border: 1.5px solid currentColor;
-    border-radius: 50%;
-    font-size: 1.4rem;
-  }
-  .policy-scroll small {
-    display: block;
-    margin-top: 0.25rem;
-    font-family: var(--policy-type);
-    font-size: 0.7rem;
-    font-weight: 400;
-  }
-  .policy-read,
-  .policy-home {
-    padding: 0.7rem 0;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-decoration: underline;
-    text-underline-offset: 0.3em;
-  }
-  .policy-read {
-    border: 0;
-    background: none;
-    cursor: pointer;
-  }
-  .policy-read span,
-  .policy-home span {
-    margin-left: 0.75rem;
-  }
-  .policy-progress {
-    display: none;
-    width: 13rem;
-    text-align: center;
-    font-family: var(--policy-type);
-    font-size: 0.65rem;
-  }
-  .policy-progress-track {
-    display: block;
-    height: 3px;
-    margin-top: 0.65rem;
-    background: var(--color-mint);
-  }
-  .policy-progress-track > span {
-    display: block;
-    height: 100%;
-    background: var(--color-bcorp-green);
-    transform: scaleX(0);
-    transform-origin: left;
-  }
-  .policy :focus-visible {
-    outline: 2px solid var(--color-bcorp-green);
-    outline-offset: 5px;
-  }
-  .policy :global(.policy-word) {
-    display: inline-block;
-    white-space: nowrap;
-  }
-  .policy :global(.policy-char) {
-    visibility: hidden;
-  }
-  .policy :global(.policy-char.is-typed) {
-    visibility: visible;
-  }
-  .policy :global(.policy-char.is-caret) {
-    position: relative;
-  }
-  .policy :global(.policy-char.is-caret)::after {
-    position: absolute;
-    left: 100%;
-    top: 0.1em;
-    width: 2px;
-    height: 1em;
-    background: var(--color-bcorp-green);
-    content: "";
-  }
-  .policy :global(.policy-accessible) {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-
-  @media (min-width: 1024px) and (min-height: 600px) {
-    .policy-intro {
-      min-height: 70svh;
-    }
-    .policy-seal {
-      position: absolute;
-      right: 5%;
-      top: 56svh;
-      width: 9rem;
-    }
-    .policy-sprout {
-      display: block;
-      top: 57svh;
-      bottom: auto;
-      width: 11vw;
-    }
-    .policy.is-enhanced {
-      height: 580svh;
-    }
-    .is-enhanced .policy-frame {
-      position: sticky;
-      top: 0;
-      height: 100svh;
-      min-height: 0;
-      overflow: clip;
-    }
-    .is-enhanced .policy-intro {
-      position: absolute;
-      inset: 20% 3% 17%;
-      min-height: 0;
-      padding: 0;
-    }
-    .is-enhanced .policy-letter {
-      position: absolute;
-      top: max(23%, 11rem);
-      bottom: 15%;
-      left: 50%;
-      width: min(64%, 51rem);
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      transform: translateX(-50%);
-      opacity: 0;
-    }
-    .is-enhanced .policy-seal,
-    .is-enhanced .policy-sprout {
-      top: auto;
-      bottom: 20%;
-      margin-bottom: 0;
-    }
-    .is-enhanced .policy-letter-window {
-      flex: 1;
-      min-height: 0;
-      overflow: clip;
-    }
-    .is-enhanced .policy-letter-header {
-      flex: 0 0 auto;
-    }
-    .is-enhanced .policy-letter-footer {
-      flex: 0 0 auto;
-    }
-    .is-enhanced .policy-bottomline {
-      position: absolute;
-      bottom: 2rem;
-      left: clamp(1.25rem, 4vw, 4rem);
-      right: clamp(1.25rem, 4vw, 4rem);
-    }
-    .is-enhanced .policy-progress {
-      display: block;
-    }
-    .is-enhanced .policy-flow-scroll {
-      display: none;
-    }
-    .is-enhanced .policy-home {
-      display: none;
-    }
-    .is-enhanced.is-complete .policy-home {
-      display: block;
-    }
-    .policy.is-reading .policy-intro {
-      min-height: 32rem;
-    }
-  }
-
-  @media (max-width: 1023px), (max-height: 599px) {
-    .policy-frame {
-      padding-top: 6.5rem;
-    }
-    .policy-topline {
-      font-size: 0.55rem;
-      letter-spacing: 0.07em;
-    }
-    .policy-intro {
-      min-height: 58svh;
-    }
-    .policy-seal {
-      width: 8rem;
-      padding: 0.85rem 1rem;
-      margin-bottom: 4rem;
-    }
-    .policy-seal img {
-      width: 4rem;
-    }
-    .policy-letter-subject {
-      font-size: 0.6rem;
-    }
-    .policy-letter-header h2 {
-      font-size: 1.25rem;
-    }
-    .policy-letter-footer {
-      font-size: 0.5rem;
-    }
-    .policy-bottomline {
-      gap: 0.75rem;
-    }
-    .policy-scroll {
-      display: none;
-    }
-    .policy.is-flowing .policy-read {
-      position: absolute;
-      top: 8.25rem;
-      right: 1.25rem;
-      z-index: 4;
-      font-size: 0.7rem;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .policy-scroll {
-      display: none;
-    }
-  }
-
-  @media print {
-    .policy-frame {
-      padding: 0;
-    }
-    .policy-intro {
-      min-height: 0;
-      padding: 1rem 0;
-    }
-    .policy h1 {
-      font-size: 2rem;
-    }
-    .policy-seal,
-    .policy-sprout,
-    .policy-bottomline,
-    .policy-topline,
-    .policy-kicker,
-    .policy-intro-note {
-      display: none;
-    }
-    .policy-letter {
-      width: 100%;
-      border: 0;
-      padding: 1rem;
-      margin: 0;
-    }
-  }
+  @media print { .impact-page { overflow: visible; } .impact-hero { min-height: 0; padding: 1rem; } .hero-puddle, .hero-sprout, .hero-scroll, .bcorp-badge { display: none; } .section-pad { padding: 2rem 1rem; } .wave-section::before { display: none; } }
 </style>
-
-<script>
-  import { gsap } from "gsap";
-  import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-  gsap.registerPlugin(ScrollTrigger);
-  let disposePolicy: (() => void) | undefined;
-
-  function initPolicy() {
-    disposePolicy?.();
-    const root = document.querySelector<HTMLElement>("[data-policy]");
-    if (!root) return;
-
-    const intro = root.querySelector<HTMLElement>(".policy-intro")!;
-    const letter = root.querySelector<HTMLElement>(".policy-letter")!;
-    const source = root.querySelector<HTMLElement>("[data-letter-source]")!;
-    const viewport = root.querySelector<HTMLElement>(".policy-letter-window")!;
-    const readButton =
-      root.querySelector<HTMLButtonElement>("[data-read-letter]")!;
-    const scrollLink = root.querySelector<HTMLAnchorElement>(
-      "[data-scroll-letter]",
-    )!;
-    const scrollLabel = root.querySelector<HTMLElement>("[data-scroll-label]")!;
-    const scrollNote = root.querySelector<HTMLElement>("[data-scroll-note]")!;
-    const progressBar = root.querySelector<HTMLElement>("[data-progress-bar]")!;
-    const progressLabel = root.querySelector<HTMLElement>(
-      "[data-progress-label]",
-    )!;
-    const media = gsap.matchMedia();
-    let reading = false;
-    let scrollToLetter = () =>
-      letter.scrollIntoView({ behavior: "smooth", block: "start" });
-
-    media.add(
-      {
-        desktop: "(min-width: 1024px) and (min-height: 600px)",
-        compact: "(max-width: 1023px), (max-height: 599px)",
-        reduce: "(prefers-reduced-motion: reduce)",
-        print: "print",
-      },
-      (context) => {
-        if (reading || context.conditions?.reduce || context.conditions?.print)
-          return;
-        const desktop = context.conditions?.desktop;
-        root.classList.add(desktop ? "is-enhanced" : "is-flowing");
-        readButton.hidden = false;
-
-        // The intact source is always available to assistive technology.
-        // Only this presentational copy is split, so letters are never announced individually.
-        const visual = source.cloneNode(true) as HTMLElement;
-        visual.removeAttribute("data-letter-source");
-        visual.setAttribute("aria-hidden", "true");
-        source.classList.add("policy-accessible");
-        viewport.append(visual);
-        const walker = document.createTreeWalker(visual, NodeFilter.SHOW_TEXT);
-        const textNodes: Text[] = [];
-        while (walker.nextNode()) textNodes.push(walker.currentNode as Text);
-        const chars: HTMLElement[] = [];
-        for (const node of textNodes) {
-          const fragment = document.createDocumentFragment();
-          for (const word of (node.textContent ?? "").split(/(\s+)/)) {
-            if (!word) continue;
-            if (/^\s+$/.test(word)) {
-              fragment.append(document.createTextNode(word));
-              continue;
-            }
-            const wrapper = document.createElement("span");
-            wrapper.className = "policy-word";
-            for (const character of word) {
-              const span = document.createElement("span");
-              span.className = "policy-char";
-              span.textContent = character;
-              chars.push(span);
-              wrapper.append(span);
-            }
-            fragment.append(wrapper);
-          }
-          node.replaceWith(fragment);
-        }
-
-        let previousCount = 0;
-        const reveal = (count: number) => {
-          chars[previousCount - 1]?.classList.remove("is-caret");
-          if (count > previousCount) {
-            for (let i = previousCount; i < count; i++)
-              chars[i].classList.add("is-typed");
-          } else {
-            for (let i = count; i < previousCount; i++)
-              chars[i].classList.remove("is-typed");
-          }
-          if (count > 0 && count < chars.length)
-            chars[count - 1].classList.add("is-caret");
-          previousCount = count;
-        };
-
-        gsap.from(root.querySelectorAll("[data-title-word]"), {
-          yPercent: 115,
-          rotation: 3,
-          duration: 1.05,
-          stagger: 0.13,
-          ease: "power3.out",
-        });
-        gsap.from(root.querySelectorAll("[data-intro-reveal]"), {
-          opacity: 0,
-          y: 12,
-          duration: 0.65,
-          delay: 0.4,
-          stagger: 0.15,
-        });
-
-        if (desktop) {
-          // CSS sticky owns the frame; ScrollTrigger only drives its contents.
-          const transition = gsap
-            .timeline({ paused: true })
-            .to(intro, { autoAlpha: 0, y: -50, duration: 1, ease: "none" }, 0)
-            .fromTo(
-              letter,
-              { opacity: 0, y: 40, rotation: -2 },
-              { opacity: 1, y: 0, rotation: 0, duration: 1, ease: "none" },
-              0.65,
-            )
-            .to(
-              root.querySelector(".policy-sprout"),
-              { xPercent: -18, scale: 0.8, duration: 1, ease: "none" },
-              0,
-            )
-            .to(
-              root.querySelector(".policy-seal"),
-              {
-                rotation: 0,
-                xPercent: 20,
-                scale: 0.88,
-                duration: 1,
-                ease: "none",
-              },
-              0,
-            );
-
-          const setLetterY = gsap.quickSetter(visual, "y", "px");
-          let lineBottoms: number[] = [];
-          const measure = () => {
-            const top = visual.getBoundingClientRect().top;
-            lineBottoms = chars.map(
-              (char) => char.getBoundingClientRect().bottom - top,
-            );
-          };
-          measure();
-
-          const update = (progress: number) => {
-            transition.progress(Math.min(progress / 0.17, 1));
-            const typingProgress = gsap.utils.clamp(
-              0,
-              1,
-              (progress - 0.18) / 0.76,
-            );
-            const count = Math.floor(typingProgress * chars.length);
-            reveal(count);
-            // Follow the typed line only when the page exceeds the available paper window.
-            const overflow = Math.max(
-              0,
-              visual.scrollHeight - viewport.clientHeight,
-            );
-            const lineOffset = Math.max(
-              0,
-              (lineBottoms[count - 1] ?? 0) - viewport.clientHeight + 30,
-            );
-            setLetterY(-Math.min(lineOffset, overflow));
-            progressBar.style.transform = `scaleX(${typingProgress})`;
-            const complete = typingProgress === 1;
-            root.classList.toggle("is-complete", complete);
-            progressLabel.textContent = complete
-              ? "A commitment that keeps growing."
-              : `${Math.round(typingProgress * 100)}% of our letter`;
-            scrollLabel.textContent = complete
-              ? "Thank you for reading"
-              : progress > 0.17
-                ? "Keep scrolling"
-                : "Scroll down";
-            scrollNote.textContent = complete
-              ? "Small changes. Lasting impact."
-              : progress > 0.17
-                ? "One commitment. Every word."
-                : "A letter from our CEO";
-          };
-          const trigger = ScrollTrigger.create({
-            trigger: root,
-            start: "top top",
-            end: "bottom bottom",
-            onUpdate: (self) => update(self.progress),
-            onRefresh: (self) => {
-              measure();
-              update(self.progress);
-            },
-          });
-          scrollToLetter = () =>
-            window.scrollTo({
-              top: trigger.start + (trigger.end - trigger.start) * 0.2,
-              behavior: "smooth",
-            });
-        } else {
-          // On touch/small screens there is no pinning or artificial scroll distance.
-          // Each paragraph types as it naturally enters the viewport.
-          visual.querySelectorAll<HTMLElement>("p").forEach((paragraph) => {
-            const localChars = Array.from(
-              paragraph.querySelectorAll<HTMLElement>(".policy-char"),
-            );
-            ScrollTrigger.create({
-              trigger: paragraph,
-              start: "top 95%",
-              end: "bottom 80%",
-              onUpdate: (self) => {
-                const count = Math.ceil(self.progress * localChars.length);
-                localChars.forEach((char, index) =>
-                  char.classList.toggle("is-typed", index < count),
-                );
-              },
-            });
-          });
-        }
-
-        let active = true;
-        document.fonts.ready.then(() => {
-          if (active) ScrollTrigger.refresh();
-        });
-        return () => {
-          active = false;
-          visual.remove();
-          source.classList.remove("policy-accessible");
-          root.classList.remove("is-enhanced", "is-flowing", "is-complete");
-          readButton.hidden = true;
-          progressBar.style.transform = "";
-          scrollToLetter = () =>
-            letter.scrollIntoView({ behavior: "smooth", block: "start" });
-        };
-      },
-    );
-
-    const readFullLetter = () => {
-      reading = true;
-      media.revert();
-      root.classList.add("is-reading");
-      letter.scrollIntoView({ behavior: "instant", block: "start" });
-      letter.focus({ preventScroll: true });
-    };
-    const advanceLetter = (event: MouseEvent) => {
-      event.preventDefault();
-      scrollToLetter();
-    };
-    readButton.addEventListener("click", readFullLetter);
-    scrollLink.addEventListener("click", advanceLetter);
-
-    disposePolicy = () => {
-      media.revert();
-      readButton.removeEventListener("click", readFullLetter);
-      scrollLink.removeEventListener("click", advanceLetter);
-    };
-  }
-
-  initPolicy();
-  document.addEventListener("astro:page-load", initPolicy);
-  document.addEventListener("astro:before-swap", () => disposePolicy?.());
-</script>

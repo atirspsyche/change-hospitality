@@ -1,0 +1,293 @@
+---
+import '@fontsource/courier-prime/latin-400.css';
+import '@fontsource/courier-prime/latin-700.css';
+import { storyParagraphs } from '../data/ourStory';
+import StoryIllustration from './StoryIllustration.astro';
+---
+
+<section class="story" aria-labelledby="story-title" data-our-story>
+  <div class="story-frame">
+    <div class="story-blob story-blob-mist" aria-hidden="true"></div>
+    <div class="story-blob story-blob-blush" aria-hidden="true"></div>
+    <div class="story-intro">
+      <p class="story-sticker" data-intro-reveal>A little idea. A lot of heart.</p>
+      <h1 id="story-title"><span><span data-title-word>Our Story</span></span></h1>
+      <p class="story-deck" data-intro-reveal>From rock bands to recruitment.<br />And always, always people first.</p>
+      <a class="story-start" href="#story-letter" data-start-letter>A letter from Jim <span aria-hidden="true">↓</span></a>
+    </div>
+
+    <div class="story-doodle story-chef" aria-hidden="true">
+      <StoryIllustration kind="chef" />
+      <span>Good people.<br />Great hospitality.</span>
+    </div>
+    <div class="story-doodle story-pan" aria-hidden="true">
+      <StoryIllustration kind="pan" />
+      <span>People first.<br />Since day one.</span>
+    </div>
+
+    <article class="story-letter" id="story-letter" aria-labelledby="story-letter-title" tabindex="-1">
+      <header class="story-letter-header">
+        <div><p>From the desk of</p><h2 id="story-letter-title">Jim O’Brien</h2></div>
+        <span class="story-letter-stamp">The story<br />so far</span>
+      </header>
+      <div class="story-letter-window">
+        <div class="story-letter-body" data-letter-source>
+          {storyParagraphs.map((paragraph) => <p>{paragraph}</p>)}
+          <p class="story-signature"><strong>Jim O’Brien</strong><br />CEO and Founder</p>
+        </div>
+      </div>
+      <footer class="story-letter-footer"><span>With love, Change.</span><span>Still people first.</span></footer>
+    </article>
+
+    <div class="story-controls">
+      <p class="story-scroll"><span aria-hidden="true">↓</span><span data-scroll-label>Scroll to turn back the clock</span></p>
+      <div class="story-progress" aria-hidden="true"><span data-progress-label>Every story starts somewhere.</span><span class="story-progress-track"><span data-progress-bar></span></span></div>
+      <button class="story-read" type="button" data-read-letter hidden>Read full letter <span aria-hidden="true">↗</span></button>
+    </div>
+  </div>
+</section>
+
+<section class="story-next" aria-labelledby="story-next-title">
+  <p>Same heart. Next chapter.</p>
+  <h2 id="story-next-title">Good people.<br />Positive change.</h2>
+  <div><a href="/team/">Meet our people <span aria-hidden="true">↗</span></a><a href="/sustainability-impact/">Sustainability &amp; Impact <span aria-hidden="true">↗</span></a></div>
+</section>
+
+<style>
+  .story { position: relative; background: var(--color-cream); color: var(--color-cocoa); font-family: var(--font-sans); }
+  .story-frame { position: relative; isolation: isolate; min-height: 100svh; padding: 7rem 1.5rem 2rem; overflow: clip; }
+  .story-blob { position: absolute; z-index: -1; pointer-events: none; width: 40vw; height: 32vw; border-radius: 44% 56% 63% 37% / 58% 43% 57% 42%; }
+  .story-blob-mist { top: 4%; left: -23%; background: var(--color-mist); transform: rotate(25deg); }
+  .story-blob-blush { top: 9%; right: -24%; background: var(--color-blush); transform: rotate(-20deg); }
+  .story-intro { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 65svh; padding: 3rem 0; text-align: center; }
+  .story-sticker { border-radius: 55% 45% 48% 52%; background: var(--color-blush); padding: 1rem 1.7rem; font-family: var(--font-display); font-weight: 600; transform: rotate(-5deg); }
+  h1 { margin: 1.5rem 0; font-family: var(--font-hero); font-size: clamp(3.5rem, 11.5vw, 11rem); line-height: 1.2; letter-spacing: -0.055em; }
+  h1 > span { display: block; overflow: clip; padding: 0 0.1em; }
+  [data-title-word] { display: block; }
+  .story-deck { font-family: var(--font-display); font-size: clamp(1rem, 1.65vw, 1.5rem); font-weight: 500; line-height: 1.5; }
+  .story-start, .story-next a { display: inline-flex; align-items: center; justify-content: center; gap: 1.5rem; min-height: 3rem; padding: 1rem 1.5rem; border-radius: 2rem; background: var(--color-cocoa); color: var(--color-cream); font-family: var(--font-display); font-weight: 600; }
+  .story-start { margin-top: 2rem; }
+  .story-doodle { position: absolute; width: clamp(7rem, 16vw, 15rem); text-align: center; font-family: var(--font-display); font-weight: 500; line-height: 1.2; }
+  .story-chef { left: 3%; top: 47svh; transform: rotate(-10deg); }
+  .story-pan { right: 3%; top: 48svh; transform: rotate(10deg); }
+  .story-letter { position: relative; width: min(100%, 54rem); margin: 4rem auto 2rem; padding: clamp(1.5rem, 3.2vw, 3rem); background: var(--color-paper); border-radius: 2.8rem 2rem 2.5rem 1.5rem; scroll-margin-top: 6rem; }
+  .story-letter::before { content: ''; position: absolute; left: 40%; top: -0.8rem; width: 20%; height: 1.7rem; background: var(--color-mist); transform: rotate(-4deg); clip-path: polygon(3% 0, 98% 5%, 95% 30%, 100% 50%, 97% 100%, 0 95%, 3% 65%, 0 30%); }
+  .story-letter-header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1.5rem; font-family: var(--font-display); }
+  .story-letter-header p { font-size: 0.8rem; }
+  .story-letter-header h2 { font-size: clamp(1.5rem, 2.4vw, 2.2rem); font-weight: 600; line-height: 1.15; }
+  .story-letter-stamp { padding: 0.8rem 1rem; border-radius: 48% 52% 38% 62%; background: var(--color-blush); font-size: 0.75rem; font-weight: 600; text-align: center; transform: rotate(7deg); }
+  .story-letter-body { font-family: 'Courier Prime', 'Courier New', monospace; color: var(--color-ink); font-size: clamp(1rem, 1.2vw, 1.15rem); line-height: 1.6; }
+  .story-letter-body p { margin-bottom: 1.3em; }
+  .story-letter-body p:last-child { margin-bottom: 0; }
+  .story-signature { color: var(--color-cocoa); }
+  .story-letter-footer { display: flex; justify-content: space-between; gap: 1rem; margin-top: 1.25rem; font-family: var(--font-display); font-size: 0.75rem; font-weight: 500; }
+  .story-controls { display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-family: var(--font-display); font-size: 0.85rem; }
+  .story-scroll { display: flex; gap: 0.75rem; align-items: center; }
+  .story-scroll > span:first-child { display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 50%; background: var(--color-mist); font-size: 1.5rem; }
+  .story-progress { width: 15rem; text-align: center; font-size: 0.75rem; }
+  .story-progress-track { display: block; height: 0.5rem; margin-top: 0.65rem; border-radius: 1rem; overflow: hidden; background: var(--color-blush); }
+  .story-progress-track > span { display: block; height: 100%; background: var(--color-cocoa); transform: scaleX(0); transform-origin: left; }
+  .story-read { border-radius: 2rem; padding: 0.9rem 1.2rem; background: var(--color-blush); cursor: pointer; font-weight: 600; }
+  .story:not(.is-enhanced) .story-scroll, .story:not(.is-enhanced) .story-progress { display: none; }
+  .story.is-flowing .story-controls { justify-content: center; }
+  .story-next { position: relative; padding: clamp(4rem, 9vw, 8rem) 1.5rem; border-radius: 50% 50% 0 0 / 3rem 3rem 0 0; margin-top: -1px; background: var(--color-mint); color: var(--color-cocoa); text-align: center; }
+  .story-next > p { font-family: var(--font-display); font-weight: 500; }
+  .story-next h2 { margin: 1.5rem 0 2rem; font-size: clamp(2.5rem, 6vw, 6rem); font-weight: 600; line-height: 1; }
+  .story-next > div { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; }
+  .story-next a:last-child { background: var(--color-cream); color: var(--color-cocoa); }
+  .story a:hover, .story button:hover, .story-next a:hover { transform: rotate(-2deg); }
+  .story :focus-visible, .story-next :focus-visible { outline: 3px solid var(--color-cocoa); outline-offset: 5px; }
+  .story :global(.story-word) { display: inline-block; white-space: nowrap; }
+  .story :global(.story-char) { visibility: hidden; }
+  .story :global(.story-char.is-typed) { visibility: visible; }
+  .story :global(.story-char.is-caret) { position: relative; }
+  .story :global(.story-char.is-caret)::after { position: absolute; left: 100%; top: 0.1em; width: 2px; height: 1em; background: var(--color-cocoa); content: ''; }
+  .story :global(.story-accessible) { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  @media (min-width: 1024px) and (min-height: 600px) {
+    .story.is-enhanced { height: 1100svh; }
+    .is-enhanced .story-frame { position: sticky; top: 0; height: 100svh; min-height: 0; }
+    .is-enhanced .story-intro { position: absolute; inset: 15% 10% 18%; min-height: 0; padding: 0; }
+    .is-enhanced .story-letter { position: absolute; top: max(15%, 6.5rem); bottom: 15%; left: 50%; width: min(66%, 54rem); margin: 0; display: flex; flex-direction: column; transform: translateX(-50%); opacity: 0; visibility: hidden; }
+    .is-enhanced .story-letter-window { flex: 1; min-height: 0; overflow: clip; }
+    .is-enhanced .story-letter-header, .is-enhanced .story-letter-footer { flex: 0 0 auto; }
+    .is-enhanced .story-controls { position: absolute; bottom: 2rem; left: 4%; right: 4%; }
+    .is-enhanced .story-doodle { top: auto; bottom: 20%; width: 13vw; }
+    .is-enhanced .story-chef { left: 1%; }
+    .is-enhanced .story-pan { right: 1%; }
+  }
+  @media (max-width: 1023px), (max-height: 599px) {
+    .story-frame { padding-top: 5rem; }
+    .story-intro { min-height: 36rem; padding-bottom: 10rem; }
+    .story-doodle { top: 30rem; width: 8rem; font-size: 0.75rem; }
+    .story-chef { left: 12%; }
+    .story-pan { right: 12%; }
+    .story-blob { width: 70vw; height: 90vw; }
+    .story-letter { margin-top: 2rem; }
+    .story.is-flowing .story-read { position: absolute; top: 6rem; right: 1rem; min-height: 2.75rem; font-size: 0.75rem; padding: 0.6rem 0.9rem; }
+  }
+  @media (max-width: 380px) { h1 { font-size: 3rem; } .story-sticker { font-size: 0.85rem; } }
+  @media print {
+    .story-frame { padding: 0; overflow: visible; }
+    .story-intro { min-height: 0; padding: 1rem; }
+    h1 { font-size: 2rem; }
+    .story-doodle, .story-blob, .story-controls, .story-sticker, .story-deck, .story-start, .story-next { display: none; }
+    .story-letter { width: 100%; margin: 0; padding: 1rem; }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  gsap.registerPlugin(ScrollTrigger);
+  let disposeStory: (() => void) | undefined;
+
+  function initStory() {
+    disposeStory?.();
+    const root = document.querySelector<HTMLElement>('[data-our-story]');
+    if (!root) return;
+    const intro = root.querySelector<HTMLElement>('.story-intro')!;
+    const letter = root.querySelector<HTMLElement>('.story-letter')!;
+    const source = root.querySelector<HTMLElement>('[data-letter-source]')!;
+    const viewport = root.querySelector<HTMLElement>('.story-letter-window')!;
+    const readButton = root.querySelector<HTMLButtonElement>('[data-read-letter]')!;
+    const startLink = root.querySelector<HTMLAnchorElement>('[data-start-letter]')!;
+    const progressBar = root.querySelector<HTMLElement>('[data-progress-bar]')!;
+    const progressLabel = root.querySelector<HTMLElement>('[data-progress-label]')!;
+    const scrollLabel = root.querySelector<HTMLElement>('[data-scroll-label]')!;
+    const media = gsap.matchMedia();
+    let reading = false;
+    let scrollToLetter = () => letter.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    media.add({
+      desktop: '(min-width: 1024px) and (min-height: 600px)',
+      compact: '(max-width: 1023px), (max-height: 599px)',
+      reduce: '(prefers-reduced-motion: reduce)',
+      print: 'print',
+    }, (context) => {
+      if (reading || context.conditions?.reduce || context.conditions?.print) return;
+      const desktop = context.conditions?.desktop;
+      root.classList.add(desktop ? 'is-enhanced' : 'is-flowing');
+      readButton.hidden = false;
+
+      // Preserve the complete, unsplit letter for assistive technology and no-JS reading.
+      const visual = source.cloneNode(true) as HTMLElement;
+      visual.removeAttribute('data-letter-source');
+      visual.setAttribute('aria-hidden', 'true');
+      source.classList.add('story-accessible');
+      viewport.append(visual);
+      const walker = document.createTreeWalker(visual, NodeFilter.SHOW_TEXT);
+      const textNodes: Text[] = [];
+      while (walker.nextNode()) textNodes.push(walker.currentNode as Text);
+      const chars: HTMLElement[] = [];
+      for (const node of textNodes) {
+        const fragment = document.createDocumentFragment();
+        for (const word of (node.textContent ?? '').split(/(\s+)/)) {
+          if (!word) continue;
+          if (/^\s+$/.test(word)) { fragment.append(document.createTextNode(word)); continue; }
+          const wrapper = document.createElement('span');
+          wrapper.className = 'story-word';
+          for (const character of word) {
+            const span = document.createElement('span');
+            span.className = 'story-char';
+            span.textContent = character;
+            chars.push(span);
+            wrapper.append(span);
+          }
+          fragment.append(wrapper);
+        }
+        node.replaceWith(fragment);
+      }
+
+      let previousCount = 0;
+      const reveal = (count: number) => {
+        chars[previousCount - 1]?.classList.remove('is-caret');
+        for (let i = Math.min(count, previousCount); i < Math.max(count, previousCount); i++) {
+          chars[i].classList.toggle('is-typed', i < count);
+        }
+        if (count > 0 && count < chars.length) chars[count - 1].classList.add('is-caret');
+        previousCount = count;
+      };
+
+      gsap.from(root.querySelectorAll('[data-title-word]'), { yPercent: 115, rotation: 3, duration: 1.05, ease: 'power3.out' });
+      gsap.from(root.querySelectorAll('[data-intro-reveal]'), { opacity: 0, y: 12, duration: 0.65, delay: 0.4, stagger: 0.15 });
+
+      if (desktop) {
+        const transition = gsap.timeline({ paused: true })
+          .to(intro, { autoAlpha: 0, y: -50, duration: 1, ease: 'none' }, 0)
+          .fromTo(letter, { autoAlpha: 0, y: 40, rotation: -2 }, { autoAlpha: 1, y: 0, rotation: 0, duration: 1, ease: 'none' }, 0.65)
+          .to(root.querySelectorAll('.story-doodle'), { scale: 0.85, rotation: 0, duration: 1, ease: 'none' }, 0);
+        const setLetterY = gsap.quickSetter(visual, 'y', 'px');
+        let lineBottoms: number[] = [];
+        let overflow = 0;
+        const measure = () => {
+          const top = visual.getBoundingClientRect().top;
+          lineBottoms = chars.map((char) => char.getBoundingClientRect().bottom - top);
+          overflow = Math.max(0, visual.scrollHeight - viewport.clientHeight);
+        };
+        const update = (progress: number) => {
+          transition.progress(Math.min(progress / 0.08, 1));
+          const typing = gsap.utils.clamp(0, 1, (progress - 0.09) / 0.85);
+          const count = Math.floor(typing * chars.length);
+          reveal(count);
+          const offset = Math.max(0, (lineBottoms[count - 1] ?? 0) - viewport.clientHeight + 30);
+          setLetterY(-Math.min(offset, overflow));
+          progressBar.style.transform = `scaleX(${typing})`;
+          progressLabel.textContent = typing === 1 ? 'And we’re still changing.' : `${Math.round(typing * 100)}% of our story`;
+          scrollLabel.textContent = typing === 1 ? 'Thanks for being part of it.' : progress > 0.08 ? 'Keep scrolling. There’s more to the story.' : 'Scroll to turn back the clock';
+        };
+        const trigger = ScrollTrigger.create({
+          trigger: root, start: 'top top', end: 'bottom bottom',
+          onUpdate: (self) => update(self.progress),
+          onRefresh: (self) => { measure(); update(self.progress); },
+        });
+        measure();
+        update(trigger.progress);
+        scrollToLetter = () => window.scrollTo({ top: trigger.start + (trigger.end - trigger.start) * 0.12, behavior: 'smooth' });
+      } else {
+        // Natural mobile flow, with no pinning or additional scroll distance.
+        visual.querySelectorAll<HTMLElement>('p').forEach((paragraph) => {
+          const localChars = Array.from(paragraph.querySelectorAll<HTMLElement>('.story-char'));
+          const update = (progress: number) => {
+            const count = Math.ceil(progress * localChars.length);
+            localChars.forEach((char, index) => char.classList.toggle('is-typed', index < count));
+          };
+          ScrollTrigger.create({ trigger: paragraph, start: 'top 95%', end: 'bottom 80%', onUpdate: (self) => update(self.progress), onRefresh: (self) => update(self.progress) });
+        });
+      }
+      let active = true;
+      document.fonts.ready.then(() => { if (active) ScrollTrigger.refresh(); });
+      return () => {
+        active = false;
+        visual.remove();
+        source.classList.remove('story-accessible');
+        root.classList.remove('is-enhanced', 'is-flowing');
+        readButton.hidden = true;
+        progressBar.style.transform = '';
+        scrollToLetter = () => letter.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+    });
+
+    const readFullLetter = () => {
+      reading = true;
+      media.revert();
+      letter.scrollIntoView({ behavior: 'instant', block: 'start' });
+      letter.focus({ preventScroll: true });
+    };
+    const advanceLetter = (event: MouseEvent) => {
+      if (root.classList.contains('is-enhanced') || root.classList.contains('is-flowing')) {
+        event.preventDefault();
+        scrollToLetter();
+      }
+    };
+    readButton.addEventListener('click', readFullLetter);
+    startLink.addEventListener('click', advanceLetter);
+    disposeStory = () => {
+      media.revert();
+      readButton.removeEventListener('click', readFullLetter);
+      startLink.removeEventListener('click', advanceLetter);
+    };
+  }
+  initStory();
+  document.addEventListener('astro:page-load', initStory);
+  document.addEventListener('astro:before-swap', () => disposeStory?.());
+</script>

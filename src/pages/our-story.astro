@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FunMenu from '../components/FunMenu.astro';
+import OurStory from '../components/OurStory.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+---
+
+<BaseLayout title="Our Story | Change Hospitality" description="From rock bands to recruitment: a letter from founder Jim O’Brien on more than two decades of doing things differently and putting people first.">
+  <FunMenu menuButtonBackground="var(--color-blush)" menuButtonBorderColor="var(--color-cocoa)" menuButtonTextColor="var(--color-cocoa)" />
+  <main class="story-page brand-page"><OurStory /></main>
+  <div class="brand-footer"><SiteFooter /></div>
+</BaseLayout>
+
+<style>
+  .story-page { background: var(--color-cream); }
+  .brand-footer { background: var(--color-mint); }
+  @media print { :global(.funmenu) { display: none; } }
+</style>

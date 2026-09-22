@@ -1,10 +1,17 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import {
+  Fragment,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import {
   getStoryFrameUrl,
   homeStory,
   type StoryAction,
   type StoryBeat,
   type StoryColumn,
+  type StoryTypography,
 } from "../data/homeStory";
 import "./HomeStoryHero.css";
 
@@ -26,6 +33,21 @@ interface OverlayWindow {
 
 const clamp = (value: number, minimum: number, maximum: number) =>
   Math.min(maximum, Math.max(minimum, value));
+
+function getTypographyStyle(typography?: StoryTypography) {
+  if (!typography) return undefined;
+
+  return {
+    "--story-heading-size": typography.headingSize,
+    "--story-heading-line-height": typography.headingLineHeight,
+    "--story-heading-weight": typography.headingWeight,
+    "--story-heading-max-width": typography.headingMaxWidth,
+    "--story-body-size": typography.bodySize,
+    "--story-body-line-height": typography.bodyLineHeight,
+    "--story-body-weight": typography.bodyWeight,
+    "--story-body-max-width": typography.bodyMaxWidth,
+  } as CSSProperties;
+}
 
 function buildStoryTimeline() {
   const totalWeight = homeStory.beats.reduce(
@@ -255,7 +277,11 @@ function FallbackStory({ className }: { className: string }) {
         {homeStory.beats
           .filter((beat) => beat.overlay)
           .map((beat) => (
-            <article className="story-fallback-beat" key={beat.id}>
+            <article
+              className="story-fallback-beat"
+              key={beat.id}
+              style={getTypographyStyle(beat.overlay?.typography)}
+            >
               <BeatContent beat={beat} />
             </article>
           ))}
@@ -797,6 +823,7 @@ export default function HomeStoryHero() {
                 className={`story-overlay story-overlay--${beat.overlay?.layout}`}
                 data-story-overlay={beat.id}
                 key={beat.id}
+                style={getTypographyStyle(beat.overlay?.typography)}
               >
                 <BeatContent beat={beat} />
               </article>

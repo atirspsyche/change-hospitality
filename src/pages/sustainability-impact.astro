@@ -1,0 +1,25 @@
+---
+import EnvironmentalPolicy from '../components/EnvironmentalPolicy.astro';
+import FunMenu from '../components/FunMenu.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+---
+
+<BaseLayout
+  title="Sustainability & Impact | Change Hospitality"
+  description="People first. Planet too. Explore Change Hospitality’s B Corp and ISO certifications, climate partnerships, fair pay commitments and community impact."
+>
+  <FunMenu
+    menuButtonBackground="var(--color-cream)"
+    menuButtonBorderColor="var(--color-bcorp-green)"
+    menuButtonTextColor="var(--color-bcorp-green)"
+  />
+  <main class="brand-page">
+    <EnvironmentalPolicy />
+  </main>
+  <div class="brand-footer"><SiteFooter /></div>
+</BaseLayout>
+
+<style>
+  .brand-footer { background: var(--color-blush); }
+</style>

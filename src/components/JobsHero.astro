@@ -13,13 +13,13 @@ const { locations, positions, jobTypes } = Astro.props;
 <section class="jobs-hero" aria-labelledby="jobs-page-title" data-jobs-hero>
   <div class="jobs-hero-inner">
     <div class="jobs-hero-copy">
-      <p class="jobs-hero-kicker">Fresh from the pass</p>
+      <p class="jobs-hero-kicker">Live roles</p>
       <h1 id="jobs-page-title">
-        Find a job<br /><span>with good energy.</span>
+        <span>Your next move</span> <br /> is closer than you think
       </h1>
       <p class="jobs-hero-intro">
-        Hospitality roles picked by people who know the room. Choose what
-        matters, then see what is ready right now.
+        From small independents to biggest names in the industry, and everything in between. 
+        There's something for everyone here.
       </p>
 
       <form class="jobs-search" id="job-search-form" data-job-search-form>
@@ -155,7 +155,7 @@ const { locations, positions, jobTypes } = Astro.props;
   .jobs-hero h1 {
     max-width: 50rem;
     font-family: var(--font-hero);
-    font-size: clamp(3.5rem, 7.5vw, 7.5rem);
+    font-size: clamp(3rem, 7vw, 7rem);
     font-weight: 400;
     line-height: 0.9;
     text-wrap: balance;

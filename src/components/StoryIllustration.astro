@@ -1,0 +1,53 @@
+---
+interface Props {
+  kind?: 'chef' | 'pan' | 'sprout' | 'apple' | 'plate';
+}
+const { kind = 'sprout' } = Astro.props;
+---
+
+<svg viewBox="0 0 240 240" fill="none" aria-hidden="true" focusable="false">
+  {kind === 'chef' && <>
+    <path class="blue" d="M55 222v-27c0-28 27-43 65-43s65 15 65 43v27Z" />
+    <path class="pink" d="M79 93h82v37c0 29-17 45-41 45s-41-16-41-45Z" />
+    <path class="paper" d="M78 95V78C44 67 57 23 87 31c10-28 55-28 66 0 32-8 45 36 9 47v17Z" />
+    <path class="paper" d="M78 84h84v24H78Z" />
+    <path class="paper" d="m99 170 21 15 21-15 17 52H82Z" />
+    <path d="M101 124v8m38-8v8m-29 15q10 10 20 0M99 51l4 22m34-22-4 22M64 195l-19-16m131 16 19-16M22 109l10 8m171-8-10 8" />
+    <circle class="flame" cx="120" cy="201" r="4" />
+  </>}
+  {kind === 'pan' && <>
+    <path class="blue" d="m163 139 65 47c10 8 0 26-12 19l-65-49Z" />
+    <ellipse class="ink" cx="98" cy="136" rx="78" ry="66" transform="rotate(-15 98 136)" />
+    <ellipse class="blue" cx="98" cy="128" rx="70" ry="59" transform="rotate(-15 98 128)" />
+    <path class="paper" d="M58 104c-9-25 17-37 36-23 20-15 47-2 44 19 27 9 22 37 1 42-1 24-33 31-47 16-25 10-48-9-39-28-17-8-14-21 5-26Z" />
+    <circle class="flame" cx="99" cy="120" r="25" />
+    <path d="M90 115v5m18-5v5m-16 9q7 7 14 0M62 51c-15-16 12-20 0-36m41 32c-15-16 12-20 0-36m40 41c-15-16 12-20 0-36" />
+    <circle class="paper" cx="219" cy="193" r="4" />
+  </>}
+  {kind === 'sprout' && <>
+    <path class="pink" d="M28 209c26-24 157-26 185 0-20 30-163 31-185 0Z" />
+    <path class="lime" d="M122 144C63 161 25 122 28 69c57-9 104 18 94 75Zm2-31C111 55 153 16 211 21c4 54-23 93-87 92Z" />
+    <path d="M120 208c0-50 4-97 49-140m-46 98c-4-28-26-49-57-67M152 62v8m24-18v8m-24 26c9 5 19 0 23-8M16 37l12 12M65 13l5 17m155 104-18 1m14 29-15-9" />
+  </>}
+  {kind === 'apple' && <>
+    <path class="lime" d="M119 66c7-45 44-56 67-45-6 31-35 41-67 45Z" />
+    <path class="pink" d="M119 76C57 39 18 90 39 155c14 46 50 64 80 47 33 17 68-1 82-48 21-63-23-113-82-78Z" />
+    <path d="M119 80c-1-25-12-42-28-48m-5 87v12m60-12v12m-40 10q14 14 29 0M50 163l-28 17m172-19 25 19" />
+  </>}
+  {kind === 'plate' && <>
+    <circle class="blue" cx="120" cy="119" r="83" />
+    <circle class="paper" cx="120" cy="119" r="59" />
+    <path class="lime" d="M83 124c-10-27 8-43 24-31 13-24 43-14 41 6 26 4 25 38-1 41-9 24-38 26-46 2-15 1-23-6-18-18Z" />
+    <path d="M104 114v8m31-8v8m-23 13q9 8 17 0M17 58v131M7 58v37q10 14 20 0V58m195 0c-12 21-13 47 0 58v73M71 210l-10 12m109-12 10 12" />
+  </>}
+</svg>
+
+<style>
+  svg { width: 100%; height: auto; stroke: currentColor; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+  .blue { fill: var(--color-mist); }
+  .paper { fill: var(--color-cream); }
+  .pink { fill: var(--color-blush); }
+  .lime { fill: var(--color-citron); }
+  .flame { fill: var(--color-flame); }
+  .ink { fill: var(--color-ink); }
+</style>

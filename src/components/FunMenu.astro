@@ -24,6 +24,7 @@ const siteLinks: FunMenuLink[] = [
   { label: 'Jobs', href: '/jobs/', meta: 'Find your next role' },
   { label: 'Team', href: '/team/', meta: 'Meet the consultants' },
   { label: 'Recruit', href: '/recruit-talent/', meta: 'Build your team' },
+  { label: 'Our Story', href: '/our-story/', meta: 'How it all started' },
 ];
 
 // Rotating accent colours the big links flash through on hover.
@@ -91,7 +92,7 @@ const flashColors = [
       <nav class="funmenu-list" aria-label="Site navigation">
         {siteLinks.map((link, index) => (
           <a
-            class="funmenu-link"
+            class:list={['funmenu-link', { 'funmenu-link-long': link.label.length > 12 }]}
             href={link.href}
             style={`--flash:${flashColors[index % flashColors.length]}`}
             data-funmenu-link
@@ -331,9 +332,12 @@ const flashColors = [
     z-index: 2;
     display: flex;
     min-height: inherit;
+    max-height: calc(100dvh - 1.5rem);
     width: 100%;
     flex-direction: column;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
     padding: 6.2rem 1.65rem 1.65rem;
   }
 
@@ -408,6 +412,15 @@ const flashColors = [
 
   .funmenu-link-text::after {
     display: none;
+  }
+
+  .funmenu-link-long .funmenu-link-text {
+    font-size: clamp(1.4rem, 4vw, 2.5rem);
+    line-height: 1.05;
+  }
+
+  .funmenu-link-long .funmenu-link-meta {
+    max-width: 7rem;
   }
 
   .funmenu-link-meta {

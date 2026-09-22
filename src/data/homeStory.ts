@@ -22,12 +22,24 @@ export interface StoryColumn {
   action?: StoryAction;
 }
 
+export interface StoryTypography {
+  headingSize?: string;
+  headingLineHeight?: string;
+  headingWeight?: number;
+  headingMaxWidth?: string;
+  bodySize?: string;
+  bodyLineHeight?: string;
+  bodyWeight?: number;
+  bodyMaxWidth?: string;
+}
+
 export interface StoryOverlay {
   layout: StoryLayout;
   eyebrow?: string;
   heading?: string;
   body?: string;
   action?: StoryAction;
+  typography?: StoryTypography;
   columns?: [StoryColumn, StoryColumn];
   topText?: string;
   bottomText?: string;
@@ -69,7 +81,7 @@ export const homeStory = {
       overlay: {
         layout: "brand",
         heading: "Change Hospitality",
-        body: "Hospitality recruitment, cracked differently.",
+        body: "Specialists in hospitality recruitment and staffing",
       },
     },
     {
@@ -83,9 +95,13 @@ export const homeStory = {
       overlay: {
         layout: "left",
         eyebrow: "A better way to recruit",
-        heading: "Start with the people, not the database.",
-        body: "For more than twenty years, we have built hospitality teams through proper conversations, sharp instincts and relationships that last.",
-        action: { label: "Find talent", href: "/recruit-talent/", tone: "citron" },
+        heading:
+          "We build bridges between passionate people and the best hospitality venues",
+        body: "Every placement with us is treated with care, because the right person can make or break a team. For over two decades, we've been the ones you can trust to get it right.",
+        typography: {
+          headingSize: "clamp(2.4rem, 4.5vw, 4.75rem)",
+          bodySize: "clamp(0.9rem, 1.2vw, 1.05rem)",
+        },
       },
     },
     {
@@ -117,16 +133,20 @@ export const homeStory = {
         layout: "split",
         columns: [
           {
-            eyebrow: "For businesses",
-            heading: "Build a brilliant service.",
-            body: "Permanent, temporary and contract talent across front of house, back of house, events and commercial roles.",
-            action: { label: "Find talent", href: "/recruit-talent/", tone: "cream" },
+            eyebrow: "For Businesses",
+            heading: "Build a team that delivers.",
+            body: "Permanent, temporary talent across front of house, back of house, events and commercial roles.",
+            action: {
+              label: "Find talent",
+              href: "/recruit-talent/",
+              tone: "mint",
+            },
           },
           {
-            eyebrow: "For people",
-            heading: "Find work that fits.",
-            body: "Straight-talking support, roles worth moving for and consultants who know your corner of hospitality.",
-            action: { label: "Find work", href: "/jobs/", tone: "citron" },
+            eyebrow: "For Job Seekers",
+            heading: "Roles with momentum.",
+            body: "Whether you're ready for the next step or just seeing what's out there, discover opportunities across every corner and level of hospitality.",
+            action: { label: "Explore roles", href: "/jobs/", tone: "citron" },
           },
         ],
       },
@@ -169,14 +189,16 @@ export const homeStory = {
         layout: "sides",
         columns: [
           {
-            eyebrow: "Twenty years",
-            heading: "Instinct, earned.",
-            body: "We know the pace, pressure and personalities behind great hospitality.",
+            eyebrow: "Our team",
+            heading: "Consultants, not just recruiters",
+            body: "We're a team with real hospitality backgrounds, who understand the industry back to front and the impeccable standards associated with it.",
+            action: { label: "Meet our team", href: "/team/", tone: "citron" },
           },
           {
-            eyebrow: "Face to face",
+            eyebrow: "Our values",
             heading: "Trust, served daily.",
-            body: "Every introduction starts with listening and ends with a human handoff.",
+            body: "At the core of it all, we're a business continuously striving to look after its people and its footprint with a commitment to doing right by both.",
+            action: { label: "Sustainability", href: "/sustainability-impact/", tone: "citron" },
           },
         ],
       },
@@ -207,13 +229,20 @@ export const homeStory = {
       exitWeight: 0,
       overlay: {
         layout: "bottom",
-        heading: "Good people make great hospitality.",
-        action: { label: "Start a conversation", href: "/recruit-talent/", tone: "citron" },
+        heading: "Great venues deserve great teams.",
+        action: {
+          label: "Start a conversation",
+          href: "/recruit-talent/",
+          tone: "citron",
+        },
       },
     },
   ] satisfies StoryBeat[],
 };
 
-export function getStoryFrameUrl(frame: number, prefix = homeStory.desktopFramePrefix) {
+export function getStoryFrameUrl(
+  frame: number,
+  prefix = homeStory.desktopFramePrefix,
+) {
   return `${prefix}${String(frame).padStart(homeStory.framePadding, "0")}.${homeStory.extension}`;
 }

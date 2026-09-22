@@ -33,9 +33,13 @@ const homeSectionLinks = [
   <main class="home-page bg-cream text-ink">
     <HomeStoryHero client:load />
     <FranchiseMap />
+    <div class="home-story-link">
+      <p>A little idea. A lot of heart.</p>
+      <a href="/our-story/">Our Story <span aria-hidden="true">↗</span></a>
+    </div>
     <div class="home-policy-link">
       <p>People first. Planet too.</p>
-      <a href="/environmental-policy/">Our environmental policy <span aria-hidden="true">↗</span></a>
+      <a href="/sustainability-impact/">Sustainability &amp; Impact <span aria-hidden="true">↗</span></a>
     </div>
     <!--
       <PhilosophyReveal />
@@ -51,6 +55,7 @@ const homeSectionLinks = [
 </BaseLayout>
 
 <style>
+  .home-story-link,
   .home-policy-link {
     display: flex;
     flex-wrap: wrap;
@@ -58,10 +63,15 @@ const homeSectionLinks = [
     justify-content: center;
     gap: 1.25rem 3rem;
     padding: 2rem 1.25rem;
-    border-top: 2px solid var(--color-bcorp-green);
     background: var(--color-mint);
     color: var(--color-bcorp-green);
   }
+
+  .home-story-link { background: var(--color-blush); color: var(--color-cocoa); border-radius: 50% 50% 0 0 / 1.5rem 1.5rem 0 0; }
+  .home-story-link p { font-family: var(--font-display); font-size: clamp(1.1rem, 2vw, 1.6rem); font-weight: 500; }
+  .home-story-link a { display: inline-flex; align-items: center; gap: 2rem; border-radius: 3rem; background: var(--color-cocoa); color: var(--color-cream); padding: 1rem 1.5rem; font-size: 0.85rem; font-weight: 700; }
+  .home-story-link a:hover { transform: rotate(-3deg); }
+  .home-story-link a:focus-visible { outline: 2px solid var(--color-cocoa); outline-offset: 4px; }
 
   .home-policy-link p { font-family: var(--font-hero); font-size: clamp(1.1rem, 2vw, 1.6rem); }
   .home-policy-link a { display: inline-flex; align-items: center; gap: 2rem; border: 2px solid currentColor; border-radius: 3rem; padding: 1rem 1.5rem; font-size: 0.85rem; font-weight: 700; }

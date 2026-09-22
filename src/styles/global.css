@@ -152,6 +152,30 @@ body::selection {
   color: var(--color-obsidian);
 }
 
+/* Brand-led pages keep browser chrome, focus and selection on palette too. */
+html:has(.brand-page),
+body:has(.brand-page) {
+  background: var(--color-cream);
+  color: var(--color-ink);
+}
+
+body:has(.brand-page) ::selection {
+  background: var(--color-citron);
+  color: var(--color-ink);
+}
+
+body:has(.brand-page) :focus-visible {
+  outline-color: var(--color-cocoa);
+}
+
+.brand-footer .site-footer {
+  border-radius: 50% 50% 0 0 / 2.5rem 2.5rem 0 0;
+}
+
+@media print {
+  .brand-footer { display: none; }
+}
+
 a,
 button,
 input,

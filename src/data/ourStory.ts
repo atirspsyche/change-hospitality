@@ -1,0 +1,16 @@
+export const storyParagraphs = [
+  'Change started with a fairly simple idea: recruitment could be better.',
+  '“Yeah, yeah, yeah,” I hear you say. “They all say that…” but read on….',
+  'At the turn of the century, I started working in recruitment. Before that, I’d worked in pubs and restaurants, alongside playing in rock bands. In other words, I had plenty of experience dealing with people — and the occasional difficult customer.',
+  'As the dream of world domination became increasingly unlikely, I hung up the guitar and took my first job in recruitment.',
+  'I was learning the trade, meeting plenty of people and getting to understand how the industry worked. But something didn’t quite sit right. Too often, it felt as though the order of importance was money first, client second and candidate somewhere a long way down the list. I thought there had to be a better way.',
+  'I spoke to a friend from the same firm and asked if he would join me in starting a different kind of recruitment business. He agreed, and together we decided to build it. We called the business “Change” because that was exactly what we wanted to do: change the way recruitment was done. More importantly, we wanted to remember that behind every CV, vacancy and interview was an actual person.',
+  'For a candidate, changing jobs can be a pretty big deal. It can mean leaving somewhere familiar, taking a risk, starting again and wondering whether you’ve made the right decision. It’s exciting, but it can also be daunting.',
+  'We wanted to be the people who helped make that process easier, more straightforward and a little less nerve-wracking.',
+  'And on the other side of the desk, we wanted our clients to know that we weren’t simply trying to fill a vacancy and move on to the next one. We wanted to understand their business, their people and what they actually needed. Then we wanted to find them the right person — not simply someone who happened to be available and would make us a quick buck. We wanted that person to become a genuine asset to our client’s business, making the work we did not just successful, but genuinely good value for money.',
+  'Over the years, we’ve built the business around those principles: look after people, do the right thing and provide the level of service we’d expect ourselves. Because, ultimately, it’s far better to retain great clients than to constantly be looking for new ones.',
+  'More than two decades later, there have been plenty of highs and lows. Businesses rarely survive that long without a few bumps in the road. For us, two of the biggest bumps were barely surviving the financial crash of 2008 and being shut down for 18 months during Covid.',
+  'There have been changes, challenges, good days, bad days and an awful lot of hard work.',
+  'But one thing hasn’t changed. We still believe recruitment should be about people first. That’s why we’re still here, and after more than 20 years, we’re proud to be considered one of the best recruitment businesses in the UK.',
+  'We started Change because we wanted to do things differently. Turns out, we’re still changing.',
+];

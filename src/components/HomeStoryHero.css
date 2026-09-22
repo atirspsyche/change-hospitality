@@ -228,34 +228,36 @@
   margin: 0;
   color: var(--color-blush);
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: var(--story-heading-weight, 400);
   letter-spacing: 0;
-  line-height: 0.92;
+  line-height: var(--story-heading-line-height, 0.92);
   text-wrap: balance;
 }
 
 .story-heading {
-  font-size: clamp(3rem, 6.5vw, 7rem);
+  max-width: var(--story-heading-max-width, none);
+  font-size: var(--story-heading-size, clamp(3rem, 6.5vw, 7rem));
 }
 
 .story-overlay--brand .story-heading {
   font-family: var(--font-hero);
-  font-size: clamp(3.2rem, 6.4vw, 7rem);
+  font-size: var(--story-heading-size, clamp(3.2rem, 6.4vw, 7rem));
 }
 
 .story-column-heading {
-  font-size: clamp(2.1rem, 4vw, 4.6rem);
+  max-width: var(--story-heading-max-width, none);
+  font-size: var(--story-heading-size, clamp(2.1rem, 4vw, 4.6rem));
 }
 
 .story-overlay--split .story-column-heading,
 .story-overlay--sides .story-column-heading,
 .story-edge-columns .story-column-heading {
-  font-size: clamp(1.8rem, 3vw, 3.4rem);
+  font-size: var(--story-heading-size, clamp(1.8rem, 3vw, 3.4rem));
 }
 
 .story-overlay--bottom .story-heading {
   max-width: none;
-  font-size: clamp(1.5rem, 2.5vw, 3rem);
+  font-size: var(--story-heading-size, clamp(1.5rem, 2.5vw, 3rem));
   white-space: nowrap;
 }
 
@@ -271,12 +273,12 @@
 }
 
 .story-body {
-  max-width: 38rem;
+  max-width: var(--story-body-max-width, 38rem);
   margin: 1.3rem 0 0;
   color: var(--color-paper);
-  font-size: clamp(1rem, 1.7vw, 1.3rem);
-  font-weight: 800;
-  line-height: 1.5;
+  font-size: var(--story-body-size, clamp(1rem, 1.7vw, 1.3rem));
+  font-weight: var(--story-body-weight, 800);
+  line-height: var(--story-body-line-height, 1.5);
   text-wrap: pretty;
 }
 
@@ -288,7 +290,7 @@
 
 .story-overlay--brand .story-body {
   margin-top: 0.75rem;
-  font-size: clamp(0.8rem, 1.2vw, 1rem);
+  font-size: var(--story-body-size, clamp(0.8rem, 1.2vw, 1rem));
   text-transform: uppercase;
 }
 
@@ -574,12 +576,12 @@
   }
 
   .story-edge-columns .story-column-heading {
-    font-size: clamp(1rem, 5vw, 1.4rem);
+    font-size: var(--story-heading-size, clamp(1rem, 5vw, 1.4rem));
   }
 
   .story-edge-columns .story-body {
-    font-size: 0.68rem;
-    line-height: 1.3;
+    font-size: var(--story-body-size, 0.68rem);
+    line-height: var(--story-body-line-height, 1.3);
   }
 
   .story-edge-columns .story-eyebrow {
@@ -599,21 +601,21 @@
   }
 
   .story-heading {
-    font-size: clamp(2.5rem, 12vw, 4.7rem);
+    font-size: var(--story-heading-size, clamp(2.5rem, 12vw, 4.7rem));
   }
 
   .story-overlay--brand .story-heading {
-    font-size: clamp(2.6rem, 12vw, 4.6rem);
+    font-size: var(--story-heading-size, clamp(2.6rem, 12vw, 4.6rem));
   }
 
   .story-column-heading {
-    font-size: clamp(1.55rem, 7vw, 2.4rem);
+    font-size: var(--story-heading-size, clamp(1.55rem, 7vw, 2.4rem));
   }
 
   .story-body {
     margin-top: 0.75rem;
-    font-size: 0.9rem;
-    line-height: 1.4;
+    font-size: var(--story-body-size, 0.9rem);
+    line-height: var(--story-body-line-height, 1.4);
   }
 
   .story-button {
@@ -634,7 +636,7 @@
   }
 
   .story-overlay--bottom .story-heading {
-    font-size: clamp(1.45rem, 7vw, 2.2rem);
+    font-size: var(--story-heading-size, clamp(1.45rem, 7vw, 2.2rem));
     white-space: normal;
   }
 
