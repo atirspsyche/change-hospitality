@@ -13,26 +13,17 @@ import {
   type StoryColumn,
   type StoryTypography,
 } from "../data/homeStory";
+import { frameForProgress, storyTimeline, clamp } from "../lib/homeStoryTimeline";
+import {
+  getStoryScene,
+  sequenceFrameForPosition,
+  storyKeyFrames,
+  storySequenceFrames,
+  type StorySprite,
+} from "../lib/homeStoryScene";
 import "./HomeStoryHero.css";
 
 type DecodedFrame = ImageBitmap | HTMLImageElement;
-
-interface FrameSegment {
-  progressStart: number;
-  progressEnd: number;
-  frameStart: number;
-  frameEnd: number;
-}
-
-interface OverlayWindow {
-  id: string;
-  progressStart: number;
-  progressEnd: number;
-  hideAtEnd: boolean;
-}
-
-const clamp = (value: number, minimum: number, maximum: number) =>
-  Math.min(maximum, Math.max(minimum, value));
 
 function getTypographyStyle(typography?: StoryTypography) {
   if (!typography) return undefined;
@@ -47,116 +38,6 @@ function getTypographyStyle(typography?: StoryTypography) {
     "--story-body-weight": typography.bodyWeight,
     "--story-body-max-width": typography.bodyMaxWidth,
   } as CSSProperties;
-}
-
-function buildStoryTimeline() {
-  const totalWeight = homeStory.beats.reduce(
-    (total, beat) =>
-      total + beat.travelWeight + beat.holdWeight + beat.exitWeight,
-    0,
-  );
-  const segments: FrameSegment[] = [];
-  const plateauWindows = new Map<string, [number, number]>();
-  let cursor = 0;
-
-  homeStory.beats.forEach((beat) => {
-    const travelStart = cursor / totalWeight;
-    cursor += beat.travelWeight;
-    const travelEnd = cursor / totalWeight;
-
-    segments.push({
-      progressStart: travelStart,
-      progressEnd: travelEnd,
-      frameStart: beat.frames[0],
-      frameEnd: beat.holdFrame,
-    });
-
-    const plateauStart = cursor / totalWeight;
-    cursor += beat.holdWeight;
-    const plateauEnd = cursor / totalWeight;
-
-    if (beat.holdWeight > 0) {
-      segments.push({
-        progressStart: plateauStart,
-        progressEnd: plateauEnd,
-        frameStart: beat.holdFrame,
-        frameEnd: beat.holdFrame,
-      });
-      plateauWindows.set(beat.id, [plateauStart, plateauEnd]);
-    }
-
-    if (beat.exitWeight > 0) {
-      const exitStart = cursor / totalWeight;
-      cursor += beat.exitWeight;
-      segments.push({
-        progressStart: exitStart,
-        progressEnd: cursor / totalWeight,
-        frameStart: beat.holdFrame,
-        frameEnd: beat.frames[1],
-      });
-    }
-  });
-
-  const progressForFrame = (frame: number) => {
-    const segment = segments.find(
-      ({ frameStart, frameEnd }) =>
-        frame >= Math.min(frameStart, frameEnd) &&
-        frame <= Math.max(frameStart, frameEnd),
-    );
-    if (!segment) return 0;
-    const frameDistance = segment.frameEnd - segment.frameStart;
-    if (!frameDistance) return segment.progressStart;
-    const localProgress = (frame - segment.frameStart) / frameDistance;
-    return (
-      segment.progressStart +
-      (segment.progressEnd - segment.progressStart) * localProgress
-    );
-  };
-
-  const overlayWindows = homeStory.beats.flatMap<OverlayWindow>((beat) => {
-    if (!beat.overlay) return [];
-    if (beat.overlayFrames) {
-      return [{
-        id: beat.id,
-        progressStart: progressForFrame(beat.overlayFrames[0]),
-        progressEnd: progressForFrame(beat.overlayFrames[1]),
-        hideAtEnd: true,
-      }];
-    }
-
-    const plateau = plateauWindows.get(beat.id);
-    if (!plateau) return [];
-    return [{
-      id: beat.id,
-      progressStart: plateau[0],
-      progressEnd: plateau[1],
-      hideAtEnd: false,
-    }];
-  });
-
-  return { segments, overlayWindows };
-}
-
-const storyTimeline = buildStoryTimeline();
-
-function frameForProgress(progress: number) {
-  const safeProgress = clamp(progress, 0, 1);
-  const segment =
-    storyTimeline.segments.find(
-      (item) =>
-        safeProgress >= item.progressStart && safeProgress <= item.progressEnd,
-    ) ?? storyTimeline.segments.at(-1);
-
-  if (!segment) return homeStory.posterFrame;
-  const segmentLength = segment.progressEnd - segment.progressStart;
-  const localProgress = segmentLength
-    ? (safeProgress - segment.progressStart) / segmentLength
-    : 1;
-
-  return Math.round(
-    segment.frameStart +
-      (segment.frameEnd - segment.frameStart) * clamp(localProgress, 0, 1),
-  );
 }
 
 function HeadingWords({ text }: { text: string }) {
@@ -314,13 +195,24 @@ export default function HomeStoryHero() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [loadProgress, setLoadProgress] = useState(0);
   const [isInitialChunkReady, setIsInitialChunkReady] = useState(false);
+  const [motionEnabled, setMotionEnabled] = useState(false);
+
+  useEffect(() => {
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setMotionEnabled(!preference.matches);
+    update();
+    preference.addEventListener("change", update);
+    return () => preference.removeEventListener("change", update);
+  }, []);
 
   useEffect(() => {
     const experience = experienceRef.current;
     const hero = heroRef.current;
     const canvas = canvasRef.current;
-    if (!experience || !hero || !canvas) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!experience || !hero || !canvas || !motionEnabled) return;
+    setLoadProgress(0);
+    setIsInitialChunkReady(false);
+    experience.classList.remove("is-failed");
 
     const context = canvas.getContext("2d", { alpha: false });
     if (!context) {
@@ -333,6 +225,15 @@ export default function HomeStoryHero() {
     const blobRequests = new Map<number, Promise<Blob>>();
     const decodedFrames = new Map<number, DecodedFrame>();
     const decodeRequests = new Map<number, Promise<DecodedFrame>>();
+    const decodedSprites = new Map<StorySprite, DecodedFrame>();
+    const initialFrames = new Set([
+      ...storySequenceFrames.slice(0, homeStory.initialChunkSize),
+      ...storyKeyFrames,
+    ]);
+    const spriteNames = Object.keys(homeStory.animation.sprites) as StorySprite[];
+    const initialAssetCount = initialFrames.size + spriteNames.length;
+    const remainingFrames = storySequenceFrames.filter((frame) => !initialFrames.has(frame));
+    const backgroundColor = getComputedStyle(hero).getPropertyValue("--color-flame").trim();
     const sourceDpr = window.devicePixelRatio || 1;
     const prefersLightFrames = window.innerWidth < 768 || sourceDpr <= 1;
     const useMobileFrames =
@@ -342,23 +243,21 @@ export default function HomeStoryHero() {
     let activePrefix = useMobileFrames
       ? homeStory.mobileFramePrefix
       : homeStory.desktopFramePrefix;
-    let loadedFrameCount = 0;
-    let requestedFrame = homeStory.posterFrame;
-    let drawnFrame = 0;
+    let loadedAssetCount = 0;
+    let requestedPosition = homeStory.posterFrame;
     let isVisible = true;
     let isStreaming = false;
     let canStream = false;
-    let streamCursor = homeStory.initialChunkSize + 1;
+    let streamCursor = 0;
     let destroyed = false;
     let parallaxFrame = 0;
     let parallaxX = 0;
     let parallaxY = 0;
+    let renderFrame = 0;
     let gsapCleanup: (() => void) | undefined;
 
     const renderParallax = () => {
       parallaxFrame = 0;
-      hero.style.setProperty("--story-image-x", `${parallaxX * 12}px`);
-      hero.style.setProperty("--story-image-y", `${parallaxY * 8}px`);
       hero.style.setProperty("--story-copy-x", `${parallaxX * -5}px`);
       hero.style.setProperty("--story-copy-y", `${parallaxY * -3}px`);
     };
@@ -383,12 +282,8 @@ export default function HomeStoryHero() {
     }
 
     const updateLoadingProgress = () => {
-      const progress = Math.round(
-        (Math.min(loadedFrameCount, homeStory.initialChunkSize) /
-          homeStory.initialChunkSize) *
-          100,
-      );
-      setLoadProgress(progress);
+      if (destroyed) return;
+      setLoadProgress(Math.round((loadedAssetCount / initialAssetCount) * 100));
     };
 
     const fetchBlobFrom = async (frame: number, prefix: string) => {
@@ -408,10 +303,13 @@ export default function HomeStoryHero() {
 
       const request = fetchBlobFrom(frame, activePrefix)
         .then((blob) => {
+          if (destroyed) return blob;
           blobs.set(frame, blob);
           blobRequests.delete(frame);
-          loadedFrameCount += 1;
-          updateLoadingProgress();
+          if (initialFrames.has(frame)) {
+            loadedAssetCount += 1;
+            updateLoadingProgress();
+          }
           return blob;
         })
         .catch((error) => {
@@ -428,11 +326,12 @@ export default function HomeStoryHero() {
 
     const trimDecodedFrames = () => {
       if (decodedFrames.size <= maxDecodedFrames) return;
+      const requestedFrame = sequenceFrameForPosition(requestedPosition);
       const protectedFrames = new Set([
+        ...storyKeyFrames,
         requestedFrame,
         requestedFrame - 1,
         requestedFrame + 1,
-        drawnFrame,
       ]);
 
       for (const [frameNumber, frame] of decodedFrames) {
@@ -458,6 +357,17 @@ export default function HomeStoryHero() {
         image.src = url;
       });
 
+    const decodeImage = async (blob: Blob): Promise<DecodedFrame> => {
+      if (typeof window.createImageBitmap === "function") {
+        try {
+          return await window.createImageBitmap(blob);
+        } catch {
+          // Some Safari versions expose ImageBitmap without decoding WebP.
+        }
+      }
+      return decodeBlobWithImage(blob);
+    };
+
     const decodeFrame = (frame: number): Promise<DecodedFrame> => {
       const cached = decodedFrames.get(frame);
       if (cached) {
@@ -471,12 +381,7 @@ export default function HomeStoryHero() {
       const request = (async (): Promise<DecodedFrame> => {
         try {
           const blob = await loadBlob(frame);
-          let decoded: DecodedFrame;
-          if (typeof window.createImageBitmap === "function") {
-            decoded = await window.createImageBitmap(blob);
-          } else {
-            decoded = await decodeBlobWithImage(blob);
-          }
+          const decoded = await decodeImage(blob);
           decodeRequests.delete(frame);
           if (destroyed) {
             closeFrame(decoded);
@@ -494,61 +399,64 @@ export default function HomeStoryHero() {
       return request;
     };
 
-    const drawFrame = (frame: DecodedFrame, frameNumber: number) => {
-      const sourceWidth =
-        frame instanceof HTMLImageElement ? frame.naturalWidth : frame.width;
-      const sourceHeight =
-        frame instanceof HTMLImageElement ? frame.naturalHeight : frame.height;
-      if (!sourceWidth || !sourceHeight) return;
+    const renderScene = () => {
+      renderFrame = 0;
+      if (destroyed) return;
+      const scene = getStoryScene(requestedPosition, canvas.width, canvas.height);
+      const images = scene.layers.map(({ asset }) => typeof asset === "number"
+        ? decodedFrames.get(asset) : decodedSprites.get(asset));
+      // Keep the last complete composition during a seek. Never substitute an
+      // unrelated nearest frame underneath the shells or the cutlery.
+      if (images.some((image) => !image)) return;
 
-      const scale = canvas.height / sourceHeight;
-      const width = sourceWidth * scale;
-      const height = sourceHeight * scale;
-      const x = (canvas.width - width) / 2;
-
-      context.fillStyle = "#cf4f3a";
+      context.globalAlpha = 1;
+      context.fillStyle = backgroundColor;
       context.fillRect(0, 0, canvas.width, canvas.height);
-      context.drawImage(frame, x, 0, width, height);
-      drawnFrame = frameNumber;
-      hero.classList.add("has-canvas-frame");
-    };
-
-    const drawNearestDecodedFrame = (target: number) => {
-      const exact = decodedFrames.get(target);
-      if (exact) {
-        drawFrame(exact, target);
-        return;
-      }
-
-      let nearestNumber = 0;
-      let nearestDistance = Number.POSITIVE_INFINITY;
-      decodedFrames.forEach((_frame, frameNumber) => {
-        const distance = Math.abs(frameNumber - target);
-        if (distance < nearestDistance) {
-          nearestDistance = distance;
-          nearestNumber = frameNumber;
+      scene.layers.forEach((layer, index) => {
+        const image = images[index]!;
+        context.save();
+        context.globalAlpha = layer.opacity ?? 1;
+        if (layer.rotation) {
+          context.translate(layer.rotation.x, layer.rotation.y);
+          context.rotate(layer.rotation.radians);
+          context.translate(-layer.rotation.x, -layer.rotation.y);
         }
+        if (layer.crop) {
+          const sourceWidth = image instanceof HTMLImageElement ? image.naturalWidth : image.width;
+          const sourceHeight = image instanceof HTMLImageElement ? image.naturalHeight : image.height;
+          const sx = sourceWidth / homeStory.animation.referenceWidth;
+          const sy = sourceHeight / homeStory.animation.referenceHeight;
+          context.drawImage(image,
+            layer.crop.x * sx, layer.crop.y * sy, layer.crop.width * sx, layer.crop.height * sy,
+            layer.x, layer.y, layer.width, layer.height);
+        } else {
+          context.drawImage(image, layer.x, layer.y, layer.width, layer.height);
+        }
+        context.restore();
       });
-      const nearest = decodedFrames.get(nearestNumber);
-      if (nearest) drawFrame(nearest, nearestNumber);
+      context.globalAlpha = 1;
+      hero.classList.add("has-canvas-frame");
+      hero.dataset.storyFrame = requestedPosition.toFixed(3);
+      hero.dataset.storyScene = scene.kind;
     };
 
-    const requestFrame = (frame: number) => {
-      requestedFrame = clamp(frame, 1, homeStory.frameCount);
-      drawNearestDecodedFrame(requestedFrame);
-      void decodeFrame(requestedFrame)
-        .then((decoded) => {
-          if (requestedFrame === frame && !destroyed) {
-            drawFrame(decoded, frame);
-          }
-        })
-        .catch(() => undefined);
+    const requestRender = () => {
+      if (!destroyed && !renderFrame) renderFrame = window.requestAnimationFrame(renderScene);
+    };
 
-      [1, -1, 2, -2].forEach((offset) => {
-        const neighbor = requestedFrame + offset;
-        if (neighbor >= 1 && neighbor <= homeStory.frameCount) {
-          void decodeFrame(neighbor).catch(() => undefined);
-        }
+    const requestFrame = (position: number) => {
+      requestedPosition = clamp(position, 1, homeStory.frameCount);
+      requestRender();
+      const sourceFrame = sequenceFrameForPosition(requestedPosition);
+      if (!decodedFrames.has(sourceFrame)) {
+        void decodeFrame(sourceFrame).then(requestRender).catch(() => undefined);
+      }
+      // Map neighbours through the coded ranges too, so prefetch cannot fetch
+      // the baked animations that this renderer deliberately replaces.
+      const neighbours = new Set([1, -1, 2, -2].map((offset) =>
+        sequenceFrameForPosition(clamp(requestedPosition + offset, 1, homeStory.frameCount))));
+      neighbours.forEach((frame) => {
+        if (!decodedFrames.has(frame)) void decodeFrame(frame).catch(() => undefined);
       });
     };
 
@@ -560,7 +468,7 @@ export default function HomeStoryHero() {
         canvas.width = width;
         canvas.height = height;
       }
-      drawNearestDecodedFrame(requestedFrame);
+      requestRender();
     };
 
     const idleYield = () =>
@@ -579,17 +487,9 @@ export default function HomeStoryHero() {
       while (
         isVisible &&
         !destroyed &&
-        streamCursor <= homeStory.frameCount
+        streamCursor < remainingFrames.length
       ) {
-        const chunk = Array.from(
-          {
-            length: Math.min(
-              homeStory.streamChunkSize,
-              homeStory.frameCount - streamCursor + 1,
-            ),
-          },
-          (_, index) => streamCursor + index,
-        );
+        const chunk = remainingFrames.slice(streamCursor, streamCursor + homeStory.streamChunkSize);
         streamCursor += chunk.length;
         await mapWithConcurrency(chunk, 4, (frame) =>
           loadBlob(frame).catch(() => new Blob()),
@@ -608,7 +508,14 @@ export default function HomeStoryHero() {
       if (destroyed) return;
       gsap.registerPlugin(ScrollTrigger);
 
-      const gsapContext = gsap.context(() => {
+      const media = gsap.matchMedia();
+      gsapCleanup = () => media.revert();
+      media.add({
+        desktop: "(min-width: 1024px)",
+        motion: "(prefers-reduced-motion: no-preference)",
+      }, (mediaContext) => {
+        if (!mediaContext.conditions?.motion) return;
+        const desktop = mediaContext.conditions.desktop;
         const overlays = Array.from(
           hero.querySelectorAll<HTMLElement>("[data-story-overlay]"),
         );
@@ -616,11 +523,14 @@ export default function HomeStoryHero() {
         const playhead = { progress: 0 };
         const timeline = gsap.timeline({
           scrollTrigger: {
+            id: "home-story",
             trigger: hero,
             start: "top top",
             end: () => `+=${window.innerHeight * homeStory.scrollScreens}`,
             pin: true,
-            scrub: 0.28,
+            // The story needs one pin on mobile too; omit secondary word
+            // choreography and pointer motion there instead of extra pins.
+            scrub: desktop ? 0.28 : true,
             anticipatePin: 1,
             invalidateOnRefresh: true,
             onEnter: () => {
@@ -664,7 +574,7 @@ export default function HomeStoryHero() {
 
           timeline.fromTo(
             overlay,
-            { autoAlpha: 0, y: 28 },
+            { autoAlpha: 0, y: desktop ? 28 : 0 },
             {
               autoAlpha: 1,
               y: 0,
@@ -675,24 +585,24 @@ export default function HomeStoryHero() {
           );
           timeline.fromTo(
             words,
-            { yPercent: 115, rotate: 2 },
+            { yPercent: desktop ? 115 : 0, rotate: desktop ? 2 : 0 },
             {
               yPercent: 0,
               rotate: 0,
               duration: enterDuration * 1.6,
-              stagger: 0.0025,
+              stagger: desktop ? 0.0025 : 0,
               ease: "power3.out",
             },
             overlayWindow.progressStart + enterDuration * 0.25,
           );
           timeline.fromTo(
             supportingCopy,
-            { y: 18, opacity: 0 },
+            { y: desktop ? 18 : 0, opacity: 0 },
             {
               y: 0,
               opacity: 1,
               duration: enterDuration * 1.4,
-              stagger: 0.003,
+              stagger: desktop ? 0.003 : 0,
               ease: "power2.out",
             },
             overlayWindow.progressStart + enterDuration * 0.6,
@@ -719,7 +629,6 @@ export default function HomeStoryHero() {
         });
       }, hero);
 
-      gsapCleanup = () => gsapContext.revert();
       ScrollTrigger.refresh();
       document.documentElement.dataset.homeStoryReady = "true";
       document.dispatchEvent(new CustomEvent("home-story-ready"));
@@ -738,7 +647,6 @@ export default function HomeStoryHero() {
     visibilityObserver.observe(hero);
 
     const initialize = async () => {
-      void setupGsap();
       try {
         if (useMobileFrames) {
           try {
@@ -746,29 +654,47 @@ export default function HomeStoryHero() {
               homeStory.posterFrame,
               homeStory.mobileFramePrefix,
             );
+            if (destroyed) return;
             blobs.set(homeStory.posterFrame, mobilePoster);
-            loadedFrameCount = 1;
+            loadedAssetCount = 1;
             updateLoadingProgress();
           } catch {
             activePrefix = homeStory.desktopFramePrefix;
           }
         }
 
-        const firstFrame = await decodeFrame(homeStory.posterFrame);
-        resizeCanvas();
-        drawFrame(firstFrame, homeStory.posterFrame);
-
-        const initialFrames = Array.from(
-          { length: homeStory.initialChunkSize - 1 },
-          (_, index) => index + 2,
-        );
-        await mapWithConcurrency(initialFrames, 3, decodeFrame);
+        await decodeFrame(homeStory.posterFrame);
         if (destroyed) return;
-        setIsInitialChunkReady(true);
+        resizeCanvas();
+        renderScene();
+
+        await Promise.all([
+          mapWithConcurrency([...initialFrames], 3, decodeFrame),
+          ...spriteNames.map(async (name) => {
+            const response = await fetch(homeStory.animation.sprites[name].src, {
+              cache: "force-cache", signal: abortController.signal,
+            });
+            if (!response.ok) throw new Error(`Story sprite ${name} returned ${response.status}`);
+            const decoded = await decodeImage(await response.blob());
+            if (destroyed) {
+              closeFrame(decoded);
+              return;
+            }
+            decodedSprites.set(name, decoded);
+            loadedAssetCount += 1;
+            updateLoadingProgress();
+          }),
+        ]);
+        if (destroyed) return;
+        // No scroll-driven scene can run before its composite assets exist.
+        await setupGsap();
+        if (destroyed) return;
         canStream = true;
+        setIsInitialChunkReady(true);
         void streamRemainingFrames();
       } catch {
         if (!abortController.signal.aborted) {
+          gsapCleanup?.();
           experience.classList.add("is-failed");
         }
       }
@@ -783,10 +709,17 @@ export default function HomeStoryHero() {
       visibilityObserver.disconnect();
       gsapCleanup?.();
       if (parallaxFrame) window.cancelAnimationFrame(parallaxFrame);
+      if (renderFrame) window.cancelAnimationFrame(renderFrame);
       decodedFrames.forEach(closeFrame);
       decodedFrames.clear();
+      decodedSprites.forEach(closeFrame);
+      decodedSprites.clear();
+      hero.classList.remove("has-canvas-frame");
+      hero.style.removeProperty("--story-copy-x");
+      hero.style.removeProperty("--story-copy-y");
+      delete document.documentElement.dataset.homeStoryReady;
     };
-  }, []);
+  }, [motionEnabled]);
 
   return (
     <div className="story-experience" ref={experienceRef}>
@@ -838,6 +771,7 @@ export default function HomeStoryHero() {
 
       <FallbackStory className="story-reduced" />
       <noscript>
+        <style>{`.story-hero, .story-reduced { display: none !important; } .story-nojs { display: block !important; }`}</style>
         <FallbackStory className="story-nojs" />
       </noscript>
     </div>

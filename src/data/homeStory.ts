@@ -58,7 +58,8 @@ export interface StoryBeat {
 }
 
 export const homeStory = {
-  frameCount: 340,
+  // Logical frames include the coded transitions, not just downloaded images.
+  frameCount: 279,
   framePadding: 4,
   extension: "webp",
   scrollScreens: 20,
@@ -68,7 +69,90 @@ export const homeStory = {
   mobileFramePrefix: "/story_sequence/mobile/frame_",
   mobileFramesAvailable: false,
   posterFrame: 1,
-  fallbackFrame: 340,
+  fallbackFrame: 279,
+  animation: {
+    referenceWidth: 1920,
+    referenceHeight: 1080,
+    hand: {
+      frames: [55, 84] as const,
+      // Keep these sequence frames ABOVE the coded hand so the carton hides it.
+      // They temporarily contain a second hand; replace them in-place with
+      // transparent carton-only exports on the same 1920 × 1080 artboard.
+      cartonFrames: [55, 66] as const,
+      // Egg centre and sleeve cut edge in the transparent cutout's artboard.
+      origin: { x: 639, y: 821 },
+      sleeveEnd: [{ x: 1553, y: 178 }, { x: 1742, y: 618 }] as const,
+      edgePadding: 12,
+      // Reference-matched poses: clockwise degrees, uniform scale, egg centre.
+      // Interpolate continuously; the timeline alone owns the frame-70 hold.
+      poses: [
+        // The egg starts below the artboard, rising as the carton drops away.
+        { frame: 55, rotation: -45.5, scale: 1.000, x: 1938, y: 1539 },
+        { frame: 56, rotation: -32.2, scale: 1.000, x: 1793, y: 1514 },
+        { frame: 57, rotation: -26.7, scale: 1.000, x: 1645, y: 1484 },
+        { frame: 58, rotation: -17.7, scale: 1.000, x: 1571, y: 1375 },
+        { frame: 59, rotation: -8.1, scale: 1.000, x: 1396, y: 1304 },
+        { frame: 60, rotation: -5.7, scale: 1.000, x: 1300, y: 1195 },
+        { frame: 61, rotation: 0, scale: 1.000, x: 1244, y: 1113 },
+        { frame: 62, rotation: 4, scale: 1.000, x: 1231, y: 1062 },
+        { frame: 63, rotation: 14.2, scale: 0.991, x: 1198, y: 945 },
+        { frame: 64, rotation: 20.1, scale: 1.006, x: 1185, y: 846 },
+        { frame: 65, rotation: 26.8, scale: 1.007, x: 1145, y: 803 },
+        { frame: 66, rotation: 29.8, scale: 0.999, x: 1132, y: 726 },
+        { frame: 67, rotation: 32.1, scale: 1.010, x: 1135, y: 703 },
+        { frame: 68, rotation: 38.3, scale: 1.013, x: 1149, y: 678 },
+        { frame: 70, rotation: 58.4, scale: 1.101, x: 1045, y: 606 },
+        { frame: 72, rotation: 70.5, scale: 1.101, x: 1029, y: 564 },
+        { frame: 74, rotation: 87.8, scale: 1.072, x: 1013, y: 467 },
+        { frame: 76, rotation: 99.2, scale: 1.118, x: 969, y: 444 },
+        { frame: 78, rotation: 114.9, scale: 1.152, x: 1013, y: 393 },
+        { frame: 80, rotation: 123.8, scale: 1.181, x: 1031, y: 393 },
+        { frame: 82, rotation: 130.3, scale: 1.336, x: 1003, y: 411 },
+        { frame: 84, rotation: 132.3, scale: 1.470, x: 986, y: 427 },
+      ],
+    },
+    zoom: {
+      frames: [84, 109] as const,
+      matchFrame: 109,
+      endScale: 14,
+      textureBlendStart: 0.85,
+    },
+    shells: {
+      frames: [120, 138] as const,
+      backgroundFrame: 138,
+    },
+    cutlery: {
+      frames: [266, 279] as const,
+      backgroundFrame: 266,
+      // Plate bounds in frame 266 and the gap visible in the final reference.
+      plateBounds: { left: 680, right: 1243 },
+      gap: 60,
+    },
+    // Cutouts retain the transparent padding of their 1920 × 1080 artboards.
+    // Bounds enclose the artwork, including faint edge pixels.
+    sprites: {
+      handEgg: {
+        src: "/story_sequence/utils/hand-egg.webp",
+        bounds: { left: 256, right: 1744, top: 176, bottom: 968 },
+      },
+      leftShell: {
+        src: "/story_sequence/utils/left-egg-shell.webp",
+        bounds: { left: 0, right: 1056, top: 0, bottom: 1080 },
+      },
+      rightShell: {
+        src: "/story_sequence/utils/right-egg-shell.webp",
+        bounds: { left: 984, right: 1920, top: 0, bottom: 1080 },
+      },
+      fork: {
+        src: "/story_sequence/utils/fork.webp",
+        bounds: { left: 480, right: 624, top: 232, bottom: 832 },
+      },
+      knife: {
+        src: "/story_sequence/utils/knife.webp",
+        bounds: { left: 1328, right: 1440, top: 240, bottom: 840 },
+      },
+    },
+  },
   beats: [
     {
       id: "carton-open-brand",
@@ -86,9 +170,9 @@ export const homeStory = {
     },
     {
       id: "egg-in-hand",
-      label: "Egg held on the right",
-      frames: [41, 80],
-      holdFrame: 80,
+      label: "Carton entrance into the coded hand, held on the right",
+      frames: [41, 70],
+      holdFrame: 70,
       travelWeight: 0.55,
       holdWeight: 1.15,
       exitWeight: 0,
@@ -105,30 +189,23 @@ export const homeStory = {
       },
     },
     {
-      id: "egg-close-up",
-      label: "Clean egg close-up",
-      frames: [81, 120],
-      holdFrame: 120,
+      id: "egg-zoom",
+      label: "Coded hand rotation into a continuous egg zoom",
+      frames: [71, 109],
+      holdFrame: 109,
       travelWeight: 0.75,
-      holdWeight: 1.35,
+      holdWeight: 0,
       exitWeight: 0,
-      overlay: {
-        layout: "center",
-        eyebrow: "The right pick",
-        heading: "Talent is personal.",
-        body: "We meet people face to face, learn what makes them tick and introduce them to places where they can do their best work.",
-        action: { label: "Meet the team", href: "/team/", tone: "mint" },
-      },
     },
     {
       id: "egg-transition",
       label: "Egg transition with copy on both sides",
-      frames: [121, 194],
-      holdFrame: 132,
+      frames: [110, 182],
+      holdFrame: 138,
       travelWeight: 0.55,
       holdWeight: 0,
       exitWeight: 1,
-      overlayFrames: [132, 194],
+      overlayFrames: [138, 182],
       overlay: {
         layout: "split",
         columns: [
@@ -154,8 +231,8 @@ export const homeStory = {
     {
       id: "egg-four-ways",
       label: "Egg with copy on all four sides",
-      frames: [195, 225],
-      holdFrame: 225,
+      frames: [183, 213],
+      holdFrame: 213,
       travelWeight: 0.35,
       holdWeight: 1.4,
       exitWeight: 0,
@@ -180,8 +257,8 @@ export const homeStory = {
     {
       id: "plate-center",
       label: "Plate in the middle",
-      frames: [226, 267],
-      holdFrame: 267,
+      frames: [214, 253],
+      holdFrame: 253,
       travelWeight: 1.1,
       holdWeight: 1.3,
       exitWeight: 0,
@@ -206,8 +283,8 @@ export const homeStory = {
     {
       id: "plate-left",
       label: "Plate on the left",
-      frames: [268, 300],
-      holdFrame: 300,
+      frames: [254, 259],
+      holdFrame: 259,
       travelWeight: 0.65,
       holdWeight: 1.3,
       exitWeight: 0,
@@ -222,11 +299,12 @@ export const homeStory = {
     {
       id: "final-plate",
       label: "Final plated breakfast",
-      frames: [300, 340],
-      holdFrame: 340,
+      frames: [260, 266],
+      holdFrame: 266,
       travelWeight: 0.5,
-      holdWeight: 1.5,
+      holdWeight: 0,
       exitWeight: 0,
+      overlayFrames: [266, 279],
       overlay: {
         layout: "bottom",
         heading: "Great venues deserve great teams.",
@@ -236,6 +314,15 @@ export const homeStory = {
           tone: "citron",
         },
       },
+    },
+    {
+      id: "table-setting",
+      label: "Fork and knife arrive beside the plate",
+      frames: [266, 279],
+      holdFrame: 279,
+      travelWeight: 0.65,
+      holdWeight: 1.5,
+      exitWeight: 0,
     },
   ] satisfies StoryBeat[],
 };
