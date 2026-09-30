@@ -81,25 +81,28 @@ export const homeStory = {
       cartonFrames: [55, 66] as const,
       // Egg centre and sleeve cut edge in the transparent cutout's artboard.
       origin: { x: 639, y: 821 },
-      sleeveEnd: [{ x: 1553, y: 178 }, { x: 1742, y: 618 }] as const,
+      sleeveEnd: [
+        { x: 1553, y: 178 },
+        { x: 1742, y: 618 },
+      ] as const,
       edgePadding: 12,
       // Reference-matched poses: clockwise degrees, uniform scale, egg centre.
       // Interpolate continuously; the timeline alone owns the frame-70 hold.
       poses: [
         // The egg starts below the artboard, rising as the carton drops away.
-        { frame: 55, rotation: -45.5, scale: 1.000, x: 1938, y: 1539 },
-        { frame: 56, rotation: -32.2, scale: 1.000, x: 1793, y: 1514 },
-        { frame: 57, rotation: -26.7, scale: 1.000, x: 1645, y: 1484 },
-        { frame: 58, rotation: -17.7, scale: 1.000, x: 1571, y: 1375 },
-        { frame: 59, rotation: -8.1, scale: 1.000, x: 1396, y: 1304 },
-        { frame: 60, rotation: -5.7, scale: 1.000, x: 1300, y: 1195 },
-        { frame: 61, rotation: 0, scale: 1.000, x: 1244, y: 1113 },
-        { frame: 62, rotation: 4, scale: 1.000, x: 1231, y: 1062 },
+        { frame: 55, rotation: -45.5, scale: 1.0, x: 1938, y: 1539 },
+        { frame: 56, rotation: -32.2, scale: 1.0, x: 1793, y: 1514 },
+        { frame: 57, rotation: -26.7, scale: 1.0, x: 1645, y: 1484 },
+        { frame: 58, rotation: -17.7, scale: 1.0, x: 1571, y: 1375 },
+        { frame: 59, rotation: -8.1, scale: 1.0, x: 1396, y: 1304 },
+        { frame: 60, rotation: -5.7, scale: 1.0, x: 1300, y: 1195 },
+        { frame: 61, rotation: 0, scale: 1.0, x: 1244, y: 1113 },
+        { frame: 62, rotation: 4, scale: 1.0, x: 1231, y: 1062 },
         { frame: 63, rotation: 14.2, scale: 0.991, x: 1198, y: 945 },
         { frame: 64, rotation: 20.1, scale: 1.006, x: 1185, y: 846 },
         { frame: 65, rotation: 26.8, scale: 1.007, x: 1145, y: 803 },
         { frame: 66, rotation: 29.8, scale: 0.999, x: 1132, y: 726 },
-        { frame: 67, rotation: 32.1, scale: 1.010, x: 1135, y: 703 },
+        { frame: 67, rotation: 32.1, scale: 1.01, x: 1135, y: 703 },
         { frame: 68, rotation: 38.3, scale: 1.013, x: 1149, y: 678 },
         { frame: 70, rotation: 58.4, scale: 1.101, x: 1045, y: 606 },
         { frame: 72, rotation: 70.5, scale: 1.101, x: 1029, y: 564 },
@@ -108,7 +111,7 @@ export const homeStory = {
         { frame: 78, rotation: 114.9, scale: 1.152, x: 1013, y: 393 },
         { frame: 80, rotation: 123.8, scale: 1.181, x: 1031, y: 393 },
         { frame: 82, rotation: 130.3, scale: 1.336, x: 1003, y: 411 },
-        { frame: 84, rotation: 132.3, scale: 1.470, x: 986, y: 427 },
+        { frame: 84, rotation: 132.3, scale: 1.47, x: 986, y: 427 },
       ],
     },
     zoom: {
@@ -185,6 +188,11 @@ export const homeStory = {
         typography: {
           headingSize: "clamp(2rem, 4.5vw, 4.25rem)",
           bodySize: "clamp(0.9rem, 1.2vw, 1.05rem)",
+        },
+        action: {
+          label: "Our Story",
+          href: "/our-story/",
+          tone: "cream",
         },
       },
     },
@@ -275,7 +283,11 @@ export const homeStory = {
             eyebrow: "Our values",
             heading: "Trust, served daily.",
             body: "At the core of it all, we're a business continuously striving to look after its people and its footprint with a commitment to doing right by both.",
-            action: { label: "Sustainability", href: "/sustainability-impact/", tone: "citron" },
+            action: {
+              label: "Sustainability",
+              href: "/sustainability-impact/",
+              tone: "citron",
+            },
           },
         ],
       },

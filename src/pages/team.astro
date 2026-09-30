@@ -5,11 +5,7 @@ import EggIllustration from "../components/EggIllustration.astro";
 import FunMenu from "../components/FunMenu.astro";
 import PageMotion from "../components/PageMotion.astro";
 import SiteFooter from "../components/SiteFooter.astro";
-import {
-  teamCategories,
-  teamGalleryItems,
-  teamPassSteps,
-} from "../data/team";
+import { teamCategories, teamGalleryItems, teamPassSteps } from "../data/team";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getTeamMembers } from "../sanity/queries";
 
@@ -95,7 +91,9 @@ const teamSectionLinks = [
           <p
             class="team-hero-intro mt-7 max-w-xl text-xl font-black leading-8 text-cocoa md:text-2xl md:leading-9"
           >
-            Hospitality people, through and through. We've worked the floors, the kitchens and the front desks ourselves, which is why we know exactly what you're looking for.
+            Hospitality people, through and through. We've worked the floors,
+            the kitchens and the front desks ourselves, which is why we know
+            exactly what you're looking for.
           </p>
           <ul
             class="team-hero-specialisms mt-7"
@@ -107,7 +105,7 @@ const teamSectionLinks = [
           </ul>
           <div class="mt-9 flex flex-col gap-3 sm:flex-row">
             <a class="team-hero-button bg-cocoa text-cream" href="#profiles"
-                >Meet the team</a
+              >Meet the team</a
             >
             <a class="team-hero-button bg-citron text-ink" href="#gallery"
               >See the storyboard</a
@@ -160,7 +158,7 @@ const teamSectionLinks = [
             <p
               class="mb-4 text-sm font-black uppercase tracking-wide text-flame"
             >
-                Our people
+              Our people
             </p>
             <h2
               id="profiles-title"
@@ -433,7 +431,7 @@ const teamSectionLinks = [
     height: 8rem;
     width: 8rem;
     /* border-radius: 50% 50% 46% 54% / 58% 42% 58% 42%; */
-    /* background: var(--color-citron); 
+  /* background: var(--color-citron); 
     content: "";
     transform: rotate(18deg);
   } */
