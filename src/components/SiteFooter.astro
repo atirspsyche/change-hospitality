@@ -20,6 +20,25 @@ const socialLinks = [
   { label: 'Instagram', href: 'https://www.instagram.com/changehospitality/' },
   { label: 'Email', href: 'mailto:hello@changehospitality.co.uk' },
 ];
+
+const policyLinks = [
+  {
+    label: 'Data Protection',
+    href: 'https://drive.google.com/file/d/1F0XXLU-BIkhUMy5drgsjA6yOwSmNWHju/view?usp=drive_link',
+  },
+  {
+    label: 'Environmental',
+    href: 'https://drive.google.com/file/d/1q8Ebm8oPestODG0Wo6NEcT85vzSmzYym/view?usp=drive_link',
+  },
+  {
+    label: 'Equality',
+    href: 'https://drive.google.com/file/d/1h2-kKHuK2fpHKKX6FDgTvyOr7zTuDvsi/view?usp=drive_link',
+  },
+  {
+    label: 'Modern Day Slavery',
+    href: 'https://drive.google.com/file/d/1EoBwxBNnnQ9nZKmHgmhN93OCIwDQUdvP/view?usp=drive_link',
+  },
+];
 ---
 
 <footer
@@ -79,6 +98,20 @@ const socialLinks = [
       <nav class="site-footer-socials" aria-label="Social media">
         {socialLinks.map((link) => <a href={link.href}>{link.label}</a>)}
       </nav>
+
+      <div class="site-footer-policies">
+        <p>Policies &amp; commitments</p>
+        <nav aria-label="Policy documents">
+          {
+            policyLinks.map((link) => (
+              <a href={link.href} target="_blank" rel="noopener noreferrer">
+                <span>{link.label}</span>
+                <span aria-hidden="true">↗</span>
+              </a>
+            ))
+          }
+        </nav>
+      </div>
     </div>
   </div>
 
@@ -241,6 +274,55 @@ const socialLinks = [
     transform: translateY(-0.3rem) rotate(3deg);
   }
 
+  .site-footer-policies {
+    padding-top: 0.4rem;
+  }
+
+  .site-footer-policies > p {
+    margin-bottom: 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .site-footer-policies nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+  }
+
+  .site-footer-policies a {
+    display: inline-flex;
+    min-height: 3rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+    border: 2px solid var(--color-cocoa);
+    border-radius: 999px;
+    background: var(--color-cream);
+    padding: 0.75rem 1rem;
+    font-size: 0.78rem;
+    font-weight: 900;
+    line-height: 1.1;
+    text-transform: uppercase;
+    transition:
+      transform 300ms var(--ease-cartoon),
+      background-color 240ms ease,
+      color 240ms ease;
+  }
+
+  .site-footer-policies a span:last-child {
+    font-size: 1.1rem;
+    line-height: 1;
+  }
+
+  .site-footer-policies a:hover,
+  .site-footer-policies a:focus-visible {
+    background: var(--color-cocoa);
+    color: var(--color-cream);
+    transform: translateY(-0.25rem) rotate(-1deg);
+  }
+
   .site-footer-ribbon {
     position: absolute;
     right: -6rem;
@@ -272,7 +354,8 @@ const socialLinks = [
     .site-footer-egg,
     .site-footer-cta,
     .site-footer-link,
-    .site-footer-socials a {
+    .site-footer-socials a,
+    .site-footer-policies a {
       transition: none;
     }
   }

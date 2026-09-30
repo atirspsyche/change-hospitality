@@ -5,6 +5,7 @@ const divisions = [
   'Back of House',
   'Events and Management',
   'HR & Finance',
+  'Leadership & Operations',
 ];
 
 export const consultant = defineType({

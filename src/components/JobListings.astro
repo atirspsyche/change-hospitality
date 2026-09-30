@@ -438,7 +438,6 @@ const toExcerpt = (description: string, maxLength = 88) => {
     const cards = Array.from(root.querySelectorAll<HTMLElement>('[data-job-card]'));
     const locationFilter = form.querySelector<HTMLSelectElement>('[data-job-filter="location"]');
     const positionFilter = form.querySelector<HTMLSelectElement>('[data-job-filter="position"]');
-    const typeFilter = form.querySelector<HTMLSelectElement>('[data-job-filter="jobType"]');
     const showAllButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-show-all-jobs], [data-empty-show-all]'));
     const count = root.querySelector<HTMLElement>('[data-job-count]');
     const countLabel = root.querySelector<HTMLElement>('[data-job-count-label]');
@@ -501,11 +500,9 @@ const toExcerpt = (description: string, maxLength = 88) => {
     const applyFilters = () => {
       const location = locationFilter?.value || '';
       const position = positionFilter?.value || '';
-      const jobType = typeFilter?.value || '';
       visibleCards = cards.filter((card) =>
         (!location || card.dataset.location === location) &&
-        (!position || card.dataset.position === position) &&
-        (!jobType || card.dataset.jobType === jobType)
+        (!position || card.dataset.position === position)
       );
       currentPage = 1;
       render();
@@ -530,7 +527,6 @@ const toExcerpt = (description: string, maxLength = 88) => {
         sessionStorage.setItem('jobs-return-state', JSON.stringify({
           location: locationFilter?.value || '',
           position: positionFilter?.value || '',
-          jobType: typeFilter?.value || '',
           page: currentPage,
           scrollY: window.scrollY,
           focusHref: link.getAttribute('href') || '',
@@ -580,18 +576,15 @@ const toExcerpt = (description: string, maxLength = 88) => {
         const state = JSON.parse(returnState) as {
           location?: string;
           position?: string;
-          jobType?: string;
           page?: number;
           scrollY?: number;
           focusHref?: string;
         };
         if (locationFilter) locationFilter.value = state.location || '';
         if (positionFilter) positionFilter.value = state.position || '';
-        if (typeFilter) typeFilter.value = state.jobType || '';
         visibleCards = cards.filter((card) =>
           (!state.location || card.dataset.location === state.location) &&
-          (!state.position || card.dataset.position === state.position) &&
-          (!state.jobType || card.dataset.jobType === state.jobType)
+          (!state.position || card.dataset.position === state.position)
         );
         currentPage = Math.max(1, Math.min(state.page || 1, Math.ceil(visibleCards.length / pageSize) || 1));
         render();

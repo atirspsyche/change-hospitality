@@ -183,7 +183,7 @@ export const homeStory = {
           "We build bridges between passionate people and the best hospitality venues",
         body: "Every placement with us is treated with care, because the right person can make or break a team. For over two decades, we've been the ones you can trust to get it right.",
         typography: {
-          headingSize: "clamp(2.4rem, 4.5vw, 4.75rem)",
+          headingSize: "clamp(2rem, 4.5vw, 4.25rem)",
           bodySize: "clamp(0.9rem, 1.2vw, 1.05rem)",
         },
       },
@@ -293,7 +293,7 @@ export const homeStory = {
         eyebrow: "Ready when you are",
         heading: "Your next move is on the pass.",
         body: "Explore live hospitality roles or tell us who your team needs next.",
-        action: { label: "See live jobs", href: "/jobs/", tone: "flame" },
+        action: { label: "Franchising", href: "/franchising/", tone: "flame" },
       },
     },
     {

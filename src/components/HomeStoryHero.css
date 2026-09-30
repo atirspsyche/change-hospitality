@@ -131,9 +131,27 @@
   gap: clamp(5rem, 18vw, 22rem);
 }
 
+.story-overlay--split .story-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.story-overlay--split .story-body {
+  margin-bottom: 1.7rem;
+}
+
+.story-overlay--split .story-button {
+  align-self: flex-start;
+  margin-top: auto;
+}
+
 .story-overlay--split .story-column:last-child,
 .story-overlay--sides .story-column:last-child {
   text-align: right;
+}
+
+.story-overlay--split .story-column:last-child .story-button {
+  align-self: flex-end;
 }
 
 .story-overlay--sides .story-columns {
@@ -546,10 +564,19 @@
 
   .story-overlay--split .story-column,
   .story-overlay--sides .story-column {
+    display: block;
     padding: 0.9rem;
     border: 2px solid var(--color-ink);
     border-radius: 1.1rem;
     background: var(--color-cream);
+  }
+
+  .story-overlay--split .story-body {
+    margin-bottom: 0;
+  }
+
+  .story-overlay--split .story-button {
+    margin-top: 1.7rem;
   }
 
   .story-overlay--split .story-column:last-child,

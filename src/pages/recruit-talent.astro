@@ -1,6 +1,8 @@
 ---
+import ClientTestimonials from '../components/ClientTestimonials.astro';
 import FunMenu from '../components/FunMenu.astro';
 import EggIllustration from '../components/EggIllustration.astro';
+import PageMotion from '../components/PageMotion.astro';
 import RecruitTalentHero from '../components/RecruitTalentHero.astro';
 import RecruitmentDivisions from '../components/RecruitmentDivisions.astro';
 import RecruitmentForm from '../components/RecruitmentForm.astro';
@@ -9,6 +11,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 const showHandoff = false;
 
 const sectionLinks = [
+  { label: 'Client stories', href: '#client-testimonials', meta: 'Better together' },
   { label: 'Divisions', href: '#divisions', meta: 'Where we recruit' },
   { label: 'Staffing brief', href: '#staffing-brief', meta: 'Tell us what you need' },
 ];
@@ -43,8 +46,10 @@ const handoffSteps = [
     menuButtonTextColor="var(--color-cream)"
   />
 
+  <PageMotion page="recruit" />
   <main class="recruit-page" data-recruit-page>
     <RecruitTalentHero />
+    <ClientTestimonials />
 
     {showHandoff && (
       <section id="how-it-works" class="recruit-handoff" aria-labelledby="handoff-title" data-section-reveal>

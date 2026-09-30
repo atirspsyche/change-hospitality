@@ -1,19 +1,22 @@
 ---
+import CandidateTestimonials from '../components/CandidateTestimonials.astro';
 import FunMenu from '../components/FunMenu.astro';
 import JobListings from '../components/JobListings.astro';
 import JobsHero from '../components/JobsHero.astro';
+import PageMotion from '../components/PageMotion.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import TemporaryJobsExperience from '../components/TemporaryJobsExperience.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getJobs } from '../sanity/queries';
 
 const jobs = await getJobs();
 const locations = [...new Set(jobs.map((job) => job.location))].sort();
 const positions = [...new Set(jobs.map((job) => job.position))].sort();
-const jobTypes = [...new Set(jobs.map((job) => job.jobType))].sort();
 
 const sectionLinks = [
   { label: 'Search', href: '#job-search-form', meta: 'Choose what matters' },
   { label: 'Open roles', href: '#jobs', meta: 'See every opportunity' },
+  { label: 'Candidate stories', href: '#candidate-testimonials', meta: 'In their own words' },
 ];
 ---
 
@@ -28,9 +31,14 @@ const sectionLinks = [
     menuButtonTextColor="var(--color-cream)"
   />
 
+  <PageMotion page="jobs" />
   <main class="jobs-page">
-    <JobsHero {locations} {positions} {jobTypes} />
-    <JobListings {jobs} pageSize={6} />
+    <JobsHero {locations} {positions} />
+    <div data-jobs-mode-panel="permanent">
+      <JobListings {jobs} pageSize={6} />
+    </div>
+    <TemporaryJobsExperience />
+    <CandidateTestimonials />
     <SiteFooter />
   </main>
 </BaseLayout>
@@ -45,6 +53,39 @@ const sectionLinks = [
 </style>
 
 <script>
+  function initJobsModeSwitch() {
+    const switcher = document.querySelector<HTMLFieldSetElement>('[data-jobs-mode-switch]');
+    if (!switcher || switcher.dataset.ready === 'true') return;
+    switcher.dataset.ready = 'true';
+
+    const inputs = Array.from(switcher.querySelectorAll<HTMLInputElement>('input[name="jobsMode"]'));
+    const searchForm = document.querySelector<HTMLFormElement>('[data-job-search-form]');
+    const panels = Array.from(document.querySelectorAll<HTMLElement>('[data-jobs-mode-panel]'));
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const setMode = (mode: string, shouldScroll = false) => {
+      panels.forEach((panel) => {
+        panel.hidden = panel.dataset.jobsModePanel !== mode;
+      });
+      if (searchForm) searchForm.hidden = mode !== 'permanent';
+
+      const target = panels.find((panel) => panel.dataset.jobsModePanel === mode);
+      if (shouldScroll && target) {
+        target.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' });
+        const heading = target.querySelector<HTMLElement>('h2[tabindex="-1"]');
+        window.setTimeout(() => heading?.focus({ preventScroll: true }), reducedMotion ? 0 : 650);
+      }
+    };
+
+    inputs.forEach((input) => {
+      input.addEventListener('change', () => {
+        if (input.checked) setMode(input.value, true);
+      });
+    });
+
+    setMode(inputs.find((input) => input.checked)?.value || 'permanent');
+  }
+
   function initJobsHeroMotion() {
     const hero = document.querySelector<HTMLElement>('[data-jobs-hero]');
     if (!hero || hero.dataset.motionReady === 'true') return;
@@ -72,6 +113,8 @@ const sectionLinks = [
     }, { passive: true });
   }
 
+  initJobsModeSwitch();
   initJobsHeroMotion();
+  document.addEventListener('astro:page-load', initJobsModeSwitch);
   document.addEventListener('astro:page-load', initJobsHeroMotion);
 </script>

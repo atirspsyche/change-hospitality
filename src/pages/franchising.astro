@@ -1,0 +1,711 @@
+---
+import { ArrowDown, ArrowUp, ArrowUpRight, Building2, Mail, MapPin, Phone } from '@lucide/astro';
+import FunMenu from '../components/FunMenu.astro';
+import StoryIllustration from '../components/StoryIllustration.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const email = 'info@changehospitality.co.uk';
+const emailLink = `mailto:${email}?subject=Franchising%20with%20Change%20Hospitality`;
+const offices = [
+  { name: 'Office 01', image: '', alt: '' },
+  { name: 'Office 02', image: '', alt: '' },
+  { name: 'Office 03', image: '', alt: '' },
+];
+---
+
+<BaseLayout
+  title="Franchising | Change Hospitality"
+  description="Bring Change Hospitality to your community. Explore hospitality recruitment franchising with a people-first business and over 20 years of relationships."
+>
+  <FunMenu
+    menuButtonBackground="var(--color-blush)"
+    menuButtonBorderColor="var(--color-ink)"
+    menuButtonTextColor="var(--color-ink)"
+  />
+
+  <main class="franchising-page">
+    <section class="franchise-hero" aria-labelledby="franchise-title">
+      <div class="hero-copy">
+        <p class="eyebrow hero-eyebrow">Your ambition. Our next chapter.</p>
+        <h1 id="franchise-title" tabindex="-1">Franchise with <span>Change.</span></h1>
+        <p class="hero-intro">
+          You know your city. We know hospitality.<br />
+          Let's put a people-first recruitment business on your doorstep.
+        </p>
+        <a class="conversation-link" href="#lets-talk">Let's talk franchising <ArrowDown size={18} aria-hidden="true" /></a>
+      </div>
+
+      <div class="hero-baseline">
+        <div class="hero-character hero-character--chef" aria-hidden="true"><StoryIllustration kind="chef" /></div>
+        <p><strong>3</strong><span>Franchise locations.<br /><b>One shared ambition.</b></span></p>
+        <div class="hero-character hero-character--growth" aria-hidden="true"><StoryIllustration kind="sprout" /></div>
+      </div>
+    </section>
+
+    <section class="franchise-next" id="the-opportunity" aria-labelledby="opportunity-title">
+      <div class="opportunity">
+        <div class="opportunity-heading">
+          <p class="eyebrow">Independent spirit. Shared DNA.</p>
+          <h2 id="opportunity-title">Your patch.<br />Our kind of people.</h2>
+        </div>
+        <div class="opportunity-copy">
+          <p>
+            The best connections start with someone who knows the neighbourhood.
+            The venues. The teams. The people behind the pass.
+          </p>
+          <p>
+            With 20+ years of hospitality relationships and franchises in three
+            locations, we're ready to talk about what comes next. If you know your
+            local hospitality scene and want to build a business around people,
+            we'd love to meet you.
+          </p>
+          <p class="opportunity-signoff">Your local knowledge. Our face-to-face approach.</p>
+        </div>
+      </div>
+
+      <section class="office-gallery" aria-labelledby="office-title">
+        <div class="office-gallery-heading">
+          <p class="eyebrow">Growing, together</p>
+          <h2 id="office-title">Three places.<br class="mobile-break" /> One Change.</h2>
+        </div>
+        <div class="office-photos">
+          {offices.map((office, index) => (
+            <div class="office-photo-wrap" data-office-photo>
+              <figure class={`office-photo office-photo--${index + 1}`}>
+                <span class="photo-tape" aria-hidden="true"></span>
+                <div class="office-photo-image">
+                  {office.image ? (
+                    <img src={office.image} alt={office.alt} width="640" height="400" loading="lazy" decoding="async" />
+                  ) : (
+                    <div class="office-photo-placeholder">
+                      <Building2 size={76} strokeWidth={1.5} aria-hidden="true" />
+                      <span>Office photo to follow</span>
+                    </div>
+                  )}
+                </div>
+                <figcaption><MapPin size={20} aria-hidden="true" /><span>{office.name}</span><b aria-hidden="true">0{index + 1}</b></figcaption>
+              </figure>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <div class="franchise-contact" id="lets-talk" aria-labelledby="contact-title" tabindex="-1">
+        <div class="contact-heading">
+          <p class="eyebrow">The next location could be yours</p>
+          <h2 id="contact-title">It starts with<br /><span>a hello.</span></h2>
+          <p>No big pitch needed. Tell us a little about you,<br class="desktop-break" /> where you're based and what you have in mind.</p>
+        </div>
+        <div class="contact-links">
+          <a class="contact-link contact-link--email" href={emailLink}>
+            <span class="contact-label"><span><Mail size={16} aria-hidden="true" /> Drop us a line</span><ArrowUpRight size={24} aria-hidden="true" /></span>
+            <span class="contact-value">info@<wbr />changehospitality.co.uk</span>
+            <span class="contact-detail">Let's talk about your idea</span>
+          </a>
+          <a class="contact-link contact-link--phone" href="tel:+442080506312">
+            <span class="contact-label"><span><Phone size={16} aria-hidden="true" /> Have a conversation</span><ArrowUpRight size={24} aria-hidden="true" /></span>
+            <span class="contact-value">020 8050 6312</span>
+            <span class="contact-detail">Ask the team about franchising</span>
+          </a>
+        </div>
+      </div>
+
+      <footer class="franchise-footer">
+        <a href="/">Change Hospitality</a>
+        <span>Good people. Great hospitality. Your next chapter.</span>
+        <a href="#franchise-title">Back to top <ArrowUp size={16} aria-hidden="true" /></a>
+      </footer>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  :global(html:has(.franchising-page)),
+  :global(body:has(.franchising-page)) {
+    background: var(--color-citron);
+    color: var(--color-ink);
+  }
+
+  .franchising-page {
+    background: var(--color-citron);
+    color: var(--color-ink);
+    letter-spacing: 0;
+    overflow: clip;
+  }
+
+  .franchising-page :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 6px;
+  }
+
+  .franchising-page ::selection {
+    background: var(--color-ink);
+    color: var(--color-citron);
+  }
+
+  .franchise-hero {
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+    padding-top: 6rem;
+  }
+
+  .hero-copy {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: min(100%, 90rem);
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-inline: auto;
+    padding: 1rem 1.5rem;
+    text-align: center;
+  }
+
+  .eyebrow {
+    width: fit-content;
+    border-radius: 0.8rem;
+    background: var(--color-mint);
+    padding: 0.65rem 0.9rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.5;
+    text-transform: uppercase;
+    transform: rotate(-2deg);
+  }
+
+  .hero-eyebrow {
+    margin-bottom: 1.5rem;
+    background: var(--color-blush);
+  }
+
+  .hero-copy h1 {
+    font-family: var(--font-hero);
+    font-size: 3.75rem;
+    font-weight: 400;
+    line-height: 1.15;
+  }
+
+  .hero-copy h1 > span {
+    display: block;
+    color: var(--color-cocoa);
+    font-size: 7.5rem;
+    font-weight: 400;
+    line-height: 1.1;
+    text-shadow: 3px 4px 0 var(--color-blush);
+  }
+
+  .hero-intro {
+    max-width: 31rem;
+    margin: 1.2rem auto 1.5rem;
+    font-size: 1rem;
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+
+  .conversation-link {
+    display: inline-flex;
+    min-height: 3.4rem;
+    align-items: center;
+    justify-content: center;
+    gap: 1.75rem;
+    border: 2px solid var(--color-ink);
+    border-radius: 1.2rem;
+    background: var(--color-mint);
+    padding: 0.8rem 1.25rem;
+    color: var(--color-ink);
+    font-size: 0.9rem;
+    font-weight: 700;
+    box-shadow: 4px 5px 0 var(--color-ink);
+    transition: background 200ms ease, box-shadow 200ms ease, transform 300ms var(--ease-cartoon);
+  }
+
+  .conversation-link:hover,
+  .conversation-link:focus-visible {
+    transform: translateY(-3px) rotate(-2deg);
+    background: var(--color-blush);
+    box-shadow: 6px 8px 0 var(--color-ink);
+  }
+
+  .hero-baseline {
+    position: relative;
+    display: flex;
+    width: min(100%, 80rem);
+    min-height: 12rem;
+    flex-shrink: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-inline: auto;
+    padding: 1rem 3rem 2rem;
+    font-size: 0.8rem;
+  }
+
+  .hero-baseline > p {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    border: 2px solid var(--color-ink);
+    border-radius: 1.2rem;
+    background: var(--color-mint);
+    padding: 0.8rem 1.5rem;
+    color: var(--color-ink);
+    box-shadow: 5px 6px 0 var(--color-ink);
+    line-height: 1.4;
+    transform: rotate(-2deg);
+  }
+
+  .hero-baseline strong {
+    color: var(--color-cocoa);
+    font-family: var(--font-hero);
+    font-size: 4rem;
+    font-weight: 400;
+    line-height: 1;
+  }
+
+  .hero-baseline > p > span { font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; }
+  .hero-baseline b { font-family: var(--font-sans); font-size: 0.9rem; font-weight: 400; }
+
+  .hero-character {
+    position: absolute;
+    bottom: 1rem;
+    width: 16rem;
+    pointer-events: none;
+  }
+
+  .hero-character--chef { left: 3rem; transform: rotate(-8deg); }
+  .hero-character--growth { right: 3rem; width: 14rem; transform: rotate(8deg); }
+
+  .franchise-next {
+    display: flex;
+    min-height: 100svh;
+    flex-direction: column;
+    border-radius: 50% 50% 0 0 / 2rem 2rem 0 0;
+    background: var(--color-blush);
+    scroll-margin-top: 2rem;
+  }
+
+  .opportunity,
+  .franchise-contact {
+    display: grid;
+    width: min(100%, 86rem);
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    margin-inline: auto;
+    padding: 3.5rem 3rem;
+  }
+
+  .opportunity-heading h2 {
+    margin-top: 1.25rem;
+    font-family: var(--font-hero);
+    font-size: 2.75rem;
+    font-weight: 400;
+    line-height: 1.15;
+  }
+
+  .opportunity-copy {
+    align-self: center;
+    max-width: 34rem;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .opportunity-copy p + p {
+    margin-top: 0.9rem;
+  }
+
+  .opportunity-signoff {
+    color: var(--color-cocoa);
+    font-weight: 700;
+  }
+
+  .office-gallery {
+    width: min(100%, 86rem);
+    margin-inline: auto;
+    padding: 0.5rem 3rem 3rem;
+  }
+
+  .office-gallery-heading { text-align: center; }
+  .office-gallery-heading .eyebrow { margin: 0 auto 1rem; background: var(--color-mist); transform: rotate(2deg); }
+  .office-gallery h2 { font-family: var(--font-hero); font-size: 2.25rem; line-height: 1.2; }
+  .mobile-break { display: none; }
+
+  .office-photos {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2.5rem;
+    padding-top: 2.75rem;
+  }
+
+  .office-photo-wrap { min-width: 0; }
+
+  .office-photo {
+    --photo-tilt: -3deg;
+    --photo-accent: var(--color-citron);
+    position: relative;
+    border: 2px solid var(--color-ink);
+    border-radius: 0.5rem;
+    background: var(--color-paper);
+    padding: 0.75rem 0.75rem 0;
+    box-shadow: 5px 6px 0 var(--color-ink);
+    transform: rotate(var(--photo-tilt));
+    transition: transform 350ms var(--ease-cartoon), box-shadow 350ms ease;
+  }
+
+  .office-photo--2 { --photo-tilt: 2deg; --photo-accent: var(--color-mint); }
+  .office-photo--3 { --photo-tilt: -1deg; --photo-accent: var(--color-mist); }
+  .office-photo:hover { transform: translateY(-6px) rotate(0); box-shadow: 7px 10px 0 var(--color-ink); }
+
+  .photo-tape {
+    position: absolute;
+    z-index: 1;
+    top: -0.8rem;
+    left: calc(50% - 2.5rem);
+    width: 5rem;
+    height: 1.65rem;
+    background: var(--color-flame);
+    clip-path: polygon(0 10%, 97% 0, 100% 90%, 3% 100%);
+    transform: rotate(-5deg);
+  }
+
+  .office-photo--2 .photo-tape { transform: rotate(5deg); }
+  .office-photo-image { aspect-ratio: 8 / 5; background: var(--photo-accent); overflow: hidden; }
+  .office-photo-image img { width: 100%; height: 100%; object-fit: cover; }
+  .office-photo-placeholder { display: flex; height: 100%; flex-direction: column; align-items: center; justify-content: center; gap: 0.75rem; }
+  .office-photo-placeholder > span { font-size: 0.8rem; }
+  .office-photo figcaption { display: flex; min-height: 4rem; align-items: center; gap: 0.6rem; font-family: var(--font-display); font-size: 1.3rem; font-weight: 500; }
+  .office-photo figcaption b { margin-left: auto; color: var(--color-cocoa); font-family: var(--font-hero); font-size: 1.6rem; font-weight: 400; }
+
+  .franchise-contact {
+    flex: 1;
+    align-items: center;
+    scroll-margin-top: 2rem;
+  }
+
+  .contact-heading > .eyebrow { background: var(--color-citron); }
+
+  .contact-heading h2 {
+    margin: 1.2rem 0;
+    font-family: var(--font-hero);
+    font-size: 3.5rem;
+    font-weight: 400;
+    line-height: 1.15;
+  }
+
+  .contact-heading h2 span {
+    color: var(--color-cocoa);
+  }
+
+  .contact-heading > p:last-child {
+    max-width: 30rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .contact-links {
+    display: grid;
+    gap: 1.25rem;
+    min-width: 0;
+    padding: 0.5rem;
+  }
+
+  .contact-link {
+    display: block;
+    border: 2px solid var(--color-ink);
+    border-radius: 1.2rem;
+    background: var(--color-mint);
+    padding: 1.3rem 1.5rem;
+    box-shadow: 5px 6px 0 var(--color-ink);
+    transform: rotate(-2deg);
+    transition: background 200ms ease, box-shadow 200ms ease, transform 300ms var(--ease-cartoon);
+  }
+
+  .contact-link--phone { background: var(--color-mist); transform: rotate(2deg); }
+
+  .contact-link:hover,
+  .contact-link:focus-visible {
+    background: var(--color-citron);
+    box-shadow: 7px 9px 0 var(--color-ink);
+    transform: translateY(-3px) rotate(0);
+  }
+
+  .contact-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .contact-label > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .contact-value {
+    display: block;
+    margin-block: 0.9rem 0.5rem;
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 500;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+
+  .contact-link--phone .contact-value {
+    font-size: 2.5rem;
+  }
+
+  .contact-detail {
+    font-size: 0.78rem;
+  }
+
+  .franchise-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    background: var(--color-mint);
+    padding: 0.75rem 3rem;
+    font-size: 0.72rem;
+  }
+
+  .franchise-footer a {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .franchise-footer a:first-child {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .franchise-footer a:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.25rem;
+  }
+
+  @keyframes arrive {
+    from { opacity: 0; transform: translateY(1rem); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-copy h1 { animation: arrive 650ms ease both; }
+    .hero-intro { animation: arrive 650ms 100ms ease both; }
+    .conversation-link { animation: arrive 650ms 200ms ease backwards; }
+  }
+
+  @media (min-width: 1600px) {
+    .hero-copy h1 { font-size: 4.5rem; }
+    .hero-copy h1 > span { font-size: 9rem; }
+  }
+
+  @media (max-width: 1023px) {
+    .hero-baseline { padding-inline: 1.5rem; }
+    .hero-character { width: 11rem; }
+    .hero-character--chef { left: 1.5rem; }
+    .hero-character--growth { right: 1.5rem; width: 10rem; }
+    .opportunity, .franchise-contact { gap: 2rem; padding: 3rem 1.5rem; }
+    .office-gallery { padding-inline: 1.5rem; }
+    .office-photos { gap: 1.25rem; }
+    .opportunity-heading h2 { font-size: 2.25rem; }
+    .contact-heading h2 { font-size: 3rem; }
+    .contact-value { font-size: 1.4rem; }
+    .contact-link--phone .contact-value { font-size: 2rem; }
+    .franchise-footer { padding-inline: 1.5rem; }
+  }
+
+  @media (max-width: 639px) {
+    .franchise-hero { padding-top: 5.5rem; }
+    .hero-copy { padding: 1rem 1.25rem; }
+    .hero-eyebrow { margin-bottom: 1.25rem; font-size: 0.6rem; }
+    .hero-copy h1 { font-size: 2rem; }
+    .hero-copy h1 > span { margin-top: 0.3rem; font-size: 4.25rem; }
+    .hero-intro { margin-top: 1.1rem; font-size: 0.9rem; }
+    .hero-intro br { display: none; }
+    .hero-baseline { justify-content: flex-end; min-height: 10rem; padding: 0.75rem 1rem 1.5rem; font-size: 0.7rem; }
+    .hero-baseline > p { gap: 0.85rem; padding: 0.8rem 1rem; }
+    .hero-baseline > p > span { font-size: 1.1rem; }
+    .hero-baseline b { font-size: 0.8rem; }
+    .hero-baseline strong { font-size: 3rem; }
+    .hero-character { bottom: 7rem; width: 6.5rem; }
+    .hero-character--chef { left: 0.75rem; }
+    .hero-character--growth { right: 0.75rem; width: 5.75rem; }
+    .opportunity, .franchise-contact { grid-template-columns: 1fr; gap: 1.5rem; padding: 2.5rem 1.25rem; }
+    .opportunity-heading h2 { font-size: 2rem; }
+    .opportunity-copy { font-size: 0.9rem; }
+    .office-gallery { padding: 0.5rem 1.5rem 2rem; }
+    .office-gallery h2 { font-size: 1.8rem; }
+    .mobile-break { display: block; }
+    .office-photos { grid-template-columns: 1fr; gap: 2.5rem; max-width: 23rem; margin-inline: auto; }
+    .contact-heading h2 { font-size: 2.75rem; }
+    .contact-link { padding: 1.1rem; }
+    .contact-value { font-size: 1.4rem; }
+    .contact-link--phone .contact-value { font-size: 2.15rem; }
+    .franchise-footer { flex-wrap: wrap; gap: 0.25rem 1rem; padding: 0.75rem 1.25rem; }
+    .franchise-footer > span { flex-basis: 100%; order: 3; padding-bottom: 0.5rem; }
+    .franchise-footer a:last-child { margin-left: auto; }
+    .desktop-break { display: none; }
+  }
+
+  @media (max-width: 359px) {
+    .hero-copy h1 { font-size: 1.8rem; }
+    .hero-copy h1 > span { font-size: 3.5rem; }
+    .hero-character { width: 5rem; }
+    .contact-value { font-size: 1.25rem; }
+  }
+
+  @media (max-height: 740px) and (min-width: 640px) {
+    .franchise-hero { padding-top: 5rem; }
+    .hero-eyebrow { margin-bottom: 0.65rem; }
+    .hero-copy h1 { font-size: 2.5rem; }
+    .hero-copy h1 > span { font-size: 5rem; }
+    .hero-intro { margin-block: 0.75rem 1rem; }
+    .hero-baseline { min-height: 9rem; padding-bottom: 1rem; }
+    .hero-character { width: 10rem; }
+  }
+</style>
+
+<script>
+  import Lenis from 'lenis';
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+  let cleanupFranchising: (() => void) | undefined;
+
+  function initFranchising() {
+    cleanupFranchising?.();
+    const root = document.querySelector<HTMLElement>('.franchising-page');
+    if (!root) return;
+
+    const media = gsap.matchMedia();
+    media.add({
+      motion: '(prefers-reduced-motion: no-preference)',
+      desktop: '(min-width: 1024px)',
+    }, (context) => {
+      if (!context.conditions?.motion) return;
+
+      const listeners = new AbortController();
+      const lenis = new Lenis({
+        duration: 1.2,
+        smoothWheel: true,
+        prevent: (node) => Boolean(node.closest('[data-funmenu-overlay]')),
+      });
+      const tick = (time: number) => lenis.raf(time * 1000);
+      lenis.on('scroll', ScrollTrigger.update);
+      gsap.ticker.add(tick);
+
+      root.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((link) => {
+        link.addEventListener('click', (event) => {
+          if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+          const target = root.querySelector<HTMLElement>(link.hash);
+          if (!target) return;
+          event.preventDefault();
+          lenis.scrollTo(target, {
+            offset: -32,
+            duration: 2.6,
+            easing: (time) => (1 - Math.cos(Math.PI * time)) / 2,
+            onComplete: () => {
+              history.pushState(history.state, '', link.hash);
+              target.focus({ preventScroll: true });
+            },
+          });
+        }, { signal: listeners.signal });
+      });
+
+      const revealTargets = root.querySelectorAll<HTMLElement>(
+        '.opportunity-heading, .opportunity-copy, .office-gallery-heading, .contact-heading, .contact-links',
+      );
+      revealTargets.forEach((element) => {
+        ScrollTrigger.create({
+          trigger: element,
+          start: 'top 94%',
+          once: true,
+          onEnter: () => context.add(() => {
+            gsap.fromTo(element, { y: 24, opacity: 0.35 }, {
+              y: 0,
+              opacity: 1,
+              duration: 0.8,
+              ease: 'power2.out',
+              clearProps: 'transform,opacity',
+            });
+          }),
+        });
+      });
+
+      root.querySelectorAll<HTMLElement>('.office-photo').forEach((photo, index) => {
+        ScrollTrigger.create({
+          trigger: photo,
+          start: 'top 96%',
+          once: true,
+          onEnter: () => context.add(() => {
+            gsap.fromTo(photo, { opacity: 0.3 }, {
+              opacity: 1,
+              duration: 0.8,
+              delay: context.conditions?.desktop ? index * 0.12 : 0,
+              clearProps: 'opacity',
+            });
+          }),
+        });
+      });
+
+      if (context.conditions.desktop) {
+        gsap.to(root.querySelector('.hero-character--chef'), {
+          y: -70,
+          rotation: -16,
+          ease: 'none',
+          scrollTrigger: { trigger: root.querySelector('.franchise-hero'), start: 'top top', end: 'bottom top', scrub: 0.8 },
+        });
+        gsap.to(root.querySelector('.hero-character--growth'), {
+          y: -110,
+          rotation: 16,
+          ease: 'none',
+          scrollTrigger: { trigger: root.querySelector('.franchise-hero'), start: 'top top', end: 'bottom top', scrub: 0.8 },
+        });
+
+        ScrollTrigger.create({
+          trigger: root.querySelector('.office-gallery'),
+          start: 'top bottom',
+          once: true,
+          onEnter: () => context.add(() => {
+            root.querySelectorAll<HTMLElement>('[data-office-photo]').forEach((photo, index) => {
+              gsap.fromTo(photo, { y: index === 1 ? -16 : 16 }, {
+                y: index === 1 ? 16 : -16,
+                ease: 'none',
+                scrollTrigger: { trigger: root.querySelector('.office-gallery'), start: 'top bottom', end: 'bottom top', scrub: 0.8 },
+              });
+            });
+          }),
+        });
+      }
+
+      return () => {
+        listeners.abort();
+        gsap.ticker.remove(tick);
+        lenis.destroy();
+      };
+    }, root);
+
+    cleanupFranchising = () => media.revert();
+  }
+
+  initFranchising();
+  document.addEventListener('astro:page-load', initFranchising);
+  document.addEventListener('astro:before-swap', () => {
+    cleanupFranchising?.();
+    cleanupFranchising = undefined;
+  });
+</script>

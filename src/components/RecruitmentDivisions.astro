@@ -1,87 +1,143 @@
 ---
 const divisions = [
   {
-    name: 'Front of House',
-    index: '01',
-    tone: 'var(--color-mint)',
-    description: 'Guest-facing people with the judgement, pace and personality to make every service feel considered.',
-    roles: ['General managers', 'Reception', 'Food & beverage', 'Waiters', 'Banqueting Staff', 'Hosts'],
-    images: ['/recruit-talent-images/foh.png', '/recruit-talent-images/foh2.png'],
+    name: "Front of House",
+    index: "01",
+    tone: "var(--color-mint)",
+    description:
+      "Guest-facing people with the judgement, pace and personality to make every service feel considered.",
+    roles: [
+      "General managers",
+      "Reception",
+      "Food & beverage",
+      "Waiters",
+      "Banqueting Staff",
+      "Hosts",
+    ],
+    images: [
+      "/recruit-talent-images/foh.png",
+      "/recruit-talent-images/foh2.png",
+    ],
   },
   {
-    name: 'Back of House',
-    index: '02',
-    tone: 'var(--color-blush)',
-    description: 'Kitchen staff at every level, from casual covers to inspiring leaders who shape the change.',
-    roles: ['Executive chefs', 'Sous chefs', 'Chef De Partie', 'Pastry Chef', 'Kitchen Porter'],
-    images: ['/recruit-talent-images/boh.png', '/recruit-talent-images/boh2.png'],
+    name: "Back of House",
+    index: "02",
+    tone: "var(--color-blush)",
+    description:
+      "Kitchen staff at every level, from casual covers to inspiring leaders who shape the change.",
+    roles: [
+      "Executive chefs",
+      "Sous chefs",
+      "Head Chef",
+      "Chef De Partie",
+      "Pastry Chef",
+      "Kitchen Porter",
+    ],
+    images: [
+      "/recruit-talent-images/boh.png",
+      "/recruit-talent-images/boh2.png",
+    ],
   },
   {
-    name: 'Events & Commercial',
-    index: '03',
-    tone: 'var(--color-citron)',
-    description: 'The people behind big moves : operational, commercial and support specialists who keep your business moving.',
-    roles: ['Senior executives', 'Sales & marketing', 'Events', 'HR', 'Finance & Administration'],
-    images: ['/recruit-talent-images/event1.png', '/recruit-talent-images/event2.png'],
+    name: "Events & Commercial",
+    index: "03",
+    tone: "var(--color-citron)",
+    description:
+      "The people behind big moves : operational, commercial and support specialists who keep your business moving.",
+    roles: [
+      "Senior executives",
+      "Sales & marketing",
+      "Events",
+      "HR",
+      "Finance & Administration",
+    ],
+    images: [
+      "/recruit-talent-images/event1.png",
+      "/recruit-talent-images/event2.png",
+    ],
   },
 ];
 ---
 
-<section id="divisions" class="division-flow" aria-labelledby="division-flow-title" data-division-flow>
+<section
+  id="divisions"
+  class="division-flow"
+  aria-labelledby="division-flow-title"
+  data-division-flow
+>
   <div class="division-flow-heading">
     <p>Where we recruit</p>
     <h2 id="division-flow-title">You're in good company</h2>
-    <p class="division-flow-intro">Over two decades of partnership with independent brands and national names.</p>
+    <p class="division-flow-intro">
+      Over two decades of partnership with independent brands and national
+      names.
+    </p>
   </div>
 
   <div class="division-flow-list">
-    {divisions.map((division, index) => (
-      <article
-        class="division-flow-item"
-        style={`--item-tone:${division.tone};--item-index:${index}`}
-        data-division-item
-        data-expanded="false"
-      >
-        <button
-          class="division-flow-trigger"
-          type="button"
-          aria-expanded="false"
-          aria-controls={`division-panel-${index}`}
-          data-division-trigger
+    {
+      divisions.map((division, index) => (
+        <article
+          class="division-flow-item"
+          style={`--item-tone:${division.tone};--item-index:${index}`}
+          data-division-item
+          data-expanded="false"
         >
-          <span class="division-flow-index">{division.index}</span>
-          <span class="division-flow-name">{division.name}</span>
-          <span class="division-flow-action" aria-hidden="true">+</span>
-          <span class="division-flow-marquee" aria-hidden="true">
-            <span class="division-flow-track">
-              {[0, 1].map(() => (
-                <span class="division-flow-track-group">
-                  <span>{division.name}</span>
-                  <img src={division.images[0]} alt="" loading="lazy" decoding="async" />
-                  <span>{division.name}</span>
-                  <img src={division.images[1]} alt="" loading="lazy" decoding="async" />
-                </span>
-              ))}
+          <button
+            class="division-flow-trigger"
+            type="button"
+            aria-expanded="false"
+            aria-controls={`division-panel-${index}`}
+            data-division-trigger
+          >
+            <span class="division-flow-index">{division.index}</span>
+            <span class="division-flow-name">{division.name}</span>
+            <span class="division-flow-action" aria-hidden="true">
+              +
             </span>
-          </span>
-        </button>
+            <span class="division-flow-marquee" aria-hidden="true">
+              <span class="division-flow-track">
+                {[0, 1].map(() => (
+                  <span class="division-flow-track-group">
+                    <span>{division.name}</span>
+                    <img
+                      src={division.images[0]}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <span>{division.name}</span>
+                    <img
+                      src={division.images[1]}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </span>
+                ))}
+              </span>
+            </span>
+          </button>
 
-        <div
-          id={`division-panel-${index}`}
-          class="division-flow-panel"
-          role="region"
-          aria-label={`${division.name} recruitment details`}
-          aria-hidden="true"
-        >
-          <div class="division-flow-panel-inner">
-            <p>{division.description}</p>
-            <ul aria-label={`${division.name} example roles`}>
-              {division.roles.map((role) => <li>{role}</li>)}
-            </ul>
+          <div
+            id={`division-panel-${index}`}
+            class="division-flow-panel"
+            role="region"
+            aria-label={`${division.name} recruitment details`}
+            aria-hidden="true"
+          >
+            <div class="division-flow-panel-inner">
+              <p>{division.description}</p>
+              <ul aria-label={`${division.name} example roles`}>
+                {division.roles.map((role) => (
+                  <li>{role}</li>
+                ))}
+              </ul>
+            </div>
           </div>
-        </div>
-      </article>
-    ))}
+        </article>
+      ))
+    }
   </div>
 </section>
 
@@ -126,16 +182,20 @@ const divisions = [
   }
 
   .division-flow-list {
-    border-top: 1px solid color-mix(in srgb, var(--color-cream) 45%, transparent);
+    border-top: 1px solid
+      color-mix(in srgb, var(--color-cream) 45%, transparent);
   }
 
   .division-flow-item {
-    border-bottom: 1px solid color-mix(in srgb, var(--color-ink) 24%, transparent);
+    border-bottom: 1px solid
+      color-mix(in srgb, var(--color-ink) 24%, transparent);
     background: var(--item-tone);
     color: var(--color-ink);
     opacity: 0;
     translate: 0 1.5rem;
-    transition: opacity 500ms ease, translate 650ms var(--ease-cartoon);
+    transition:
+      opacity 500ms ease,
+      translate 650ms var(--ease-cartoon);
     transition-delay: calc(var(--item-index) * 80ms);
   }
 
@@ -189,7 +249,10 @@ const divisions = [
     background: color-mix(in srgb, var(--color-cream) 72%, transparent);
     font-size: 1.7rem;
     line-height: 1;
-    transition: transform 350ms var(--ease-cartoon), background-color 220ms ease, color 220ms ease;
+    transition:
+      transform 350ms var(--ease-cartoon),
+      background-color 220ms ease,
+      color 220ms ease;
   }
 
   .division-flow-marquee {
@@ -203,7 +266,9 @@ const divisions = [
     color: var(--color-cream);
     opacity: 0;
     transform: translateY(100%);
-    transition: transform 450ms var(--ease-luxury), opacity 200ms ease;
+    transition:
+      transform 450ms var(--ease-luxury),
+      opacity 200ms ease;
   }
 
   .division-flow-track {
@@ -305,7 +370,9 @@ const divisions = [
   }
 
   @keyframes division-marquee {
-    to { transform: translateX(-50%); }
+    to {
+      transform: translateX(-50%);
+    }
   }
 
   @media (min-width: 640px) {
@@ -376,26 +443,33 @@ const divisions = [
 
 <script>
   function initDivisionFlow() {
-    const section = document.querySelector<HTMLElement>('[data-division-flow]');
-    if (!section || section.dataset.ready === 'true') return;
-    section.dataset.ready = 'true';
+    const section = document.querySelector<HTMLElement>("[data-division-flow]");
+    if (!section || section.dataset.ready === "true") return;
+    section.dataset.ready = "true";
 
-    const observer = new IntersectionObserver(([entry]) => {
-      if (!entry?.isIntersecting) return;
-      section.classList.add('is-visible');
-      observer.disconnect();
-    }, { threshold: 0.12 });
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        section.classList.add("is-visible");
+        observer.disconnect();
+      },
+      { threshold: 0.12 },
+    );
     observer.observe(section);
 
-    const items = Array.from(section.querySelectorAll<HTMLElement>('[data-division-item]'));
+    const items = Array.from(
+      section.querySelectorAll<HTMLElement>("[data-division-item]"),
+    );
 
     const setExpanded = (item: HTMLElement, expanded: boolean) => {
-      const trigger = item.querySelector<HTMLButtonElement>('[data-division-trigger]');
-      const panelId = trigger?.getAttribute('aria-controls');
+      const trigger = item.querySelector<HTMLButtonElement>(
+        "[data-division-trigger]",
+      );
+      const panelId = trigger?.getAttribute("aria-controls");
       const panel = panelId ? document.getElementById(panelId) : null;
       item.dataset.expanded = String(expanded);
-      trigger?.setAttribute('aria-expanded', String(expanded));
-      panel?.setAttribute('aria-hidden', String(!expanded));
+      trigger?.setAttribute("aria-expanded", String(expanded));
+      panel?.setAttribute("aria-hidden", String(!expanded));
     };
 
     const closeOthers = (activeItem: HTMLElement) => {
@@ -405,34 +479,40 @@ const divisions = [
     };
 
     items.forEach((item) => {
-      const trigger = item.querySelector<HTMLButtonElement>('[data-division-trigger]');
+      const trigger = item.querySelector<HTMLButtonElement>(
+        "[data-division-trigger]",
+      );
       if (!trigger) return;
 
-      trigger.addEventListener('click', (event) => {
-        const openedByMouseHover = event.detail > 0 && item.matches(':hover') && item.dataset.expanded === 'true';
-        const shouldExpand = openedByMouseHover || item.dataset.expanded !== 'true';
+      trigger.addEventListener("click", (event) => {
+        const openedByMouseHover =
+          event.detail > 0 &&
+          item.matches(":hover") &&
+          item.dataset.expanded === "true";
+        const shouldExpand =
+          openedByMouseHover || item.dataset.expanded !== "true";
         closeOthers(item);
         setExpanded(item, shouldExpand);
       });
 
-      item.addEventListener('focusout', (event) => {
+      item.addEventListener("focusout", (event) => {
         const nextTarget = event.relatedTarget;
         if (nextTarget instanceof Node && item.contains(nextTarget)) return;
-        if (!item.matches(':hover')) setExpanded(item, false);
+        if (!item.matches(":hover")) setExpanded(item, false);
       });
 
-      item.addEventListener('pointerenter', (event) => {
-        if (event.pointerType !== 'mouse') return;
+      item.addEventListener("pointerenter", (event) => {
+        if (event.pointerType !== "mouse") return;
         closeOthers(item);
         setExpanded(item, true);
       });
-      item.addEventListener('pointerleave', (event) => {
-        if (event.pointerType !== 'mouse') return;
+      item.addEventListener("pointerleave", (event) => {
+        if (event.pointerType !== "mouse") return;
         if (!item.contains(document.activeElement)) setExpanded(item, false);
       });
     });
   }
 
   initDivisionFlow();
-  document.addEventListener('astro:page-load', initDivisionFlow);
+  document.addEventListener("astro:page-load", initDivisionFlow);
 </script>

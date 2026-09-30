@@ -1,0 +1,955 @@
+---
+const benefits = [
+  [
+    "Be in charge of your work",
+    "Casual work with us gives you full autonomy over your hours and where you work. Take the shifts that suit you, in the places you want to be.",
+  ],
+  [
+    "Shifts turn into careers",
+    "Casual work can be a foot in the door. Plenty of our candidates are taken on permanently by venues that loved having them, and if that's where you want to go, we'll help you get there.",
+  ],
+  [
+    "A mix of venues",
+    "Events, restaurants, luxury venues, stadiums and more. There's genuine variety here, so no two weeks have to look the same.",
+  ],
+  [
+    "Work across the region",
+    "Our offices are spread across London, Manchester and Hampshire, so there's work for wherever you are.",
+  ],
+  [
+    "Easy to book, paid on time",
+    "Book your shifts through our app, and get paid every Friday.",
+  ],
+  [
+    "Extra support when you need it",
+    "For our front-of-house team, we run training days in our office to build skills and confidence. Whether you're just starting out or levelling up, you won't be left to figure it out alone.",
+  ],
+];
+
+const roles = ["Back of house", "Front of house", "Sales", "Events", "Admin"];
+
+const faqs: Array<{ question: string; paragraphs: string[] }> = [
+  {
+    question: "How do I join your temp team?",
+    paragraphs: [
+      "Once you apply, our recruitment team will get in touch with you. You'll be invited to meet us in our office or join a quick video call for an assessment. Once you pass, you're part of the team.",
+    ],
+  },
+  {
+    question: "How soon after applying can I start working?",
+    paragraphs: [
+      "Once you complete the registration process, you can start working straight away.",
+    ],
+  },
+  {
+    question:
+      "I don't live in the UK. Can I still apply for one of your positions?",
+    paragraphs: [
+      "If you are applying for one of our UK roles, you will need to have a UK address. We will also need to see your Right to Work in the UK before you can join us.",
+    ],
+  },
+  {
+    question: "Do I need hospitality experience?",
+    paragraphs: [
+      "It depends on the role. For front-of-house work, the right attitude matters most, and we can help with the rest. Back-of-house and kitchen roles usually call for more hands-on experience.",
+      "Some roles also require specific certifications, such as food hygiene or health-and-safety qualifications, depending on where and what you'll be working. Whatever the role needs, your consultant will talk you through it and point you in the right direction.",
+    ],
+  },
+  {
+    question: "What kind of roles and venues can I work in?",
+    paragraphs: [
+      "On the front-of-house side, our roles include waiting staff, bar staff, baristas, hosts, event staff and supervisors. Behind the scenes, we cover kitchen roles from kitchen porters to chefs of every level.",
+      "Our shifts span events, contract catering, pubs, restaurants, hotels, private venues, schools, hospitals and stadiums. Depending on what you like, there's work here to suit you.",
+    ],
+  },
+];
+---
+
+<section
+  id="temporary-work"
+  class="temp-experience"
+  aria-labelledby="temporary-work-title"
+  data-jobs-mode-panel="temporary"
+  data-temp-experience
+  hidden
+>
+  <div class="temp-benefits">
+    <div class="temp-inner">
+      <header class="temp-section-header">
+        <p>Temporary work, your way</p>
+        <h2 id="temporary-work-title" tabindex="-1">Why work with us</h2>
+        <span>Good shifts. Good people. More control.</span>
+      </header>
+      <div class="temp-benefit-grid">
+        {
+          benefits.map(([title, copy], index) => (
+            <article class="temp-benefit">
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <h3>{title}</h3>
+              <p>{copy}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="temp-application" id="temporary-application">
+    <div class="temp-inner temp-application-layout">
+      <header class="temp-form-intro">
+        <p>Join the team</p>
+        <h2>Tell us what works for you.</h2>
+        <p>
+          Share your details and the roles you want. Our temporary recruitment
+          team will be in touch when the right shifts come up.
+        </p>
+      </header>
+
+      <form
+        action="/api/temporary-application"
+        method="post"
+        class="temp-form"
+        data-temp-application-form
+      >
+        <div class="temp-form-heading">
+          <div>
+            <p>Temporary application</p><h3>Start with the essentials.</h3>
+          </div>
+        </div>
+
+        <div class="temp-form-grid">
+          <label class="temp-field temp-field-wide">
+            <span>First and last name, according to your passport</span>
+            <input name="name" autocomplete="name" required maxlength="160" />
+          </label>
+          <label class="temp-field">
+            <span>Country</span>
+            <input
+              name="country"
+              autocomplete="country-name"
+              required
+              maxlength="100"
+            />
+          </label>
+          <label class="temp-field">
+            <span>City</span>
+            <input
+              name="city"
+              autocomplete="address-level2"
+              required
+              maxlength="100"
+            />
+          </label>
+          <label class="temp-field">
+            <span>Email</span>
+            <input
+              name="email"
+              type="email"
+              autocomplete="email"
+              required
+              maxlength="254"
+            />
+          </label>
+          <label class="temp-field">
+            <span>Phone number</span>
+            <input
+              name="phone"
+              type="tel"
+              autocomplete="tel"
+              inputmode="tel"
+              required
+              maxlength="40"
+            />
+          </label>
+        </div>
+
+        <fieldset class="temp-role-group" data-temp-role-group>
+          <legend>What role are you looking for?</legend>
+          <p id="temp-role-help">Choose at least one.</p>
+          <div class="temp-role-options" aria-describedby="temp-role-help">
+            {
+              roles.map((role) => (
+                <label class="temp-role-option">
+                  <input name="roles" type="checkbox" value={role} />
+                  <>
+                    <span aria-hidden="true" />
+                    <strong>{role}</strong>
+                  </>
+                </label>
+              ))
+            }
+          </div>
+          <p class="temp-role-error" data-temp-role-error aria-live="polite">
+          </p>
+        </fieldset>
+
+        <div class="temp-honeypot" aria-hidden="true">
+          <label
+            >Website<input
+              name="website"
+              tabindex="-1"
+              autocomplete="off"
+            /></label
+          >
+        </div>
+        <label class="temp-consent">
+          <input name="consent" type="checkbox" required />
+          <span
+            >I agree that Change Hospitality may contact me about temporary work
+            opportunities.</span
+          >
+        </label>
+        <div class="temp-form-actions">
+          <button
+            type="submit"
+            data-temp-submit
+            data-default-label="Send my details"
+            ><span>Send my details</span><span aria-hidden="true">&#8599;</span
+            ></button
+          >
+          <p role="status" aria-live="polite" data-temp-form-status></p>
+        </div>
+      </form>
+
+      <div
+        class="temp-form-success"
+        data-temp-form-success
+        hidden
+        tabindex="-1"
+      >
+        <span aria-hidden="true">&#10003;</span><p>Details received</p><h3>
+          You're on our list.
+        </h3><p data-temp-success-message></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="temp-faqs">
+    <div class="temp-inner temp-faq-layout">
+      <header class="temp-faq-header"><p>Good to know</p><h2>FAQs</h2></header>
+      <div class="temp-faq-list">
+        {
+          faqs.map(({ question, paragraphs }, index) => (
+            <details class="temp-faq">
+              <summary>
+                <>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <strong>{question}</strong>
+                  <i aria-hidden="true" />
+                </>
+              </summary>
+              <div>
+                {paragraphs.map((paragraph: string) => (
+                  <p>{paragraph}</p>
+                ))}
+              </div>
+            </details>
+          ))
+        }
+        <details class="temp-faq">
+          <summary
+            ><span>06</span><strong
+              >If there is an issue with my app, what do I do?</strong
+            ><i aria-hidden="true"></i></summary
+          >
+          <div>
+            <p>
+              <a href="/team/">Contact a consultant</a> and our team will help.
+            </p>
+          </div>
+        </details>
+        <details class="temp-faq">
+          <summary
+            ><span>07</span><strong
+              >If I can't submit my hours on the app, what do I do?</strong
+            ><i aria-hidden="true"></i></summary
+          >
+          <div>
+            <p>
+              Email <a href="mailto:timesheets@changehospitality.co.uk"
+                >timesheets@changehospitality.co.uk</a
+              >.
+            </p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .temp-experience {
+    color: var(--color-ink);
+  }
+  .temp-inner {
+    width: min(100%, 80rem);
+    margin: 0 auto;
+  }
+  .temp-benefits,
+  .temp-application,
+  .temp-faqs {
+    padding: 5.5rem 1.25rem 6.5rem;
+  }
+  .temp-benefits {
+    background: var(--color-mint);
+  }
+  .temp-application {
+    background: var(--color-cocoa);
+  }
+  .temp-faqs {
+    background: var(--color-blush);
+  }
+
+  .temp-section-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 0.75rem 2rem;
+    margin-bottom: 3rem;
+  }
+  .temp-section-header > p,
+  .temp-form-intro > p:first-child,
+  .temp-faq-header > p,
+  .temp-form-heading p {
+    grid-column: 1 / -1;
+    color: var(--color-flame);
+    font-size: 0.75rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+  .temp-section-header h2,
+  .temp-form-intro h2,
+  .temp-faq-header h2 {
+    max-width: 48rem;
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 7vw, 6rem);
+    font-weight: 400;
+    line-height: 0.92;
+    text-wrap: balance;
+  }
+  .temp-section-header > span {
+    border-radius: 999px;
+    background: var(--color-citron);
+    padding: 0.8rem 1rem;
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    transform: rotate(2deg);
+  }
+
+  .temp-benefit-grid {
+    display: grid;
+    gap: 1rem;
+  }
+  .temp-benefit {
+    min-height: 18rem;
+    border-radius: 1.2rem;
+    background: var(--color-cream);
+    padding: 1.4rem;
+    transition:
+      transform 350ms var(--ease-cartoon),
+      background-color 220ms ease;
+  }
+  .temp-benefit:nth-child(2n) {
+    background: var(--color-paper);
+  }
+  .temp-benefit:hover {
+    background: var(--color-citron);
+    transform: translateY(-0.3rem) rotate(-0.5deg);
+  }
+  .temp-benefit > span {
+    display: grid;
+    width: 2.5rem;
+    height: 2.5rem;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--color-flame);
+    color: var(--color-cream);
+    font-size: 0.72rem;
+    font-weight: 900;
+  }
+  .temp-benefit h3 {
+    margin-top: 2rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-weight: 650;
+    line-height: 1;
+  }
+  .temp-benefit p {
+    margin-top: 1rem;
+    color: var(--color-cocoa);
+    font-weight: 700;
+    line-height: 1.55;
+  }
+
+  .temp-application-layout {
+    display: grid;
+    gap: 2rem;
+  }
+  .temp-form-intro {
+    color: var(--color-cream);
+  }
+  .temp-form-intro h2 {
+    margin-top: 0.75rem;
+  }
+  .temp-form-intro > p:last-child {
+    max-width: 34rem;
+    margin-top: 1.25rem;
+    color: var(--color-blush);
+    font-weight: 700;
+    line-height: 1.6;
+  }
+  .temp-form,
+  .temp-form-success {
+    position: relative;
+    border-radius: 1.2rem;
+    background: var(--color-cream);
+    padding: clamp(1.25rem, 4vw, 2.5rem);
+  }
+  .temp-form-heading {
+    margin-bottom: 2rem;
+  }
+  .temp-form-heading h3 {
+    margin-top: 0.5rem;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3.25rem);
+    font-weight: 650;
+    line-height: 0.95;
+  }
+  .temp-form-grid {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .temp-field {
+    display: grid;
+    gap: 0.6rem;
+    border-radius: 0.85rem;
+    background: var(--color-paper);
+    padding: 1rem;
+    transition:
+      background-color 220ms ease,
+      transform 280ms var(--ease-cartoon);
+  }
+  .temp-field:focus-within {
+    background: var(--color-citron);
+    transform: translateY(-0.12rem);
+  }
+  .temp-field > span,
+  .temp-role-group > legend {
+    color: var(--color-flame);
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+  .temp-field input {
+    width: 100%;
+    min-width: 0;
+    min-height: 2.4rem;
+    border: 0;
+    background: transparent;
+    color: var(--color-ink);
+    font-size: 1rem;
+    font-weight: 800;
+    outline: 0;
+  }
+
+  .temp-role-group {
+    margin: 2rem 0 0;
+    border: 0;
+    padding: 0;
+  }
+  .temp-role-group > legend {
+    font-size: 0.78rem;
+  }
+  .temp-role-group > p {
+    margin-top: 0.35rem;
+    color: var(--color-cocoa);
+    font-size: 0.78rem;
+    font-weight: 800;
+  }
+  .temp-role-options {
+    display: grid;
+    gap: 0.65rem;
+    margin-top: 1rem;
+  }
+  .temp-role-option {
+    position: relative;
+    display: flex;
+    min-height: 4rem;
+    align-items: center;
+    gap: 0.75rem;
+    border-radius: 0.8rem;
+    background: var(--color-paper);
+    padding: 0.9rem;
+    cursor: pointer;
+    transition:
+      background-color 220ms ease,
+      transform 260ms var(--ease-cartoon);
+  }
+  .temp-role-option:hover {
+    transform: translateY(-0.12rem);
+  }
+  .temp-role-option:has(input:checked) {
+    background: var(--color-citron);
+  }
+  .temp-role-option:focus-within {
+    outline: 3px solid var(--color-flame);
+    outline-offset: 2px;
+  }
+  .temp-role-option input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+  .temp-role-option > span {
+    position: relative;
+    width: 1.4rem;
+    height: 1.4rem;
+    flex: 0 0 auto;
+    border: 2px solid var(--color-cocoa);
+    border-radius: 0.3rem;
+    background: var(--color-cream);
+  }
+  .temp-role-option input:checked + span {
+    border-color: var(--color-flame);
+    background: var(--color-flame);
+  }
+  .temp-role-option input:checked + span::after {
+    position: absolute;
+    top: 0.12rem;
+    left: 0.38rem;
+    width: 0.35rem;
+    height: 0.65rem;
+    border-right: 2px solid var(--color-cream);
+    border-bottom: 2px solid var(--color-cream);
+    content: "";
+    transform: rotate(45deg);
+  }
+  .temp-role-option strong {
+    font-size: 0.88rem;
+    text-transform: uppercase;
+  }
+  .temp-role-error {
+    min-height: 1.2rem;
+    color: var(--color-flame) !important;
+    font-weight: 900 !important;
+  }
+
+  .temp-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    margin-top: 1.5rem;
+    color: var(--color-cocoa);
+    font-size: 0.88rem;
+    font-weight: 800;
+    line-height: 1.45;
+  }
+  .temp-consent input {
+    width: 1.1rem;
+    height: 1.1rem;
+    flex: 0 0 auto;
+    margin-top: 0.15rem;
+    accent-color: var(--color-flame);
+  }
+  .temp-honeypot {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .temp-form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  .temp-form-actions button {
+    display: inline-flex;
+    min-width: 15rem;
+    min-height: 4rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border: 0;
+    border-radius: 0.8rem;
+    background: var(--color-flame);
+    color: var(--color-cream);
+    padding: 1rem 1.2rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      background-color 220ms ease,
+      transform 280ms var(--ease-cartoon);
+  }
+  .temp-form-actions button:hover,
+  .temp-form-actions button:focus-visible {
+    background: var(--color-cocoa);
+    transform: translateY(-0.18rem) rotate(-1deg);
+  }
+  .temp-form-actions button:disabled {
+    cursor: wait;
+    opacity: 0.65;
+    transform: none;
+  }
+  .temp-form-actions p {
+    min-height: 1.5rem;
+    color: var(--color-cocoa);
+    font-size: 0.85rem;
+    font-weight: 800;
+  }
+  .temp-form-actions p[data-state="error"] {
+    color: var(--color-flame);
+  }
+
+  .temp-form-success {
+    align-self: start;
+    text-align: center;
+  }
+  .temp-form-success > span {
+    display: grid;
+    width: 4rem;
+    height: 4rem;
+    margin: 0 auto 1rem;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--color-citron);
+    font-size: 1.8rem;
+    font-weight: 900;
+  }
+  .temp-form-success > p:first-of-type {
+    color: var(--color-flame);
+    font-size: 0.72rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+  .temp-form-success h3 {
+    margin-top: 0.5rem;
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    font-weight: 650;
+    line-height: 1;
+  }
+  .temp-form-success > p:last-child {
+    margin-top: 1rem;
+    color: var(--color-cocoa);
+    font-weight: 750;
+    line-height: 1.5;
+  }
+
+  .temp-faq-layout {
+    display: grid;
+    gap: 2.5rem;
+  }
+  .temp-faq-list {
+    border-top: 2px solid var(--color-ink);
+  }
+  .temp-faq {
+    border-bottom: 1px solid
+      color-mix(in srgb, var(--color-ink) 28%, transparent);
+  }
+  .temp-faq[data-animating="true"] {
+    overflow: hidden;
+  }
+  .temp-faq summary {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr) 2rem;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 6rem;
+    padding: 1rem 0;
+    cursor: pointer;
+    list-style: none;
+  }
+  .temp-faq summary::-webkit-details-marker {
+    display: none;
+  }
+  .temp-faq summary > span {
+    color: var(--color-flame);
+    font-size: 0.72rem;
+    font-weight: 900;
+  }
+  .temp-faq summary strong {
+    font-family: var(--font-display);
+    font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+    line-height: 1.1;
+    font-weight: 600;
+  }
+  .temp-faq summary i {
+    position: relative;
+    width: 1.8rem;
+    height: 1.8rem;
+    border-radius: 50%;
+    background: var(--color-citron);
+  }
+  .temp-faq summary i::before,
+  .temp-faq summary i::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0.75rem;
+    height: 2px;
+    background: var(--color-ink);
+    content: "";
+    transform: translate(-50%, -50%);
+    transition: transform 220ms ease;
+  }
+  .temp-faq summary i::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+  .temp-faq[open] summary i::after {
+    transform: translate(-50%, -50%) rotate(0);
+  }
+  .temp-faq > div {
+    max-width: 44rem;
+    padding: 0 0 1.75rem 3.25rem;
+    color: var(--color-cocoa);
+    font-weight: 700;
+    line-height: 1.65;
+  }
+  .temp-faq > div p + p {
+    margin-top: 0.8rem;
+  }
+  .temp-faq a {
+    color: var(--color-flame);
+    font-weight: 900;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  @media (min-width: 640px) {
+    .temp-benefit-grid,
+    .temp-form-grid,
+    .temp-role-options {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .temp-field-wide {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (min-width: 1024px) {
+    .temp-benefits,
+    .temp-application,
+    .temp-faqs {
+      padding-inline: 2.5rem;
+    }
+    .temp-benefit-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .temp-application-layout {
+      grid-template-columns: minmax(17rem, 0.7fr) minmax(0, 1.3fr);
+      gap: 4rem;
+      align-items: start;
+    }
+    .temp-form-intro,
+    .temp-faq-header {
+      position: sticky;
+      top: 7rem;
+      align-self: start;
+    }
+    .temp-form-success {
+      grid-column: 2;
+    }
+    .temp-faq-layout {
+      grid-template-columns: minmax(16rem, 0.65fr) minmax(0, 1.35fr);
+      gap: 5rem;
+    }
+  }
+  @media (max-width: 639px) {
+    .temp-section-header {
+      grid-template-columns: 1fr;
+    }
+    .temp-section-header > span {
+      width: fit-content;
+    }
+    .temp-form-heading {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+    .temp-form-actions button {
+      width: 100%;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .temp-benefit,
+    .temp-field,
+    .temp-role-option,
+    .temp-form-actions button {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  function initTemporaryApplication() {
+    document
+      .querySelectorAll<HTMLElement>("[data-temp-experience]")
+      .forEach((root) => {
+        if (root.dataset.tempReady === "true") return;
+        root.dataset.tempReady = "true";
+        const form = root.querySelector<HTMLFormElement>(
+          "[data-temp-application-form]",
+        );
+        const roleGroup = root.querySelector<HTMLElement>(
+          "[data-temp-role-group]",
+        );
+        const roleError = root.querySelector<HTMLElement>(
+          "[data-temp-role-error]",
+        );
+        const roleInputs = Array.from(
+          root.querySelectorAll<HTMLInputElement>('input[name="roles"]'),
+        );
+        const submit =
+          root.querySelector<HTMLButtonElement>("[data-temp-submit]");
+        const submitLabel = submit?.querySelector<HTMLElement>("span");
+        const status = root.querySelector<HTMLElement>(
+          "[data-temp-form-status]",
+        );
+        const success = root.querySelector<HTMLElement>(
+          "[data-temp-form-success]",
+        );
+        const successMessage = root.querySelector<HTMLElement>(
+          "[data-temp-success-message]",
+        );
+        if (
+          !form ||
+          !roleGroup ||
+          !roleError ||
+          !submit ||
+          !submitLabel ||
+          !status ||
+          !success
+        )
+          return;
+
+        const validateRoles = () => {
+          const valid = roleInputs.some((input) => input.checked);
+          roleGroup.setAttribute("aria-invalid", String(!valid));
+          roleError.textContent = valid ? "" : "Choose at least one role.";
+          return valid;
+        };
+        const setStatus = (
+          message: string,
+          state: "idle" | "error" = "idle",
+        ) => {
+          status.textContent = message;
+          status.dataset.state = state;
+        };
+        roleInputs.forEach((input) =>
+          input.addEventListener("change", validateRoles),
+        );
+
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          setStatus("");
+          const rolesAreValid = validateRoles();
+          if (!form.checkValidity() || !rolesAreValid) {
+            form.reportValidity();
+            if (!rolesAreValid) roleInputs[0]?.focus();
+            return;
+          }
+
+          const formData = new FormData(form);
+          const payload = {
+            name: formData.get("name"),
+            country: formData.get("country"),
+            city: formData.get("city"),
+            email: formData.get("email"),
+            phone: formData.get("phone"),
+            roles: formData.getAll("roles"),
+            consent: formData.has("consent"),
+            website: formData.get("website"),
+          };
+          submit.disabled = true;
+          submitLabel.textContent = "Sending...";
+          setStatus("Passing your details to our temporary recruitment team.");
+
+          try {
+            const response = await fetch(form.action, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+            const result: {
+              ok?: boolean;
+              message?: string;
+              reference?: string;
+            } = await response.json().catch(() => ({}));
+            if (!response.ok || !result.ok)
+              throw new Error(
+                result.message ||
+                  "We could not send your details. Please try again.",
+              );
+            form.hidden = true;
+            success.hidden = false;
+            if (successMessage)
+              successMessage.textContent = `${result.message || "Application received."} Reference ${result.reference}.`;
+            success.focus();
+            form.reset();
+          } catch (error) {
+            setStatus(
+              error instanceof Error
+                ? error.message
+                : "We could not send your details. Please try again.",
+              "error",
+            );
+          } finally {
+            submit.disabled = false;
+            submitLabel.textContent =
+              submit.dataset.defaultLabel || "Send my details";
+          }
+        });
+      });
+  }
+
+  function initTemporaryFaqs() {
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    document.querySelectorAll<HTMLDetailsElement>(".temp-faq").forEach((faq) => {
+      if (faq.dataset.faqReady === "true") return;
+      faq.dataset.faqReady = "true";
+
+      const summary = faq.querySelector<HTMLElement>("summary");
+      const content = faq.querySelector<HTMLElement>(":scope > div");
+      if (!summary || !content || reducedMotion) return;
+
+      summary.addEventListener("click", (event) => {
+        event.preventDefault();
+        if (faq.dataset.animating === "true") return;
+
+        const isClosing = faq.open;
+        const startHeight = faq.offsetHeight;
+        if (!isClosing) faq.open = true;
+        const endHeight = isClosing ? summary.offsetHeight : faq.offsetHeight;
+
+        faq.dataset.animating = "true";
+        const heightAnimation = faq.animate(
+          { height: [`${startHeight}px`, `${endHeight}px`] },
+          { duration: 360, easing: "cubic-bezier(0.25, 1, 0.5, 1)" },
+        );
+        content.animate(
+          isClosing
+            ? { opacity: [1, 0], transform: ["translateY(0)", "translateY(-0.4rem)"] }
+            : { opacity: [0, 1], transform: ["translateY(-0.4rem)", "translateY(0)"] },
+          { duration: 260, easing: "ease-out", fill: "both" },
+        );
+
+        heightAnimation.addEventListener("finish", () => {
+          if (isClosing) faq.open = false;
+          delete faq.dataset.animating;
+        }, { once: true });
+      });
+    });
+  }
+
+  initTemporaryApplication();
+  initTemporaryFaqs();
+  document.addEventListener("astro:page-load", initTemporaryApplication);
+  document.addEventListener("astro:page-load", initTemporaryFaqs);
+</script>

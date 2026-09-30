@@ -32,6 +32,8 @@ Job and team content is loaded from the Sanity `production` dataset during each 
 
 The recruiter experience lives at `/recruit-talent/`. Its form posts JSON to `/api/recruit-talent`, which validates and sanitizes the staffing brief before sending it to `RECRUITMENT_INBOX`.
 
+The temporary-work option on `/jobs/` posts candidate details to `/api/temporary-application`. The endpoint validates every field and the selected role list before emailing `TEMP_APPLICATIONS_INBOX`, falling back to `APPLICATIONS_INBOX` when no dedicated temporary-work inbox is configured.
+
 Both functions use the shared Nodemailer transport in `server/mail.js`. They wait for the SMTP server to accept the message before returning success. Set these variables in the Vercel project for Production, Preview and Development as required:
 
 | Variable | Purpose |
@@ -44,6 +46,7 @@ Both functions use the shared Nodemailer transport in `server/mail.js`. They wai
 | `SMTP_FROM` | Verified sender, for example `Change Hospitality <website@example.com>` |
 | `RECRUITMENT_INBOX` | Destination for company staffing briefs |
 | `APPLICATIONS_INBOX` | Optional archive and fallback destination for job applications |
+| `TEMP_APPLICATIONS_INBOX` | Optional dedicated destination for temporary candidate applications; falls back to `APPLICATIONS_INBOX` |
 
 `SMTP_HOST`, `SMTP_USER` and `SMTP_PASS` are accepted as aliases for `SMTP_SERVER`, `SMTP_LOGIN` and `SMTP_PASSWORD`. Keep all credentials in Vercel environment variables and never expose them through `PUBLIC_` variables or browser code.
 

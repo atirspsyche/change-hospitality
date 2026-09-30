@@ -4,10 +4,9 @@ import EggIllustration from "./EggIllustration.astro";
 interface Props {
   locations: string[];
   positions: string[];
-  jobTypes: string[];
 }
 
-const { locations, positions, jobTypes } = Astro.props;
+const { locations, positions } = Astro.props;
 ---
 
 <section class="jobs-hero" aria-labelledby="jobs-page-title" data-jobs-hero>
@@ -21,6 +20,18 @@ const { locations, positions, jobTypes } = Astro.props;
         From small independents to biggest names in the industry, and everything in between. 
         There's something for everyone here.
       </p>
+
+      <fieldset class="jobs-mode-switch" data-jobs-mode-switch>
+        <legend>Choose how you want to work</legend>
+        <label>
+          <input type="radio" name="jobsMode" value="permanent" checked />
+          <span>Permanent</span>
+        </label>
+        <label>
+          <input type="radio" name="jobsMode" value="temporary" />
+          <span>Temporary</span>
+        </label>
+      </fieldset>
 
       <form class="jobs-search" id="job-search-form" data-job-search-form>
         <div class="jobs-search-fields">
@@ -46,20 +57,6 @@ const { locations, positions, jobTypes } = Astro.props;
                 {
                   positions.map((position) => (
                     <option value={position}>{position}</option>
-                  ))
-                }
-              </select>
-              <span class="jobs-select-arrow" aria-hidden="true"></span>
-            </span>
-          </label>
-          <label>
-            <span class="jobs-select-label">Job type</span>
-            <span class="jobs-select-control">
-              <select name="jobType" data-job-filter="jobType">
-                <option value="">Any type</option>
-                {
-                  jobTypes.map((jobType) => (
-                    <option value={jobType}>{jobType}</option>
                   ))
                 }
               </select>
@@ -184,6 +181,65 @@ const { locations, positions, jobTypes } = Astro.props;
     padding: 0.75rem;
   }
 
+  .jobs-mode-switch {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: min(100%, 29rem);
+    margin-top: 2rem;
+    border: 0;
+    border-radius: 1rem;
+    background: var(--color-cream);
+    padding: 0.4rem;
+  }
+
+  .jobs-mode-switch legend {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .jobs-mode-switch label {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .jobs-mode-switch input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  .jobs-mode-switch span {
+    display: grid;
+    min-height: 3.5rem;
+    place-items: center;
+    border-radius: 0.7rem;
+    color: var(--color-cocoa);
+    font-size: 0.82rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    transition: background-color 220ms ease, color 220ms ease, transform 280ms var(--ease-cartoon);
+  }
+
+  .jobs-mode-switch input:checked + span {
+    background: var(--color-flame);
+    color: var(--color-cream);
+  }
+
+  .jobs-mode-switch input:focus-visible + span {
+    outline: 3px solid var(--color-ink);
+    outline-offset: 3px;
+  }
+
+  .jobs-mode-switch label:hover span {
+    transform: translateY(-0.12rem);
+  }
+
   .jobs-search-fields {
     display: grid;
     gap: 0.55rem;
@@ -205,11 +261,6 @@ const { locations, positions, jobTypes } = Astro.props;
 
   .jobs-search label:nth-child(2) {
     --select-accent: var(--color-cocoa);
-  }
-
-  .jobs-search label:nth-child(3) {
-    --select-accent: var(--color-citron);
-    --select-accent-text: var(--color-ink);
   }
 
   .jobs-select-label {
@@ -355,7 +406,7 @@ const { locations, positions, jobTypes } = Astro.props;
 
   @media (min-width: 640px) {
     .jobs-search-fields {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
     .jobs-search-actions {
       grid-template-columns: repeat(2, minmax(0, 1fr));

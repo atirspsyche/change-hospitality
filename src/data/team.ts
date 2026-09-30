@@ -16,7 +16,8 @@ export type TeamDivision =
   | 'Front of House'
   | 'Back of House'
   | 'Events and Management'
-  | 'HR & Finance';
+  | 'HR & Finance'
+  | 'Leadership & Operations';
 
 export const teamCategories: Array<{
   id: string;
@@ -48,6 +49,12 @@ export const teamCategories: Array<{
     description: 'People, culture, operations and hospitality finance.',
     accent: 'blush',
   },
+  {
+    id: 'leadership-and-operations',
+    label: 'Leadership & Operations',
+    description: 'Agency leadership, administration and the team behind our team.',
+    accent: 'citron',
+  },
 ];
 
 export const teamMembers: TeamMember[] = [
@@ -62,7 +69,7 @@ export const teamMembers: TeamMember[] = [
     accent: 'pink',
     note: 'Keeps the agency close to the people, not just the roles.',
     signal: 'Founder energy / calm brief control',
-    division: 'Events and Management',
+    division: 'Leadership & Operations',
   },
   {
     _id: 'consultant-amelia-grant',

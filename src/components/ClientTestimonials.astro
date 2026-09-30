@@ -1,0 +1,419 @@
+---
+import { Quote } from '@lucide/astro';
+
+const testimonials = [
+  {
+    client: 'Searcys',
+    logo: 'searcys',
+    quote: "The team at Change are a pure joy to work with - responsive, proactive, and genuinely invested in Searcy's success. I can say with confidence: if you're in hospitality and you're not working with Change, you're missing out. Five stars isn't enough.",
+    name: 'Laura Maddams',
+    role: 'Head of Talent and Development',
+  },
+  {
+    client: 'Tate',
+    logo: 'tate',
+    quote: "Change provided a highly professional service, carefully listening to our brief and delivering exactly what we needed by introducing us to Chloe, who's already excelling in our Catering team as a Hospitality Manager.",
+    name: 'Ali Gannage-Stewart',
+    role: 'Director, Events and Corporate Membership',
+  },
+  {
+    client: 'Tobacco Dock',
+    logo: 'tobacco-dock',
+    quote: "Following two successful hires via Change Hospitality in the last 18months, Charley at Change remains our 'go to' for all our new recruitment needs. We've found a recruitment partner in Change who have really taken the time to understand our business and in turn the experience, skills and characteristics that are likely to result in the best pairings.",
+    name: 'Charlotte Smart',
+    role: 'Commercial Director',
+  },
+  {
+    client: 'Royal Bank of Canada',
+    logo: 'rbc',
+    quote: "You are always so responsive, especially with last minute bookings and special requests. You constantly provide amazing staff even when under pressure. Your reliability and professionalism has made my job be easier, it's been so great to build such a strong relationship and I appreciate all of your hard work.",
+    name: 'Tara Dempsey',
+    role: 'Catering Manager',
+  },
+  {
+    client: 'Four Seasons',
+    logo: 'four-seasons',
+    quote: "Working with Change Hospitality has been a life saver on countless occasions. They're prompt responses, availability at short notice and most of all, the level of professionalism and care from each individual they've sent us has been unparalleled.",
+    name: 'Robert Siddu',
+    role: 'Breakfast Manager',
+  },
+];
+---
+
+<section id="client-testimonials" class="client-stories" aria-labelledby="client-stories-title" data-client-stories>
+  <div class="client-stories-inner">
+    <div class="client-stories-stage" data-client-stage>
+      <header class="client-stories-heading">
+        <p class="client-stories-eyebrow">From our clients</p>
+        <h2 id="client-stories-title">Great teams.<br /><span>Better together.</span></h2>
+        <p class="client-stories-intro">Behind every great partnership?<br />People who just get it.</p>
+        <div class="client-stories-mark" aria-hidden="true"><Quote size={72} stroke-width={1.4} /></div>
+        <div class="client-stories-position" aria-hidden="true">
+          <p><span data-client-current>01</span><span class="client-stories-total"> / 05</span></p>
+          <div class="client-stories-track"><span data-client-progress></span></div>
+          <span>People-first partnerships</span>
+        </div>
+      </header>
+
+      <div class="client-stories-stack" data-client-stack>
+        {testimonials.map((testimonial, index) => (
+          <figure class="client-quote" data-client-quote style={`--sheet-index: ${index};`}>
+            <div class="client-quote-header">
+              <img class:list={['client-logo', `client-logo-${testimonial.logo}`]} src={`/client-logos/${testimonial.logo}.svg`} alt={`${testimonial.client} logo`} width="160" height="80" loading="lazy" decoding="async" />
+              <span class="client-quote-number" aria-hidden="true">{String(index + 1).padStart(2, '0')} / 05</span>
+            </div>
+            <p class="client-quote-brand">{testimonial.client}</p>
+            <blockquote><p>&ldquo;{testimonial.quote}&rdquo;</p></blockquote>
+            <figcaption>
+              <span class="client-quote-signature" aria-hidden="true"><Quote size={22} stroke-width={1.7} /></span>
+              <div><span class="client-quote-name">{testimonial.name}</span><span class="client-quote-role">{testimonial.role}</span></div>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .client-stories {
+    position: relative;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    padding: 4.5rem 1.25rem;
+  }
+
+  .client-stories-inner {
+    width: min(100%, 80rem);
+    margin-inline: auto;
+  }
+
+  .client-stories-stage {
+    display: grid;
+    gap: 2.5rem;
+    align-items: center;
+  }
+
+  .client-stories-eyebrow {
+    margin-bottom: 1.25rem;
+    color: var(--color-cocoa);
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .client-stories-heading h2 {
+    max-width: 30rem;
+    font-family: var(--font-hero);
+    font-size: 2.25rem;
+    line-height: 1.15;
+    letter-spacing: 0;
+  }
+
+  .client-stories-heading h2 span {
+    color: var(--color-cocoa);
+  }
+
+  .client-stories-intro {
+    margin-top: 1.5rem;
+    color: var(--color-cocoa);
+    font-size: 1.05rem;
+    font-weight: 500;
+    line-height: 1.6;
+  }
+
+  .client-stories-mark {
+    display: none;
+    width: 7rem;
+    height: 7rem;
+    margin-top: 2.5rem;
+    place-items: center;
+    border-radius: 48% 52% 43% 57% / 46% 43% 57% 54%;
+    background: var(--color-citron);
+    color: var(--color-cocoa);
+    rotate: -9deg;
+  }
+
+  .client-stories-position {
+    display: none;
+    width: 12rem;
+    margin-top: 2.5rem;
+  }
+
+  .client-stories-position p {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  .client-stories-total {
+    color: var(--color-cocoa);
+    font-size: 1rem;
+  }
+
+  .client-stories-track {
+    height: 0.25rem;
+    margin-block: 0.85rem;
+    overflow: hidden;
+    border-radius: 1rem;
+    background: var(--color-blush);
+  }
+
+  .client-stories-track > span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--color-cocoa);
+    transform: scaleX(0.2);
+    transform-origin: left;
+  }
+
+  .client-stories-position > span {
+    color: var(--color-cocoa);
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  .client-stories-stack {
+    display: grid;
+    min-width: 0;
+    gap: 1.5rem;
+  }
+
+  .client-quote {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    border-radius: 1.5rem;
+    background: var(--color-blush);
+    padding: 1.5rem;
+  }
+
+  .client-quote:nth-child(2) { background: var(--color-mist); }
+  .client-quote:nth-child(3) { background: var(--color-mint); }
+  .client-quote:nth-child(4) { background: var(--color-cream); }
+  .client-quote:nth-child(5) { background: var(--color-citron); }
+
+  .client-quote-header {
+    display: flex;
+    min-height: 5rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .client-logo {
+    width: 8.5rem;
+    height: 4.5rem;
+    object-fit: contain;
+    object-position: left center;
+  }
+
+  .client-logo-rbc { width: 3.5rem; }
+  .client-logo-tate { width: 6rem; }
+  .client-logo-four-seasons { width: 7rem; }
+
+  .client-quote-number {
+    flex: none;
+    align-self: start;
+    padding-top: 0.5rem;
+    color: var(--color-cocoa);
+    font-size: 0.7rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .client-quote-brand {
+    margin-bottom: 0.85rem;
+    color: var(--color-cocoa);
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .client-quote blockquote {
+    margin-bottom: 2rem;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.45;
+    overflow-wrap: break-word;
+  }
+
+  .client-quote figcaption {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-top: auto;
+    color: var(--color-cocoa);
+  }
+
+  .client-quote-signature {
+    display: grid;
+    flex: none;
+    width: 2.75rem;
+    height: 2.75rem;
+    place-items: center;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--color-paper) 65%, transparent);
+  }
+
+  .client-quote-name, .client-quote-role { display: block; }
+  .client-quote-name { font-size: 0.9rem; font-weight: 700; }
+  .client-quote-role { margin-top: 0.25rem; font-size: 0.8rem; line-height: 1.5; }
+
+  @media (min-width: 768px) {
+    .client-stories { padding: 6rem 2.5rem; }
+    .client-stories-heading h2 { font-size: 3rem; }
+    .client-stories-stack { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .client-quote { padding: 2rem; }
+    .client-quote:last-child { grid-column: 1 / -1; }
+  }
+
+  .client-stories.is-stacked .client-stories-stage {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: 3rem;
+  }
+
+  .client-stories.is-stacked .client-stories-stack {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    overflow: clip;
+    padding: 1rem;
+    margin: -1rem;
+  }
+
+  .client-stories.is-stacked .client-quote {
+    grid-area: 1 / 1;
+    z-index: var(--sheet-index);
+    min-height: 35rem;
+    padding: 2.25rem;
+    transform-origin: center top;
+  }
+
+  .client-stories.is-stacked .client-quote blockquote { font-size: 1.5rem; }
+  .client-stories.is-stacked .client-stories-mark { display: grid; }
+  .client-stories.is-stacked .client-stories-position { display: block; }
+
+  @media print {
+    .client-quote { break-inside: avoid; }
+  }
+</style>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+  let disposeClientStories: (() => void) | undefined;
+
+  function initClientStories() {
+    disposeClientStories?.();
+    disposeClientStories = undefined;
+    const section = document.querySelector<HTMLElement>('[data-client-stories]');
+    const stage = section?.querySelector<HTMLElement>('[data-client-stage]');
+    if (!section || !stage) return;
+
+    const cards = Array.from(section.querySelectorAll<HTMLElement>('[data-client-quote]'));
+    const current = section.querySelector<HTMLElement>('[data-client-current]');
+    const progress = section.querySelector<HTMLElement>('[data-client-progress]');
+    const media = gsap.matchMedia();
+
+    media.add({
+      motion: '(prefers-reduced-motion: no-preference)',
+      desktop: '(min-width: 1100px) and (min-height: 760px)',
+      print: 'print',
+    }, (context) => {
+      if (!context.conditions?.motion || context.conditions.print) return;
+
+      const revealCards = () => {
+        cards.forEach((card) => ScrollTrigger.create({
+          trigger: card,
+          start: 'top 96%',
+          once: true,
+          onEnter: () => context.add(() => {
+            gsap.fromTo(card, { y: 24, opacity: 0.7 }, {
+              y: 0, opacity: 1, duration: 0.8, ease: 'power3.out', clearProps: 'transform,opacity',
+            });
+          }),
+        }));
+      };
+
+      if (!context.conditions.desktop) {
+        revealCards();
+        return;
+      }
+
+      let refreshFrame = 0;
+      ScrollTrigger.create({
+        trigger: section,
+        start: 'top bottom',
+        once: true,
+        onEnter: () => context.add(() => {
+          section.classList.add('is-stacked');
+          if (stage.getBoundingClientRect().height > window.innerHeight - 112) {
+            section.classList.remove('is-stacked');
+            revealCards();
+            return;
+          }
+
+          gsap.set(cards.slice(1), { yPercent: 110, rotation: 3, opacity: 0 });
+          const arrivalTimes = [0];
+          const timeline = gsap.timeline({
+            scrollTrigger: {
+              trigger: stage,
+              start: 'top 64px',
+              end: () => `+=${cards.length * Math.min(window.innerHeight * 0.7, 650)}`,
+              pin: true,
+              scrub: 1,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+            },
+            onUpdate: () => {
+              let active = 0;
+              arrivalTimes.forEach((time, index) => { if (timeline.time() >= time) active = index; });
+              if (current) current.textContent = String(active + 1).padStart(2, '0');
+              if (progress) progress.style.transform = `scaleX(${(active + 1) / cards.length})`;
+            },
+          });
+
+          timeline.to({}, { duration: 0.7 });
+          cards.slice(1).forEach((card, index) => {
+            const position = timeline.duration();
+            arrivalTimes.push(position + 0.6);
+            timeline.to(cards[index], { scale: 0.96, y: -8, opacity: 0.35, duration: 1, ease: 'none' }, position);
+            timeline.to(card, { yPercent: 0, rotation: 0, opacity: 1, duration: 1, ease: 'power2.inOut' }, position);
+            timeline.to({}, { duration: 0.8 });
+          });
+
+          gsap.fromTo(section.querySelector('.client-stories-mark'), { rotation: -8, y: 10 }, {
+            rotation: 10,
+            y: -10,
+            ease: 'none',
+            scrollTrigger: { trigger: section, start: 'top bottom', end: 'bottom top', scrub: 1.2 },
+          });
+          refreshFrame = requestAnimationFrame(() => ScrollTrigger.refresh());
+        }),
+      });
+
+      return () => {
+        cancelAnimationFrame(refreshFrame);
+        section.classList.remove('is-stacked');
+        if (current) current.textContent = '01';
+        if (progress) progress.style.removeProperty('transform');
+      };
+    }, section);
+
+    disposeClientStories = () => media.revert();
+  }
+
+  initClientStories();
+  document.addEventListener('astro:page-load', initClientStories);
+  document.addEventListener('astro:before-swap', () => {
+    disposeClientStories?.();
+    disposeClientStories = undefined;
+  });
+</script>

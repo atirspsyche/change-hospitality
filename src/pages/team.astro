@@ -3,6 +3,7 @@ import CircularGallery from "../components/team/CircularGallery";
 import ProfileCard from "../components/team/ProfileCard";
 import EggIllustration from "../components/EggIllustration.astro";
 import FunMenu from "../components/FunMenu.astro";
+import PageMotion from "../components/PageMotion.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import {
   teamCategories,
@@ -20,7 +21,7 @@ const teamGroups = teamCategories.map((category) => ({
 }));
 
 const teamSectionLinks = [
-  { label: "Profiles", href: "#profiles", meta: "Meet the consultants" },
+  { label: "Profiles", href: "#profiles", meta: "Meet the team" },
   { label: "Gallery", href: "#gallery", meta: "Frames of the work" },
 ];
 ---
@@ -37,6 +38,7 @@ const teamSectionLinks = [
     menuButtonTextColor="var(--color-cream)"
   />
 
+  <PageMotion page="team" />
   <main
     class="team-page min-h-screen overflow-hidden bg-paper text-ink"
     data-team-page
@@ -105,7 +107,7 @@ const teamSectionLinks = [
           </ul>
           <div class="mt-9 flex flex-col gap-3 sm:flex-row">
             <a class="team-hero-button bg-cocoa text-cream" href="#profiles"
-              >Meet the consultants</a
+                >Meet the team</a
             >
             <a class="team-hero-button bg-citron text-ink" href="#gallery"
               >See the storyboard</a
@@ -158,7 +160,7 @@ const teamSectionLinks = [
             <p
               class="mb-4 text-sm font-black uppercase tracking-wide text-flame"
             >
-              Consultants
+                Our people
             </p>
             <h2
               id="profiles-title"
