@@ -18,9 +18,10 @@ interface OverlayWindow {
 }
 
 function buildStoryTimeline() {
+  const weightPerFrame = homeStory.movementWeight / (homeStory.frameCount - homeStory.posterFrame);
   const totalWeight = homeStory.beats.reduce(
-    (total, beat) => total + beat.travelWeight + beat.holdWeight + beat.exitWeight,
-    0,
+    (total, beat) => total + beat.holdWeight,
+    homeStory.movementWeight,
   );
   const segments: FrameSegment[] = [];
   const plateaus = new Map<string, [number, number]>();
@@ -34,11 +35,13 @@ function buildStoryTimeline() {
     return [progressStart, progressEnd] as [number, number];
   };
 
+  let previousFrame = homeStory.posterFrame;
   homeStory.beats.forEach((beat) => {
-    addSegment(beat.travelWeight, beat.frames[0], beat.holdFrame);
+    addSegment((beat.holdFrame - previousFrame) * weightPerFrame, previousFrame, beat.holdFrame);
     const plateau = addSegment(beat.holdWeight, beat.holdFrame, beat.holdFrame);
     if (beat.holdWeight > 0) plateaus.set(beat.id, plateau);
-    addSegment(beat.exitWeight, beat.holdFrame, beat.frames[1]);
+    addSegment((beat.frames[1] - beat.holdFrame) * weightPerFrame, beat.holdFrame, beat.frames[1]);
+    previousFrame = beat.frames[1];
   });
 
   const progressForFrame = (frame: number) => {

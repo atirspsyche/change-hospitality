@@ -8,9 +8,10 @@ import { getStoryScene, sequenceFrameForPosition, storySequenceFrames } from "./
 const close = (actual, expected) => assert.ok(Math.abs(actual - expected) < 0.00001, `${actual} ≠ ${expected}`);
 const { animation } = homeStory;
 
-test("the new storyboard holds only at 40, 70, 213, 253, 259 and 279", () => {
+test("the storyboard omits egg-four-ways and has no terminal hold", () => {
   const plateaus = storyTimeline.segments.filter((segment) => segment.frameStart === segment.frameEnd);
-  assert.deepEqual(plateaus.map((segment) => segment.frameStart), [40, 70, 213, 253, 259, 279]);
+  assert.deepEqual(plateaus.map((segment) => segment.frameStart), [40, 70, 253, 259]);
+  assert.ok(!homeStory.beats.some((beat) => beat.id === "egg-four-ways"));
   assert.ok(!homeStory.beats.some((beat) => beat.id === "egg-close-up"));
   for (const plateau of plateaus) {
     close(frameForProgress((plateau.progressStart + plateau.progressEnd) / 2), plateau.frameStart);
@@ -19,12 +20,36 @@ test("the new storyboard holds only at 40, 70, 213, 253, 259 and 279", () => {
   close(frameForProgress(1), 279);
 });
 
+test("removed holds preserve the calibrated scroll distance per timeline weight", () => {
+  const totalWeight = homeStory.beats.reduce(
+    (total, beat) => total + beat.holdWeight,
+    homeStory.movementWeight,
+  );
+  close(homeStory.scrollScreens / totalWeight, 20 / 14.8);
+});
+
 test("logical frames stay fractional through coded animations", () => {
   for (const frame of [55.125, 60.25, 65.75, 66.999, 67.125, 69.5, 73.75, 83.5, 84.125, 96.5, 109, 120.25, 131.75, 138, 266.5, 274.125]) {
     close(frameForProgress(storyTimeline.progressForFrame(frame)), frame);
   }
   const forward = Array.from({ length: 1001 }, (_, i) => frameForProgress(i / 1000));
   assert.ok(forward.every((frame, index) => index === 0 || frame >= forward[index - 1]));
+});
+
+test("moving frames share one scroll speed and segment boundaries are continuous", () => {
+  const moving = storyTimeline.segments.filter((segment) => segment.frameEnd > segment.frameStart);
+  const speed = (segment) => (segment.frameEnd - segment.frameStart) / (segment.progressEnd - segment.progressStart);
+  for (const segment of moving) close(speed(segment), speed(moving[0]));
+  storyTimeline.segments.forEach((segment, index) => {
+    if (!index) return;
+    const previous = storyTimeline.segments[index - 1];
+    close(segment.progressStart, previous.progressEnd);
+    close(segment.frameStart, previous.frameEnd);
+    close(frameForProgress(segment.progressStart - 1e-10), frameForProgress(segment.progressStart + 1e-10));
+  });
+  for (let frame = homeStory.posterFrame; frame <= homeStory.frameCount; frame += 0.125) {
+    close(frameForProgress(storyTimeline.progressForFrame(frame)), frame);
+  }
 });
 
 test("transition copy starts after the shells exit and closing copy spans the final hold", () => {

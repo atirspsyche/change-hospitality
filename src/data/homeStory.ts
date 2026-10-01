@@ -50,9 +50,7 @@ export interface StoryBeat {
   label: string;
   frames: [number, number];
   holdFrame: number;
-  travelWeight: number;
   holdWeight: number;
-  exitWeight: number;
   overlayFrames?: [number, number];
   overlay?: StoryOverlay;
 }
@@ -62,7 +60,10 @@ export const homeStory = {
   frameCount: 279,
   framePadding: 4,
   extension: "webp",
-  scrollScreens: 20,
+  // Preserve the original 20 screens / 14.8 timeline-weight cadence after
+  // removing the 1.4 egg-four-ways hold and the 1.5 terminal hold.
+  scrollScreens: (20 / 14.8) * 11.9,
+  movementWeight: 6.9,
   initialChunkSize: 24,
   streamChunkSize: 16,
   desktopFramePrefix: "/story_sequence/",
@@ -162,9 +163,7 @@ export const homeStory = {
       label: "Carton opens to reveal Change Hospitality",
       frames: [1, 40],
       holdFrame: 40,
-      travelWeight: 0.8,
-      holdWeight: 1.25,
-      exitWeight: 0,
+      holdWeight: 0.75,
       overlay: {
         layout: "brand",
         heading: "Change Hospitality",
@@ -176,9 +175,7 @@ export const homeStory = {
       label: "Carton entrance into the coded hand, held on the right",
       frames: [41, 70],
       holdFrame: 70,
-      travelWeight: 0.55,
       holdWeight: 1.15,
-      exitWeight: 0,
       overlay: {
         layout: "left",
         eyebrow: "A better way to recruit",
@@ -201,18 +198,14 @@ export const homeStory = {
       label: "Coded hand rotation into a continuous egg zoom",
       frames: [71, 109],
       holdFrame: 109,
-      travelWeight: 0.75,
       holdWeight: 0,
-      exitWeight: 0,
     },
     {
       id: "egg-transition",
       label: "Egg transition with copy on both sides",
       frames: [110, 182],
       holdFrame: 138,
-      travelWeight: 0.55,
       holdWeight: 0,
-      exitWeight: 1,
       overlayFrames: [138, 182],
       overlay: {
         layout: "split",
@@ -237,39 +230,11 @@ export const homeStory = {
       },
     },
     {
-      id: "egg-four-ways",
-      label: "Egg with copy on all four sides",
-      frames: [183, 213],
-      holdFrame: 213,
-      travelWeight: 0.35,
-      holdWeight: 1.4,
-      exitWeight: 0,
-      overlay: {
-        layout: "edges",
-        topText: "Twenty years of hospitality instinct",
-        bottomText: "Events & Commercial / Permanent / Temporary / Contract",
-        columns: [
-          {
-            eyebrow: "Front of House",
-            heading: "People who set the tone.",
-            body: "Warm welcomes, sharp service and leaders who make every shift click.",
-          },
-          {
-            eyebrow: "Back of House",
-            heading: "Talent behind the pass.",
-            body: "Skilled kitchens, steady hands and teams built for the pace of service.",
-          },
-        ],
-      },
-    },
-    {
       id: "plate-center",
       label: "Plate in the middle",
       frames: [214, 253],
       holdFrame: 253,
-      travelWeight: 1.1,
       holdWeight: 1.3,
-      exitWeight: 0,
       overlay: {
         layout: "sides",
         columns: [
@@ -297,9 +262,7 @@ export const homeStory = {
       label: "Plate on the left",
       frames: [254, 259],
       holdFrame: 259,
-      travelWeight: 0.65,
       holdWeight: 1.3,
-      exitWeight: 0,
       overlay: {
         layout: "right",
         eyebrow: "Ready when you are",
@@ -313,9 +276,7 @@ export const homeStory = {
       label: "Final plated breakfast",
       frames: [260, 266],
       holdFrame: 266,
-      travelWeight: 0.5,
       holdWeight: 0,
-      exitWeight: 0,
       overlayFrames: [266, 279],
       overlay: {
         layout: "bottom",
@@ -332,9 +293,7 @@ export const homeStory = {
       label: "Fork and knife arrive beside the plate",
       frames: [266, 279],
       holdFrame: 279,
-      travelWeight: 0.65,
-      holdWeight: 1.5,
-      exitWeight: 0,
+      holdWeight: 0,
     },
   ] satisfies StoryBeat[],
 };

@@ -56,6 +56,7 @@
 .story-overlay {
   position: absolute;
   inset: 0;
+  translate: 0 var(--story-depth-y, 0px);
   display: flex;
   visibility: hidden;
   align-items: center;
@@ -131,16 +132,19 @@
   gap: clamp(5rem, 18vw, 22rem);
 }
 
-.story-overlay--split .story-column {
+.story-overlay--split .story-column,
+.story-overlay--sides .story-column {
   display: flex;
   flex-direction: column;
 }
 
-.story-overlay--split .story-body {
+.story-overlay--split .story-body,
+.story-overlay--sides .story-body {
   margin-bottom: 1.7rem;
 }
 
-.story-overlay--split .story-button {
+.story-overlay--split .story-button,
+.story-overlay--sides .story-button {
   align-self: flex-start;
   margin-top: auto;
 }
@@ -150,12 +154,14 @@
   text-align: right;
 }
 
-.story-overlay--split .story-column:last-child .story-button {
+.story-overlay--split .story-column:last-child .story-button,
+.story-overlay--sides .story-column:last-child .story-button {
   align-self: flex-end;
 }
 
+.story-overlay--split .story-columns,
 .story-overlay--sides .story-columns {
-  align-items: end;
+  align-items: stretch;
 }
 
 .story-edge-layout {

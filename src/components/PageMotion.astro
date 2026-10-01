@@ -1,6 +1,6 @@
 ---
 interface Props {
-  page: 'jobs' | 'story' | 'recruit' | 'impact' | 'team';
+  page: 'home' | 'jobs' | 'story' | 'recruit' | 'impact' | 'team';
 }
 
 const { page } = Astro.props;
@@ -22,6 +22,10 @@ const { page } = Astro.props;
   gsap.registerPlugin(ScrollTrigger);
 
   const settings = {
+    home: {
+      layers: '.franchise-map__halo',
+      reveals: '[data-map-copy], .home-story-link > *, .home-policy-link > *, #site-footer-title',
+    },
     jobs: {
       layers: '.jobs-hero-art',
       reveals: '#jobs h2',
@@ -116,48 +120,59 @@ const { page } = Astro.props;
         animated.add(element);
       };
 
-      root.querySelectorAll<HTMLElement>(settings[page].reveals).forEach((element) => {
-        ScrollTrigger.create({
-          trigger: element,
-          start: 'top 94%',
-          once: true,
-          onEnter: () => context.add(() => {
-            track(element);
-            gsap.fromTo(element, { '--page-motion-y': '24px', opacity: 0.35 }, {
-              '--page-motion-y': '0px',
-              opacity: 1,
-              duration: 0.8,
-              ease: 'power2.out',
-              clearProps: '--page-motion-y,opacity',
-            });
-          }),
-        });
-      });
-
-      if (context.conditions.desktop) {
-        root.querySelectorAll<HTMLElement>(settings[page].layers).forEach((element, index) => {
-          const section = element.closest('section') || root;
-          const hero = section === root.querySelector('section');
+      const initAnimations = () => context.add(() => {
+        root.querySelectorAll<HTMLElement>(settings[page].reveals).forEach((element) => {
           ScrollTrigger.create({
-            trigger: section,
-            start: 'top bottom',
+            trigger: element,
+            start: 'top 94%',
             once: true,
             onEnter: () => context.add(() => {
               track(element);
-              gsap.fromTo(element, { '--page-motion-y': hero ? '0px' : '16px' }, {
-                '--page-motion-y': hero ? `${index % 2 ? -110 : -70}px` : '-16px',
-                ease: 'none',
-                scrollTrigger: {
-                  trigger: section,
-                  start: hero ? 'top top' : 'top bottom',
-                  end: 'bottom top',
-                  scrub: 0.8,
-                  invalidateOnRefresh: true,
-                },
+              gsap.fromTo(element, { '--page-motion-y': '24px', opacity: 0.35 }, {
+                '--page-motion-y': '0px',
+                opacity: 1,
+                duration: 0.8,
+                ease: 'power2.out',
+                clearProps: '--page-motion-y,opacity',
               });
             }),
           });
         });
+
+        if (context.conditions?.desktop) {
+          root.querySelectorAll<HTMLElement>(settings[page].layers).forEach((element, index) => {
+            const section = element.closest('section') || root;
+            const hero = section === root.querySelector('section');
+            ScrollTrigger.create({
+              trigger: section,
+              start: 'top bottom',
+              once: true,
+              onEnter: () => context.add(() => {
+                track(element);
+                gsap.fromTo(element, { '--page-motion-y': hero ? '0px' : '16px' }, {
+                  '--page-motion-y': hero ? `${index % 2 ? -110 : -70}px` : '-16px',
+                  ease: 'none',
+                  scrollTrigger: {
+                    trigger: section,
+                    start: hero ? 'top top' : 'top bottom',
+                    end: 'bottom top',
+                    scrub: 0.8,
+                    invalidateOnRefresh: true,
+                  },
+                });
+              }),
+            });
+          });
+        }
+
+        lenis.resize();
+        ScrollTrigger.refresh();
+      });
+
+      if (page === 'home' && document.documentElement.dataset.homeStoryReady !== 'true') {
+        document.addEventListener('home-story-ready', initAnimations, { once: true, signal: listeners.signal });
+      } else {
+        initAnimations();
       }
 
       let resizeFrame = 0;

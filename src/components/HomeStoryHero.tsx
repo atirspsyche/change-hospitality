@@ -214,10 +214,16 @@ export default function HomeStoryHero() {
     setIsInitialChunkReady(false);
     experience.classList.remove("is-failed");
 
+    const notifyReady = () => {
+      document.documentElement.dataset.homeStoryReady = "true";
+      document.dispatchEvent(new CustomEvent("home-story-ready"));
+    };
+
     const context = canvas.getContext("2d", { alpha: false });
     if (!context) {
       experience.classList.add("is-failed");
-      return;
+      notifyReady();
+      return () => { delete document.documentElement.dataset.homeStoryReady; };
     }
 
     const abortController = new AbortController();
@@ -245,6 +251,10 @@ export default function HomeStoryHero() {
       : homeStory.desktopFramePrefix;
     let loadedAssetCount = 0;
     let requestedPosition = homeStory.posterFrame;
+    let renderedPosition = Number.NaN;
+    let frameDirection = 1;
+    let decodeQueue: number[] = [];
+    let activeDecodes = 0;
     let isVisible = true;
     let isStreaming = false;
     let canStream = false;
@@ -401,7 +411,7 @@ export default function HomeStoryHero() {
 
     const renderScene = () => {
       renderFrame = 0;
-      if (destroyed) return;
+      if (destroyed || renderedPosition === requestedPosition) return;
       const scene = getStoryScene(requestedPosition, canvas.width, canvas.height);
       const images = scene.layers.map(({ asset }) => typeof asset === "number"
         ? decodedFrames.get(asset) : decodedSprites.get(asset));
@@ -435,6 +445,7 @@ export default function HomeStoryHero() {
         context.restore();
       });
       context.globalAlpha = 1;
+      renderedPosition = requestedPosition;
       hero.classList.add("has-canvas-frame");
       hero.dataset.storyFrame = requestedPosition.toFixed(3);
       hero.dataset.storyScene = scene.kind;
@@ -444,20 +455,27 @@ export default function HomeStoryHero() {
       if (!destroyed && !renderFrame) renderFrame = window.requestAnimationFrame(renderScene);
     };
 
+    const decodeUpcomingFrames = () => {
+      while (!destroyed && activeDecodes < 3 && decodeQueue.length) {
+        const frame = decodeQueue.shift()!;
+        if (decodedFrames.has(frame)) continue;
+        activeDecodes += 1;
+        void decodeFrame(frame).then(requestRender).catch(() => undefined).finally(() => {
+          activeDecodes -= 1;
+          decodeUpcomingFrames();
+        });
+      }
+    };
+
     const requestFrame = (position: number) => {
+      if (position !== requestedPosition) frameDirection = position > requestedPosition ? 1 : -1;
       requestedPosition = clamp(position, 1, homeStory.frameCount);
       requestRender();
-      const sourceFrame = sequenceFrameForPosition(requestedPosition);
-      if (!decodedFrames.has(sourceFrame)) {
-        void decodeFrame(sourceFrame).then(requestRender).catch(() => undefined);
-      }
-      // Map neighbours through the coded ranges too, so prefetch cannot fetch
-      // the baked animations that this renderer deliberately replaces.
-      const neighbours = new Set([1, -1, 2, -2].map((offset) =>
-        sequenceFrameForPosition(clamp(requestedPosition + offset, 1, homeStory.frameCount))));
-      neighbours.forEach((frame) => {
-        if (!decodedFrames.has(frame)) void decodeFrame(frame).catch(() => undefined);
-      });
+      const offsets = [0, -frameDirection, ...Array.from({ length: 12 }, (_, index) => (index + 1) * frameDirection)];
+      decodeQueue = [...new Set(offsets.map((offset) =>
+        sequenceFrameForPosition(clamp(requestedPosition + offset, 1, homeStory.frameCount))))]
+        .filter((frame) => !decodedFrames.has(frame) && !decodeRequests.has(frame));
+      decodeUpcomingFrames();
     };
 
     const resizeCanvas = () => {
@@ -467,6 +485,7 @@ export default function HomeStoryHero() {
       if (canvas.width !== width || canvas.height !== height) {
         canvas.width = width;
         canvas.height = height;
+        renderedPosition = Number.NaN;
       }
       requestRender();
     };
@@ -530,7 +549,7 @@ export default function HomeStoryHero() {
             pin: true,
             // The story needs one pin on mobile too; omit secondary word
             // choreography and pointer motion there instead of extra pins.
-            scrub: desktop ? 0.28 : true,
+            scrub: desktop ? true : 0.12,
             anticipatePin: 1,
             invalidateOnRefresh: true,
             onEnter: () => {
@@ -571,6 +590,14 @@ export default function HomeStoryHero() {
             overlayWindow.progressEnd - overlayWindow.progressStart;
           const enterDuration = Math.min(0.018, windowLength * 0.22);
           const exitDuration = Math.min(0.014, windowLength * 0.18);
+
+          if (desktop) {
+            timeline.fromTo(overlay, { "--story-depth-y": "10px" }, {
+              "--story-depth-y": "-10px",
+              duration: windowLength,
+              ease: "none",
+            }, overlayWindow.progressStart);
+          }
 
           timeline.fromTo(
             overlay,
@@ -630,8 +657,7 @@ export default function HomeStoryHero() {
       }, hero);
 
       ScrollTrigger.refresh();
-      document.documentElement.dataset.homeStoryReady = "true";
-      document.dispatchEvent(new CustomEvent("home-story-ready"));
+      notifyReady();
     };
 
     const resizeObserver = new ResizeObserver(resizeCanvas);
@@ -696,13 +722,15 @@ export default function HomeStoryHero() {
         if (!abortController.signal.aborted) {
           gsapCleanup?.();
           experience.classList.add("is-failed");
+          notifyReady();
         }
       }
     };
 
     void initialize();
 
-    return () => {
+    const dispose = () => {
+      if (destroyed) return;
       destroyed = true;
       abortController.abort();
       resizeObserver.disconnect();
@@ -718,6 +746,11 @@ export default function HomeStoryHero() {
       hero.style.removeProperty("--story-copy-x");
       hero.style.removeProperty("--story-copy-y");
       delete document.documentElement.dataset.homeStoryReady;
+    };
+    document.addEventListener("astro:before-swap", dispose, { once: true });
+    return () => {
+      document.removeEventListener("astro:before-swap", dispose);
+      dispose();
     };
   }, [motionEnabled]);
 
