@@ -545,7 +545,7 @@ export default function HomeStoryHero() {
             id: "home-story",
             trigger: hero,
             start: "top top",
-            end: () => `+=${window.innerHeight * homeStory.scrollScreens}`,
+            end: () => `+=${window.innerHeight * storyTimeline.scrollScreens}`,
             pin: true,
             // The story needs one pin on mobile too; omit secondary word
             // choreography and pointer motion there instead of extra pins.

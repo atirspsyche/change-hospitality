@@ -19,29 +19,34 @@ interface OverlayWindow {
 
 function buildStoryTimeline() {
   const weightPerFrame = homeStory.movementWeight / (homeStory.frameCount - homeStory.posterFrame);
-  const totalWeight = homeStory.beats.reduce(
-    (total, beat) => total + beat.holdWeight,
-    homeStory.movementWeight,
-  );
   const segments: FrameSegment[] = [];
   const plateaus = new Map<string, [number, number]>();
   let cursor = 0;
 
   const addSegment = (weight: number, frameStart: number, frameEnd: number) => {
-    const progressStart = cursor / totalWeight;
+    const progressStart = cursor;
     cursor += weight;
-    const progressEnd = cursor / totalWeight;
+    const progressEnd = cursor;
     if (weight > 0) segments.push({ progressStart, progressEnd, frameStart, frameEnd });
     return [progressStart, progressEnd] as [number, number];
   };
 
   let previousFrame = homeStory.posterFrame;
   homeStory.beats.forEach((beat) => {
-    addSegment((beat.holdFrame - previousFrame) * weightPerFrame, previousFrame, beat.holdFrame);
+    addSegment(beat.approachWeight ?? (beat.holdFrame - previousFrame) * weightPerFrame, previousFrame, beat.holdFrame);
     const plateau = addSegment(beat.holdWeight, beat.holdFrame, beat.holdFrame);
     if (beat.holdWeight > 0) plateaus.set(beat.id, plateau);
     addSegment((beat.frames[1] - beat.holdFrame) * weightPerFrame, beat.holdFrame, beat.frames[1]);
     previousFrame = beat.frames[1];
+  });
+  const totalWeight = cursor;
+  segments.forEach((segment) => {
+    segment.progressStart /= totalWeight;
+    segment.progressEnd /= totalWeight;
+  });
+  plateaus.forEach((plateau) => {
+    plateau[0] /= totalWeight;
+    plateau[1] /= totalWeight;
   });
 
   const progressForFrame = (frame: number) => {
@@ -75,7 +80,7 @@ function buildStoryTimeline() {
     }] : [];
   });
 
-  return { segments, overlayWindows, progressForFrame };
+  return { segments, overlayWindows, progressForFrame, totalWeight, scrollScreens: totalWeight * 20 / 14.8 };
 }
 
 export const storyTimeline = buildStoryTimeline();

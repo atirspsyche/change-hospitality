@@ -10,7 +10,7 @@ const { animation } = homeStory;
 
 test("the storyboard omits egg-four-ways and has no terminal hold", () => {
   const plateaus = storyTimeline.segments.filter((segment) => segment.frameStart === segment.frameEnd);
-  assert.deepEqual(plateaus.map((segment) => segment.frameStart), [40, 70, 253, 259]);
+  assert.deepEqual(plateaus.map((segment) => segment.frameStart), [40, 70, 256, 259]);
   assert.ok(!homeStory.beats.some((beat) => beat.id === "egg-four-ways"));
   assert.ok(!homeStory.beats.some((beat) => beat.id === "egg-close-up"));
   for (const plateau of plateaus) {
@@ -20,12 +20,15 @@ test("the storyboard omits egg-four-ways and has no terminal hold", () => {
   close(frameForProgress(1), 279);
 });
 
-test("removed holds preserve the calibrated scroll distance per timeline weight", () => {
-  const totalWeight = homeStory.beats.reduce(
-    (total, beat) => total + beat.holdWeight,
-    homeStory.movementWeight,
-  );
-  close(homeStory.scrollScreens / totalWeight, 20 / 14.8);
+test("coded plate movement gains scroll distance without changing other movement speed", () => {
+  close(storyTimeline.scrollScreens / storyTimeline.totalWeight, 20 / 14.8);
+  const outgoing = storyTimeline.segments.find((segment) => segment.frameStart === 256 && segment.frameEnd === 259);
+  const returning = storyTimeline.segments.find((segment) => segment.frameStart === 259 && segment.frameEnd === 266);
+  assert.ok((outgoing.progressEnd - outgoing.progressStart) * storyTimeline.scrollScreens > 1);
+  assert.ok((returning.progressEnd - returning.progressStart) * storyTimeline.scrollScreens > 0.8);
+  const cutlery = storyTimeline.segments.find((segment) => segment.frameStart === 266 && segment.frameEnd === 279);
+  close((cutlery.progressEnd - cutlery.progressStart) * storyTimeline.scrollScreens / 13,
+    homeStory.movementWeight / (homeStory.frameCount - homeStory.posterFrame) * 20 / 14.8);
 });
 
 test("logical frames stay fractional through coded animations", () => {
@@ -37,7 +40,8 @@ test("logical frames stay fractional through coded animations", () => {
 });
 
 test("moving frames share one scroll speed and segment boundaries are continuous", () => {
-  const moving = storyTimeline.segments.filter((segment) => segment.frameEnd > segment.frameStart);
+  const moving = storyTimeline.segments.filter((segment) => segment.frameEnd > segment.frameStart
+    && segment.frameStart !== 256 && segment.frameStart !== 259);
   const speed = (segment) => (segment.frameEnd - segment.frameStart) / (segment.progressEnd - segment.progressStart);
   for (const segment of moving) close(speed(segment), speed(moving[0]));
   storyTimeline.segments.forEach((segment, index) => {
@@ -64,7 +68,8 @@ test("transition copy starts after the shells exit and closing copy spans the fi
 });
 
 test("streaming and neighbour prefetch never request replaced or missing frames", () => {
-  const replaced = (frame) => (frame >= 67 && frame <= 108) || (frame >= 120 && frame <= 137) || frame >= 267;
+  const replaced = (frame) => (frame >= 67 && frame <= 108) || (frame >= 120 && frame <= 137)
+    || frame >= 257;
   assert.ok(storySequenceFrames.every((frame) => !replaced(frame)));
   assert.ok(storySequenceFrames.includes(109)); // texture handoff only
   for (let position = 1; position <= 279; position += 0.125) {
@@ -87,7 +92,8 @@ test("coded transitions switch back to the correct sequence frames", () => {
     [84, "zoom", "handEgg"], [109.5, "zoom", "handEgg"],
     [110, "sequence", 110], [119.999, "sequence", 119],
     [120, "shells", 138], [138, "shells", 138], [139, "sequence", 139],
-    [265, "sequence", 265], [266, "cutlery", 266], [279, "cutlery", 266],
+    [255.999, "sequence", 256], [256, "plate", 256], [259, "plate", 256],
+    [265.999, "plate", 256], [266, "cutlery", 256], [279, "cutlery", 256],
   ]) {
     const scene = getStoryScene(position, 1440, 900);
     assert.equal(scene.kind, kind);
@@ -95,6 +101,36 @@ test("coded transitions switch back to the correct sequence frames", () => {
   }
   assert.ok(!getStoryScene(138, 1440, 900).layers.some((layer) => typeof layer.asset === "string"));
   assert.equal(getStoryScene(109, 1440, 900).layers.at(-1).opacity, 1);
+});
+
+test("plate moves smoothly to the left hold and rotates back before cutlery", () => {
+  for (const [width, height] of [[1920, 1080], [1440, 900], [390, 844]]) {
+    const scale = height / animation.referenceHeight;
+    const start = getStoryScene(256, width, height).layers[0];
+    const leaving = getStoryScene(257.5, width, height).layers[0];
+    const held = getStoryScene(259, width, height).layers[0];
+    const returning = getStoryScene(262.5, width, height).layers[0];
+    const end = getStoryScene(266 - 0.000001, width, height).layers[0];
+    const cutlery = getStoryScene(266, width, height).layers[0];
+    const plateWidth = (animation.cutlery.plateBounds.right - animation.cutlery.plateBounds.left) * scale;
+    const margin = Math.min(260 * scale, width * animation.plate.leftMargin);
+    const targetLeft = plateWidth + 2 * margin <= width ? margin : (width - plateWidth) / 2;
+
+    close(start.x, (width - start.width) / 2);
+    close(start.rotation.radians, 0);
+    assert.ok(leaving.x < start.x && leaving.x > held.x);
+    close(held.x + animation.cutlery.plateBounds.left * scale, targetLeft);
+    close(held.rotation.radians, animation.plate.rotation * Math.PI / 180);
+    assert.ok(animation.plate.leftMargin < 0.135);
+    assert.ok(returning.x > held.x && returning.x < start.x);
+    assert.ok(returning.rotation.radians > held.rotation.radians && returning.rotation.radians < 0);
+    assert.ok(Math.abs(end.x - cutlery.x) < 0.001);
+    assert.ok(Math.abs(end.rotation.radians) < 0.000001);
+    const hold = storyTimeline.segments.find((segment) => segment.frameStart === 259 && segment.frameEnd === 259);
+    assert.deepEqual(getStoryScene(frameForProgress((hold.progressStart + hold.progressEnd) / 2), width, height).layers[0], held);
+    getStoryScene(260, width * 2, height);
+    assert.deepEqual(getStoryScene(262.5, width, height).layers[0], returning);
+  }
 });
 
 test("frames 55–66 keep the carton sequence in front of the coded hand", () => {

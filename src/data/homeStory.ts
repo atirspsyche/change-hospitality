@@ -51,6 +51,7 @@ export interface StoryBeat {
   frames: [number, number];
   holdFrame: number;
   holdWeight: number;
+  approachWeight?: number;
   overlayFrames?: [number, number];
   overlay?: StoryOverlay;
 }
@@ -60,9 +61,6 @@ export const homeStory = {
   frameCount: 279,
   framePadding: 4,
   extension: "webp",
-  // Preserve the original 20 screens / 14.8 timeline-weight cadence after
-  // removing the 1.4 egg-four-ways hold and the 1.5 terminal hold.
-  scrollScreens: (20 / 14.8) * 11.9,
   movementWeight: 6.9,
   initialChunkSize: 24,
   streamChunkSize: 16,
@@ -125,10 +123,16 @@ export const homeStory = {
       frames: [120, 138] as const,
       backgroundFrame: 138,
     },
+    plate: {
+      frames: [256, 266] as const,
+      leftFrame: 259,
+      sourceFrame: 256,
+      rotation: -45,
+      leftMargin: 0.1,
+    },
     cutlery: {
       frames: [266, 279] as const,
-      backgroundFrame: 266,
-      // Plate bounds in frame 266 and the gap visible in the final reference.
+      // Plate bounds in frame 256 and the gap visible in the final reference.
       plateBounds: { left: 680, right: 1243 },
       gap: 60,
     },
@@ -232,9 +236,9 @@ export const homeStory = {
     {
       id: "plate-center",
       label: "Plate in the middle",
-      frames: [214, 253],
-      holdFrame: 253,
-      holdWeight: 1.3,
+      frames: [214, 256],
+      holdFrame: 256,
+      holdWeight: 1,
       overlay: {
         layout: "sides",
         columns: [
@@ -260,9 +264,10 @@ export const homeStory = {
     {
       id: "plate-left",
       label: "Plate on the left",
-      frames: [254, 259],
+      frames: [256, 259],
       holdFrame: 259,
       holdWeight: 1.3,
+      approachWeight: 0.95,
       overlay: {
         layout: "right",
         eyebrow: "Ready when you are",
@@ -273,10 +278,11 @@ export const homeStory = {
     },
     {
       id: "final-plate",
-      label: "Final plated breakfast",
-      frames: [260, 266],
+      label: "Plate returns and cutlery arrives",
+      frames: [259, 279],
       holdFrame: 266,
       holdWeight: 0,
+      approachWeight: 0.65,
       overlayFrames: [266, 279],
       overlay: {
         layout: "bottom",
@@ -287,13 +293,6 @@ export const homeStory = {
           tone: "citron",
         },
       },
-    },
-    {
-      id: "table-setting",
-      label: "Fork and knife arrive beside the plate",
-      frames: [266, 279],
-      holdFrame: 279,
-      holdWeight: 0,
     },
   ] satisfies StoryBeat[],
 };

@@ -18,19 +18,20 @@ export interface StoryLayer {
 }
 
 export interface StoryScene {
-  kind: "sequence" | "hand" | "zoom" | "shells" | "cutlery";
+  kind: "sequence" | "hand" | "zoom" | "shells" | "plate" | "cutlery";
   layers: StoryLayer[];
 }
 
 const { animation } = homeStory;
-const { referenceWidth, referenceHeight, hand, zoom, shells, cutlery, sprites } = animation;
+const { referenceWidth, referenceHeight, hand, zoom, shells, plate, cutlery, sprites } = animation;
 const mix = (start: number, end: number, progress: number) => start + (end - start) * progress;
 const progressIn = (frame: number, range: readonly [number, number]) =>
   clamp((frame - range[0]) / (range[1] - range[0]), 0, 1);
+const easeInOut = (progress: number) => progress * progress * (3 - 2 * progress);
 
 // These images are reused for whole coded ranges. Keep them decoded and never
-// download the baked-in hand/zoom/shell/cutlery frames they replace.
-export const storyKeyFrames = [zoom.matchFrame, shells.backgroundFrame, cutlery.backgroundFrame];
+// download the baked-in hand/zoom/shell/plate/cutlery frames they replace.
+export const storyKeyFrames = [zoom.matchFrame, shells.backgroundFrame, plate.sourceFrame];
 
 export function sequenceFrameForPosition(frame: number) {
   // The entrance still needs its carton layer, even while the hand is coded.
@@ -39,7 +40,8 @@ export function sequenceFrameForPosition(frame: number) {
   // The hand itself needs no sequence image; keep only its zoom handoff cached.
   if (frame >= hand.frames[0] && frame < zoom.frames[1] + 1) return zoom.matchFrame;
   if (frame >= shells.frames[0] && frame < shells.frames[1] + 1) return shells.backgroundFrame;
-  if (frame >= cutlery.frames[0]) return cutlery.backgroundFrame;
+  if (frame >= plate.frames[0] && frame < plate.frames[1]) return plate.sourceFrame;
+  if (frame >= cutlery.frames[0]) return plate.sourceFrame;
   // Do not round into the first baked shell image on the approach to frame 120.
   if (frame > zoom.frames[1] && frame < shells.frames[0]) return Math.min(119, Math.round(frame));
   return clamp(Math.round(frame), 1, homeStory.frameCount);
@@ -184,9 +186,31 @@ export function getStoryScene(position: number, viewportWidth: number, viewportH
     return { kind: "shells", layers };
   }
 
+  if (frame >= plate.frames[0] && frame < plate.frames[1]) {
+    const outgoing = frame <= plate.leftFrame;
+    const progress = outgoing
+      ? progressIn(frame, [plate.frames[0], plate.leftFrame])
+      : 1 - progressIn(frame, [plate.leftFrame, plate.frames[1]]);
+    const amount = easeInOut(progress);
+    const plateWidth = (cutlery.plateBounds.right - cutlery.plateBounds.left) * scale;
+    const margin = Math.min(260 * scale, viewportWidth * plate.leftMargin);
+    const targetLeft = plateWidth + 2 * margin <= viewportWidth
+      ? margin : (viewportWidth - plateWidth) / 2;
+    const offset = (targetLeft - x - cutlery.plateBounds.left * scale) * amount;
+    layers.push({
+      asset: plate.sourceFrame, x: x + offset, y: 0, width, height: viewportHeight,
+      rotation: {
+        radians: plate.rotation * Math.PI / 180 * amount,
+        x: x + offset + (cutlery.plateBounds.left + cutlery.plateBounds.right) / 2 * scale,
+        y: viewportHeight / 2,
+      },
+    });
+    return { kind: "plate", layers };
+  }
+
   if (frame >= cutlery.frames[0]) {
     const progress = progressIn(frame, cutlery.frames);
-    image(cutlery.backgroundFrame);
+    image(plate.sourceFrame);
     const margin = Math.min(16, viewportWidth * 0.025);
     const plateLeft = x + cutlery.plateBounds.left * scale;
     const plateRight = x + cutlery.plateBounds.right * scale;
