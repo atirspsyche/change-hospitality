@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { afterEach, test } from 'node:test';
 
-import handler, { validateRecruitmentBrief } from './recruit-talent.js';
+import handler, { renderRecruitmentEmail, validateRecruitmentBrief } from './recruit-talent.js';
 
 const validPayload = {
   submitterName: 'Alex Morgan',
@@ -9,8 +9,6 @@ const validPayload = {
   email: 'alex@example.com',
   phone: '020 0000 0000',
   location: 'London',
-  numberPositions: 3,
-  jobTitle: 'Restaurant Manager',
   jobTypes: ['Permanent Placements - Front of House'],
   message: 'Opening in September',
   consent: true,
@@ -47,6 +45,37 @@ test('rejects incomplete recruitment briefs', () => {
   assert.equal(result.data.email, '');
   assert.equal(result.errors.email, 'Enter a valid email address.');
   assert.equal(result.errors.jobTypes, 'Choose at least one staffing type.');
+});
+
+test('accepts a brief without a job title or position count and ignores legacy fields', () => {
+  const result = validateRecruitmentBrief(validPayload);
+  const legacy = validateRecruitmentBrief({
+    ...validPayload,
+    numberPositions: 0,
+    jobTitle: 'Old title',
+  });
+
+  assert.deepEqual(result.errors, {});
+  assert.deepEqual(legacy.errors, {});
+  assert.deepEqual(legacy.data, result.data);
+  assert.equal(Object.hasOwn(result.data, 'numberPositions'), false);
+  assert.equal(Object.hasOwn(result.data, 'jobTitle'), false);
+});
+
+test('still requires the location', () => {
+  const result = validateRecruitmentBrief({ ...validPayload, location: ' ' });
+
+  assert.deepEqual(result.errors, { location: 'Enter the role location.' });
+});
+
+test('escapes the company email heading', () => {
+  const email = renderRecruitmentEmail({
+    ...validPayload,
+    companyName: 'Hotel <script>alert(1)</script>',
+  }, 'CH-HIRE-TEST');
+
+  assert.match(email.html, /Hotel &lt;script&gt;alert\(1\)&lt;\/script&gt;/);
+  assert.doesNotMatch(email.html, /<script>/);
 });
 
 test('accepts one choice from either staffing subgroup', () => {
@@ -88,7 +117,13 @@ test('sends a sanitized valid brief to the configured inbox', async () => {
   assert.equal(response.body.ok, true);
   assert.equal(emailPayload.to, 'team@example.com');
   assert.equal(emailPayload.replyTo, validPayload.email);
+  assert.equal(emailPayload.subject, 'New staffing brief: The Test Hotel');
   assert.match(emailPayload.text, /The Test Hotel/);
+  assert.match(emailPayload.text, /Location: London/);
+  assert.match(emailPayload.html, /<h1[^>]*>The Test Hotel<\/h1>/);
+  assert.match(emailPayload.html, /<th[^>]*>Location<\/th>/);
+  assert.doesNotMatch(emailPayload.text, /Positions:|Job title:|undefined|NaN/);
+  assert.doesNotMatch(emailPayload.html, />Positions<|>Job title<|undefined|NaN/);
   assert.doesNotMatch(emailPayload.html, /<script>/);
 });
 

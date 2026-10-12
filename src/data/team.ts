@@ -9,53 +9,37 @@ export interface TeamMember {
   accent: 'pink' | 'blue' | 'lime' | 'pale';
   note: string;
   signal: string;
-  division: TeamDivision;
+  location: { _id: string; name: string } | null;
 }
 
-export type TeamDivision =
-  | 'Front of House'
-  | 'Back of House'
-  | 'Events and Management'
-  | 'HR & Finance'
-  | 'Leadership & Operations';
+export interface OfficeLocation {
+  _id: string;
+  name: string;
+  slug: { current: string };
+  active: boolean;
+  isHeadOffice?: boolean;
+  description?: string;
+  sortOrder?: number;
+}
 
-export const teamCategories: Array<{
-  id: string;
-  label: TeamDivision;
-  description: string;
-  accent: 'flame' | 'mint' | 'citron' | 'blush';
-}> = [
-  {
-    id: 'front-of-house',
-    label: 'Front of House',
-    description: 'Guest experience, restaurants, clubs and service teams.',
-    accent: 'citron',
-  },
-  {
-    id: 'back-of-house',
-    label: 'Back of House',
-    description: 'Chefs, kitchens, production and every role behind the pass.',
-    accent: 'mint',
-  },
-  {
-    id: 'events-and-management',
-    label: 'Events and Management',
-    description: 'Venues, leadership, launches and commercial hospitality.',
-    accent: 'flame',
-  },
-  {
-    id: 'hr-and-finance',
-    label: 'HR & Finance',
-    description: 'People, culture, operations and hospitality finance.',
-    accent: 'blush',
-  },
-  {
-    id: 'leadership-and-operations',
-    label: 'Leadership & Operations',
-    description: 'Agency leadership, administration and the team behind our team.',
-    accent: 'citron',
-  },
-];
+export const getTeamGroups = (locations: OfficeLocation[], members: TeamMember[]) => {
+  const accents = ['citron', 'mint', 'flame', 'blush'] as const;
+  return locations
+    .filter((location) => location.active && location.slug?.current)
+    .sort((first, second) =>
+      (first.sortOrder ?? 1000) - (second.sortOrder ?? 1000) || first.name.localeCompare(second.name),
+    )
+    .map((location, index) => ({
+      id: location.slug.current,
+      label: location.name,
+      isHeadOffice: location.isHeadOffice,
+      description: location.description || (location.isHeadOffice
+        ? `Our head office and the people behind our ${location.name} team.`
+        : `Meet the hospitality specialists in our ${location.name} team.`),
+      accent: accents[index % accents.length],
+      members: members.filter((member) => member.location?._id === location._id),
+    }));
+};
 
 export const teamMembers: TeamMember[] = [
   {
@@ -69,7 +53,7 @@ export const teamMembers: TeamMember[] = [
     accent: 'pink',
     note: 'Keeps the agency close to the people, not just the roles.',
     signal: 'Founder energy / calm brief control',
-    division: 'Leadership & Operations',
+    location: { _id: 'location-london', name: 'London' },
   },
   {
     _id: 'consultant-amelia-grant',
@@ -82,7 +66,7 @@ export const teamMembers: TeamMember[] = [
     accent: 'blue',
     note: 'Looks for the small service instincts that make a room feel calm.',
     signal: 'Guest experience / polished pace',
-    division: 'Front of House',
+    location: { _id: 'location-london', name: 'London' },
   },
   {
     _id: 'consultant-marcus-reed',
@@ -95,7 +79,7 @@ export const teamMembers: TeamMember[] = [
     accent: 'blue',
     note: 'Understands pressure, pace and the craft behind the pass.',
     signal: 'Kitchen pressure / sharp read',
-    division: 'Back of House',
+    location: { _id: 'location-hampshire', name: 'Hampshire' },
   },
   {
     _id: 'consultant-priya-shah',
@@ -108,7 +92,7 @@ export const teamMembers: TeamMember[] = [
     accent: 'pink',
     note: 'Matches high-energy briefs with people who keep the moment composed.',
     signal: 'Event tempo / commercial instinct',
-    division: 'Events and Management',
+    location: { _id: 'location-manchester', name: 'Manchester' },
   },
 ];
 
@@ -119,13 +103,4 @@ export const teamPassSteps = [
   { label: '01 / Listen', copy: 'The brief is heard properly before anyone is moved.' },
   { label: '02 / Read', copy: 'Culture, pace and pressure are matched to the person.' },
   { label: '03 / Place', copy: 'The introduction lands cleanly, with context on both sides.' },
-];
-
-export const teamGalleryItems = [
-  { image: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1200&q=85', text: 'The brief arrives' },
-  { image: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=1200&q=85', text: 'People first' },
-  { image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=85', text: 'The room matters' },
-  { image: 'https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&w=1200&q=85', text: 'Kitchen pace' },
-  { image: 'https://images.unsplash.com/photo-1559329007-40df8a9345d8?auto=format&fit=crop&w=1200&q=85', text: 'Every detail lands' },
-  { image: 'https://images.unsplash.com/photo-1566554273541-37a9ca77b91f?auto=format&fit=crop&w=1200&q=85', text: 'Service feels easy' },
 ];

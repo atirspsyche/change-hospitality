@@ -70,6 +70,10 @@
   text-align: center;
 }
 
+.story-overlay--brand {
+  padding-block: 0;
+}
+
 .story-overlay--bottom {
   align-items: flex-end;
   justify-content: center;
@@ -91,7 +95,6 @@
 
 .story-overlay--brand .story-copy {
   width: min(46rem, 72vw);
-  transform: translateY(-1rem);
 }
 
 .story-overlay--center .story-copy,
@@ -307,14 +310,17 @@
 }
 
 .story-overlay--brand .story-body {
-  margin-top: 2.5rem;
+  max-width: var(--story-body-max-width, 40rem);
+  margin-top: 0;
   font-family: var(--font-display);
-  font-size: var(--story-body-size, clamp(0.8rem, 1.2vw, 1rem));
+  font-size: var(--story-body-size, 2.5rem);
+  line-height: var(--story-body-line-height, 1.15);
+  letter-spacing: 0;
+  word-spacing: 0.2em;
+  text-wrap: balance;
   text-transform: uppercase;
-  color: var(--color-paper);
-  font-weight: 600;
-  /* letter-spacing: 0.08em; */
-  word-spacing: 0.3em;
+  color: var(--color-blush);
+  font-weight: var(--story-body-weight, 600);
 }
 
 .story-overlay--right .story-copy,
@@ -539,6 +545,10 @@
     align-items: center;
   }
 
+  .story-overlay--brand {
+    padding-block: 0;
+  }
+
   .story-overlay--brand .story-copy,
   .story-overlay--left .story-copy,
   .story-overlay--right .story-copy {
@@ -650,6 +660,11 @@
     margin-top: 0.75rem;
     font-size: var(--story-body-size, 0.9rem);
     line-height: var(--story-body-line-height, 1.4);
+  }
+
+  .story-overlay--brand .story-body {
+    font-size: var(--story-body-size, 1.5rem);
+    line-height: var(--story-body-line-height, 1.2);
   }
 
   .story-button {

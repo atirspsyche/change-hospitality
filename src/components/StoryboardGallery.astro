@@ -1,0 +1,116 @@
+---
+import CircularGallery from './team/CircularGallery';
+
+const galleryItems = [
+  { image: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1200&q=85', text: 'The brief arrives' },
+  { image: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=1200&q=85', text: 'People first' },
+  { image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=85', text: 'The room matters' },
+  { image: 'https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&w=1200&q=85', text: 'Kitchen pace' },
+  { image: 'https://images.unsplash.com/photo-1559329007-40df8a9345d8?auto=format&fit=crop&w=1200&q=85', text: 'Every detail lands' },
+  { image: 'https://images.unsplash.com/photo-1566554273541-37a9ca77b91f?auto=format&fit=crop&w=1200&q=85', text: 'Service feels easy' },
+];
+---
+
+<section
+  id="gallery"
+  class="relative overflow-hidden bg-cocoa py-18 md:py-24"
+  aria-labelledby="gallery-title"
+>
+  <div class="storyboard-gallery-oval" data-gallery-parallax="34" aria-hidden="true"></div>
+  <div class="relative z-10 mx-auto max-w-7xl px-5 md:px-10">
+    <div class="mb-8 grid gap-6 lg:grid-cols-[0.85fr_1fr] lg:items-end">
+      <div>
+        <p class="mb-4 text-sm font-black uppercase tracking-wide text-citron">
+          Image gallery
+        </p>
+        <h2
+          id="gallery-title"
+          class="font-serif text-5xl font-semibold leading-none text-cream md:text-7xl"
+        >
+          A few frames of the work.
+        </h2>
+      </div>
+      <p class="max-w-2xl text-lg font-bold leading-8 text-cream">
+        Real photo frames for the people side of the work: briefing tables,
+        service floors, kitchens and the human moments around every careful
+        handoff.
+      </p>
+    </div>
+  </div>
+
+  <div class="relative z-10 h-136 md:h-168" aria-label="Storyboard gallery">
+    <CircularGallery
+      client:visible
+      items={galleryItems}
+      bend={2.2}
+      scrollEase={0.04}
+      textColor="var(--color-cream)"
+    />
+  </div>
+</section>
+
+<style>
+  .storyboard-gallery-oval {
+    position: absolute;
+    top: 12%;
+    right: -16rem;
+    height: 23rem;
+    width: 39rem;
+    border-radius: 999px;
+    background: var(--color-flame);
+    pointer-events: none;
+    transform: rotate(-10deg);
+    transition: transform 220ms ease-out;
+    will-change: transform;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .storyboard-gallery-oval {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  function initGalleryParallax() {
+    const shape = document.querySelector<HTMLElement>('[data-gallery-parallax]');
+    if (!shape || shape.dataset.parallaxReady === 'true') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    shape.dataset.parallaxReady = 'true';
+
+    const controller = new AbortController();
+    const base = window.getComputedStyle(shape).transform;
+    const depth = Number(shape.dataset.galleryParallax || 0);
+    let pointerX = 0;
+    let pointerY = 0;
+    let frame = 0;
+
+    const render = () => {
+      frame = 0;
+      const rect = shape.getBoundingClientRect();
+      const sectionOffset =
+        ((rect.top + rect.height / 2 - window.innerHeight / 2) / window.innerHeight) * depth * -0.42;
+      shape.style.transform = `${base === 'none' ? '' : base} translate3d(${(pointerX * depth).toFixed(1)}px, ${(pointerY * depth + sectionOffset).toFixed(1)}px, 0)`;
+    };
+
+    const requestRender = () => {
+      if (!frame) frame = window.requestAnimationFrame(render);
+    };
+
+    window.addEventListener('pointermove', (event) => {
+      pointerX = (event.clientX / window.innerWidth - 0.5) * 2;
+      pointerY = (event.clientY / window.innerHeight - 0.5) * 2;
+      requestRender();
+    }, { passive: true, signal: controller.signal });
+    window.addEventListener('scroll', requestRender, { passive: true, signal: controller.signal });
+    window.addEventListener('resize', requestRender, { passive: true, signal: controller.signal });
+    document.addEventListener('astro:before-swap', () => {
+      controller.abort();
+      window.cancelAnimationFrame(frame);
+    }, { once: true, signal: controller.signal });
+    requestRender();
+  }
+
+  initGalleryParallax();
+  document.addEventListener('astro:page-load', initGalleryParallax);
+</script>

@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "sanity dev",
     "build": "sanity build",
+    "test": "node --experimental-strip-types --test schemaTypes/*.test.js",
+    "seed:locations": "sanity exec scripts/seed-locations.ts --with-user-token",
     "deploy": "sanity deploy"
   },
   "dependencies": {

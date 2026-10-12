@@ -1,0 +1,99 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { consultant } from './consultant.ts';
+import { location as locationSchema } from './location.ts';
+import { getTeamGroups, teamMembers } from '../../src/data/team.ts';
+import { englishCities, seedLocations } from '../data/locations.ts';
+
+test('team members reference active location documents without a fixed office list', () => {
+  const location = consultant.fields.find((field) => field.name === 'location');
+
+  assert.equal(location.type, 'reference');
+  assert.deepEqual(location.to, [{ type: 'location' }]);
+  assert.equal(location.options.filter, 'active == true');
+  assert.equal(location.options.disableNew, true);
+  assert.equal(location.options.list, undefined);
+  assert.ok(!consultant.fields.some((field) => field.name === 'division'));
+  assert.equal(location.initialValue, undefined);
+});
+
+test('a team member location reference is required', () => {
+  const location = consultant.fields.find((field) => field.name === 'location');
+  const calls = [];
+  const rule = {
+    required() {
+      calls.push('required');
+      return this;
+    },
+  };
+
+  location.validation(rule);
+  assert.deepEqual(calls, ['required']);
+});
+
+test('new locations are inactive until explicitly enabled and published', () => {
+  assert.equal(locationSchema.fields.find((field) => field.name === 'active').initialValue, false);
+  assert.equal(locationSchema.preview.prepare({ title: 'York', active: false }).subtitle, 'Inactive');
+  assert.equal(locationSchema.preview.prepare({ title: 'London', active: true, isHeadOffice: true }).subtitle, 'Active / Head office');
+});
+
+test('Studio previews show the office or flag an unassigned member', () => {
+  assert.equal(consultant.preview.select.location, 'location.name');
+  assert.equal(consultant.preview.prepare({
+    title: 'Example member', jobTitle: 'Consultant', location: 'Hampshire',
+  }).subtitle, 'Consultant / Hampshire');
+  assert.equal(consultant.preview.prepare({
+    title: 'Example member', jobTitle: 'Consultant',
+  }).subtitle, 'Consultant / Location required');
+});
+
+const offices = [
+  { _id: 'location-london', name: 'London', slug: { current: 'london' }, active: true, isHeadOffice: true, sortOrder: 0 },
+  { _id: 'location-hampshire', name: 'Hampshire', slug: { current: 'hampshire' }, active: true, sortOrder: 1 },
+  { _id: 'location-manchester', name: 'Manchester', slug: { current: 'manchester' }, active: true, sortOrder: 2 },
+];
+
+test('active offices group every assigned member by document ID', () => {
+  const groups = getTeamGroups(offices, teamMembers);
+  assert.deepEqual(groups.map((group) => group.label), ['London', 'Hampshire', 'Manchester']);
+  assert.deepEqual(groups.map((group) => group.members.length), [2, 1, 1]);
+  assert.match(groups[0].description, /head office/);
+});
+
+test('activating a new office automatically creates its accordion and assigns its members', () => {
+  const bristol = { _id: 'location-bristol', name: 'Bristol', slug: { current: 'bristol' }, active: true };
+  const member = { ...teamMembers[0], _id: 'consultant-bristol', location: { _id: bristol._id, name: bristol.name } };
+  const groups = getTeamGroups([...offices, bristol], [...teamMembers, member]);
+  assert.equal(groups.length, 4);
+  assert.deepEqual(groups.find((group) => group.id === 'bristol').members, [member]);
+  assert.equal(getTeamGroups([...offices, { ...bristol, active: false }], [...teamMembers, member]).length, 3);
+});
+
+test('renaming an office preserves its members and unassigned profiles are not misclassified', () => {
+  const groups = getTeamGroups([{ ...offices[0], name: 'London Central' }], [
+    ...teamMembers, { ...teamMembers[0], _id: 'unassigned', location: null },
+  ]);
+  assert.equal(groups[0].label, 'London Central');
+  assert.equal(groups[0].members.length, 2);
+});
+
+test('offices sort by display order then name, and active offices may have no profiles', () => {
+  const extra = ['York', 'Bath'].map((name) => ({ _id: `location-${name}`, name, slug: { current: name.toLowerCase() }, active: true }));
+  const groups = getTeamGroups([...extra, ...offices.slice().reverse()], teamMembers);
+  assert.deepEqual(groups.map((group) => group.label), ['London', 'Hampshire', 'Manchester', 'Bath', 'York']);
+  assert.equal(groups.at(-1).members.length, 0);
+});
+
+test('the seed includes every official English city plus Hampshire, with three active offices', () => {
+  assert.equal(englishCities.length, 55);
+  assert.equal(new Set(englishCities).size, 55);
+  assert.equal(seedLocations.length, 56);
+  assert.equal(new Set(seedLocations.map((location) => location._id)).size, 56);
+  assert.equal(new Set(seedLocations.map((location) => location.slug.current)).size, 56);
+  assert.deepEqual(seedLocations.filter((location) => location.active).map((location) => location.name).sort(), ['Hampshire', 'London', 'Manchester']);
+  assert.deepEqual(seedLocations.filter((location) => location.isHeadOffice).map((location) => location.name), ['London']);
+  assert.deepEqual(getTeamGroups(seedLocations, teamMembers).map((group) => group.label), ['London', 'Hampshire', 'Manchester']);
+  assert.ok(englishCities.includes('Westminster'));
+  assert.ok(englishCities.includes('Doncaster'));
+  assert.ok(!englishCities.includes('Hampshire'));
+});

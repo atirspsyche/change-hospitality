@@ -170,7 +170,6 @@ export const homeStory = {
       holdWeight: 0.75,
       overlay: {
         layout: "brand",
-        heading: "Change Hospitality",
         body: "Specialists in hospitality recruitment and staffing",
       },
     },
@@ -193,7 +192,7 @@ export const homeStory = {
         action: {
           label: "Our Story",
           href: "/our-story/",
-          tone: "cream",
+          tone: "citron",
         },
       },
     },
@@ -221,7 +220,7 @@ export const homeStory = {
             action: {
               label: "Find talent",
               href: "/recruit-talent/",
-              tone: "mint",
+              tone: "citron",
             },
           },
           {
@@ -250,7 +249,7 @@ export const homeStory = {
           },
           {
             eyebrow: "Our values",
-            heading: "Trust, served daily.",
+            heading: "Building trust through transparency",
             body: "At the core of it all, we're a business continuously striving to look after its people and its footprint with a commitment to doing right by both.",
             action: {
               label: "Sustainability",
@@ -273,7 +272,7 @@ export const homeStory = {
         eyebrow: "Ready when you are",
         heading: "Your next move is on the pass.",
         body: "Explore live hospitality roles or tell us who your team needs next.",
-        action: { label: "Franchising", href: "/franchising/", tone: "flame" },
+        action: { label: "Franchising", href: "/franchising/", tone: "citron" },
       },
     },
     {

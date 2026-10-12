@@ -1,30 +1,28 @@
 ---
-import CircularGallery from "../components/team/CircularGallery";
 import ProfileCard from "../components/team/ProfileCard";
 import EggIllustration from "../components/EggIllustration.astro";
 import FunMenu from "../components/FunMenu.astro";
 import PageMotion from "../components/PageMotion.astro";
 import SiteFooter from "../components/SiteFooter.astro";
-import { teamCategories, teamGalleryItems, teamPassSteps } from "../data/team";
+import { getTeamGroups, teamPassSteps } from "../data/team";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { getTeamMembers } from "../sanity/queries";
+import { getActiveLocations, getTeamMembers } from "../sanity/queries";
 
 const showTeamPass = false;
-const teamMembers = await getTeamMembers();
-const teamGroups = teamCategories.map((category) => ({
-  ...category,
-  members: teamMembers.filter((member) => member.division === category.label),
-}));
+const [teamMembers, locations] = await Promise.all([getTeamMembers(), getActiveLocations()]);
+const teamGroups = getTeamGroups(locations, teamMembers);
+const officeNames = new Intl.ListFormat("en-GB", { style: "long", type: "conjunction" }).format(
+  teamGroups.map((group) => `${group.label}${group.isHeadOffice ? " (head office)" : ""}`),
+);
 
 const teamSectionLinks = [
   { label: "Profiles", href: "#profiles", meta: "Meet the team" },
-  { label: "Gallery", href: "#gallery", meta: "Frames of the work" },
 ];
 ---
 
 <BaseLayout
   title="Team Profiles | Change Hospitality"
-  description="Meet the Change Hospitality team: people-first consultants for front of house, back of house, events and commercial hospitality recruitment."
+  description={`Meet the Change Hospitality team across ${officeNames || "our offices"}: people-first hospitality recruitment specialists.`}
   image="https://images.unsplash.com/photo-1559329007-40df8a9345d8?auto=format&fit=crop&w=1600&q=85"
 >
   <FunMenu
@@ -107,9 +105,6 @@ const teamSectionLinks = [
             <a class="team-hero-button bg-cocoa text-cream" href="#profiles"
               >Meet the team</a
             >
-            <a class="team-hero-button bg-citron text-ink" href="#gallery"
-              >See the storyboard</a
-            >
           </div>
         </div>
 
@@ -167,8 +162,7 @@ const teamSectionLinks = [
               Meet our team.
             </h2>
             <p class="max-w-xl mt-5 text-lg font-bold leading-8 text-cocoa">
-              A close-knit team of hospitality specialists, organised around the
-              people and roles they know best.
+              A close-knit team of hospitality specialists across {officeNames || "our offices"}.
             </p>
           </div>
         </div>
@@ -253,7 +247,7 @@ const teamSectionLinks = [
                         </div>
                       ) : (
                         <p class="team-accordion-empty">
-                          New profiles are joining this division soon.
+                          New profiles are joining this office soon.
                         </p>
                       )}
                     </div>
@@ -313,47 +307,6 @@ const teamSectionLinks = [
       )
     }
 
-    <section
-      id="gallery"
-      class="relative overflow-hidden bg-cocoa py-18 md:py-24"
-      aria-labelledby="gallery-title"
-    >
-      <div class="team-gallery-oval" data-parallax="34" aria-hidden="true">
-      </div>
-      <div class="relative z-10 mx-auto max-w-7xl px-5 md:px-10">
-        <div class="mb-8 grid gap-6 lg:grid-cols-[0.85fr_1fr] lg:items-end">
-          <div>
-            <p
-              class="mb-4 text-sm font-black uppercase tracking-wide text-citron"
-            >
-              Image gallery
-            </p>
-            <h2
-              id="gallery-title"
-              class="font-serif text-5xl font-semibold leading-none text-cream md:text-7xl"
-            >
-              A few frames of the work.
-            </h2>
-          </div>
-          <p class="max-w-2xl text-lg font-bold leading-8 text-cream">
-            Real photo frames for the people side of the work: briefing tables,
-            service floors, kitchens and the human moments around every careful
-            handoff.
-          </p>
-        </div>
-      </div>
-
-      <div class="relative z-10 h-136 md:h-168" aria-label="Storyboard gallery">
-        <CircularGallery
-          client:visible
-          items={teamGalleryItems}
-          bend={2.2}
-          scrollEase={0.04}
-          textColor="var(--color-cream)"
-        />
-      </div>
-    </section>
-
     <SiteFooter />
   </main>
 </BaseLayout>
@@ -363,8 +316,7 @@ const teamSectionLinks = [
   .team-cloud,
   .team-hero-oval,
   .team-hero-confetti span,
-  .team-section-oval,
-  .team-gallery-oval {
+  .team-section-oval {
     position: absolute;
     pointer-events: none;
     will-change: transform;
@@ -394,8 +346,7 @@ const teamSectionLinks = [
   }
 
   .team-hero-oval,
-  .team-section-oval,
-  .team-gallery-oval {
+  .team-section-oval {
     border-radius: 999px;
   }
 
@@ -570,15 +521,6 @@ const teamSectionLinks = [
     width: 36rem;
     background: var(--color-citron);
     transform: rotate(-8deg);
-  }
-
-  .team-gallery-oval {
-    top: 12%;
-    right: -16rem;
-    height: 23rem;
-    width: 39rem;
-    background: var(--color-flame);
-    transform: rotate(-10deg);
   }
 
   /* ---------- Hero buttons ---------- */
@@ -1390,7 +1332,6 @@ const teamSectionLinks = [
     .team-cloud,
     .team-hero-oval,
     .team-section-oval,
-    .team-gallery-oval,
     :global(.team-card-wrap) {
       animation: none;
       transition: none;

@@ -15,6 +15,7 @@ export default defineConfig({
           .items([
             S.documentTypeListItem('job').title('Jobs'),
             S.documentTypeListItem('consultant').title('Team members'),
+            S.documentTypeListItem('location').title('Locations'),
           ]),
     }),
   ],

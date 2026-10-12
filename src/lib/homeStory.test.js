@@ -8,6 +8,14 @@ import { getStoryScene, sequenceFrameForPosition, storySequenceFrames } from "./
 const close = (actual, expected) => assert.ok(Math.abs(actual - expected) < 0.00001, `${actual} ≠ ${expected}`);
 const { animation } = homeStory;
 
+test("the opening brand overlay contains only the recruitment line", () => {
+  const opening = homeStory.beats.find((beat) => beat.id === "carton-open-brand");
+  assert.deepEqual(opening.overlay, {
+    layout: "brand",
+    body: "Specialists in hospitality recruitment and staffing",
+  });
+});
+
 test("the storyboard omits egg-four-ways and has no terminal hold", () => {
   const plateaus = storyTimeline.segments.filter((segment) => segment.frameStart === segment.frameEnd);
   assert.deepEqual(plateaus.map((segment) => segment.frameStart), [40, 70, 256, 259]);

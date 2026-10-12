@@ -46,12 +46,12 @@ import EggIllustration from './EggIllustration.astro';
     position: relative;
     isolation: isolate;
     box-sizing: border-box;
+    height: 100vh;
     height: 100svh;
-    min-height: 100vh;
     overflow: hidden;
     background: var(--color-mist);
     color: var(--color-ink);
-    padding: 7.5rem 1.25rem 4rem;
+    padding: 6.5rem 1.25rem 2rem;
   }
 
   .recruit-hero-inner {
@@ -281,7 +281,7 @@ import EggIllustration from './EggIllustration.astro';
     position: absolute;
     z-index: 5;
     left: 4%;
-    bottom: 3%;
+    bottom: 8%;
     width: 13rem;
     border-radius: 1rem;
     background: var(--color-flame);
@@ -333,17 +333,18 @@ import EggIllustration from './EggIllustration.astro';
   @media (min-width: 1024px) {
     .recruit-hero-inner {
       display: grid;
-      height: auto;
-      min-height: calc(100svh - 11.5rem);
+      min-height: 0;
       grid-template-columns: minmax(0, 1.04fr) minmax(26rem, 0.96fr);
     }
 
     .recruit-hero h1 {
-      font-size: 6.7rem;
+      font-size: 5rem;
     }
 
     .recruit-brief-stage {
-      min-height: 39rem;
+      height: 100%;
+      min-height: 0;
+      max-height: 39rem;
     }
 
     .recruit-ticket-main {
@@ -358,7 +359,7 @@ import EggIllustration from './EggIllustration.astro';
     }
 
     .recruit-hero h1 {
-      font-size: 2.9rem;
+      font-size: 2.5rem;
     }
 
     .recruit-hero-intro {
@@ -389,7 +390,7 @@ import EggIllustration from './EggIllustration.astro';
     }
 
     .recruit-ticket-main {
-      top: -3.1rem;
+      top: 1rem;
       right: 0;
       width: 7.8rem;
       padding: 0.65rem;
@@ -416,17 +417,154 @@ import EggIllustration from './EggIllustration.astro';
       max-width: 70%;
     }
 
+    .recruit-hero h1 {
+      font-size: 3.8rem;
+    }
+
     .recruit-hero-proof {
       display: none;
     }
 
     .recruit-brief-stage {
-      right: -4rem;
+      right: 0;
       bottom: -2rem;
       width: 25rem;
       min-height: 28rem;
     }
 
+  }
+
+  @media (max-height: 800px) and (min-width: 640px) {
+    .recruit-hero {
+      padding-top: 5.5rem;
+      padding-bottom: 1.5rem;
+    }
+
+    .recruit-hero-kicker {
+      margin-bottom: 1rem;
+    }
+
+    .recruit-hero h1 {
+      font-size: 3.8rem;
+    }
+
+    .recruit-hero-intro {
+      margin-top: 1rem;
+      font-size: 1rem;
+      line-height: 1.45;
+    }
+
+    .recruit-hero-actions,
+    .recruit-hero-proof {
+      margin-top: 1.25rem;
+    }
+  }
+
+  @media (max-height: 800px) and (min-width: 1024px) {
+    .recruit-hero-proof {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .recruit-hero-proof div {
+      grid-template-columns: auto 1fr;
+      gap: 0.75rem;
+    }
+  }
+
+  @media (max-height: 700px) and (max-width: 639px) {
+    .recruit-brief-stage {
+      right: 0;
+      bottom: 0;
+      width: 10rem;
+      min-height: 5rem;
+    }
+
+    :global(.recruit-hero-egg) {
+      --egg-width: 5rem;
+    }
+
+    .recruit-ticket-main {
+      display: none;
+    }
+  }
+
+  @media (max-height: 500px) {
+    .recruit-hero {
+      padding-top: 4.75rem;
+      padding-bottom: 1rem;
+    }
+
+    .recruit-hero-kicker {
+      margin-bottom: 0.75rem;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.625rem;
+    }
+
+    .recruit-hero h1 {
+      font-size: 2.5rem;
+      line-height: 0.95;
+    }
+
+    .recruit-hero-intro {
+      margin-top: 0.75rem;
+      font-size: 0.875rem;
+      line-height: 1.4;
+    }
+
+    .recruit-hero-actions {
+      margin-top: 0.75rem;
+    }
+
+    .recruit-hero-button {
+      min-height: 2.75rem;
+      padding: 0.6rem 0.8rem;
+      font-size: 0.75rem;
+    }
+
+    .recruit-brief-stage {
+      right: 0;
+      bottom: 0;
+      width: 14rem;
+      height: 100%;
+      min-height: 0;
+    }
+
+    :global(.recruit-hero-egg) {
+      --egg-width: 9rem;
+    }
+
+    .recruit-ticket-main {
+      top: 4%;
+      right: 0;
+      width: 9rem;
+      padding: 0.65rem;
+    }
+
+    .recruit-ticket-main strong {
+      margin: 0.5rem 0 0.7rem;
+      font-size: 1.3rem;
+    }
+
+    .recruit-ticket-note,
+    .recruit-stage-caption {
+      display: none;
+    }
+  }
+
+  @media (max-height: 500px) and (max-width: 639px) {
+    .recruit-hero h1 {
+      font-size: 2rem;
+    }
+
+    .recruit-hero-intro {
+      max-width: none;
+      font-size: 0.8rem;
+    }
+
+    .recruit-brief-stage {
+      display: none;
+    }
   }
 
   @media (max-width: 1023px) {

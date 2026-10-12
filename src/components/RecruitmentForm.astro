@@ -66,29 +66,15 @@ const staffingGroups = [
         <span>Contact number</span>
         <input name="phone" type="tel" autocomplete="tel" required maxlength="40" />
       </label>
-    </div>
-  </fieldset>
-
-  <fieldset class="recruit-form-section">
-    <legend><span>02</span> The role</legend>
-    <div class="recruit-field-grid">
       <label class="recruit-field recruit-field-blush recruit-field-wide">
         <span>Location</span>
         <input name="location" autocomplete="address-level2" placeholder="Free text, e.g. Shoreditch, London" required maxlength="180" />
-      </label>
-      <label class="recruit-field recruit-field-paper">
-        <span>Number of positions</span>
-        <input name="numberPositions" type="number" inputmode="numeric" min="1" max="999" value="1" required />
-      </label>
-      <label class="recruit-field recruit-field-paper">
-        <span>Job title</span>
-        <input name="jobTitle" placeholder="e.g. Restaurant Manager" required maxlength="180" />
       </label>
     </div>
   </fieldset>
 
   <fieldset class="recruit-form-section recruit-choice-group" data-choice-group="jobTypes">
-    <legend><span>03</span> Staffing type</legend>
+    <legend><span>02</span> Staffing type</legend>
     <p id={`${id}-staffing-help`} class="recruit-field-help">Choose at least one option across either group.</p>
     <div class="recruit-staffing-groups" aria-describedby={`${id}-staffing-help`}>
       {staffingGroups.map((group) => (
@@ -542,8 +528,6 @@ const staffingGroups = [
           email: formData.get('email'),
           phone: formData.get('phone'),
           location: formData.get('location'),
-          numberPositions: Number(formData.get('numberPositions')),
-          jobTitle: formData.get('jobTitle'),
           jobTypes: formData.getAll('jobTypes'),
           message: formData.get('message'),
           consent: formData.has('consent'),

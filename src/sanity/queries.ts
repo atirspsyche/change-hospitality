@@ -1,5 +1,5 @@
 import type { JobPosting } from '../data/jobs';
-import type { TeamMember } from '../data/team';
+import type { OfficeLocation, TeamMember } from '../data/team';
 import { sanityClient } from './client';
 
 const jobsQuery = `
@@ -37,7 +37,19 @@ const teamMembersQuery = `
     accent,
     note,
     signal,
-    division
+    "location": location->{_id, name}
+  }
+`;
+
+const activeLocationsQuery = `
+  *[_type == "location" && active == true && defined(slug.current)] {
+    _id,
+    name,
+    slug,
+    active,
+    isHeadOffice,
+    description,
+    sortOrder
   }
 `;
 
@@ -45,3 +57,6 @@ export const getJobs = () => sanityClient.fetch<JobPosting[]>(jobsQuery);
 
 export const getTeamMembers = () =>
   sanityClient.fetch<TeamMember[]>(teamMembersQuery);
+
+export const getActiveLocations = () =>
+  sanityClient.fetch<OfficeLocation[]>(activeLocationsQuery);

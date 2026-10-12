@@ -8,9 +8,33 @@ Standalone Sanity Studio for project `3z2hqf8g` and the `production` dataset.
 npm install
 npm run dev
 npm run build
+npm test
+npm run seed:locations
 npm run deploy
 ```
 
 `npm run deploy` publishes the Studio to a Sanity-hosted `*.sanity.studio` URL. Access is controlled by Sanity project membership and roles.
 
 The public Astro website is a separate package in the repository root. It reads published jobs and team members from Content Lake during its static build.
+
+## Team Office Locations
+
+Locations are independent Sanity documents with an **Active office** switch, **Head office** flag, optional team introduction and display order. Team members require an **Office location** reference; the picker only offers active locations. There is no default assignment.
+
+The team page reads published active locations and automatically creates an accordion for each, including offices that do not yet have profiles. Members are matched by location document ID, so renaming an office does not break assignments. Inactive offices and their assigned profiles are not shown on the team page. The shared `getActiveLocations()` query is available for other office-based views; job vacancy location fields remain separate.
+
+### Initial Population
+
+`npm run seed:locations` uses the signed-in Sanity CLI user to create 56 published location documents: all 55 English cities from the [Cabinet Office list](https://www.gov.uk/government/publications/list-of-cities/list-of-cities-html), plus Hampshire, which is a county rather than a city. London, Hampshire and Manchester start active, in that order; London is head office. The other cities start inactive.
+
+The seed uses stable document IDs and `createIfNotExists`, so rerunning it does not reset flags, names or other editorial changes. It does not replace team members or jobs.
+
+### Editorial Workflow
+
+1. In **Locations**, enable **Active office** for a city, set the introduction and display order if needed, and **Publish**. Editors can also create new locations beyond the seed list; give each a unique slug.
+2. Open each team member, select their **Office location**, and **Publish**. Older documents with a plain-text location may show an invalid-type warning; reset that field and select the referenced location. Old `division` values are no longer used.
+3. Rebuild or redeploy the Astro website after publishing location or team changes.
+
+No website code change is needed to add an office. The website is static, so Content Lake changes are visible on the public site after its next build, not immediately on publish. To automate that step, configure a Sanity webhook for location and consultant changes that calls a Vercel deploy hook; this is not configured by the seed or Studio deployment.
+
+Profiles without a location reference do not appear in any accordion. Local sample members are not automatically uploaded to Sanity. Editing existing team documents preserves their IDs and job consultant references.

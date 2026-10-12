@@ -5,6 +5,7 @@ import JobListings from '../components/JobListings.astro';
 import JobsHero from '../components/JobsHero.astro';
 import PageMotion from '../components/PageMotion.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import StoryboardGallery from '../components/StoryboardGallery.astro';
 import TemporaryJobsExperience from '../components/TemporaryJobsExperience.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getJobs } from '../sanity/queries';
@@ -17,6 +18,7 @@ const sectionLinks = [
   { label: 'Search', href: '#job-search-form', meta: 'Choose what matters' },
   { label: 'Open roles', href: '#jobs', meta: 'See every opportunity' },
   { label: 'Candidate stories', href: '#candidate-testimonials', meta: 'In their own words' },
+  { label: 'Gallery', href: '#gallery', meta: 'Frames of the work' },
 ];
 ---
 
@@ -39,6 +41,7 @@ const sectionLinks = [
     </div>
     <TemporaryJobsExperience />
     <CandidateTestimonials />
+    <StoryboardGallery />
     <SiteFooter />
   </main>
 </BaseLayout>

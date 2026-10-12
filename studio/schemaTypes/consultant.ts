@@ -1,13 +1,5 @@
 import { defineField, defineType } from 'sanity';
 
-const divisions = [
-  'Front of House',
-  'Back of House',
-  'Events and Management',
-  'HR & Finance',
-  'Leadership & Operations',
-];
-
 export const consultant = defineType({
   name: 'consultant',
   title: 'Team member',
@@ -59,10 +51,12 @@ export const consultant = defineType({
       description: 'Optional fallback for imported content. Prefer uploading a portrait above.',
     }),
     defineField({
-      name: 'division',
-      title: 'Division',
-      type: 'string',
-      options: { list: divisions.map((division) => ({ title: division, value: division })) },
+      name: 'location',
+      title: 'Office location',
+      type: 'reference',
+      to: [{ type: 'location' }],
+      description: 'Choose an active office. Manage office availability in Locations.',
+      options: { filter: 'active == true', disableNew: true },
       validation: (rule) => rule.required(),
     }),
     defineField({
@@ -104,6 +98,13 @@ export const consultant = defineType({
     },
   ],
   preview: {
-    select: { title: 'name', subtitle: 'title', media: 'avatar' },
+    select: { title: 'name', jobTitle: 'title', location: 'location.name', media: 'avatar' },
+    prepare({ title, jobTitle, location, media }) {
+      return {
+        title,
+        subtitle: [jobTitle, location || 'Location required'].filter(Boolean).join(' / '),
+        media,
+      };
+    },
   },
 });

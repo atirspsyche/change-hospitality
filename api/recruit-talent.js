@@ -55,15 +55,12 @@ export function validateRecruitmentBrief(payload) {
     return { data: null, errors: { form: 'Submit a valid recruitment brief.' } };
   }
 
-  const numberPositions = Number(payload.numberPositions);
   const data = {
     submitterName: cleanString(payload.submitterName),
     companyName: cleanString(payload.companyName),
     email: cleanString(payload.email, 254).toLowerCase(),
     phone: cleanString(payload.phone, 40),
     location: cleanString(payload.location, 180),
-    numberPositions,
-    jobTitle: cleanString(payload.jobTitle, 180),
     jobTypes: cleanList(payload.jobTypes, JOB_TYPES),
     message: cleanString(payload.message, 2_000),
     consent: payload.consent === true,
@@ -76,10 +73,6 @@ export function validateRecruitmentBrief(payload) {
   if (!EMAIL_PATTERN.test(data.email)) errors.email = 'Enter a valid email address.';
   if (!data.phone) errors.phone = 'Enter a contact number.';
   if (!data.location) errors.location = 'Enter the role location.';
-  if (!Number.isInteger(numberPositions) || numberPositions < 1 || numberPositions > 999) {
-    errors.numberPositions = 'Enter between 1 and 999 positions.';
-  }
-  if (!data.jobTitle) errors.jobTitle = 'Enter a job title.';
   if (!data.jobTypes.length) errors.jobTypes = 'Choose at least one staffing type.';
   if (!data.consent) errors.consent = 'Confirm that we may contact you about this brief.';
 
@@ -93,8 +86,6 @@ function renderRows(data) {
     ['Email', data.email],
     ['Phone', data.phone],
     ['Location', data.location],
-    ['Positions', String(data.numberPositions)],
-    ['Job title', data.jobTitle],
     ['Staffing types', data.jobTypes.join(', ')],
     ['Additional detail', data.message || 'None provided'],
   ];
@@ -112,13 +103,11 @@ export function renderRecruitmentEmail(data, reference) {
     `Email: ${data.email}`,
     `Phone: ${data.phone}`,
     `Location: ${data.location}`,
-    `Positions: ${data.numberPositions}`,
-    `Job title: ${data.jobTitle}`,
     `Staffing types: ${data.jobTypes.join(', ')}`,
     `Additional detail: ${data.message || 'None provided'}`,
   ].join('\n');
 
-  const html = `<!doctype html><html><body style="margin:0;background:#f4f1ef;color:#1d1d1b;font-family:Arial,sans-serif"><div style="margin:0 auto;max-width:680px;padding:32px 20px"><div style="background:#cccf5a;padding:24px;border-radius:8px 8px 0 0"><p style="margin:0 0 8px;font-size:12px;font-weight:700;text-transform:uppercase">New client brief / ${escapeHtml(reference)}</p><h1 style="margin:0;font-size:30px;line-height:1.1">${escapeHtml(data.jobTitle)}</h1></div><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#fff;border-collapse:collapse">${renderRows(data)}</table></div></body></html>`;
+  const html = `<!doctype html><html><body style="margin:0;background:#f4f1ef;color:#1d1d1b;font-family:Arial,sans-serif"><div style="margin:0 auto;max-width:680px;padding:32px 20px"><div style="background:#cccf5a;padding:24px;border-radius:8px 8px 0 0"><p style="margin:0 0 8px;font-size:12px;font-weight:700;text-transform:uppercase">New client brief / ${escapeHtml(reference)}</p><h1 style="margin:0;font-size:30px;line-height:1.1">${escapeHtml(data.companyName)}</h1></div><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#fff;border-collapse:collapse">${renderRows(data)}</table></div></body></html>`;
 
   return { html, text };
 }
@@ -171,7 +160,7 @@ export default async function handler(request, response, dependencies = {}) {
     await mailer({
       to: inbox,
       replyTo: data.email,
-      subject: `New staffing brief: ${data.jobTitle} - ${data.companyName}`,
+      subject: `New staffing brief: ${data.companyName}`,
       html: email.html,
       text: email.text,
       headers: { 'X-Change-Hospitality-Reference': reference },
