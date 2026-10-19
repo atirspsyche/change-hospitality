@@ -11,20 +11,18 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { getJobs } from '../sanity/queries';
 
 const jobs = await getJobs();
-const locations = [...new Set(jobs.map((job) => job.location))].sort();
-const positions = [...new Set(jobs.map((job) => job.position))].sort();
 
 const sectionLinks = [
   { label: 'Search', href: '#job-search-form', meta: 'Choose what matters' },
   { label: 'Open roles', href: '#jobs', meta: 'See every opportunity' },
   { label: 'Candidate stories', href: '#candidate-testimonials', meta: 'In their own words' },
-  { label: 'Gallery', href: '#gallery', meta: 'Frames of the work' },
+  { label: 'Gallery', href: '#gallery', meta: 'People behind the placements' },
 ];
 ---
 
 <BaseLayout
-  title="Hospitality Jobs in London | Change Hospitality"
-  description="Explore permanent, temporary and contract hospitality jobs across front of house, back of house, events and commercial teams in London."
+  title="Hospitality Jobs in London | Manchester | Hampshire | Change Hospitality"
+  description="Explore permanent, temporary and contract hospitality jobs across front of house, back of house, events and commercial teams in London, Manchester and Hampshire."
 >
   <FunMenu
     sectionLinks={sectionLinks}
@@ -35,7 +33,7 @@ const sectionLinks = [
 
   <PageMotion page="jobs" />
   <main class="jobs-page">
-    <JobsHero {locations} {positions} />
+    <JobsHero />
     <div data-jobs-mode-panel="permanent">
       <JobListings {jobs} pageSize={6} />
     </div>
@@ -62,7 +60,6 @@ const sectionLinks = [
     switcher.dataset.ready = 'true';
 
     const inputs = Array.from(switcher.querySelectorAll<HTMLInputElement>('input[name="jobsMode"]'));
-    const searchForm = document.querySelector<HTMLFormElement>('[data-job-search-form]');
     const panels = Array.from(document.querySelectorAll<HTMLElement>('[data-jobs-mode-panel]'));
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -70,8 +67,6 @@ const sectionLinks = [
       panels.forEach((panel) => {
         panel.hidden = panel.dataset.jobsModePanel !== mode;
       });
-      if (searchForm) searchForm.hidden = mode !== 'permanent';
-
       const target = panels.find((panel) => panel.dataset.jobsModePanel === mode);
       if (shouldScroll && target) {
         target.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' });

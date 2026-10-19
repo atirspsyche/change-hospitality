@@ -1,5 +1,6 @@
 ---
 import { ClientRouter } from 'astro:transitions';
+import StoryLoadingScreen from '../components/StoryLoadingScreen.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -7,6 +8,8 @@ interface Props {
   description?: string;
   image?: string;
   structuredData?: Record<string, unknown> | Record<string, unknown>[];
+  loadStory?: boolean;
+  noindex?: boolean;
 }
 
 const {
@@ -14,6 +17,8 @@ const {
   description = 'Premium hospitality recruitment for front of house, back of house, events and commercial teams, built on 20 years of trusted relationships.',
   image = 'https://images.unsplash.com/photo-1559329007-40df8a9345d8?auto=format&fit=crop&w=1600&q=85',
   structuredData = [],
+  loadStory = false,
+  noindex = false,
 } = Astro.props;
 
 const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : Astro.url.href;
@@ -38,8 +43,10 @@ const pageSchemas = Array.isArray(structuredData) ? structuredData : [structured
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href={canonical} />
+    <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow'} />
+    {!noindex && <link rel="canonical" href={canonical} />}
+    {loadStory && <script is:inline data-astro-rerun>document.documentElement.setAttribute('data-story-loading', '');</script>}
+    {loadStory && <noscript><style is:inline>.story-experience { min-height: 0 !important; } .story-hero { display: none !important; } .story-reduced { display: block !important; }</style></noscript>}
     <link rel="icon" type="image/svg+xml" href="/CH_LOGO.svg" />
     <link rel="icon" href="/CH_LOGO.ico" />
     <meta property="og:type" content="website" />
@@ -57,6 +64,9 @@ const pageSchemas = Array.isArray(structuredData) ? structuredData : [structured
     <ClientRouter />
   </head>
   <body class="bg-obsidian text-off-white antialiased">
-    <slot />
+    <div data-site-content>
+      <slot />
+    </div>
+    {loadStory && <StoryLoadingScreen />}
   </body>
 </html>

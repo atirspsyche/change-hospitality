@@ -1,5 +1,6 @@
 ---
 import FranchiseMap from '../components/FranchiseMap.astro';
+import { PrimaryButton, SecondaryButton } from '../components/Button';
 import FunMenu from '../components/FunMenu.astro';
 import HomeStoryHero from '../components/HomeStoryHero';
 import PageMotion from '../components/PageMotion.astro';
@@ -24,7 +25,7 @@ const homeSectionLinks = [
 ];
 ---
 
-<BaseLayout>
+<BaseLayout loadStory>
   <FunMenu
     sectionLinks={homeSectionLinks}
     menuButtonBackground="var(--color-cream)"
@@ -36,11 +37,27 @@ const homeSectionLinks = [
     <FranchiseMap />
     <div class="home-story-link">
       <p>A little idea. A lot of heart.</p>
-      <a href="/our-story/">Our Story <span aria-hidden="true">↗</span></a>
+      <PrimaryButton
+        href="/our-story/"
+        backgroundColor="var(--color-cocoa)"
+        textColor="var(--color-cream)"
+        hoverBackgroundColor="var(--color-cream)"
+      >
+        Our Story
+      </PrimaryButton>
     </div>
     <div class="home-policy-link">
       <p>People first. Planet too.</p>
-      <a href="/sustainability-impact/">Sustainability &amp; Impact <span aria-hidden="true">↗</span></a>
+      <SecondaryButton
+        href="/sustainability-impact/"
+        shadow
+        textColor="var(--color-bcorp-green)"
+        borderColor="var(--color-bcorp-green)"
+        hoverBackgroundColor="var(--color-bcorp-green)"
+        hoverTextColor="var(--color-cream)"
+      >
+        Sustainability &amp; Impact
+      </SecondaryButton>
     </div>
     <!--
       <PhilosophyReveal />
@@ -70,12 +87,6 @@ const homeSectionLinks = [
 
   .home-story-link { background: var(--color-blush); color: var(--color-cocoa); border-radius: 50% 50% 0 0 / 1.5rem 1.5rem 0 0; }
   .home-story-link p { font-family: var(--font-display); font-size: clamp(1.1rem, 2vw, 1.6rem); font-weight: 500; }
-  .home-story-link a { display: inline-flex; align-items: center; gap: 2rem; border-radius: 3rem; background: var(--color-cocoa); color: var(--color-cream); padding: 1rem 1.5rem; font-size: 0.85rem; font-weight: 700; }
-  .home-story-link a:hover { transform: rotate(-3deg); }
-  .home-story-link a:focus-visible { outline: 2px solid var(--color-cocoa); outline-offset: 4px; }
 
   .home-policy-link p { font-family: var(--font-hero); font-size: clamp(1.1rem, 2vw, 1.6rem); }
-  .home-policy-link a { display: inline-flex; align-items: center; gap: 2rem; border: 2px solid currentColor; border-radius: 3rem; padding: 1rem 1.5rem; font-size: 0.85rem; font-weight: 700; }
-  .home-policy-link a:hover { background: var(--color-bcorp-green); color: var(--color-cream); border-color: var(--color-bcorp-green); }
-  .home-policy-link a:focus-visible { outline: 2px solid var(--color-bcorp-green); outline-offset: 4px; }
 </style>

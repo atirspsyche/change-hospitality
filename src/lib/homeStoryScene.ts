@@ -27,7 +27,6 @@ const { referenceWidth, referenceHeight, hand, zoom, shells, plate, cutlery, spr
 const mix = (start: number, end: number, progress: number) => start + (end - start) * progress;
 const progressIn = (frame: number, range: readonly [number, number]) =>
   clamp((frame - range[0]) / (range[1] - range[0]), 0, 1);
-const easeInOut = (progress: number) => progress * progress * (3 - 2 * progress);
 
 // These images are reused for whole coded ranges. Keep them decoded and never
 // download the baked-in hand/zoom/shell/plate/cutlery frames they replace.
@@ -67,6 +66,21 @@ function handPoseForPosition(frame: number) {
 }
 
 type Point = { x: number; y: number };
+
+export function getCartonCopyBounds(viewportWidth: number, viewportHeight: number) {
+  const artboard = getStoryScene(homeStory.posterFrame, viewportWidth, viewportHeight).layers[0];
+  const scale = artboard.height / referenceHeight;
+  const bounds = animation.carton.copyBounds;
+  const margin = Math.min(16, viewportWidth * 0.05);
+  const left = Math.max(margin, artboard.x + bounds.left * scale);
+  const right = Math.min(viewportWidth - margin, artboard.x + bounds.right * scale);
+  return {
+    x: left,
+    y: bounds.top * scale,
+    width: Math.max(1, right - left),
+    height: (bounds.bottom - bounds.top) * scale,
+  };
+}
 
 // Find the smallest translation along the sleeve's outward normal that puts
 // its cut edge outside the viewport. Segment/rectangle separating axes avoid
@@ -187,24 +201,7 @@ export function getStoryScene(position: number, viewportWidth: number, viewportH
   }
 
   if (frame >= plate.frames[0] && frame < plate.frames[1]) {
-    const outgoing = frame <= plate.leftFrame;
-    const progress = outgoing
-      ? progressIn(frame, [plate.frames[0], plate.leftFrame])
-      : 1 - progressIn(frame, [plate.leftFrame, plate.frames[1]]);
-    const amount = easeInOut(progress);
-    const plateWidth = (cutlery.plateBounds.right - cutlery.plateBounds.left) * scale;
-    const margin = Math.min(260 * scale, viewportWidth * plate.leftMargin);
-    const targetLeft = plateWidth + 2 * margin <= viewportWidth
-      ? margin : (viewportWidth - plateWidth) / 2;
-    const offset = (targetLeft - x - cutlery.plateBounds.left * scale) * amount;
-    layers.push({
-      asset: plate.sourceFrame, x: x + offset, y: 0, width, height: viewportHeight,
-      rotation: {
-        radians: plate.rotation * Math.PI / 180 * amount,
-        x: x + offset + (cutlery.plateBounds.left + cutlery.plateBounds.right) / 2 * scale,
-        y: viewportHeight / 2,
-      },
-    });
+    image(plate.sourceFrame);
     return { kind: "plate", layers };
   }
 

@@ -74,7 +74,7 @@ const divisions = [
 >
   <div class="division-flow-heading">
     <div class="division-client-intro">
-      <h2 id="division-flow-title">Trusted by teams across hospitality.</h2>
+      <h2 id="division-flow-title">You're in good company.</h2>
       <p>From neighbourhood favourites to iconic destinations, we help these teams find their people.</p>
     </div>
     <button
@@ -97,6 +97,7 @@ const divisions = [
     tabindex="0"
     data-client-marquee
     data-paused="false"
+    data-in-view="false"
   >
     <div class="division-client-track">
       {[0, 1].map(() => (
@@ -263,6 +264,11 @@ const divisions = [
     display: flex;
     width: max-content;
     animation: client-logo-scroll 252s linear infinite;
+    animation-play-state: paused;
+  }
+
+  .division-client-marquee[data-in-view="true"] .division-client-track {
+    animation-play-state: running;
   }
 
   .division-client-group {
@@ -596,6 +602,21 @@ const divisions = [
       pauseButton.setAttribute("aria-label", label);
       pauseButton.title = label;
     });
+
+    if (marquee) {
+      const marqueeObserver = new IntersectionObserver(
+        ([entry]) => {
+          if (entry) marquee.dataset.inView = String(entry.isIntersecting);
+        },
+        { threshold: 0 },
+      );
+      marqueeObserver.observe(marquee);
+      document.addEventListener(
+        "astro:before-swap",
+        () => marqueeObserver.disconnect(),
+        { once: true },
+      );
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {

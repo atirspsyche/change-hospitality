@@ -56,7 +56,7 @@ export const englishCities = [
   'York',
 ];
 
-const initialOffices = ['London', 'Hampshire', 'Manchester'];
+const initialOffices = ['London', 'Manchester', 'Hampshire'];
 
 export const seedLocations = [...englishCities, 'Hampshire'].map((name) => {
   const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');

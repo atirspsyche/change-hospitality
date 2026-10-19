@@ -1,4 +1,5 @@
 ---
+import { PrimaryButton, SecondaryButton } from './Button';
 import type { JobPosting } from '../data/jobs';
 
 interface Props {
@@ -7,6 +8,8 @@ interface Props {
 }
 
 const { jobs, pageSize = 6 } = Astro.props;
+const locations = [...new Set(jobs.map((job) => job.location))].sort();
+const positions = [...new Set(jobs.map((job) => job.position))].sort();
 const newRoleAccents = ['flame', 'citron', 'cocoa'];
 const toExcerpt = (description: string, maxLength = 88) => {
   if (description.length <= maxLength) return description;
@@ -28,6 +31,43 @@ const toExcerpt = (description: string, maxLength = 88) => {
         <span data-job-count-label>{jobs.length === 1 ? 'role ready' : 'roles ready'}</span>
       </div>
     </header>
+
+    <form class="jobs-search" id="job-search-form" data-job-search-form aria-label="Filter open roles">
+      <div class="jobs-search-fields">
+        <label>
+          <span class="jobs-select-label">Location</span>
+          <span class="jobs-select-control">
+            <select name="location" data-job-filter="location">
+              <option value="">Anywhere</option>
+              {locations.map((location) => (
+                <option value={location}>{location}</option>
+              ))}
+            </select>
+            <span class="jobs-select-arrow" aria-hidden="true"></span>
+          </span>
+        </label>
+        <label>
+          <span class="jobs-select-label">Position</span>
+          <span class="jobs-select-control">
+            <select name="position" data-job-filter="position">
+              <option value="">Any team</option>
+              {positions.map((position) => (
+                <option value={position}>{position}</option>
+              ))}
+            </select>
+            <span class="jobs-select-arrow" aria-hidden="true"></span>
+          </span>
+        </label>
+      </div>
+      <PrimaryButton
+        type="submit"
+        shadow={false}
+        backgroundColor="var(--color-cocoa)"
+        textColor="var(--color-cream)"
+      >
+        Search jobs
+      </PrimaryButton>
+    </form>
 
     <p class="visually-hidden" data-job-status aria-live="polite"></p>
 
@@ -52,8 +92,8 @@ const toExcerpt = (description: string, maxLength = 88) => {
           <h3 transition:name={`job-title-${job.slug.current}`}>{job.role}</h3>
           <dl class="job-card-meta">
             <div>
-              <dt>Job type</dt>
-              <dd>{job.jobType}</dd>
+              <dt>Salary</dt>
+              <dd>{job.salary.display}</dd>
             </div>
             <div>
               <dt>Location</dt>
@@ -63,15 +103,18 @@ const toExcerpt = (description: string, maxLength = 88) => {
           <p class="job-card-description">
             {toExcerpt(job.description)}... <span>See more...</span>
           </p>
-          <a
-            class="job-card-link"
+          <PrimaryButton
+            className="job-card-link"
             href={`/jobs/${job.slug.current}/`}
+            shadow={false}
+            backgroundColor="var(--color-ink)"
+            textColor="var(--color-cream)"
             aria-label={`Open ${job.role} job`}
             data-job-link
             data-astro-prefetch="hover"
           >
-            Open this job <span aria-hidden="true">&#8599;</span>
-          </a>
+            Open this job
+          </PrimaryButton>
         </article>
       ))}
     </div>
@@ -80,7 +123,9 @@ const toExcerpt = (description: string, maxLength = 88) => {
       <span aria-hidden="true">?</span>
       <h3>No exact match yet.</h3>
       <p>Try a wider search or show every role currently on the pass.</p>
-      <button type="button" data-empty-show-all>Show all jobs</button>
+      <SecondaryButton type="button" data-empty-show-all>
+        Show all jobs
+      </SecondaryButton>
     </div>
 
     <footer class="job-pagination-footer">
@@ -163,6 +208,113 @@ const toExcerpt = (description: string, maxLength = 88) => {
     font-size: 0.75rem;
     font-weight: 900;
     text-transform: uppercase;
+  }
+
+  .jobs-search {
+    --button-min-height: 2.75rem;
+    --button-padding: 0.6rem 1rem;
+    --button-gap: 0.65rem;
+    --button-font-size: 0.75rem;
+    --button-icon-size: 1rem;
+    position: relative;
+    z-index: 4;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 0.85rem;
+    width: min(100%, 44rem);
+    margin-bottom: 2rem;
+  }
+
+  .jobs-search-fields {
+    display: grid;
+    min-width: 0;
+    flex: 1 1 28rem;
+    gap: 0.85rem;
+  }
+
+  .jobs-search label {
+    display: grid;
+    min-width: 0;
+    gap: 0.4rem;
+  }
+
+  .jobs-select-label {
+    color: var(--color-cocoa);
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+
+  .jobs-select-control {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    min-height: 2.75rem;
+    align-items: center;
+  }
+
+  .jobs-search select {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    min-width: 0;
+    min-height: 2.75rem;
+    appearance: none;
+    border: 1px solid color-mix(in srgb, var(--color-cocoa) 65%, transparent);
+    border-radius: 0.6rem;
+    background: transparent;
+    color: var(--color-ink);
+    padding: 0.6rem 2.25rem 0.6rem 0.85rem;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: border-color 180ms ease, background-color 180ms ease;
+  }
+
+  .jobs-search select:hover {
+    border-color: var(--color-cocoa);
+    background: color-mix(in srgb, var(--color-cocoa) 4%, transparent);
+  }
+
+  .jobs-search select:focus-visible {
+    outline: none;
+    border-color: var(--color-cocoa);
+  }
+
+  .jobs-search label:has(select:focus-visible) .jobs-select-label {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.4em;
+  }
+
+  .jobs-search select option {
+    background: var(--color-cream);
+    color: var(--color-ink);
+    font-weight: 700;
+  }
+
+  .jobs-select-arrow {
+    position: absolute;
+    top: 50%;
+    right: 0.85rem;
+    display: grid;
+    width: 1rem;
+    aspect-ratio: 1;
+    place-items: center;
+    pointer-events: none;
+    transform: translateY(-50%);
+  }
+
+  .jobs-select-arrow::before {
+    width: 0.42rem;
+    height: 0.42rem;
+    border-right: 0.12rem solid var(--color-cocoa);
+    border-bottom: 0.12rem solid var(--color-cocoa);
+    content: "";
+    transform: translateY(-0.1rem) rotate(45deg);
   }
 
   .job-listings-grid {
@@ -309,30 +461,8 @@ const toExcerpt = (description: string, maxLength = 88) => {
   }
 
   .job-card-link {
-    position: relative;
-    display: inline-flex;
-    min-height: 3.7rem;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
     margin-top: auto;
-    border-radius: 0.75rem;
-    background: var(--color-ink);
-    color: var(--color-cream);
-    padding: 0.9rem 1rem;
-    font-size: 0.88rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    transition: background-color 240ms ease, transform 300ms var(--ease-cartoon);
   }
-
-  .job-card-link:hover,
-  .job-card-link:focus-visible {
-    background: var(--color-flame);
-    transform: translateY(-0.18rem);
-  }
-
-  .job-card-link span { font-size: 1.25rem; }
 
   .job-empty {
     max-width: 42rem;
@@ -358,17 +488,6 @@ const toExcerpt = (description: string, maxLength = 88) => {
 
   .job-empty h3 { font-size: 2rem; }
   .job-empty p { margin: 0.7rem auto 1.2rem; color: var(--color-cocoa); font-weight: 700; }
-  .job-empty button {
-    border: 0;
-    border-radius: 0.7rem;
-    background: var(--color-flame);
-    color: var(--color-cream);
-    padding: 0.9rem 1.1rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    cursor: pointer;
-  }
-
   .job-pagination-footer {
     display: flex;
     flex-wrap: wrap;
@@ -414,6 +533,12 @@ const toExcerpt = (description: string, maxLength = 88) => {
     color: var(--color-cream);
   }
 
+  @media (min-width: 640px) {
+    .jobs-search-fields {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
   @media (min-width: 720px) {
     .job-listings-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
@@ -431,14 +556,14 @@ const toExcerpt = (description: string, maxLength = 88) => {
 <script>
   function initJobListings() {
     const root = document.querySelector<HTMLElement>('[data-job-listings]');
-    const form = document.querySelector<HTMLFormElement>('[data-job-search-form]');
+    const form = root?.querySelector<HTMLFormElement>('[data-job-search-form]');
     if (!root || !form || root.dataset.jobsReady === 'true') return;
     root.dataset.jobsReady = 'true';
 
     const cards = Array.from(root.querySelectorAll<HTMLElement>('[data-job-card]'));
     const locationFilter = form.querySelector<HTMLSelectElement>('[data-job-filter="location"]');
     const positionFilter = form.querySelector<HTMLSelectElement>('[data-job-filter="position"]');
-    const showAllButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-show-all-jobs], [data-empty-show-all]'));
+    const showAllButton = root.querySelector<HTMLButtonElement>('[data-empty-show-all]');
     const count = root.querySelector<HTMLElement>('[data-job-count]');
     const countLabel = root.querySelector<HTMLElement>('[data-job-count-label]');
     const status = root.querySelector<HTMLElement>('[data-job-status]');
@@ -521,7 +646,7 @@ const toExcerpt = (description: string, maxLength = 88) => {
       event.preventDefault();
       applyFilters();
     });
-    showAllButtons.forEach((button) => button.addEventListener('click', showAll));
+    showAllButton?.addEventListener('click', showAll);
     jobLinks.forEach((link) => {
       link.addEventListener('click', () => {
         sessionStorage.setItem('jobs-return-state', JSON.stringify({

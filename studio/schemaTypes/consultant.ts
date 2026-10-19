@@ -61,7 +61,8 @@ export const consultant = defineType({
     }),
     defineField({
       name: 'accent',
-      title: 'Profile card colour',
+      title: 'Profile label colour',
+      description: 'Colour of the short label over the portrait. All profile cards use a cream background.',
       type: 'string',
       initialValue: 'pink',
       options: {

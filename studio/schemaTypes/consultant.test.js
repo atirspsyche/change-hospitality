@@ -55,7 +55,7 @@ const offices = [
 
 test('active offices group every assigned member by document ID', () => {
   const groups = getTeamGroups(offices, teamMembers);
-  assert.deepEqual(groups.map((group) => group.label), ['London', 'Hampshire', 'Manchester']);
+  assert.deepEqual(groups.map((group) => group.label), ['London', 'Manchester', 'Hampshire']);
   assert.deepEqual(groups.map((group) => group.members.length), [2, 1, 1]);
   assert.match(groups[0].description, /head office/);
 });
@@ -77,11 +77,37 @@ test('renaming an office preserves its members and unassigned profiles are not m
   assert.equal(groups[0].members.length, 2);
 });
 
-test('offices sort by display order then name, and active offices may have no profiles', () => {
+test('primary offices keep their order ahead of other offices sorted by display order then name', () => {
   const extra = ['York', 'Bath'].map((name) => ({ _id: `location-${name}`, name, slug: { current: name.toLowerCase() }, active: true }));
-  const groups = getTeamGroups([...extra, ...offices.slice().reverse()], teamMembers);
-  assert.deepEqual(groups.map((group) => group.label), ['London', 'Hampshire', 'Manchester', 'Bath', 'York']);
+  const bristol = { _id: 'location-bristol', name: 'Bristol', slug: { current: 'bristol' }, active: true, sortOrder: 0 };
+  const groups = getTeamGroups([...extra, bristol, ...offices.slice().reverse()], teamMembers);
+  assert.deepEqual(groups.map((group) => group.label), ['London', 'Manchester', 'Hampshire', 'Bristol', 'Bath', 'York']);
   assert.equal(groups.at(-1).members.length, 0);
+});
+
+test('office order uses stable slugs, preserves the source list, and skips inactive or incomplete offices', () => {
+  const locations = [
+    { ...offices[1], sortOrder: 0 },
+    { ...offices[2], sortOrder: 1 },
+    { ...offices[0], name: 'London Central', sortOrder: 2 },
+    { _id: 'location-inactive', name: 'Inactive', slug: { current: 'inactive' }, active: false },
+    { _id: 'location-incomplete', name: 'Incomplete', active: true },
+  ];
+  const original = locations.slice();
+  const groups = getTeamGroups(locations, teamMembers);
+  assert.deepEqual(groups.map((group) => group.label), ['London Central', 'Manchester', 'Hampshire']);
+  assert.deepEqual(locations, original);
+  assert.deepEqual(groups.map((group) => group.accent), ['mint', 'flame', 'blush']);
+});
+
+test('new office section accents cycle without using the cream profile card surface', () => {
+  const locations = Array.from({ length: 8 }, (_, index) => ({
+    _id: `location-${index}`, name: `Office ${index}`, slug: { current: `office-${index}` }, active: true,
+  }));
+  assert.deepEqual(
+    getTeamGroups(locations, []).map((group) => group.accent),
+    ['mint', 'flame', 'blush', 'citron', 'mint', 'flame', 'blush', 'citron'],
+  );
 });
 
 test('the seed includes every official English city plus Hampshire, with three active offices', () => {
@@ -92,7 +118,11 @@ test('the seed includes every official English city plus Hampshire, with three a
   assert.equal(new Set(seedLocations.map((location) => location.slug.current)).size, 56);
   assert.deepEqual(seedLocations.filter((location) => location.active).map((location) => location.name).sort(), ['Hampshire', 'London', 'Manchester']);
   assert.deepEqual(seedLocations.filter((location) => location.isHeadOffice).map((location) => location.name), ['London']);
-  assert.deepEqual(getTeamGroups(seedLocations, teamMembers).map((group) => group.label), ['London', 'Hampshire', 'Manchester']);
+  assert.deepEqual(
+    seedLocations.filter((location) => location.active).sort((first, second) => first.sortOrder - second.sortOrder).map((location) => location.name),
+    ['London', 'Manchester', 'Hampshire'],
+  );
+  assert.deepEqual(getTeamGroups(seedLocations, teamMembers).map((group) => group.label), ['London', 'Manchester', 'Hampshire']);
   assert.ok(englishCities.includes('Westminster'));
   assert.ok(englishCities.includes('Doncaster'));
   assert.ok(!englishCities.includes('Hampshire'));

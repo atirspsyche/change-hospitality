@@ -10,12 +10,31 @@ npm run dev
 npm run build
 npm test
 npm run seed:locations
+npm run seed:impact
 npm run deploy
 ```
 
 `npm run deploy` publishes the Studio to a Sanity-hosted `*.sanity.studio` URL. Access is controlled by Sanity project membership and roles.
 
-The public Astro website is a separate package in the repository root. It reads published jobs and team members from Content Lake during its static build.
+The public Astro website is a separate package in the repository root. It reads published jobs, team members, locations and environmental impact numbers from Content Lake during its static build.
+
+## Environmental Impact Numbers
+
+Open **Environmental impact** in the Studio sidebar to edit the **To date** cards on `/sustainability-impact/`. This is a single document with the stable ID `environmental-impact`. Each entry has a required display value, label and card shape, plus an optional unit. Display values are text so formatting such as `3.09` and `20,000+` is preserved. Drag entries to reorder them; add or remove entries as needed, keeping at least one.
+
+### Initial Population
+
+Run `npm run seed:impact` from this directory using a signed-in Sanity CLI account with write access. The command creates and publishes the four currently displayed figures: 498 trees funded, 15 projects worldwide, 9 tonnes of carbon avoidance and 34 square metres of habitat restoration. The commented-out carbon removal figure is not seeded.
+
+The seed uses `createIfNotExists`, so rerunning it preserves published edits. If only an editorial draft exists, the command stops and asks you to publish that draft instead. The website has no hardcoded fallback: missing, empty or invalid impact content fails the build with an actionable error rather than displaying stale figures.
+
+### Editorial Workflow
+
+1. Edit **Environmental impact**, then **Publish**.
+2. Rebuild or redeploy the Astro website to display the published numbers. Draft changes are never displayed.
+3. For automatic rebuilds, include `_type == "environmentalImpact"` in a Sanity webhook that calls your Vercel deploy hook. This repository does not provision that webhook.
+
+Deploy the updated Studio with `npm run deploy` to make the new editor available to the team. The website still renders the cards as static HTML, with no new browser-side Sanity requests or hydration.
 
 ## Team Office Locations
 

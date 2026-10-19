@@ -1,0 +1,109 @@
+---
+import { ArrowUpRight, Clapperboard } from '@lucide/astro';
+import StoryIllustration from './StoryIllustration.astro';
+
+interface Props {
+  src: string;
+  poster?: string;
+  captions?: string;
+  transcriptUrl?: string;
+}
+
+const { src, poster, captions, transcriptUrl } = Astro.props;
+---
+
+<figure class="franchise-film" data-franchise-film data-franchise-reveal>
+  <div class="franchise-film-screen">
+    {src ? (
+      <video
+        src={src}
+        poster={poster || undefined}
+        controls
+        playsinline
+        preload="none"
+        crossorigin="anonymous"
+        aria-label="The Change Hospitality franchise film"
+        aria-describedby="franchise-film-caption"
+      >
+        {captions && <track kind="captions" src={captions} srclang="en" label="English" default />}
+        <a href={src}>Watch the Change Hospitality franchise film</a>
+      </video>
+    ) : (
+      <div class="film-poster">
+        <div class="film-poster-orbit" aria-hidden="true"></div>
+        <span class="film-wordmark">The Change way</span>
+        <div class="film-poster-copy">
+          <p>Good people.<br /><span>Bigger<br />possibilities.</span></p>
+          <span class="film-status"><Clapperboard size={18} aria-hidden="true" /> Film coming soon</span>
+        </div>
+        <div class="franchise-film-art" aria-hidden="true">
+          <div class="film-art-circle"></div>
+          <div class="film-art-chef"><StoryIllustration kind="chef" /></div>
+          <div class="film-art-pan"><StoryIllustration kind="pan" /></div>
+        </div>
+        <span class="film-poster-signoff">Independent spirit. Shared DNA.</span>
+      </div>
+    )}
+  </div>
+  <figcaption id="franchise-film-caption">
+    <div><span class="film-caption-label">A little closer to Change</span><p>Our people. Our places. One Change.</p></div>
+    {src ? (
+      <div class="film-caption-links">
+        <a href={src}>Open film <ArrowUpRight size={18} aria-hidden="true" /></a>
+        {transcriptUrl && <a href={transcriptUrl}>Read the transcript <ArrowUpRight size={18} aria-hidden="true" /></a>}
+      </div>
+    ) : (
+      <p class="film-caption-note">A look inside our world.<br />Something good is on its way.</p>
+    )}
+  </figcaption>
+</figure>
+
+<style>
+  .franchise-film { overflow: hidden; border: 1px solid color-mix(in srgb, var(--color-cocoa) 25%, transparent); border-radius: 2rem; background: var(--color-cream); color: var(--color-cocoa); }
+  .franchise-film-screen { aspect-ratio: 16 / 9; overflow: hidden; background: var(--color-cocoa); }
+  .franchise-film-screen video { display: block; width: 100%; height: 100%; object-fit: contain; }
+  .film-poster { position: relative; isolation: isolate; display: flex; height: 100%; flex-direction: column; justify-content: center; overflow: hidden; padding: 3rem 4rem; color: var(--color-cream); }
+  .film-wordmark { position: absolute; top: 2.5rem; left: 4rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+  .film-poster-copy { position: relative; z-index: 2; width: 60%; }
+  .film-poster-copy > p { font-family: var(--font-display); font-size: clamp(2.5rem, 5.4vw, 5.4rem); font-weight: 500; line-height: 0.98; letter-spacing: -0.045em; }
+  .film-poster-copy > p > span { color: var(--color-blush); font-weight: 400; }
+  .film-status { display: inline-flex; align-items: center; gap: 0.6rem; margin-top: 2rem; border: 1px solid color-mix(in srgb, var(--color-cream) 60%, transparent); border-radius: 999px; padding: 0.7rem 1rem; font-size: 0.75rem; }
+  .film-poster-orbit { position: absolute; z-index: -1; right: -10%; top: -40%; width: 53%; height: 95%; border-radius: 50%; background: var(--color-blush); transform: rotate(-20deg); }
+  .franchise-film-art { position: absolute; z-index: 1; inset: 15% 2% 7% auto; width: 42%; color: var(--color-cocoa); transform: rotate(-6deg); }
+  .film-art-circle { position: absolute; inset: 8% 0 0; border-radius: 49% 51% 42% 58%; background: var(--color-mint); transform: rotate(15deg); }
+  .film-art-chef { position: absolute; inset: 0 8% auto 0; }
+  .film-art-pan { position: absolute; right: -3%; bottom: -7%; width: 56%; transform: rotate(18deg); }
+  .film-poster-signoff { position: absolute; bottom: 2.5rem; left: 4rem; font-size: 0.65rem; letter-spacing: 0.07em; }
+  figcaption { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem 2rem; padding: 1.8rem 2rem; }
+  .film-caption-label { display: block; margin-bottom: 0.5rem; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+  figcaption > div > p { font-family: var(--font-display); font-size: clamp(1rem, 1.8vw, 1.5rem); font-weight: 500; line-height: 1.3; }
+  .film-caption-note { font-size: 0.8rem; line-height: 1.6; }
+  .film-caption-links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
+  .film-caption-links a { display: inline-flex; min-height: 2.75rem; align-items: center; gap: 0.75rem; font-size: 0.8rem; text-decoration: underline; text-underline-offset: 0.3rem; }
+
+  @media (max-width: 1023px) {
+    .film-poster { padding: 3rem 2rem; }
+    .film-wordmark { top: 1.5rem; left: 2rem; }
+    .film-poster-signoff { bottom: 1.5rem; left: 2rem; }
+    .film-poster-copy > p { font-size: clamp(2rem, 5.3vw, 3.8rem); }
+    .film-status { margin-top: 1.3rem; }
+  }
+  @media (max-width: 639px) {
+    .franchise-film { border-radius: 1.3rem; }
+    .franchise-film-screen:has(.film-poster) { aspect-ratio: 4 / 5; }
+    .film-poster { justify-content: flex-start; padding: 3.5rem 1.25rem 1.25rem; }
+    .film-wordmark { top: 1.3rem; left: 1.25rem; font-size: 0.6rem; }
+    .film-poster-copy { width: 100%; }
+    .film-poster-copy > p { font-size: clamp(2.4rem, 9vw, 3.8rem); }
+    .film-status { margin-top: 1rem; padding: 0.55rem 0.75rem; font-size: 0.65rem; }
+    .franchise-film-art { inset: auto -1% 3% auto; width: 42%; height: 40%; }
+    .film-poster-orbit { top: auto; bottom: -25%; right: -25%; width: 85%; height: 70%; }
+    .film-poster-signoff { bottom: 1.25rem; left: 1.25rem; max-width: 30%; font-size: 0.6rem; line-height: 1.5; }
+    figcaption { align-items: start; gap: 0.8rem; padding: 1.25rem; }
+    .film-caption-note { font-size: 0.75rem; }
+    .film-caption-note br { display: none; }
+  }
+  @media print {
+    .franchise-film-screen { display: none; }
+  }
+</style>

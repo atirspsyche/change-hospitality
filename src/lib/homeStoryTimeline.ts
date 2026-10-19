@@ -80,7 +80,7 @@ function buildStoryTimeline() {
     }] : [];
   });
 
-  return { segments, overlayWindows, progressForFrame, totalWeight, scrollScreens: totalWeight * 20 / 14.8 };
+  return { segments, overlayWindows, progressForFrame, totalWeight, scrollScreens: homeStory.scrollScreens };
 }
 
 export const storyTimeline = buildStoryTimeline();

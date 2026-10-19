@@ -1,7 +1,9 @@
 ---
 import "@fontsource/courier-prime/latin-400.css";
 import "@fontsource/courier-prime/latin-700.css";
+import { ArrowDown } from "lucide-react";
 import { storyParagraphs } from "../data/ourStory";
+import { PrimaryButton } from "./Button";
 import StoryIllustration from "./StoryIllustration.astro";
 ---
 
@@ -19,9 +21,17 @@ import StoryIllustration from "./StoryIllustration.astro";
       <p class="story-deck" data-intro-reveal>
         From rock bands to recruitment.<br />And always, always people first.
       </p>
-      <a class="story-start" href="#story-letter" data-start-letter
-        >A letter from Jim <span aria-hidden="true">↓</span></a
+      <PrimaryButton
+        className="story-start"
+        href="#story-letter"
+        data-start-letter
+        shadow={false}
+        backgroundColor="var(--color-cocoa)"
+        textColor="var(--color-cream)"
+        icon={ArrowDown}
       >
+        A letter from Jim
+      </PrimaryButton>
     </div>
 
     <div class="story-doodle story-chef" aria-hidden="true">
@@ -67,9 +77,15 @@ import StoryIllustration from "./StoryIllustration.astro";
         <span data-progress-label>Every story starts somewhere.</span><span
           class="story-progress-track"><span data-progress-bar></span></span>
       </div>
-      <button class="story-read" type="button" data-read-letter hidden
-        >Read full letter <span aria-hidden="true">↗</span></button
+      <PrimaryButton
+        className="story-read"
+        type="button"
+        data-read-letter
+        hidden
+        shadow={false}
       >
+        Read full letter
+      </PrimaryButton>
     </div>
   </div>
 </section>
@@ -78,9 +94,22 @@ import StoryIllustration from "./StoryIllustration.astro";
   <p>Same heart. Next chapter.</p>
   <h2 id="story-next-title">Good people.<br />Positive change.</h2>
   <div>
-    <a href="/team/">Meet our people <span aria-hidden="true">↗</span></a><a
+    <PrimaryButton
+      href="/team/"
+      shadow={false}
+      backgroundColor="var(--color-cocoa)"
+      textColor="var(--color-cream)"
+    >
+      Meet our people
+    </PrimaryButton>
+    <PrimaryButton
       href="/sustainability-impact/"
-      >Sustainability &amp; Impact <span aria-hidden="true">↗</span></a>
+      shadow={false}
+      backgroundColor="var(--color-mint)"
+      textColor="var(--color-cocoa)"
+    >
+      Sustainability &amp; Impact
+    </PrimaryButton>
   </div>
 </section>
 
@@ -156,21 +185,7 @@ import StoryIllustration from "./StoryIllustration.astro";
     font-weight: 500;
     line-height: 1.5;
   }
-  .story-start,
-  .story-next a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1.5rem;
-    min-height: 3rem;
-    padding: 1rem 1.5rem;
-    border-radius: 2rem;
-    background: var(--color-cocoa);
-    color: var(--color-cream);
-    font-family: var(--font-display);
-    font-weight: 600;
-  }
-  .story-start {
+  .story :global(.story-start) {
     margin-top: 2rem;
   }
   .story-doodle {
@@ -311,12 +326,12 @@ import StoryIllustration from "./StoryIllustration.astro";
     transform: scaleX(0);
     transform-origin: left;
   }
-  .story-read {
-    border-radius: 2rem;
-    padding: 0.9rem 1.2rem;
-    background: var(--color-cream);
-    cursor: pointer;
-    font-weight: 600;
+  .story-controls :global(.story-read) {
+    --button-min-height: 3rem;
+    --button-padding: 0.9rem 1.2rem;
+  }
+  .story-controls :global(.story-read[hidden]) {
+    display: none;
   }
   .story:not(.is-enhanced) .story-scroll,
   .story:not(.is-enhanced) .story-progress {
@@ -349,15 +364,6 @@ import StoryIllustration from "./StoryIllustration.astro";
     flex-wrap: wrap;
     gap: 1rem;
     justify-content: center;
-  }
-  .story-next a:last-child {
-    background: var(--color-mint);
-    color: var(--color-cocoa);
-  }
-  .story a:hover,
-  .story button:hover,
-  .story-next a:hover {
-    transform: rotate(-2deg);
   }
   .story :focus-visible,
   .story-next :focus-visible {
@@ -398,7 +404,7 @@ import StoryIllustration from "./StoryIllustration.astro";
   }
   @media (min-width: 1024px) and (min-height: 600px) {
     .story.is-enhanced {
-      height: 1100svh;
+      height: 600svh;
     }
     .is-enhanced .story-frame {
       position: sticky;
@@ -478,13 +484,13 @@ import StoryIllustration from "./StoryIllustration.astro";
     .story-letter {
       margin-top: 2rem;
     }
-    .story.is-flowing .story-read {
+    .story.is-flowing :global(.story-read) {
+      --button-min-height: 2.75rem;
+      --button-font-size: 0.75rem;
+      --button-padding: 0.6rem 0.9rem;
       position: absolute;
       top: 6rem;
       right: 1rem;
-      min-height: 2.75rem;
-      font-size: 0.75rem;
-      padding: 0.6rem 0.9rem;
     }
   }
   @media (max-width: 380px) {
@@ -512,7 +518,7 @@ import StoryIllustration from "./StoryIllustration.astro";
     .story-controls,
     .story-sticker,
     .story-deck,
-    .story-start,
+    .story :global(.story-start),
     .story-next {
       display: none;
     }

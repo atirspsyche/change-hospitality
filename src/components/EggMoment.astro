@@ -1,0 +1,118 @@
+---
+interface Props {
+  variant?: 'loading' | 'lost';
+}
+
+const { variant = 'loading' } = Astro.props;
+---
+
+<svg class:list={['egg-moment', `egg-moment--${variant}`]} viewBox="0 0 360 290" fill="none" aria-hidden="true">
+  <ellipse class="egg-shadow" cx="180" cy="253" rx="103" ry="11" />
+  <g class="egg-plate">
+    <ellipse cx="180" cy="233" rx="133" ry="30" />
+    <ellipse cx="180" cy="229" rx="107" ry="18" />
+    <path d="M75 243c24 13 62 19 102 19" />
+  </g>
+  <g class="egg-spark egg-spark--one">
+    <path d="M67 99v24m-12-12h24M61 105l12 12m0-12-12 12" />
+  </g>
+  <g class="egg-spark egg-spark--two">
+    <path d="M286 139v20m-10-10h20" />
+    <circle cx="275" cy="81" r="4" />
+  </g>
+  <g class="egg-rays">
+    <path d="m108 61-8-13m82-16V17m66 44 10-13" />
+  </g>
+  <g class="egg-yolk">
+    <path class="egg-white" d="M127 167c-15-13-4-37 12-42-1-20 23-32 40-21 19-13 41-1 41 17 23 1 32 25 16 40 13 19-6 38-25 35-11 18-36 19-48 4-23 7-45-14-36-33Z" />
+    <circle class="egg-centre" cx="180" cy="153" r="35" />
+    <path class="egg-glint" d="M160 142c3-7 9-11 16-12" />
+    <g class="egg-face">
+      <path d="M169 151v4m22-4v4" />
+      {variant === 'lost'
+        ? <path d="M173 170q7-8 14-1m-24-28 10-3m13 0 10 3" />
+        : <path d="M172 166q8 9 16 0" />}
+    </g>
+  </g>
+  <g class="egg-shell egg-shell--bottom">
+    <path d="m122 150 15 9 15-11 17 12 16-12 17 11 17-10 17 4c0 43-21 70-57 70-35 0-57-28-57-73Z" />
+    <path class="egg-shell-detail" d="M138 180c3 14 10 23 21 26" />
+  </g>
+  <g class="egg-shell egg-shell--top">
+    <path d="M122 150c0-46 29-92 57-92 29 0 57 45 57 95l-17-4-17 10-17-11-16 12-17-12-15 11-15-9Z" />
+    <path class="egg-shell-detail" d="M143 113c5-15 13-27 22-33" />
+    <path class="egg-freckle" d="m197 94 1 1m12 15 1 1m-10 10 1 1" />
+  </g>
+</svg>
+
+<style>
+  .egg-moment {
+    width: 100%;
+    overflow: visible;
+    stroke: var(--color-cocoa);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .egg-shadow { fill: var(--color-cocoa); stroke: none; opacity: 0.1; }
+  .egg-plate > ellipse:first-child { fill: var(--color-blush); }
+  .egg-plate > ellipse:nth-child(2) { fill: var(--color-cream); stroke-width: 1.5; }
+  .egg-plate > path { stroke-width: 1.5; }
+  .egg-shell { fill: var(--color-paper); }
+  .egg-shell-detail { stroke-width: 5; stroke: var(--color-cream); }
+  .egg-freckle { stroke-width: 3.5; }
+  .egg-white { fill: var(--color-paper); stroke-width: 2; }
+  .egg-centre { fill: var(--color-citron); stroke-width: 2; }
+  .egg-glint { stroke: var(--color-paper); stroke-width: 4; }
+  .egg-face { stroke-width: 3; }
+  .egg-spark { stroke: var(--color-flame); stroke-width: 2; transform-origin: center; transform-box: fill-box; }
+  .egg-rays { stroke: var(--color-flame); }
+  .egg-shell--top { transform-origin: 179px 155px; }
+  .egg-shell--bottom { transform-origin: 179px 220px; }
+  .egg-yolk { transform-origin: 180px 153px; }
+
+  .egg-moment--loading .egg-shell--top { animation: hatch-top 3.4s var(--ease-luxury) infinite; }
+  .egg-moment--loading .egg-shell--bottom { animation: hatch-bottom 3.4s var(--ease-luxury) infinite; }
+  .egg-moment--loading .egg-yolk { animation: hatch-yolk 3.4s var(--ease-luxury) infinite; }
+  .egg-moment--loading .egg-spark { animation: hatch-spark 3.4s ease-in-out infinite; }
+  .egg-moment--loading .egg-spark--two { animation-delay: -0.3s; }
+  .egg-moment--loading .egg-rays { animation: hatch-rays 3.4s ease-in-out infinite; }
+
+  .egg-moment--lost .egg-shell--top { transform: translate(-60px, 81px) rotate(-33deg); }
+  .egg-moment--lost .egg-shell--bottom { transform: translate(52px, 6px) rotate(23deg); }
+  .egg-moment--lost .egg-yolk { transform: translateY(9px) rotate(-8deg); transform-origin: 180px 153px; }
+  .egg-moment--lost .egg-rays { display: none; }
+
+  @keyframes hatch-top {
+    0%, 12%, 88%, 100% { transform: translateY(0) rotate(0); }
+    18% { transform: translateY(-3px) rotate(-5deg); }
+    24% { transform: translateY(-3px) rotate(5deg); }
+    38%, 70% { transform: translate(-17px, -43px) rotate(-18deg); }
+  }
+
+  @keyframes hatch-bottom {
+    0%, 24%, 88%, 100% { transform: rotate(0); }
+    38%, 70% { transform: translate(5px, 5px) rotate(8deg); }
+  }
+
+  @keyframes hatch-yolk {
+    0%, 24%, 90%, 100% { opacity: 0; transform: translateY(23px) scale(0.9); }
+    40%, 68% { opacity: 1; transform: translateY(-7px) scale(1); }
+  }
+
+  @keyframes hatch-spark {
+    0%, 24%, 88%, 100% { opacity: 0.25; transform: scale(0.7) rotate(-12deg); }
+    40%, 70% { opacity: 1; transform: scale(1) rotate(0); }
+  }
+
+  @keyframes hatch-rays {
+    0%, 30%, 75%, 100% { opacity: 0; }
+    42%, 60% { opacity: 1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .egg-moment--loading :is(.egg-shell, .egg-yolk, .egg-spark, .egg-rays) { animation: none; }
+    .egg-moment--loading .egg-shell--top { transform: translate(-17px, -43px) rotate(-18deg); }
+  }
+</style>

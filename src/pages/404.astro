@@ -1,0 +1,107 @@
+---
+import { PrimaryButton } from '../components/Button';
+import EggMoment from '../components/EggMoment.astro';
+import FunMenu from '../components/FunMenu.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getNotFoundContent } from '../lib/notFound';
+
+const content = getNotFoundContent(Astro.url.pathname);
+---
+
+<BaseLayout title="Page not found | Change Hospitality" description="A little lost? Find your way back to Change Hospitality, or explore our latest hospitality jobs." noindex>
+  <FunMenu menuButtonBackground="var(--color-cocoa)" menuButtonTextColor="var(--color-cream)" />
+  <main class="not-found brand-page" data-not-found>
+    <div class="not-found-content">
+      <p class="not-found-eyebrow">404 / Not on the menu</p>
+      <div class="not-found-art" aria-hidden="true">
+        <span>4</span>
+        <div class="not-found-egg"><EggMoment variant="lost" /></div>
+        <span>4</span>
+        <p class="not-found-aside">Well, this is<br />a little scrambled.</p>
+      </div>
+      <h1 data-not-found-title>{content.title}</h1>
+      <p class="not-found-description" data-not-found-description>{content.description}</p>
+      <div class="not-found-action">
+        <PrimaryButton
+          href={content.href}
+          backgroundColor="var(--color-cocoa)"
+          textColor="var(--color-cream)"
+          hoverBackgroundColor="var(--color-citron)"
+          data-not-found-link
+        >
+          {content.label}
+        </PrimaryButton>
+      </div>
+      <p class="not-found-note" data-not-found-note>{content.note}</p>
+    </div>
+    <footer class="not-found-footer">
+      <span>Good people. Great hospitality.</span>
+      <a href="mailto:hello@changehospitality.co.uk">A human can help <span aria-hidden="true">&#8599;</span></a>
+    </footer>
+  </main>
+</BaseLayout>
+
+<script>
+  import { getNotFoundContent } from '../lib/notFound';
+
+  function initNotFound() {
+    const page = document.querySelector<HTMLElement>('[data-not-found]');
+    if (!page) return;
+    // Static hosts serve the same 404.html for every unmatched URL.
+    const content = getNotFoundContent(window.location.pathname);
+    const title = page.querySelector('[data-not-found-title]');
+    const description = page.querySelector('[data-not-found-description]');
+    const note = page.querySelector('[data-not-found-note]');
+    const link = page.querySelector<HTMLAnchorElement>('[data-not-found-link]');
+    if (title) title.textContent = content.title;
+    if (description) description.textContent = content.description;
+    if (note) note.textContent = content.note;
+    if (link) {
+      link.href = content.href;
+      const label = link.querySelector('[data-button-label]');
+      if (label) label.textContent = content.label;
+    }
+  }
+
+  initNotFound();
+  document.addEventListener('astro:page-load', initNotFound);
+</script>
+
+<style>
+  .not-found {
+    position: relative;
+    display: flex;
+    min-height: 100svh;
+    flex-direction: column;
+    justify-content: center;
+    overflow: clip;
+    background: var(--color-cream);
+    color: var(--color-cocoa);
+    padding: 8rem 1.5rem 0;
+    text-align: center;
+  }
+
+  .not-found-content { width: min(100%, 64rem); margin: auto; padding-block: 1.5rem 3rem; }
+  .not-found-eyebrow { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em; }
+  .not-found-art { position: relative; display: flex; width: min(100%, 43rem); align-items: center; justify-content: center; margin: 1.25rem auto 0; }
+  .not-found-art > span { z-index: 1; font-family: var(--font-hero); font-size: clamp(7rem, 19vw, 15rem); line-height: 1; letter-spacing: -0.08em; }
+  .not-found-art > span:first-child { transform: rotate(-9deg); }
+  .not-found-art > span:nth-child(3) { transform: rotate(9deg); }
+  .not-found-egg { width: 55%; flex: none; margin-inline: -0.5rem; }
+  .not-found-aside { position: absolute; top: 7%; right: -4%; font-family: var(--font-display); font-size: 0.85rem; line-height: 1.15; transform: rotate(9deg); }
+  .not-found h1 { margin: 1rem auto 0; font-family: var(--font-hero); font-size: clamp(1.9rem, 4.5vw, 3.5rem); line-height: 1.12; letter-spacing: -0.045em; text-wrap: balance; }
+  .not-found-description { max-width: 27rem; margin: 1.25rem auto 0; font-size: 1rem; line-height: 1.65; text-wrap: pretty; }
+  .not-found-action { display: flex; justify-content: center; margin-top: 1.8rem; }
+  .not-found-note { margin-top: 1.5rem; font-size: 0.75rem; }
+  .not-found-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; width: 100%; border-top: 1px solid color-mix(in srgb, var(--color-cocoa) 20%, transparent); padding: 1.25rem 0; font-size: 0.75rem; }
+  .not-found-footer a { text-decoration: underline; text-underline-offset: 4px; }
+  .not-found-footer a:hover { text-decoration-thickness: 2px; }
+
+  @media (max-width: 600px) {
+    .not-found { padding-top: 6rem; }
+    .not-found-content { padding-block: 1.5rem 2.5rem; }
+    .not-found-aside { top: -4%; right: 0; font-size: 0.65rem; }
+    .not-found-art { margin-top: 2rem; }
+    .not-found-footer { justify-content: center; font-size: 0.65rem; }
+  }
+</style>

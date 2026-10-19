@@ -1,42 +1,69 @@
 ---
-import StoryIllustration from './StoryIllustration.astro';
+import StoryIllustration from "./StoryIllustration.astro";
+import { getImpactNumbers } from "../sanity/queries";
 
-// Text identifiers are intentional: replace with approved artwork when supplied.
-// Do not manufacture certification seals or imply these are official logos.
+const impact = await getImpactNumbers();
+
+// Only use supplied artwork; keep missing logos explicitly labelled.
 const partners = [
-  { name: 'ISO 14001', detail: 'Environmental management' },
-  { name: 'ISO 9001', detail: 'Quality management' },
-  { name: 'Ecologi', detail: 'Climate & nature' },
-  { name: 'UNDO', detail: 'Carbon removal' },
-  { name: 'Living Wage', detail: 'Recognised service provider' },
-  { name: 'The Good Apple Effect', detail: 'A safer hospitality industry' },
-  { name: 'Beyond Food', detail: 'Opening doors' },
-];
-const impact = [
-  { number: '498', label: 'trees funded', shape: 'tree' },
-  { number: '15', label: 'projects worldwide', shape: 'round' },
-  { number: '9', unit: 'tCO₂e', label: 'carbon avoidance', shape: 'soft' },
-  { number: '3.09', unit: 'tCO₂e', label: 'carbon removal', shape: 'round' },
-  { number: '34', unit: 'm²', label: 'habitat restoration', shape: 'soft' },
+  {
+    name: "Certified B Corporation",
+    logo: { src: "/bcorp-logo.webp", width: 771, height: 905 },
+  },
+  {
+    name: "ISO 14001",
+    logo: {
+      src: "/client-logos/sustainability-logo/iso-14001.webp",
+      width: 300,
+      height: 272,
+    },
+  },
+  { name: "ISO 9001", logo: null },
+  {
+    name: "Ecologi",
+    logo: {
+      src: "/client-logos/sustainability-logo/ecologi.svg",
+      width: 393,
+      height: 334,
+    },
+  },
+  { name: "UNDO", logo: null },
+  {
+    name: "Living Wage",
+    logo: {
+      src: "/client-logos/sustainability-logo/living-wage.png",
+      width: 802,
+      height: 1075,
+    },
+  },
+  { name: "The Good Apple Effect", logo: null },
+  {
+    name: "Beyond Food",
+    logo: {
+      src: "/client-logos/sustainability-logo/beyond-food.svg",
+      width: 1200,
+      height: 630,
+    },
+  },
 ];
 const social = [
   {
-    title: 'Living Wage',
-    note: 'Good work deserves fair pay.',
-    illustration: 'chef' as const,
-    text: 'As a recognised Living Wage service provider, accredited by the Living Wage Foundation, we advocate for fair pay across every business we work with because paying a real living wage isn’t just the fair thing to do, it’s also the smart thing to do. When people feel valued, they show up with pride and passion, and that’s the heart of great hospitality.',
+    title: "Living Wage",
+    note: "Good work deserves fair pay.",
+    illustration: "chef" as const,
+    text: "As a recognised Living Wage service provider, accredited by the Living Wage Foundation, we advocate for fair pay across every business we work with because paying a real living wage isn’t just the fair thing to do, it’s also the smart thing to do. When people feel valued, they show up with pride and passion, and that’s the heart of great hospitality.",
   },
   {
-    title: 'The Good Apple Effect',
-    note: 'A little kinder. A lot better.',
-    illustration: 'apple' as const,
-    text: 'We’re incredibly proud to support The Good Apple Effect, a movement working to stamp out bullying and the misuse of power in hospitality. It’s an issue the industry has too often stayed quiet about, and one we think matters deeply — everyone deserves to work somewhere they feel safe and respected. We’re constantly using our voice within the industry to help push the conversation forward.',
+    title: "The Good Apple Effect",
+    note: "A little kinder. A lot better.",
+    illustration: "apple" as const,
+    text: "We’re incredibly proud to support The Good Apple Effect, a movement working to stamp out bullying and the misuse of power in hospitality. It’s an issue the industry has too often stayed quiet about, and one we think matters deeply — everyone deserves to work somewhere they feel safe and respected. We’re constantly using our voice within the industry to help push the conversation forward.",
   },
   {
-    title: 'Beyond Food',
-    note: 'Room at the table for everyone.',
-    illustration: 'plate' as const,
-    text: 'Our volunteering work with Beyond Food focuses on helping people facing barriers build careers in hospitality. Through mentoring and kitchen sessions, our team is working directly with people to share experience, build confidence and open a way into an industry we love.',
+    title: "Beyond Food",
+    note: "Room at the table for everyone.",
+    illustration: "plate" as const,
+    text: "Our volunteering work with Beyond Food focuses on helping people facing barriers build careers in hospitality. Through mentoring and kitchen sessions, our team is working directly with people to share experience, build confidence and open a way into an industry we love.",
   },
 ];
 ---
@@ -47,197 +74,858 @@ const social = [
     <!-- <p class="eyebrow sticker">People first. Planet too.</p> -->
     <h1 id="impact-title">Sustainability<br />&amp; Impact</h1>
     <p class="hero-note">Good business should<br />do a little good.</p>
-    <div class="hero-sprout" aria-hidden="true"><StoryIllustration kind="sprout" /></div>
-    <a href="#our-commitment" class="hero-scroll"><span aria-hidden="true">↓</span></a>
-    <aside class="bcorp-badge" aria-label="Certified B Corporation since October 2025">
+    <div class="hero-sprout" aria-hidden="true">
+      <StoryIllustration kind="sprout" />
+    </div>
+    <a href="#our-commitment" class="hero-scroll"
+      ><span aria-hidden="true">↓</span></a
+    >
+    <aside
+      class="bcorp-badge"
+      aria-label="Certified B Corporation since October 2025"
+    >
       <span>Proud to be</span>
-      <img src="/bcorp-logo.webp" width="771" height="905" alt="Certified B Corporation" fetchpriority="high" />
+      <img
+        src="/bcorp-logo.webp"
+        width="771"
+        height="905"
+        alt="Certified B Corporation"
+        fetchpriority="high"
+      />
       <span>A force for good.<br />Since October 2025.</span>
     </aside>
   </section>
 
-  <section class="impact-intro section-pad" id="our-commitment" aria-labelledby="commitment-title">
+  <section
+    class="impact-intro section-pad"
+    id="our-commitment"
+    aria-labelledby="commitment-title"
+  >
     <div class="intro-heading">
       <p class="eyebrow">Not an add-on. Part of who we are.</p>
       <h2 id="commitment-title">A better way<br />to do business.</h2>
       <span class="intro-flower" aria-hidden="true">✳</span>
     </div>
     <div class="copy intro-copy">
-      <p>For more than two decades, we’ve held onto a simple idea: recruitment is more than just about filling roles. It's about creating workplaces where people can thrive. Recruitment may not leave much of a physical footprint, but that's never been our excuse for complacency. We're firm believers that companies have a duty to do right by their teams, their clients, and the environment. Getting certified as a B Corp was the natural next step for us. It keeps us honest, holds us accountable, and proves these values are baked into everything we do.</p>
+      <p>
+        For more than two decades, we’ve held onto a simple idea: recruitment is
+        more than just about filling roles. It's about creating workplaces where
+        people can thrive. Recruitment may not leave much of a physical
+        footprint, but that's never been our excuse for complacency. We're firm
+        believers that companies have a duty to do right by their teams, their
+        clients, and the environment. Getting certified as a B Corp was the
+        natural next step for us. It keeps us honest, holds us accountable, and
+        proves these values are baked into everything we do.
+      </p>
     </div>
-    <div class="partner-garden" role="list" aria-label="Our certifications and partners">
-      <div class="partner-bcorp" role="listitem"><img src="/bcorp-logo.webp" width="771" height="905" alt="Certified B Corporation" loading="lazy" /></div>
-      {partners.map((partner) => <div class="partner-name" role="listitem"><span>{partner.name}</span><small>{partner.detail}</small></div>)}
+    <div
+      class="partner-garden"
+      role="list"
+      aria-label="Our certifications and partners"
+    >
+      {
+        partners.map((partner) => (
+          <div class="partner-name" role="listitem">
+            {partner.logo ? (
+              <img
+                class="partner-logo"
+                src={partner.logo.src}
+                width={partner.logo.width}
+                height={partner.logo.height}
+                alt={partner.name}
+                loading="lazy"
+                decoding="async"
+              />
+            ) : (
+              <>
+                <span>{partner.name}</span>
+                <small>Logo not available</small>
+              </>
+            )}
+          </div>
+        ))
+      }
     </div>
   </section>
 
-  <section class="certifications section-pad wave-section" id="certifications" aria-labelledby="certifications-title">
+  <section
+    class="certifications section-pad wave-section"
+    id="certifications"
+    aria-labelledby="certifications-title"
+  >
     <div class="certification-copy">
       <!-- <p class="eyebrow">Good intentions. Independently checked.</p> -->
       <h2 id="certifications-title">Our<br />certifications.</h2>
       <div class="copy">
-        <p>In October 2025, Change became a certified B Corp - joining a global movement of businesses measured not just on profit, but on their impact on people and the planet. To get there, we were independently assessed on how we treat our team, our candidates, our community and the environment, against standards we have to keep re-earning. It's the certification we're proudest of, because you can't talk your way into it.</p>
-        <p>Behind it sit two more independent standards that keep us honest day to day: ISO 14001 for how we manage our environmental impact, and ISO 9001 for the quality and consistency of how we work. Together they mean the way we operate isn't just well-intentioned - it's audited, documented and checked.</p>
+        <p>
+          In October 2025, Change became a certified B Corp - joining a global
+          movement of businesses measured not just on profit, but on their
+          impact on people and the planet. To get there, we were independently
+          assessed on how we treat our team, our candidates, our community and
+          the environment, against standards we have to keep re-earning. It's
+          the certification we're proudest of, because you can't talk your way
+          into it.
+        </p>
+        <p>
+          Behind it sit two more independent standards that keep us honest day
+          to day: ISO 14001 for how we manage our environmental impact, and ISO
+          9001 for the quality and consistency of how we work. Together they
+          mean the way we operate isn't just well-intentioned - it's audited,
+          documented and checked.
+        </p>
       </div>
     </div>
     <div class="certification-scrapbook">
-      <div class="certification-seal"><img src="/bcorp-logo.webp" width="771" height="905" alt="Certified B Corporation" loading="lazy" /><span>People.<br />Planet.<br />Purpose.</span></div>
-      <figure class="certification-photo photo-one"><img src="/recruit-talent-images/boh.png" width="309" height="150" loading="lazy" alt="A chef cooking over flames in a professional kitchen" /><figcaption>For the people behind the pass.</figcaption></figure>
-      <div class="iso-badges"><span><strong>ISO 14001</strong>Environmental<br />management</span><span><strong>ISO 9001</strong>Quality &amp;<br />consistency</span></div>
-      <figure class="certification-photo photo-two"><img src="/recruit-talent-images/event1.png" width="309" height="150" loading="lazy" alt="A hospitality table setting with flowers, plates and glassware" /><figcaption>And the moments they make.</figcaption></figure>
+      <div class="certification-seal">
+        <img
+          src="/bcorp-logo.webp"
+          width="771"
+          height="905"
+          alt="Certified B Corporation"
+          loading="lazy"
+        /><span>People.<br />Planet.<br />Purpose.</span>
+      </div>
+      <figure class="certification-photo photo-one">
+        <img
+          src="/recruit-talent-images/boh.png"
+          width="309"
+          height="150"
+          loading="lazy"
+          alt="A chef cooking over flames in a professional kitchen"
+        /><figcaption>For the people behind the pass.</figcaption>
+      </figure>
+      <div class="iso-badges">
+        <span><strong>ISO 14001</strong>Environmental<br />management</span
+        ><span><strong>ISO 9001</strong>Quality &amp;<br />consistency</span>
+      </div>
+      <figure class="certification-photo photo-two">
+        <img
+          src="/recruit-talent-images/event1.png"
+          width="309"
+          height="150"
+          loading="lazy"
+          alt="A hospitality table setting with flowers, plates and glassware"
+        /><figcaption>And the moments they make.</figcaption>
+      </figure>
     </div>
   </section>
 
-  <section class="environment section-pad wave-section" id="environment" aria-labelledby="environment-title">
+  <section
+    class="environment section-pad wave-section"
+    id="environment"
+    aria-labelledby="environment-title"
+  >
     <div class="environment-header">
-      <div><h2 id="environment-title">Our environmental impact</h2><h3>Partnering with Ecologi and UNDO</h3></div>
-      <div class="environment-sprout" aria-hidden="true"><StoryIllustration kind="sprout" /></div>
+      <div>
+        <h2 id="environment-title">Our environmental impact</h2><h3>
+          Partnering with Ecologi and UNDO
+        </h3>
+      </div>
+      <div class="environment-sprout" aria-hidden="true">
+        <StoryIllustration kind="sprout" />
+      </div>
     </div>
     <div class="copy environment-copy">
-      <p>Our main environmental work is through our partnerships with Ecologi and Undo, who deliver climate and nature projects around the world. Through them, we fund reforestation, carbon avoidance, carbon removal and habitat restoration - supporting projects in places where the impact is greatest. To date, we've funded 498 trees, contributed to 15 projects worldwide, and supported 9 tCO₂e of carbon avoidance, 3.09 tCO₂e of carbon removal and 34 m² of habitat restoration.</p>
+      <p>
+        Our main environmental work is through our partnerships with Ecologi and
+        Undo, who deliver climate and nature projects around the world. Through
+        them, we fund reforestation, carbon avoidance, carbon removal and
+        habitat restoration - supporting projects in places where the impact is
+        greatest.
+      </p>
+    </div>
+    <div>
+      <h3>To date</h3>
     </div>
     <dl class="impact-numbers">
-      {impact.map((item) => <div class={`impact-number shape-${item.shape}`}><dt>{item.label}</dt><dd>{item.number}{item.unit && <span>{item.unit}</span>}</dd></div>)}
+      {
+        impact.map((item) => (
+          <div class={`impact-number shape-${item.shape}`}>
+            <>
+              <dt>{item.label}</dt>
+              <dd>
+                {item.number}
+                {item.unit && <span>{item.unit}</span>}
+              </dd>
+            </>
+          </div>
+        ))
+      }
     </dl>
     <div class="office-note">
-      <p class="office-sticker"><span aria-hidden="true">☀</span>Our office runs on<br /><strong>renewable electricity</strong></p>
-      <p class="copy">Closer to home, we run our office entirely on renewable electricity, and we look at our own footprint the same way we ask our partners to look at theirs - honestly, and with room to improve. We keep these commitments under regular review, tracking what we fund and looking for where we can do more.</p>
+      <p class="office-sticker">
+        <span aria-hidden="true">☀</span>Our office runs on<br /><strong
+          >renewable electricity</strong
+        >
+      </p>
+      <p class="copy">
+        Closer to home, we run our office entirely on renewable electricity, and
+        we look at our own footprint the same way we ask our partners to look at
+        theirs - honestly, and with room to improve. We keep these commitments
+        under regular review, tracking what we fund and looking for where we can
+        do more.
+      </p>
     </div>
   </section>
 
-  <section class="social section-pad wave-section" id="social-impact" aria-labelledby="social-title">
-    <header class="social-header"><p class="eyebrow">Our social impact</p><h2 id="social-title">Fair pay, safe workplaces,<br />and open doors.</h2><p>Hospitality is about people. So are we.</p></header>
+  <section
+    class="social section-pad wave-section"
+    id="social-impact"
+    aria-labelledby="social-title"
+  >
+    <header class="social-header">
+      <p class="eyebrow">Our social impact</p><h2 id="social-title">
+        Fair pay, safe workplaces,<br />and open doors.
+      </h2><p>Hospitality is about people. So are we.</p>
+    </header>
     <div class="social-cards">
-      {social.map((item, index) => <article class={`social-card social-card-${index + 1}`}>
-        <div class="social-illustration"><StoryIllustration kind={item.illustration} /></div>
-        <p class="social-note">{item.note}</p>
-        <h3>{item.title}</h3>
-        <p class="copy">{item.text}</p>
-      </article>)}
+      {
+        social.map((item, index) => (
+          <article class={`social-card social-card-${index + 1}`}>
+            <div class="social-illustration">
+              <StoryIllustration kind={item.illustration} />
+            </div>
+            <p class="social-note">{item.note}</p>
+            <h3>{item.title}</h3>
+            <p class="copy">{item.text}</p>
+          </article>
+        ))
+      }
     </div>
   </section>
-
 </div>
 
 <style>
-  .impact-page { background: var(--color-cream); color: var(--color-bcorp-green); font-family: var(--font-sans); overflow: clip; }
-  .impact-page h2, .impact-page h3 { font-family: var(--font-display); font-weight: 600; text-wrap: balance; }
-  .impact-page h2 { font-size: clamp(2.5rem, 5.3vw, 5.5rem); line-height: 1.04; letter-spacing: -0.04em; }
-  .impact-page h3 { font-size: clamp(1.35rem, 2.3vw, 2rem); line-height: 1.15; }
-  .section-pad { padding: clamp(4rem, 8vw, 8rem) max(1.5rem, calc((100vw - 1280px) / 2)); }
-  .eyebrow { font-family: var(--font-display); font-weight: 600; font-size: 0.85rem; line-height: 1.4; margin-bottom: 1.5rem; }
-  .copy { font-size: clamp(1rem, 1.25vw, 1.16rem); line-height: 1.8; }
-  .copy p + p { margin-top: 1.5rem; }
-  .wave-section { position: relative; margin-top: 0; }
-  .wave-section::before { content: ''; position: absolute; left: 0; right: 0; top: -2rem; height: 2.1rem; background: inherit; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 40' preserveAspectRatio='none'%3E%3Cpath d='M0 20Q75 0 150 20T300 20T450 20T600 20T750 20T900 20T1050 20T1200 20V40H0Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat; }
-  .impact-hero { position: relative; isolation: isolate; min-height: min(900px, 100svh); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 9rem 1.5rem 5rem; text-align: center; }
-  .hero-puddle { position: absolute; z-index: -1; inset: 18% 14% 14%; border-radius: 48% 52% 44% 56% / 46% 38% 62% 54%; background: var(--color-mint); transform: rotate(-6deg); }
-  .sticker { padding: 0.9rem 1.5rem; border-radius: 50%; background: var(--color-citron); transform: rotate(-5deg); }
-  h1 { position: relative; z-index: 1; font-family: var(--font-hero); font-size: clamp(2.2rem, 7.8vw, 8rem); line-height: 1.15; letter-spacing: -0.055em; }
-  .hero-note { margin-top: 1.75rem; font-family: var(--font-display); font-size: clamp(1rem, 1.6vw, 1.4rem); font-weight: 500; }
-  .hero-scroll { display: inline-flex; align-items: center; gap: 1.5rem; margin-top: 2rem; font-family: var(--font-display); font-size: 0.8rem; font-weight: 500; }
-  .hero-scroll span { display: grid; place-items: center; background: var(--color-cream); width: 2.5rem; height: 2.5rem; border-radius: 50%; font-size: 1.4rem; }
-  .hero-sprout { position: absolute; width: clamp(8rem, 19vw, 17rem); bottom: 8%; left: 3%; transform: rotate(-9deg); }
-  .bcorp-badge { position: absolute; right: 5%; bottom: 11%; display: flex; flex-direction: column; align-items: center; gap: 0.8rem; background: var(--color-blush); border-radius: 48% 48% 42% 42% / 30% 30% 23% 23%; padding: 1.75rem 1.5rem; width: 10rem; transform: rotate(9deg); font-family: var(--font-display); font-size: 0.7rem; font-weight: 600; }
-  .bcorp-badge img { width: 4.6rem; height: auto; mix-blend-mode: multiply; }
-  .impact-intro { display: grid; grid-template-columns: 0.9fr 1.1fr; align-items: start; gap: 3rem; padding-top: 4rem; }
-  .intro-flower { display: block; width: fit-content; font-size: 7rem; line-height: 1; margin-top: 1rem; transform: rotate(10deg); }
-  .partner-garden { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin-top: 1rem; padding-bottom: 1.5rem; }
-  .partner-garden > div { display: flex; min-height: 9rem; flex-direction: column; align-items: center; justify-content: center; padding: 1.2rem; border-radius: 48% 52% 43% 57% / 42% 39% 61% 58%; background: var(--color-mint); text-align: center; }
-  .partner-garden > div:nth-child(3n) { background: var(--color-blush); transform: rotate(3deg); }
-  .partner-garden > div:nth-child(3n + 2) { background: var(--color-citron); transform: rotate(-3deg); }
-  .partner-bcorp img { width: 4rem; height: auto; mix-blend-mode: multiply; }
-  .partner-name span { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.15rem, 2vw, 1.8rem); line-height: 1.1; }
-  .partner-name small { font-size: 0.7rem; margin-top: 0.6rem; }
-  .certifications { background: var(--color-mint); display: grid; grid-template-columns: 1.15fr 0.85fr; gap: clamp(2rem, 7vw, 7rem); align-items: center; }
-  .certification-copy h2 { margin-bottom: 2rem; }
-  .certification-scrapbook { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
-  .certification-seal { display: flex; align-items: center; justify-content: center; gap: 2rem; width: 100%; padding: 2rem; background: var(--color-cream); border-radius: 48% 52% 47% 53%; transform: rotate(4deg); }
-  .certification-seal img { width: 5.5rem; height: auto; mix-blend-mode: multiply; }
-  .certification-seal span { font-family: var(--font-display); font-size: clamp(1.3rem, 2.5vw, 2rem); line-height: 1.1; font-weight: 600; }
-  .certification-photo { width: min(100%, 21rem); padding: 0.75rem 0.75rem 1rem; border-radius: 2rem; background: var(--color-paper); text-align: center; }
-  .certification-photo img { width: 100%; height: auto; border-radius: 1.5rem; }
-  .certification-photo figcaption { padding-top: 0.7rem; font-family: var(--font-display); font-size: 0.8rem; font-weight: 500; }
-  .photo-one { transform: rotate(-5deg); align-self: flex-start; }
-  .photo-two { transform: rotate(5deg); align-self: flex-end; }
-  .iso-badges { width: 100%; display: flex; justify-content: center; gap: 1rem; }
-  .iso-badges > span { display: grid; place-content: center; background: var(--color-citron); border-radius: 50%; width: 9rem; height: 9rem; font-size: 0.75rem; text-align: center; }
-  .iso-badges > span:last-child { background: var(--color-blush); transform: rotate(7deg); }
-  .iso-badges strong { font-family: var(--font-display); font-weight: 600; font-size: 1.3rem; margin-bottom: 0.5rem; }
-  .environment { background: var(--color-cream); }
-  .environment-header { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
-  .environment-header h3 { margin-top: 1.75rem; }
-  .environment-sprout { width: min(22%, 14rem); flex-shrink: 0; transform: rotate(8deg); }
-  .environment-copy { max-width: 58rem; margin-top: 2rem; }
-  .impact-numbers { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1rem; margin: 3rem 0; }
-  .impact-number { display: flex; flex-direction: column-reverse; justify-content: center; text-align: center; background: var(--color-mint); min-height: 12rem; padding: 1.5rem 0.75rem; }
-  .shape-tree { border-radius: 48% 48% 20% 20%; background: var(--color-citron); transform: rotate(-4deg); }
-  .shape-round { border-radius: 50%; }
-  .shape-soft { border-radius: 43% 57% 35% 65% / 54% 37% 63% 46%; background: var(--color-blush); transform: rotate(4deg); }
-  .impact-number dd { font-family: var(--font-display); font-weight: 600; font-size: clamp(2.5rem, 4.5vw, 4.5rem); line-height: 1; }
-  .impact-number dd span { display: block; margin-top: 0.3rem; font-size: 1rem; }
-  .impact-number dt { margin-top: 0.9rem; font-size: 0.85rem; }
-  .office-note { display: grid; grid-template-columns: 0.8fr 1.7fr; align-items: center; gap: 3rem; margin-top: 4rem; }
-  .office-sticker { background: var(--color-citron); border-radius: 45% 55% 52% 48% / 42% 39% 61% 58%; padding: 1.75rem 1.5rem 2.5rem; font-family: var(--font-display); font-size: 1rem; text-align: center; transform: rotate(-4deg); }
-  .office-sticker > span { display: block; font-size: 3rem; line-height: 1.3; }
-  .office-sticker strong { font-weight: 600; }
-  .social { background: var(--color-blush); padding-bottom: 8rem; }
-  .social-header { text-align: center; }
-  .social-header > p:last-child { font-family: var(--font-display); font-size: 1.15rem; margin-top: 1.5rem; }
-  .social-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; gap: 1.5rem; margin-top: 4rem; }
-  .social-card { padding: 1.5rem 1.7rem 2.5rem; background: var(--color-cream); border-radius: 3rem 3rem 2rem 4rem; }
-  .social-card-2 { background: var(--color-mint); margin-top: 3rem; border-radius: 4rem 2rem 4rem 2rem; }
-  .social-card-3 { margin-top: 1rem; border-radius: 2rem 4rem 2rem 4rem; }
-  .social-illustration { width: 10rem; margin: 0 auto 1rem; }
-  .social-note { font-family: var(--font-display); font-size: 0.75rem; font-weight: 500; margin-bottom: 0.75rem; }
-  .social-card h3 { margin-bottom: 1.5rem; }
-  .social-card .copy { font-size: 1rem; line-height: 1.75; }
-  .impact-page a:hover { transform: rotate(-2deg); }
-  .impact-page :focus-visible { outline: 3px solid currentColor; outline-offset: 5px; }
-  .impact-page section[id] { scroll-margin-top: 6rem; }
-  @media (min-width: 1024px) and (max-height: 750px) { .impact-hero { min-height: 48rem; } }
+  .impact-page {
+    background: var(--color-cream);
+    color: var(--color-bcorp-green);
+    font-family: var(--font-sans);
+    overflow: clip;
+  }
+  .impact-page h2,
+  .impact-page h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    text-wrap: balance;
+  }
+  .impact-page h2 {
+    font-size: clamp(2.5rem, 5.3vw, 5.5rem);
+    line-height: 1.04;
+    letter-spacing: -0.04em;
+  }
+  .impact-page h3 {
+    font-size: clamp(1.35rem, 2.3vw, 2rem);
+    line-height: 1.15;
+  }
+  .section-pad {
+    padding: clamp(4rem, 8vw, 8rem) max(1.5rem, calc((100vw - 1280px) / 2));
+  }
+  .eyebrow {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin-bottom: 1.5rem;
+  }
+  .copy {
+    font-size: clamp(1rem, 1.25vw, 1.16rem);
+    line-height: 1.8;
+  }
+  .copy p + p {
+    margin-top: 1.5rem;
+  }
+  .wave-section {
+    position: relative;
+    margin-top: 0;
+  }
+  .wave-section::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -2rem;
+    height: 2.1rem;
+    background: inherit;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 40' preserveAspectRatio='none'%3E%3Cpath d='M0 20Q75 0 150 20T300 20T450 20T600 20T750 20T900 20T1050 20T1200 20V40H0Z'/%3E%3C/svg%3E")
+      center / 100% 100% no-repeat;
+  }
+  .impact-hero {
+    position: relative;
+    isolation: isolate;
+    min-height: min(900px, 100svh);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 9rem 1.5rem 5rem;
+    text-align: center;
+  }
+  .hero-puddle {
+    position: absolute;
+    z-index: -1;
+    inset: 18% 14% 14%;
+    border-radius: 48% 52% 44% 56% / 46% 38% 62% 54%;
+    background: var(--color-mint);
+    transform: rotate(-6deg);
+  }
+  .sticker {
+    padding: 0.9rem 1.5rem;
+    border-radius: 50%;
+    background: var(--color-citron);
+    transform: rotate(-5deg);
+  }
+  h1 {
+    position: relative;
+    z-index: 1;
+    font-family: var(--font-hero);
+    font-size: clamp(2.2rem, 7.8vw, 8rem);
+    line-height: 1.15;
+    letter-spacing: -0.055em;
+  }
+  .hero-note {
+    margin-top: 1.75rem;
+    font-family: var(--font-display);
+    font-size: clamp(1rem, 1.6vw, 1.4rem);
+    font-weight: 500;
+  }
+  .hero-scroll {
+    display: inline-flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+  .hero-scroll span {
+    display: grid;
+    place-items: center;
+    background: var(--color-cream);
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    font-size: 1.4rem;
+  }
+  .hero-sprout {
+    position: absolute;
+    width: clamp(8rem, 19vw, 17rem);
+    bottom: 8%;
+    left: 3%;
+    transform: rotate(-9deg);
+  }
+  .bcorp-badge {
+    position: absolute;
+    right: 5%;
+    bottom: 11%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    background: var(--color-blush);
+    border-radius: 48% 48% 42% 42% / 30% 30% 23% 23%;
+    padding: 1.75rem 1.5rem;
+    width: 10rem;
+    transform: rotate(9deg);
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+  .bcorp-badge img {
+    width: 4.6rem;
+    height: auto;
+    mix-blend-mode: multiply;
+  }
+  .impact-intro {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    align-items: start;
+    gap: 3rem;
+    padding-top: 4rem;
+  }
+  .intro-flower {
+    display: block;
+    width: fit-content;
+    font-size: 7rem;
+    line-height: 1;
+    margin-top: 1rem;
+    transform: rotate(10deg);
+  }
+  .partner-garden {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-bottom: 1.5rem;
+  }
+  .partner-garden > div {
+    display: flex;
+    min-width: 0;
+    min-height: 12rem;
+    aspect-ratio: 4 / 3;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    border: 3px solid var(--color-mint);
+    border-radius: 48% 52% 43% 57% / 42% 39% 61% 58%;
+    background: transparent;
+    text-align: center;
+  }
+  .partner-garden > div:nth-child(3n) {
+    transform: rotate(3deg);
+    border-color: var(--color-blush);
+  }
+  .partner-garden > div:nth-child(3n + 2) {
+    transform: rotate(-3deg);
+    border-color: var(--color-mist);
+  }
+  .partner-logo {
+    width: min(100%, 10rem);
+    height: 7rem;
+    object-fit: contain;
+  }
+  .partner-logo[src="/bcorp-logo.webp"] {
+    mix-blend-mode: multiply;
+  }
+  .partner-name span {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1rem, 1.6vw, 1.4rem);
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+  .partner-name small {
+    font-size: 0.7rem;
+    margin-top: 0.6rem;
+  }
+  .certifications {
+    background: var(--color-mint);
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: clamp(2rem, 7vw, 7rem);
+    align-items: center;
+  }
+  .certification-copy h2 {
+    margin-bottom: 2rem;
+  }
+  .certification-scrapbook {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .certification-seal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    width: 100%;
+    padding: 2rem;
+    background: var(--color-cream);
+    border-radius: 48% 52% 47% 53%;
+    transform: rotate(4deg);
+  }
+  .certification-seal img {
+    width: 5.5rem;
+    height: auto;
+    mix-blend-mode: multiply;
+  }
+  .certification-seal span {
+    font-family: var(--font-display);
+    font-size: clamp(1.3rem, 2.5vw, 2rem);
+    line-height: 1.1;
+    font-weight: 600;
+  }
+  .certification-photo {
+    width: min(100%, 21rem);
+    padding: 0.75rem 0.75rem 1rem;
+    border-radius: 2rem;
+    background: var(--color-paper);
+    text-align: center;
+  }
+  .certification-photo img {
+    width: 100%;
+    height: auto;
+    border-radius: 1.5rem;
+  }
+  .certification-photo figcaption {
+    padding-top: 0.7rem;
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+  .photo-one {
+    transform: rotate(-5deg);
+    align-self: flex-start;
+  }
+  .photo-two {
+    transform: rotate(5deg);
+    align-self: flex-end;
+  }
+  .iso-badges {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+  .iso-badges > span {
+    display: grid;
+    place-content: center;
+    background: var(--color-citron);
+    border-radius: 50%;
+    width: 9rem;
+    height: 9rem;
+    font-size: 0.75rem;
+    text-align: center;
+  }
+  .iso-badges > span:last-child {
+    background: var(--color-blush);
+    transform: rotate(7deg);
+  }
+  .iso-badges strong {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+  }
+  .environment {
+    background: var(--color-cream);
+  }
+  .environment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+  }
+  .environment-header h3 {
+    margin-top: 1.75rem;
+  }
+  .environment-sprout {
+    width: min(22%, 14rem);
+    flex-shrink: 0;
+    transform: rotate(8deg);
+  }
+  .environment-copy {
+    max-width: 58rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+  .impact-numbers {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 1rem;
+    margin: 3rem 0;
+  }
+  .impact-number {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: center;
+    text-align: center;
+    background: var(--color-mint);
+    min-height: 12rem;
+    padding: 1.5rem 0.75rem;
+  }
+  .shape-tree {
+    border-radius: 48% 48% 20% 20%;
+    background: var(--color-citron);
+    transform: rotate(-4deg);
+  }
+  .shape-round {
+    border-radius: 50%;
+  }
+  .shape-soft {
+    border-radius: 43% 57% 35% 65% / 54% 37% 63% 46%;
+    background: var(--color-blush);
+    transform: rotate(4deg);
+  }
+  .impact-number dd {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(2.5rem, 4.5vw, 4.5rem);
+    line-height: 1;
+  }
+  .impact-number dd span {
+    display: block;
+    margin-top: 0.3rem;
+    font-size: 1rem;
+  }
+  .impact-number dt {
+    margin-top: 0.9rem;
+    font-size: 0.85rem;
+  }
+  .office-note {
+    display: grid;
+    grid-template-columns: 0.8fr 1.7fr;
+    align-items: center;
+    gap: 3rem;
+    margin-top: 4rem;
+  }
+  .office-sticker {
+    background: var(--color-citron);
+    border-radius: 45% 55% 52% 48% / 42% 39% 61% 58%;
+    padding: 1.75rem 1.5rem 2.5rem;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    text-align: center;
+    transform: rotate(-4deg);
+  }
+  .office-sticker > span {
+    display: block;
+    font-size: 3rem;
+    line-height: 1.3;
+  }
+  .office-sticker strong {
+    font-weight: 600;
+  }
+  .social {
+    background: var(--color-blush);
+    padding-bottom: 8rem;
+  }
+  .social-header {
+    text-align: center;
+  }
+  .social-header > p:last-child {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    margin-top: 1.5rem;
+  }
+  .social-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+    gap: 1.5rem;
+    margin-top: 4rem;
+  }
+  .social-card {
+    padding: 1.5rem 1.7rem 2.5rem;
+    background: var(--color-cream);
+    border-radius: 3rem 3rem 2rem 4rem;
+  }
+  .social-card-2 {
+    background: var(--color-mint);
+    margin-top: 3rem;
+    border-radius: 4rem 2rem 4rem 2rem;
+  }
+  .social-card-3 {
+    margin-top: 1rem;
+    border-radius: 2rem 4rem 2rem 4rem;
+  }
+  .social-illustration {
+    width: 10rem;
+    margin: 0 auto 1rem;
+  }
+  .social-note {
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+  }
+  .social-card h3 {
+    margin-bottom: 1.5rem;
+  }
+  .social-card .copy {
+    font-size: 1rem;
+    line-height: 1.75;
+  }
+  .impact-page a:hover {
+    transform: rotate(-2deg);
+  }
+  .impact-page :focus-visible {
+    outline: 3px solid currentColor;
+    outline-offset: 5px;
+  }
+  .impact-page section[id] {
+    scroll-margin-top: 6rem;
+  }
+  @media (min-width: 1024px) and (max-height: 750px) {
+    .impact-hero {
+      min-height: 48rem;
+    }
+  }
   @media (max-width: 1023px) {
-    .impact-hero { min-height: 48rem; padding-bottom: 14rem; }
-    .hero-puddle { inset: 20% 4% 28%; }
-    .hero-sprout { bottom: 2rem; left: 12%; width: 10rem; }
-    .bcorp-badge { bottom: 2rem; right: 14%; width: 8rem; padding: 1rem; font-size: 0.6rem; }
-    .bcorp-badge img { width: 3.5rem; }
-    .impact-intro, .certifications { grid-template-columns: 1fr; gap: 2rem; }
-    .intro-flower { display: none; }
-    .partner-garden { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    .certification-scrapbook { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; max-width: 46rem; margin: 1rem auto; }
-    .impact-numbers { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .social-cards { grid-template-columns: 1fr; max-width: 44rem; margin-inline: auto; }
-    .social-card { display: grid; grid-template-columns: 9rem 1fr; gap: 0 1.5rem; margin-top: 0; padding: 2rem; }
-    .social-illustration { width: 9rem; grid-row: 1 / 4; align-self: center; }
-    .social-card .copy { grid-column: 2; }
+    .impact-hero {
+      min-height: 48rem;
+      padding-bottom: 14rem;
+    }
+    .hero-puddle {
+      inset: 20% 4% 28%;
+    }
+    .hero-sprout {
+      bottom: 2rem;
+      left: 12%;
+      width: 10rem;
+    }
+    .bcorp-badge {
+      bottom: 2rem;
+      right: 14%;
+      width: 8rem;
+      padding: 1rem;
+      font-size: 0.6rem;
+    }
+    .bcorp-badge img {
+      width: 3.5rem;
+    }
+    .impact-intro,
+    .certifications {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .intro-flower {
+      display: none;
+    }
+    .partner-garden {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .certification-scrapbook {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      max-width: 46rem;
+      margin: 1rem auto;
+    }
+    .impact-numbers {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .social-cards {
+      grid-template-columns: 1fr;
+      max-width: 44rem;
+      margin-inline: auto;
+    }
+    .social-card {
+      display: grid;
+      grid-template-columns: 9rem 1fr;
+      gap: 0 1.5rem;
+      margin-top: 0;
+      padding: 2rem;
+    }
+    .social-illustration {
+      width: 9rem;
+      grid-row: 1 / 4;
+      align-self: center;
+    }
+    .social-card .copy {
+      grid-column: 2;
+    }
   }
   @media (max-width: 600px) {
-    .impact-hero { min-height: 44rem; padding-top: 8rem; }
-    .hero-puddle { inset: 19% -15% 29%; }
-    .hero-sprout { left: 6%; }
-    .bcorp-badge { right: 9%; }
-    .partner-garden { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
-    .partner-garden > div { min-height: 8rem; padding: 1rem; }
-    .certification-scrapbook { gap: 1rem; }
-    .certification-seal { flex-direction: column; gap: 0.75rem; padding: 1.25rem; text-align: center; }
-    .certification-seal span { font-size: 1.1rem; }
-    .certification-seal img { width: 3.5rem; }
-    .certification-photo { padding: 0.5rem 0.5rem 1rem; border-radius: 1.2rem; }
-    .certification-photo figcaption { font-size: 0.65rem; }
-    .iso-badges { flex-direction: column; align-items: center; gap: 0.75rem; }
-    .iso-badges > span { width: 7.5rem; height: 7.5rem; font-size: 0.65rem; }
-    .iso-badges strong { font-size: 1rem; }
-    .environment-header { position: relative; }
-    .environment-header > div:first-child { position: relative; z-index: 1; }
-    .environment-sprout { display: none; }
-    .impact-numbers { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
-    .impact-number { min-height: 10rem; }
-    .impact-number:last-child { grid-column: 1 / -1; width: 65%; justify-self: center; }
-    .office-note { grid-template-columns: 1fr; gap: 2rem; }
-    .office-sticker { max-width: 20rem; justify-self: center; width: 100%; }
-    .social-card { display: block; padding: 1.5rem 1.5rem 2rem; }
-    .social-illustration { width: 10rem; }
+    .impact-hero {
+      min-height: 44rem;
+      padding-top: 8rem;
+    }
+    .hero-puddle {
+      inset: 19% -15% 29%;
+    }
+    .hero-sprout {
+      left: 6%;
+    }
+    .bcorp-badge {
+      right: 9%;
+    }
+    .partner-garden {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+    .partner-garden > div {
+      min-height: 10rem;
+      padding: 1rem;
+    }
+    .partner-logo {
+      height: 5.5rem;
+    }
+    .certification-scrapbook {
+      gap: 1rem;
+    }
+    .certification-seal {
+      flex-direction: column;
+      gap: 0.75rem;
+      padding: 1.25rem;
+      text-align: center;
+    }
+    .certification-seal span {
+      font-size: 1.1rem;
+    }
+    .certification-seal img {
+      width: 3.5rem;
+    }
+    .certification-photo {
+      padding: 0.5rem 0.5rem 1rem;
+      border-radius: 1.2rem;
+    }
+    .certification-photo figcaption {
+      font-size: 0.65rem;
+    }
+    .iso-badges {
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .iso-badges > span {
+      width: 7.5rem;
+      height: 7.5rem;
+      font-size: 0.65rem;
+    }
+    .iso-badges strong {
+      font-size: 1rem;
+    }
+    .environment-header {
+      position: relative;
+    }
+    .environment-header > div:first-child {
+      position: relative;
+      z-index: 1;
+    }
+    .environment-sprout {
+      display: none;
+    }
+    .impact-numbers {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+    .impact-number {
+      min-height: 10rem;
+    }
+    .impact-number:last-child {
+      grid-column: 1 / -1;
+      width: 65%;
+      justify-self: center;
+    }
+    .office-note {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .office-sticker {
+      max-width: 20rem;
+      justify-self: center;
+      width: 100%;
+    }
+    .social-card {
+      display: block;
+      padding: 1.5rem 1.5rem 2rem;
+    }
+    .social-illustration {
+      width: 10rem;
+    }
   }
-  @media print { .impact-page { overflow: visible; } .impact-hero { min-height: 0; padding: 1rem; } .hero-puddle, .hero-sprout, .hero-scroll, .bcorp-badge { display: none; } .section-pad { padding: 2rem 1rem; } .wave-section::before { display: none; } }
+  @media print {
+    .impact-page {
+      overflow: visible;
+    }
+    .impact-hero {
+      min-height: 0;
+      padding: 1rem;
+    }
+    .hero-puddle,
+    .hero-sprout,
+    .hero-scroll,
+    .bcorp-badge {
+      display: none;
+    }
+    .section-pad {
+      padding: 2rem 1rem;
+    }
+    .wave-section::before {
+      display: none;
+    }
+  }
 </style>

@@ -1,4 +1,5 @@
 ---
+import { PrimaryButton } from "../components/Button";
 import ProfileCard from "../components/team/ProfileCard";
 import EggIllustration from "../components/EggIllustration.astro";
 import FunMenu from "../components/FunMenu.astro";
@@ -102,9 +103,14 @@ const teamSectionLinks = [
             <li>Events &amp; Commercial</li>
           </ul>
           <div class="mt-9 flex flex-col gap-3 sm:flex-row">
-            <a class="team-hero-button bg-cocoa text-cream" href="#profiles"
-              >Meet the team</a
+            <PrimaryButton
+              href="#profiles"
+              shadow={false}
+              backgroundColor="var(--color-cocoa)"
+              textColor="var(--color-cream)"
             >
+              Meet the team
+            </PrimaryButton>
           </div>
         </div>
 
@@ -130,7 +136,7 @@ const teamSectionLinks = [
 
     <section
       id="profiles"
-      class="team-profiles-section relative overflow-hidden bg-cream px-5 py-18 md:px-10 md:py-24"
+      class="team-profiles-section relative overflow-hidden bg-paper px-5 py-18 md:px-10 md:py-24"
       aria-labelledby="profiles-title"
     >
       <div
@@ -312,6 +318,10 @@ const teamSectionLinks = [
 </BaseLayout>
 
 <style>
+  .team-page {
+    --team-flame-surface: color-mix(in srgb, var(--color-flame) 88%, var(--color-ink));
+  }
+
   /* ---------- Decorative flat shapes (parallax) ---------- */
   .team-cloud,
   .team-hero-oval,
@@ -521,29 +531,6 @@ const teamSectionLinks = [
     width: 36rem;
     background: var(--color-citron);
     transform: rotate(-8deg);
-  }
-
-  /* ---------- Hero buttons ---------- */
-  .team-hero-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 999px;
-    padding: 1.25rem 2.25rem;
-    text-align: center;
-    font-size: 1rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    color: var(--color-cream);
-    transition:
-      transform 350ms var(--ease-cartoon),
-      background-color 300ms ease;
-  }
-
-  .team-hero-button:hover,
-  .team-hero-button:focus-visible {
-    transform: translateY(-3px) rotate(-1deg);
   }
 
   /* ---------- Pass stage illustration ---------- */
@@ -762,11 +749,14 @@ const teamSectionLinks = [
 
   .team-accordion-item {
     --accordion-accent: var(--color-cream);
+    --accordion-foreground: var(--color-ink);
+    --accordion-muted: var(--color-cocoa);
     position: relative;
     isolation: isolate;
     overflow: hidden;
     border-bottom: 3px solid var(--color-ink);
-    /* background: var(--color-paper); */
+    background: var(--color-paper);
+    color: var(--accordion-foreground);
     transition: background-color 500ms var(--ease-luxury);
   }
 
@@ -779,7 +769,12 @@ const teamSectionLinks = [
   }
 
   .team-accordion-flame {
-    --accordion-accent: var(--color-flame);
+    --accordion-accent: var(--team-flame-surface);
+  }
+
+  .team-accordion-flame[data-open="true"] {
+    --accordion-foreground: var(--color-off-white);
+    --accordion-muted: var(--color-off-white);
   }
 
   .team-accordion-blush {
@@ -812,6 +807,10 @@ const teamSectionLinks = [
     background: var(--color-cream);
   }
 
+  .team-accordion-flame[data-open="true"] .team-accordion-shape {
+    background: var(--color-cocoa);
+  }
+
   .team-accordion-trigger {
     position: relative;
     z-index: 2;
@@ -823,13 +822,13 @@ const teamSectionLinks = [
     border: 0;
     background: transparent;
     padding: 1.5rem 0.25rem;
-    color: var(--color-ink);
+    color: inherit;
     text-align: left;
     cursor: pointer;
   }
 
   .team-accordion-trigger:focus-visible {
-    outline-color: var(--color-ink);
+    outline-color: var(--accordion-foreground);
     outline-offset: -0.4rem;
   }
 
@@ -853,6 +852,7 @@ const teamSectionLinks = [
     border: 2px solid var(--color-ink);
     border-radius: 999px;
     background: var(--color-cream);
+    color: var(--color-ink);
     font-size: 0.72rem;
     font-weight: 900;
   }
@@ -872,7 +872,7 @@ const teamSectionLinks = [
   .team-accordion-description {
     margin-top: 0.55rem;
     max-width: 42rem;
-    color: var(--color-cocoa);
+    color: var(--accordion-muted);
     font-size: 0.85rem;
     font-weight: 500;
     line-height: 1.35;
@@ -945,9 +945,9 @@ const teamSectionLinks = [
   }
 
   .team-accordion-empty {
-    border-left: 3px solid var(--color-ink);
+    border-left: 3px solid currentColor;
     padding: 1rem 1.25rem;
-    color: var(--color-cocoa);
+    color: var(--accordion-muted);
     font-size: 1rem;
     font-weight: 900;
   }
@@ -1255,12 +1255,6 @@ const teamSectionLinks = [
     .team-hero-copy > div:last-child {
       max-width: 12rem;
       margin-top: 1.25rem;
-    }
-
-    .team-hero-button {
-      min-height: 3.25rem;
-      padding: 0.8rem 1rem;
-      font-size: 0.72rem;
     }
 
     .team-pass-stage {

@@ -1,0 +1,185 @@
+---
+import EggMoment from './EggMoment.astro';
+---
+
+<div class="story-loading-screen" data-story-loading-screen aria-label="Loading Change Hospitality">
+  <div class="loading-brand">
+    <img src="/change-hospitality-logo-new.svg" alt="Change Hospitality" width="208" height="208" loading="eager" />
+  </div>
+  <div class="loading-centre">
+    <p class="loading-eyebrow">A little change is on the way</p>
+    <div class="loading-illustration"><EggMoment /></div>
+    <p class="loading-title">Good things<br />are hatching.</p>
+    <p class="loading-status" role="status" data-loading-status>Getting your first look ready.</p>
+    <div class="loading-progress" role="progressbar" aria-label="Preparing the opening story" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-loading-progress>
+      <span></span>
+    </div>
+    <div class="loading-progress-caption" aria-hidden="true">
+      <span>Preparing the pass</span>
+      <span data-loading-percent>0%</span>
+    </div>
+  </div>
+  <p class="loading-signoff">Good people. Great hospitality.</p>
+</div>
+
+<script is:inline data-astro-rerun>
+  (() => {
+    const root = document.documentElement;
+    const screen = document.querySelector('[data-story-loading-screen]');
+    const content = document.querySelector('[data-site-content]');
+    if (!screen || !content) return;
+
+    const listeners = new AbortController();
+    let finished = false;
+    let closing = false;
+    let exitTimer;
+    root.setAttribute('data-story-loading', '');
+    content.inert = true;
+    content.setAttribute('aria-busy', 'true');
+    document.dispatchEvent(new Event('story-loading-start'));
+
+    const progress = screen.querySelector('[data-loading-progress]');
+    const percent = screen.querySelector('[data-loading-percent]');
+    const status = screen.querySelector('[data-loading-status]');
+    const updateProgress = () => {
+      const value = Math.max(0, Math.min(100, Number(root.dataset.homeStoryProgress) || 0));
+      progress.setAttribute('aria-valuenow', String(value));
+      progress.style.setProperty('--loading-progress', `${value}%`);
+      percent.textContent = `${value}%`;
+    };
+
+    const unlock = () => {
+      clearTimeout(timeout);
+      clearTimeout(exitTimer);
+      listeners.abort();
+      root.removeAttribute('data-story-loading');
+      content.inert = false;
+      content.removeAttribute('aria-busy');
+      screen.hidden = true;
+      document.dispatchEvent(new Event('story-loading-end'));
+    };
+
+    const finish = async () => {
+      if (closing) return;
+      closing = true;
+      await document.fonts.ready;
+      if (finished) return;
+      finished = true;
+      clearTimeout(timeout);
+      status.textContent = "Ready. Let's make a change.";
+      screen.classList.add('is-leaving');
+      exitTimer = setTimeout(unlock, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 420);
+    };
+
+    const timeout = setTimeout(() => {
+      console.warn('The opening story took too long to load. Showing the readable story instead.');
+      root.dataset.homeStoryFallback = 'true';
+      document.dispatchEvent(new Event('home-story-cancel'));
+      root.dataset.homeStoryReady = 'true';
+      document.dispatchEvent(new Event('home-story-ready'));
+      finished = true;
+      unlock();
+    }, 15000);
+
+    const preventScroll = (event) => event.preventDefault();
+    window.addEventListener('wheel', preventScroll, { passive: false, signal: listeners.signal });
+    window.addEventListener('touchmove', preventScroll, { passive: false, signal: listeners.signal });
+    window.addEventListener('keydown', (event) => {
+      if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) event.preventDefault();
+    }, { signal: listeners.signal });
+    document.addEventListener('home-story-progress', updateProgress, { signal: listeners.signal });
+    document.addEventListener('home-story-ready', finish, { signal: listeners.signal });
+    document.addEventListener('astro:before-swap', () => {
+      finished = true;
+      unlock();
+      delete root.dataset.homeStoryReady;
+      delete root.dataset.homeStoryProgress;
+      delete root.dataset.homeStoryFallback;
+    }, { once: true });
+    updateProgress();
+    if (root.dataset.homeStoryReady === 'true') void finish();
+  })();
+</script>
+
+<style is:inline>
+  @media screen and (prefers-reduced-motion: no-preference) {
+    /* Restoration runs before deferred styles and GSAP in development. */
+    html:not([data-home-story-fallback="true"]) .story-experience:not(.is-failed) {
+      min-height: calc(100svh + var(--story-scroll-screens) * 100vh);
+    }
+  }
+
+  html[data-story-loading],
+  html[data-story-loading] body {
+    overflow: hidden !important;
+    overscroll-behavior: none;
+  }
+
+  html[data-story-loading] {
+    scroll-behavior: auto !important;
+  }
+
+  .story-loading-screen { display: none; }
+  html[data-story-loading] .story-loading-screen:not([hidden]) { display: grid; }
+</style>
+
+<style>
+  .story-loading-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    grid-template-rows: auto 1fr auto;
+    justify-items: center;
+    height: 100%;
+    overflow: auto;
+    padding: max(1.4rem, env(safe-area-inset-top)) 1.5rem max(1.5rem, env(safe-area-inset-bottom));
+    background: var(--color-cream);
+    color: var(--color-cocoa);
+    text-align: center;
+    opacity: 1;
+    transition: opacity 420ms ease;
+  }
+
+  .story-loading-screen.is-leaving { opacity: 0; }
+
+  .loading-brand {
+    position: relative;
+    width: 13rem;
+    height: 4.3rem;
+    overflow: hidden;
+  }
+
+  .loading-brand img {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    height: auto;
+    transform: translateY(-50%);
+    filter: brightness(0);
+    opacity: 0.85;
+  }
+
+  .loading-centre { align-self: center; width: min(100%, 25rem); padding: 1rem 0 2rem; }
+  .loading-eyebrow { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; }
+  .loading-illustration { width: clamp(13rem, 34vh, 20rem); margin: 0.75rem auto 0; }
+  .loading-title { margin-top: 0.5rem; font-family: var(--font-hero); font-size: clamp(2rem, 5vw, 3rem); line-height: 1.08; letter-spacing: -0.045em; }
+  .loading-status { margin-top: 1rem; font-size: 0.85rem; }
+  .loading-progress { height: 0.3rem; width: min(100%, 14rem); margin: 1.8rem auto 0; overflow: hidden; border-radius: 1rem; background: color-mix(in srgb, var(--color-cocoa) 12%, transparent); }
+  .loading-progress > span { display: block; width: var(--loading-progress, 0%); height: 100%; border-radius: inherit; background: var(--color-cocoa); transition: width 200ms ease; }
+  .loading-progress-caption { display: flex; justify-content: space-between; width: min(100%, 14rem); margin: 0.6rem auto 0; font-size: 0.65rem; letter-spacing: 0.04em; }
+  .loading-progress-caption > :last-child { font-variant-numeric: tabular-nums; }
+  .loading-signoff { font-size: 0.7rem; letter-spacing: 0.03em; }
+
+  @media (max-height: 650px) {
+    .story-loading-screen { padding-block: 0.75rem; }
+    .loading-brand { height: 3rem; width: 10rem; }
+    .loading-centre { padding-block: 0.5rem; }
+    .loading-illustration { width: 10rem; margin-top: 0.25rem; }
+    .loading-title { font-size: 1.8rem; }
+    .loading-progress { margin-top: 1rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .story-loading-screen, .loading-progress > span { transition: none; }
+  }
+</style>

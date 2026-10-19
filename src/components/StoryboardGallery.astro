@@ -1,116 +1,336 @@
 ---
-import CircularGallery from './team/CircularGallery';
-
 const galleryItems = [
-  { image: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1200&q=85', text: 'The brief arrives' },
-  { image: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=1200&q=85', text: 'People first' },
-  { image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=85', text: 'The room matters' },
-  { image: 'https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&w=1200&q=85', text: 'Kitchen pace' },
-  { image: 'https://images.unsplash.com/photo-1559329007-40df8a9345d8?auto=format&fit=crop&w=1200&q=85', text: 'Every detail lands' },
-  { image: 'https://images.unsplash.com/photo-1566554273541-37a9ca77b91f?auto=format&fit=crop&w=1200&q=85', text: 'Service feels easy' },
+  { image: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1', alt: 'Preview photo: friends sharing food around a table' },
+  { image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c', alt: 'Preview photo: a team gathered around a laptop' },
+  { image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4', alt: 'Preview photo: colleagues getting together in a shared workspace' },
+  { image: 'https://images.unsplash.com/photo-1556761175-b413da4baf72', alt: 'Preview photo: a group catching up around a meeting table' },
+  { image: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902', alt: 'Preview photo: colleagues spending time together at work' },
+  { image: 'https://images.unsplash.com/photo-1511632765486-a01980e01a18', alt: 'Preview photo: a group celebrating together outdoors' },
 ];
+
+const photoUrl = (image: string, width: number) =>
+  `${image}?auto=format&fit=crop&w=${width}&h=${Math.round(width * 0.75)}&q=85`;
 ---
 
 <section
   id="gallery"
-  class="relative overflow-hidden bg-cocoa py-18 md:py-24"
+  class="storyboard-gallery relative overflow-hidden bg-cocoa"
   aria-labelledby="gallery-title"
+  data-storyboard-gallery
 >
-  <div class="storyboard-gallery-oval" data-gallery-parallax="34" aria-hidden="true"></div>
-  <div class="relative z-10 mx-auto max-w-7xl px-5 md:px-10">
-    <div class="mb-8 grid gap-6 lg:grid-cols-[0.85fr_1fr] lg:items-end">
-      <div>
+  <div class="storyboard-gallery-stage" data-gallery-stage>
+    <div class="storyboard-gallery-copy">
+      <header>
         <p class="mb-4 text-sm font-black uppercase tracking-wide text-citron">
-          Image gallery
+          People behind the placements
         </p>
         <h2
           id="gallery-title"
-          class="font-serif text-5xl font-semibold leading-none text-cream md:text-7xl"
+          class="font-serif font-semibold leading-none text-cream"
         >
-          A few frames of the work.
+          New roles.<br />Real connections.
         </h2>
-      </div>
-      <p class="max-w-2xl text-lg font-bold leading-8 text-cream">
-        Real photo frames for the people side of the work: briefing tables,
-        service floors, kitchens and the human moments around every careful
-        handoff.
+      </header>
+      <p class="storyboard-gallery-intro">
+        New teams, familiar faces and a few celebrations along the way.
+        A little space for the people who found their next chapter with
+        Change Hospitality.
       </p>
+      <div class="storyboard-gallery-closing" data-gallery-closing>
+        <p class="storyboard-gallery-closing-title">A new job is just the beginning.</p>
+        <p>For over 20 years, we've brought people together, face to face. The best part? Seeing where they go next.</p>
+      </div>
+      <div class="storyboard-gallery-scroll" aria-hidden="true">
+        <p>Scroll to collect the moments <span>&darr;</span></p>
+        <div class="storyboard-gallery-track"><span data-gallery-progress></span></div>
+      </div>
     </div>
-  </div>
-
-  <div class="relative z-10 h-136 md:h-168" aria-label="Storyboard gallery">
-    <CircularGallery
-      client:visible
-      items={galleryItems}
-      bend={2.2}
-      scrollEase={0.04}
-      textColor="var(--color-cream)"
-    />
+    <div class="storyboard-gallery-pictures">
+      <div class="storyboard-gallery-oval" aria-hidden="true"></div>
+      <ol class="storyboard-gallery-photos" aria-label="Candidate gallery preview with placeholder photos">
+        {galleryItems.map(({ image, alt }) => (
+          <li class="storyboard-gallery-photo" data-gallery-photo>
+            <img
+              src={photoUrl(image, 1200)}
+              srcset={[640, 960, 1200].map((width) => `${photoUrl(image, width)} ${width}w`).join(', ')}
+              sizes="(min-width: 1280px) 640px, (min-width: 1024px) 50vw, (min-width: 600px) 50vw, 100vw"
+              {alt}
+              width="1200"
+              height="900"
+              loading="lazy"
+              decoding="async"
+            />
+          </li>
+        ))}
+      </ol>
+      <p class="storyboard-gallery-preview">Photo preview / candidate pictures coming soon</p>
+    </div>
   </div>
 </section>
 
 <style>
+  .storyboard-gallery {
+    color: var(--color-cream);
+  }
+
+  .storyboard-gallery-stage {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    width: min(100%, 80rem);
+    gap: 3rem;
+    margin-inline: auto;
+    padding: 4.5rem 1.25rem 5.5rem;
+  }
+
+  .storyboard-gallery-copy {
+    min-width: 0;
+  }
+
+  .storyboard-gallery h2 {
+    max-width: 11ch;
+    font-size: clamp(2.75rem, 5vw, 4.5rem);
+    text-wrap: balance;
+  }
+
+  .storyboard-gallery-intro {
+    max-width: 34rem;
+    margin-top: 1.75rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.8;
+  }
+
+  .storyboard-gallery-closing {
+    max-width: 30rem;
+    margin-top: 2rem;
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .storyboard-gallery-closing-title {
+    margin-bottom: 0.5rem;
+    color: var(--color-citron);
+    font-weight: 700;
+  }
+
+  .storyboard-gallery-pictures {
+    position: relative;
+    isolation: isolate;
+    min-width: 0;
+  }
+
+  .storyboard-gallery-photos {
+    display: grid;
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .storyboard-gallery-photo {
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    border-radius: 0.65rem;
+    background: var(--color-cocoa);
+    box-shadow: 0 1.25rem 3rem color-mix(in srgb, var(--color-obsidian) 18%, transparent);
+  }
+
+  .storyboard-gallery-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .storyboard-gallery-preview {
+    position: relative;
+    width: fit-content;
+    margin: 2rem auto 0;
+    border-radius: 999px;
+    background: var(--color-cocoa);
+    padding: 0.35rem 0.75rem;
+    font-size: 0.75rem;
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  .storyboard-gallery-scroll {
+    display: none;
+  }
+
   .storyboard-gallery-oval {
     position: absolute;
-    top: 12%;
-    right: -16rem;
-    height: 23rem;
-    width: 39rem;
+    z-index: -1;
+    top: 20%;
+    right: -12rem;
+    height: 28rem;
+    width: 46rem;
     border-radius: 999px;
     background: var(--color-flame);
     pointer-events: none;
     transform: rotate(-10deg);
-    transition: transform 220ms ease-out;
-    will-change: transform;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .storyboard-gallery-oval {
-      transition: none;
+  .is-stacked .storyboard-gallery-stage {
+    height: 100svh;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    align-items: center;
+    gap: clamp(3rem, 5vw, 5rem);
+    padding-block: 3rem;
+  }
+
+  .is-stacked .storyboard-gallery-photos {
+    position: relative;
+    display: block;
+    width: 94%;
+    aspect-ratio: 4 / 3;
+    max-height: 62svh;
+    margin-inline: auto;
+  }
+
+  .is-stacked .storyboard-gallery-photo {
+    position: absolute;
+    inset: 0;
+    aspect-ratio: auto;
+    will-change: transform, opacity;
+  }
+
+  .is-stacked .storyboard-gallery-scroll {
+    display: block;
+    max-width: 17rem;
+    margin-top: 2rem;
+  }
+
+  .storyboard-gallery-scroll p {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.85rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .storyboard-gallery-track {
+    height: 2px;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--color-cream) 25%, transparent);
+  }
+
+  .storyboard-gallery-track span {
+    display: block;
+    height: 100%;
+    background: var(--color-citron);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  @media (min-width: 600px) {
+    .storyboard-gallery-stage {
+      padding-inline: 2.5rem;
+    }
+
+    .storyboard-gallery-photos {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media print {
+    .storyboard-gallery-stage {
+      padding-block: 2rem;
+    }
+
+    .storyboard-gallery-photo {
+      break-inside: avoid;
+      box-shadow: none;
     }
   }
 </style>
 
 <script>
-  function initGalleryParallax() {
-    const shape = document.querySelector<HTMLElement>('[data-gallery-parallax]');
-    if (!shape || shape.dataset.parallaxReady === 'true') return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    shape.dataset.parallaxReady = 'true';
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-    const controller = new AbortController();
-    const base = window.getComputedStyle(shape).transform;
-    const depth = Number(shape.dataset.galleryParallax || 0);
-    let pointerX = 0;
-    let pointerY = 0;
-    let frame = 0;
+  gsap.registerPlugin(ScrollTrigger);
+  let disposeGallery: (() => void) | undefined;
 
-    const render = () => {
-      frame = 0;
-      const rect = shape.getBoundingClientRect();
-      const sectionOffset =
-        ((rect.top + rect.height / 2 - window.innerHeight / 2) / window.innerHeight) * depth * -0.42;
-      shape.style.transform = `${base === 'none' ? '' : base} translate3d(${(pointerX * depth).toFixed(1)}px, ${(pointerY * depth + sectionOffset).toFixed(1)}px, 0)`;
-    };
+  function initStoryboardGallery() {
+    disposeGallery?.();
+    disposeGallery = undefined;
+    const section = document.querySelector<HTMLElement>('[data-storyboard-gallery]');
+    const stage = section?.querySelector<HTMLElement>('[data-gallery-stage]');
+    const photos = Array.from(section?.querySelectorAll<HTMLElement>('[data-gallery-photo]') ?? []);
+    const closing = section?.querySelector<HTMLElement>('[data-gallery-closing]');
+    const progress = section?.querySelector<HTMLElement>('[data-gallery-progress]');
+    if (!section || !stage || photos.length < 2 || !closing || !progress) return;
 
-    const requestRender = () => {
-      if (!frame) frame = window.requestAnimationFrame(render);
-    };
+    const media = gsap.matchMedia();
+    media.add({
+      desktop: '(min-width: 1024px) and (min-height: 700px)',
+      motion: '(prefers-reduced-motion: no-preference)',
+      print: 'print',
+    }, (context) => {
+      if (!context.conditions?.desktop || !context.conditions.motion || context.conditions.print) return;
 
-    window.addEventListener('pointermove', (event) => {
-      pointerX = (event.clientX / window.innerWidth - 0.5) * 2;
-      pointerY = (event.clientY / window.innerHeight - 0.5) * 2;
-      requestRender();
-    }, { passive: true, signal: controller.signal });
-    window.addEventListener('scroll', requestRender, { passive: true, signal: controller.signal });
-    window.addEventListener('resize', requestRender, { passive: true, signal: controller.signal });
-    document.addEventListener('astro:before-swap', () => {
-      controller.abort();
-      window.cancelAnimationFrame(frame);
-    }, { once: true, signal: controller.signal });
-    requestRender();
+      section.classList.add('is-stacked');
+      gsap.set(photos, { opacity: 0, yPercent: 110, xPercent: 12, rotation: 10, scale: 1.04 });
+      gsap.set(photos[0], { opacity: 1, yPercent: 0, xPercent: 0, rotation: -6, scale: 1 });
+      gsap.set(closing, { opacity: 0, y: 18 });
+
+      ScrollTrigger.create({
+        trigger: section,
+        start: 'top bottom',
+        once: true,
+        onEnter: () => context.add(() => {
+          const timeline = gsap.timeline({
+            scrollTrigger: {
+              id: 'candidate-photo-stack',
+              trigger: section,
+              start: 'top top',
+              end: () => `+=${window.innerHeight * (photos.length * 0.6 + 0.5)}`,
+              pin: stage,
+              scrub: 1.1,
+              invalidateOnRefresh: true,
+            },
+          });
+
+          photos.slice(1).forEach((photo, index) => {
+            const at = 0.3 + index * 1.25;
+            timeline.to(photos.slice(0, index + 1), {
+              y: (photoIndex) => -(index + 1 - photoIndex) * 8,
+              scale: (photoIndex) => 1 - (index + 1 - photoIndex) * 0.012,
+              duration: 1,
+              ease: 'power2.inOut',
+            }, at);
+            timeline.to(photo, {
+              opacity: 1,
+              yPercent: 0,
+              xPercent: 0,
+              rotation: [4, -4, 3, -2, 1][index % 5],
+              scale: 1,
+              duration: 1,
+              ease: 'power3.inOut',
+            }, at);
+          });
+
+          timeline.to(closing, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, '+=0.25');
+          timeline.to({}, { duration: 0.5 });
+          timeline.to(progress, { scaleX: 1, duration: timeline.duration(), ease: 'none' }, 0);
+          ScrollTrigger.refresh();
+        }),
+      });
+
+      return () => section.classList.remove('is-stacked');
+    }, section);
+
+    disposeGallery = () => media.revert();
   }
 
-  initGalleryParallax();
-  document.addEventListener('astro:page-load', initGalleryParallax);
+  initStoryboardGallery();
+  document.addEventListener('astro:page-load', initStoryboardGallery);
+  document.addEventListener('astro:before-swap', () => {
+    disposeGallery?.();
+    disposeGallery = undefined;
+  });
 </script>

@@ -8,8 +8,9 @@ Premium Astro website concept for Change Hospitality, focused on editorial luxur
 - Tailwind tokens for Obsidian, Champagne, Off-White and B-Corp Green.
 - GSAP + ScrollTrigger effects wrapped in responsive `matchMedia()` rules, with simplified mobile motion and reduced-motion support.
 - Lenis smooth scrolling for desktop polish.
+- Recruiter-page client logos scroll only while the logo strip is in view, pausing off-screen and resuming from the same position. Hover, keyboard focus, the pause control and reduced-motion preferences remain respected.
 - Role-specific candidate applications with server-validated CV attachments and consultant email routing.
-- Sanity-managed job listings and team profiles, with a standalone Studio in `studio/`.
+- Sanity-managed job listings, team profiles and environmental impact numbers, with a standalone Studio in `studio/`.
 - Shareable `/jobs/[slug]/` detail routes with assigned consultant contacts and role-specific stepped applications.
 - Reusable recruiter staffing brief with accessible multi-select controls, responsive motion and SMTP delivery.
 - SEO metadata, Open Graph tags, JSON-LD and sitemap generation.
@@ -22,6 +23,7 @@ Premium Astro website concept for Change Hospitality, focused on editorial luxur
 | `npm run dev` | Start local development at `localhost:4321` |
 | `npm run build` | Build the production site to `dist/` |
 | `npm test` | Run the Vercel function and SMTP configuration tests |
+| `npm run test:e2e` | Run homepage scroll/reload and franchising regressions in desktop and mobile Chromium |
 | `npm run preview` | Preview the built site locally |
 
 ## Email Flows
@@ -29,6 +31,12 @@ Premium Astro website concept for Change Hospitality, focused on editorial luxur
 The job application form posts multipart data to the Vercel function at `/api/apply`. The function validates the candidate fields and CV, confirms the published job and assigned consultant in Sanity, then sends the application to that consultant with the CV attached. If `APPLICATIONS_INBOX` is configured, it receives a blind copy and acts as a fallback when a consultant has no valid email. CVs are limited to 4 MB so the complete multipart request stays below Vercel's function payload limit.
 
 Job and team content is loaded from the Sanity `production` dataset during each static build. Each published job generates a static `/jobs/[slug]/` page.
+
+The **To date** impact numbers on `/sustainability-impact/` also come from published Sanity content at build time. Before the first build, run `npm run seed:impact` in [studio/](studio/) to migrate the existing four figures without overwriting editorial changes. Editors can update values, labels, units, shapes and their order under **Environmental impact**, then publish and rebuild the site. Missing or invalid impact content fails the build rather than falling back to hardcoded numbers. See the [Studio workflow](studio/README.md#environmental-impact-numbers) for setup and deployment.
+
+The `/jobs/` hero uses a compact, keyboard-accessible Permanent / Temporary selector. Permanent mode shows a compact, transparent location and position filter toolbar within Open roles, with a single Search jobs action. Choose Anywhere and Any team to broaden the search again; the no-results state also provides a reset. Temporary mode hides those listings and filters in favour of the temporary-work experience. Filter selections are preserved when switching between modes.
+
+The hero content is vertically centred on larger screens, with content-driven height on mobile. Focused filter fields underline their labels instead of adding a second outer border.
 
 The recruiter experience lives at `/recruit-talent/`. Its form posts JSON to `/api/recruit-talent`, which validates and sanitizes the staffing brief before sending it to `RECRUITMENT_INBOX`.
 
@@ -58,6 +66,82 @@ Astro's local server does not execute root-level Vercel functions. Use `npx verc
 npm test
 ```
 
+## Jobs Page Gallery
+
+The candidate gallery in [src/components/StoryboardGallery.astro](src/components/StoryboardGallery.astro) uses a borderless photo stack on desktop. Its scroll-scrubbed timeline is created as the section approaches the viewport, pins the section while photos arrive one at a time, then reveals the closing message. Pinning starts at the section's actual top edge, without velocity-based anticipation that can cause an early snap during smooth scrolling. Mobile, short viewports, reduced-motion preferences, printing and browsers without JavaScript use an unpinned photo grid.
+
+The current group photos are **temporary Unsplash placeholders**, not photographs of Change candidates. Replace `galleryItems` with approved candidate/group photos and accurate alt text, then remove the visible photo-preview note and placeholder wording from the list label. Keep the supplied image dimensions and responsive sources aligned with the final photos.
+
+## Loading & Missing Pages
+
+The homepage uses [StoryLoadingScreen.astro](src/components/StoryLoadingScreen.astro) while its opening story assets decode and the scroll timeline initializes. The branded hatching-egg illustration is inline SVG/CSS, with actual asset progress, a reduced-motion treatment and no artificial minimum wait. Scrolling and background controls stay locked until the story and fonts are ready. Other static pages do not incur a loading-screen delay.
+
+The opening story reserves its scroll height in the server-rendered layout so reload restoration can reach the same position before hydration. The canvas is synchronized on ScrollTrigger refresh, and the restored scene is decoded and drawn before the loader releases the page. Reloading within the story or in a section below it therefore preserves both the scroll position and the animation frame without requiring a wheel/touch event. Reduced-motion, failed-asset and JavaScript-disabled views do not reserve pin space.
+
+For browser regression coverage, run `npx playwright install chromium` once, then `npm run test:e2e`. [The reload tests](tests/e2e/home-story-reload.spec.js) check seven positions from the first frame through the footer, compare the position, rendered frame and visible copy before any input, then check that a tiny wheel event does not cause a jump. The suite runs against an existing local server at `127.0.0.1:4321`, or starts and stops one automatically.
+
+If the opening assets fail, or initialization exceeds 15 seconds, the loader releases the page into the readable story with a visible explanation. Pending animation work is cancelled so it cannot later pin the page or move the visitor. JavaScript-disabled visitors see the readable story without a loading overlay.
+
+[404.astro](src/pages/404.astro) generates the static host's `404.html` with a noindex directive. Its main button returns home by default; missing `/jobs/{slug}/` URLs (and the singular `/job/{slug}/` form) instead offer **Explore jobs**. Client-side URL detection handles static hosts that reuse the same 404 document for every missing path.
+
+## Shared Buttons
+
+`PrimaryButton` and `SecondaryButton` are named exports from [src/components/Button.tsx](src/components/Button.tsx). Both use Lucide React icons and the original story button's 2px border, rounded shape, 450ms left-to-right colour wipe, slight lift and diagonal icon movement. Their styles live in [src/components/Button.module.css](src/components/Button.module.css), not the global stylesheet.
+
+```astro
+---
+import { ArrowRight } from 'lucide-react';
+import { PrimaryButton, SecondaryButton } from '../components/Button';
+---
+
+<PrimaryButton
+  href="/jobs/"
+  shadow={false}
+  backgroundColor="var(--color-cocoa)"
+  textColor="var(--color-cream)"
+  hoverBackgroundColor="var(--color-citron)"
+  hoverTextColor="var(--color-ink)"
+  icon={ArrowRight}
+>
+  Find work
+</PrimaryButton>
+
+<SecondaryButton type="button" data-empty-show-all>
+  Show all jobs
+</SecondaryButton>
+```
+
+Use the same props in React/TSX. Without `href`, either component renders a native button (`type="button"` by default); with `href`, it renders a native link. Native attributes, React event handlers, refs, `aria-*`, `data-*`, `className` and `style` are forwarded. Use `type="submit"` for form submission. Do not add a `client:*` directive in Astro unless React event handlers actually need hydration: these page CTAs render as static HTML, while the existing interactive home story hydrates them as part of its island.
+
+| Prop | Default / behaviour |
+| :-- | :-- |
+| `backgroundColor` | Primary only; `var(--color-cream)`. Secondary always starts transparent. |
+| `hoverBackgroundColor` | `var(--color-blush)` |
+| `textColor` / `hoverTextColor` | `var(--color-ink)` |
+| `borderColor` | `var(--color-ink)`; also colours the optional shadow and focus ring |
+| `shadow` | `true` for Primary, `false` for Secondary |
+| `icon` | Lucide `ArrowUpRight`; pass another Lucide component or `null` for no icon |
+
+Choose existing colour tokens with sufficient text contrast for both resting and hover states. Home keeps raised shadows; Jobs, Team and Recruit opt out. The temporary form and Recruit page use cocoa rather than flame behind light button text for AA contrast. “Show all jobs”, the homepage sustainability CTA and Recruit's hero telephone link use the outlined Secondary variant. Keyboard focus triggers the same fill, disabled native buttons skip the effect, and reduced-motion preferences disable spatial motion. Page styles retain only placement or context-specific sizing via `--button-min-height`, `--button-padding`, `--button-gap`, `--button-font-size` and `--button-icon-size`.
+
+Home, Jobs, Team, Recruit and Our Story content CTAs use these components, including Recruit's staffing-brief submit button and Our Story's letter controls. Recruit retains its compact short-viewport button sizing and hides the hero telephone link on small screens as before. Menu toggles, work-mode switches, pagination, accordion controls, map markers, inline links and footers remain unchanged. Other page-specific global styles are outside this button extraction.
+
+Focused component tests run with `node --experimental-strip-types --test src/lib/buttons.test.js` and are also included in `npm test`.
+
+## Our Story Page
+
+The desktop letter in [src/components/OurStory.astro](src/components/OurStory.astro) uses a `600svh` sticky section, leaving five viewport-heights of scroll travel instead of ten. The typewriter reveal therefore advances twice as fast for the same scroll input. Mobile and short viewports retain their natural, unpinned flow; reduced-motion preferences, printing and no-JavaScript reading retain the complete letter.
+
+All four story content actions use the shared `PrimaryButton` without React hydration. The letter entry keeps its downward arrow, the closing links keep their destinations and colours, and "Read full letter" still exits the animation and focuses the complete letter. The read control stays hidden when the animation is unavailable or has been skipped.
+
+## Team Page
+
+The team page always lists London, Manchester, then Hampshire, using stable office slugs so existing Sanity display-order values and office renames do not change that sequence. Additional active offices follow, sorted by their display order and then name; inactive offices remain hidden.
+
+Profile cards consistently use the cream surface. The Sanity profile label colour controls only the small label over the portrait. Open office panels cycle through mint, flame, blush and citron, never cream. The team page uses a slightly darker, token-derived flame surface with off-white text for AA contrast, including the role badges. Closed panels retain dark text on paper, and the numbered badges keep their own light surface and dark text.
+
+The hero's "Meet the team" link uses the shared `PrimaryButton` with a cocoa face and no shadow, without additional client-side JavaScript.
+
 ## Sanity Studio
 
 Sanity Studio is maintained as an independent project in `studio/` and is configured for project `3z2hqf8g`, dataset `production`. Editors can create, publish, update and remove jobs and team members there. A job must reference a team member, so Sanity will prevent deleting a team member while a published job still uses them.
@@ -81,11 +165,19 @@ The deployed `*.sanity.studio` URL uses Sanity login and project roles. Uploaded
 
 Because the site is statically generated, publishing in Studio requires a new Vercel deployment before the public pages change. Configure a Vercel Deploy Hook and a Sanity webhook for document creates, updates and deletes on `job` and `consultant` documents.
 
-## Franchise Film
+## Franchising Page & Film
+
+The franchising page follows Recruit and Our Story's warm brand palette, display typography, illustrations and shared buttons. The original opportunity copy is preserved across four numbered chapters: the sector, the proven model, national relationships and franchisee support. `PageMotion` supplies the same Lenis scrolling, entry reveals and desktop-only layered parallax as the other brand pages. Content stays visible without JavaScript; reduced-motion and print views skip the motion, and mobile layouts are unpinned.
+
+The hero's entrance uses opacity and translation without a clipping mask, so heading descenders, lifted button borders and keyboard focus outlines remain visible.
+
+Run `npm run test:e2e -- franchising` for content preservation, shared CTA destinations and keyboard focus, hero hover/descender clipping, responsive layout, the film's coming-soon state, lazy desktop parallax, reduced motion, client navigation and no-JavaScript coverage.
 
 The film feature on `/franchising/` is configured by `franchiseFilm` at the top of [src/pages/franchising.astro](src/pages/franchising.astro). Leave `src` empty to show the illustrated "Film coming soon" state. Set `src` to a public, direct MP4 URL to render the native video player; an embed-page URL (YouTube, Vimeo or a dashboard link) will not work in this field.
 
-Set `poster` to a still from the actual film, `captions` to an English WebVTT file and `transcriptUrl` to an accessible transcript page. Provide captions for speech and meaningful sounds, and audio description when essential visual information is not conveyed in the soundtrack. The player preserves the film's aspect ratio inside a stable 16:9 area, supports inline mobile playback, and has no autoplay or video preloading. A poster image is still downloaded when supplied. Real playback and caption timing must be checked after the final assets are available.
+The presentation lives in [src/components/FranchiseFilm.astro](src/components/FranchiseFilm.astro): a rounded cinema frame, branded illustrated poster and editorial caption. The coming-soon state is deliberately not a play button. Once configured, the native player replaces the illustration and an **Open film** link provides direct access to the media.
+
+Set `poster` to a still from the actual film, `captions` to an English WebVTT file and `transcriptUrl` to an accessible transcript page. Provide captions for speech and meaningful sounds, and audio description when essential visual information is not conveyed in the soundtrack. The player preserves the film's aspect ratio inside a stable 16:9 area (the illustrated placeholder uses a taller mobile layout), supports inline mobile playback, and has no autoplay or video preloading. A poster image is still downloaded when supplied. Real playback and caption timing must be checked after the final assets are available.
 
 For one short, infrequently watched film, use a compressed H.264/AAC MP4 with fast-start metadata on **Cloudflare R2 Standard storage**, exposed through an R2 custom domain. Use 720p or 1080p depending on the footage and aim for roughly 20-40 MB for a short film, checking visual quality rather than imposing a hard size limit. R2 is object storage, not an adaptive streaming/transcoding service; consider Cloudflare Stream or a dedicated video platform if longer films or multiple quality levels become necessary.
 

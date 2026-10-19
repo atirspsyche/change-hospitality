@@ -1,4 +1,5 @@
 ---
+import { PrimaryButton, SecondaryButton } from './Button';
 import EggIllustration from './EggIllustration.astro';
 ---
 
@@ -14,8 +15,21 @@ import EggIllustration from './EggIllustration.astro';
         We meet all our candidates face-to-face, every time. That's how we know they can do the job, and how we know they'll fit in once they're through your door.
       </p>
       <div class="recruit-hero-actions">
-        <a class="recruit-hero-button recruit-hero-button-primary" href="#staffing-brief">Get in touch <span aria-hidden="true">&darr;</span></a>
-        <a class="recruit-hero-button recruit-hero-button-secondary" href="tel:02080506312">Call US - 020 8050 6312</a>
+        <PrimaryButton
+          className="recruit-hero-button"
+          href="#staffing-brief"
+          shadow={false}
+          backgroundColor="var(--color-cocoa)"
+          textColor="var(--color-cream)"
+        >
+          Get in touch
+        </PrimaryButton>
+        <SecondaryButton
+          className="recruit-hero-button recruit-hero-button-secondary"
+          href="tel:02080506312"
+        >
+          Call US - 020 8050 6312
+        </SecondaryButton>
       </div>
       <dl class="recruit-hero-proof" aria-label="Change Hospitality recruitment approach">
         <div><dt>20+</dt><dd>years of hospitality networks</dd></div>
@@ -106,37 +120,6 @@ import EggIllustration from './EggIllustration.astro';
     flex-direction: column;
     gap: 0.75rem;
     margin-top: 2rem;
-  }
-
-  .recruit-hero-button {
-    display: inline-flex;
-    min-height: 3.8rem;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    border: 0;
-    border-radius: 1.2rem;
-    padding: 0.9rem 1.3rem;
-    font-size: 0.88rem;
-    font-weight: 900;
-    text-align: center;
-    text-transform: uppercase;
-    transition: transform 280ms var(--ease-cartoon), background-color 220ms ease;
-  }
-
-  .recruit-hero-button-primary {
-    background: var(--color-flame);
-    color: var(--color-cream);
-  }
-
-  .recruit-hero-button-secondary {
-    background: var(--color-cream);
-    color: var(--color-ink);
-  }
-
-  .recruit-hero-button:hover,
-  .recruit-hero-button:focus-visible {
-    transform: translateY(-0.25rem) rotate(-1deg);
   }
 
   .recruit-hero-proof {
@@ -373,10 +356,6 @@ import EggIllustration from './EggIllustration.astro';
       margin-top: 1.15rem;
     }
 
-    .recruit-hero-button {
-      min-height: 3.4rem;
-    }
-
     .recruit-hero-button-secondary,
     .recruit-hero-proof {
       display: none;
@@ -517,9 +496,9 @@ import EggIllustration from './EggIllustration.astro';
     }
 
     .recruit-hero-button {
-      min-height: 2.75rem;
-      padding: 0.6rem 0.8rem;
-      font-size: 0.75rem;
+      --button-min-height: 2.75rem;
+      --button-padding: 0.6rem 0.8rem;
+      --button-font-size: 0.75rem;
     }
 
     .recruit-brief-stage {

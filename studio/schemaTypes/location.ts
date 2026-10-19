@@ -45,7 +45,7 @@ export const location = defineType({
       title: 'Display order',
       type: 'number',
       initialValue: 1000,
-      description: 'Lower numbers appear first; offices with the same order are sorted by name.',
+      description: 'London, Manchester and Hampshire appear first in that order on the team page. Other offices use this order, then their name.',
       validation: (rule) => rule.integer().min(0),
     }),
   ],

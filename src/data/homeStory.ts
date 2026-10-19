@@ -62,6 +62,7 @@ export const homeStory = {
   framePadding: 4,
   extension: "webp",
   movementWeight: 6.9,
+  scrollScreens: 10,
   initialChunkSize: 24,
   streamChunkSize: 16,
   desktopFramePrefix: "/story_sequence/",
@@ -72,6 +73,9 @@ export const homeStory = {
   animation: {
     referenceWidth: 1920,
     referenceHeight: 1080,
+    carton: {
+      copyBounds: { left: 560, right: 1320, top: 340, bottom: 720 },
+    },
     hand: {
       frames: [55, 84] as const,
       // Keep these sequence frames ABOVE the coded hand so the carton hides it.
@@ -125,10 +129,7 @@ export const homeStory = {
     },
     plate: {
       frames: [256, 266] as const,
-      leftFrame: 259,
       sourceFrame: 256,
-      rotation: -45,
-      leftMargin: 0.1,
     },
     cutlery: {
       frames: [266, 279] as const,
@@ -261,27 +262,35 @@ export const homeStory = {
       },
     },
     {
-      id: "plate-left",
-      label: "Plate on the left",
-      frames: [256, 259],
-      holdFrame: 259,
+      id: "plate-center-next",
+      label: "Plate stays centered for a second reveal",
+      frames: [256, 256],
+      holdFrame: 256,
       holdWeight: 1.3,
-      approachWeight: 0.95,
       overlay: {
-        layout: "right",
-        eyebrow: "Ready when you are",
-        heading: "Your next move is on the pass.",
-        body: "Explore live hospitality roles or tell us who your team needs next.",
-        action: { label: "Franchising", href: "/franchising/", tone: "citron" },
+        layout: "sides",
+        columns: [
+          {
+            eyebrow: "Franchising",
+            heading: "Build something of your own",
+            body: "Bring your hospitality experience and local relationships to a business of your own. Explore franchising with Change Hospitality.",
+            action: { label: "Franchising", href: "/franchising/", tone: "citron" },
+          },
+          {
+            eyebrow: "Ready when you are",
+            heading: "Your next move is on the pass.",
+            body: "Great venues deserve great teams. Tell us who your team needs next and start a conversation with people who know hospitality.",
+            action: { label: "Start a conversation", href: "/recruit-talent/", tone: "citron" },
+          },
+        ],
       },
     },
     {
       id: "final-plate",
-      label: "Plate returns and cutlery arrives",
-      frames: [259, 279],
+      label: "Centered plate and cutlery arrives",
+      frames: [256, 279],
       holdFrame: 266,
       holdWeight: 0,
-      approachWeight: 0.65,
       overlayFrames: [266, 279],
       overlay: {
         layout: "bottom",

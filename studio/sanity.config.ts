@@ -16,10 +16,24 @@ export default defineConfig({
             S.documentTypeListItem('job').title('Jobs'),
             S.documentTypeListItem('consultant').title('Team members'),
             S.documentTypeListItem('location').title('Locations'),
+            S.listItem()
+              .id('environmental-impact')
+              .title('Environmental impact')
+              .child(
+                S.document()
+                  .schemaType('environmentalImpact')
+                  .documentId('environmental-impact'),
+              ),
           ]),
     }),
   ],
   schema: {
     types: schemaTypes,
+    templates: (templates) => templates.filter((template) => template.schemaType !== 'environmentalImpact'),
+  },
+  document: {
+    actions: (actions, context) => context.schemaType === 'environmentalImpact'
+      ? actions.filter((action) => action.action !== 'duplicate' && action.action !== 'delete')
+      : actions,
   },
 });

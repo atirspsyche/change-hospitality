@@ -104,7 +104,7 @@ export default function ProfileCard({
     >
       <article
         ref={shellRef}
-        className="team-profile-card group relative isolate flex h-full flex-col gap-3 overflow-hidden rounded-3xl border-ink bg-(--team-accent) p-3.5 text-ink"
+        className="team-profile-card group relative isolate flex h-full flex-col gap-3 overflow-hidden rounded-3xl border-ink bg-cream p-3.5 text-ink"
       >
         {/* <div className="team-card-blob pointer-events-none absolute -right-10 -top-12 h-40 w-40 rounded-[38%_62%_52%_48%/45%_38%_62%_55%] bg-ink opacity-0 transition-opacity duration-300" aria-hidden="true" /> */}
 
@@ -116,7 +116,7 @@ export default function ProfileCard({
               {getInitials(name)}
             </div>
           )}
-          <p className="absolute bottom-3 left-3 right-3 w-fit max-w-[calc(100%-1.5rem)] -rotate-1 rounded-xl bg-citron px-3 py-2 text-[0.65rem] font-black uppercase leading-tight text-ink">
+          <p className="absolute bottom-3 left-3 right-3 w-fit max-w-[calc(100%-1.5rem)] -rotate-1 rounded-xl bg-(--team-accent) px-3 py-2 text-[0.65rem] font-black uppercase leading-tight text-ink">
             {signal}
           </p>
           <span className="absolute right-3 top-3 grid h-10 w-10 rotate-3 place-items-center rounded-full bg-cream p-2" aria-hidden="true">
@@ -126,7 +126,7 @@ export default function ProfileCard({
 
         <div className="team-card-info relative z-10 px-1 pb-1">
           <h4 className="team-card-name font-serif font-semibold leading-none text-ink">{name}</h4>
-          <p className="team-card-title mt-2 w-fit rounded-lg bg-flame px-2.5 py-1.5 text-[0.65rem] font-black uppercase leading-tight text-cream">
+          <p className="team-card-title mt-2 w-fit rounded-lg bg-(--team-flame-surface) px-2.5 py-1.5 text-[0.65rem] font-black uppercase leading-tight text-off-white">
             {title}
           </p>
           <p className="mt-2 truncate text-sm font-bold leading-5 text-cocoa" title={note}>{note}</p>

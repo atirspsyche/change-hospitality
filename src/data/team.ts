@@ -22,13 +22,22 @@ export interface OfficeLocation {
   sortOrder?: number;
 }
 
+const teamOfficeOrder: readonly string[] = ['london', 'manchester', 'hampshire'];
+
 export const getTeamGroups = (locations: OfficeLocation[], members: TeamMember[]) => {
-  const accents = ['citron', 'mint', 'flame', 'blush'] as const;
+  const accents = ['mint', 'flame', 'blush', 'citron'] as const;
   return locations
     .filter((location) => location.active && location.slug?.current)
-    .sort((first, second) =>
-      (first.sortOrder ?? 1000) - (second.sortOrder ?? 1000) || first.name.localeCompare(second.name),
-    )
+    .sort((first, second) => {
+      const firstIndex = teamOfficeOrder.indexOf(first.slug.current);
+      const secondIndex = teamOfficeOrder.indexOf(second.slug.current);
+      const firstPriority = firstIndex === -1 ? teamOfficeOrder.length : firstIndex;
+      const secondPriority = secondIndex === -1 ? teamOfficeOrder.length : secondIndex;
+
+      return firstPriority - secondPriority
+        || (first.sortOrder ?? 1000) - (second.sortOrder ?? 1000)
+        || first.name.localeCompare(second.name);
+    })
     .map((location, index) => ({
       id: location.slug.current,
       label: location.name,

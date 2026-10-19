@@ -1,6 +1,6 @@
 ---
 interface Props {
-  page: 'home' | 'jobs' | 'story' | 'recruit' | 'impact' | 'team';
+  page: 'home' | 'jobs' | 'story' | 'recruit' | 'impact' | 'team' | 'franchising';
 }
 
 const { page } = Astro.props;
@@ -27,7 +27,7 @@ const { page } = Astro.props;
       reveals: '[data-map-copy], .home-story-link > *, .home-policy-link > *, #site-footer-title',
     },
     jobs: {
-      layers: '.jobs-hero-art, .storyboard-gallery-oval',
+      layers: '.jobs-hero-art',
       reveals: '#jobs h2',
     },
     story: {
@@ -45,6 +45,10 @@ const { page } = Astro.props;
     team: {
       layers: '.team-hero-composition, .team-hero-oval, .team-hero-confetti span, .team-section-oval',
       reveals: '.team-profiles-section h2',
+    },
+    franchising: {
+      layers: '.franchise-hero-orbit, .franchise-hero-card, .franchise-hero-note, .franchise-film-art',
+      reveals: '[data-franchise-reveal]',
     },
   };
 
@@ -70,8 +74,12 @@ const { page } = Astro.props;
       const lenis = new Lenis({
         duration: 1.2,
         smoothWheel: true,
-        prevent: (node) => Boolean(node.closest('[data-funmenu-overlay], [data-lenis-prevent]')),
+        prevent: (node) => document.documentElement.hasAttribute('data-story-loading')
+          || Boolean(node.closest('[data-funmenu-overlay], [data-lenis-prevent]')),
       });
+      if (document.documentElement.hasAttribute('data-story-loading')) lenis.stop();
+      document.addEventListener('story-loading-start', () => lenis.stop(), { signal: listeners.signal });
+      document.addEventListener('story-loading-end', () => lenis.start(), { signal: listeners.signal });
       const tick = (time: number) => lenis.raf(time * 1000);
       lenis.on('scroll', ScrollTrigger.update);
       gsap.ticker.add(tick);

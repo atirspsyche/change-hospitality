@@ -1,12 +1,6 @@
 ---
+import { BriefcaseBusiness, Clock3 } from "@lucide/astro";
 import EggIllustration from "./EggIllustration.astro";
-
-interface Props {
-  locations: string[];
-  positions: string[];
-}
-
-const { locations, positions } = Astro.props;
 ---
 
 <section class="jobs-hero" aria-labelledby="jobs-page-title" data-jobs-hero>
@@ -22,62 +16,24 @@ const { locations, positions } = Astro.props;
       </p>
 
       <fieldset class="jobs-mode-switch" data-jobs-mode-switch>
-        <legend>Choose how you want to work</legend>
-        <label>
-          <input type="radio" name="jobsMode" value="permanent" checked />
-          <span>Permanent</span>
-        </label>
-        <label>
-          <input type="radio" name="jobsMode" value="temporary" />
-          <span>Temporary</span>
-        </label>
+        <legend>What kind of work suits you?</legend>
+        <div class="jobs-mode-options">
+          <label>
+            <input type="radio" name="jobsMode" value="permanent" aria-controls="jobs" checked />
+            <span>
+              <BriefcaseBusiness size={18} aria-hidden="true" focusable="false" />
+              Permanent
+            </span>
+          </label>
+          <label>
+            <input type="radio" name="jobsMode" value="temporary" aria-controls="temporary-work" />
+            <span>
+              <Clock3 size={18} aria-hidden="true" focusable="false" />
+              Temporary
+            </span>
+          </label>
+        </div>
       </fieldset>
-
-      <form class="jobs-search" id="job-search-form" data-job-search-form>
-        <div class="jobs-search-fields">
-          <label>
-            <span class="jobs-select-label">Location</span>
-            <span class="jobs-select-control">
-              <select name="location" data-job-filter="location">
-                <option value="">Anywhere</option>
-                {
-                  locations.map((location) => (
-                    <option value={location}>{location}</option>
-                  ))
-                }
-              </select>
-              <span class="jobs-select-arrow" aria-hidden="true"></span>
-            </span>
-          </label>
-          <label>
-            <span class="jobs-select-label">Position</span>
-            <span class="jobs-select-control">
-              <select name="position" data-job-filter="position">
-                <option value="">Any team</option>
-                {
-                  positions.map((position) => (
-                    <option value={position}>{position}</option>
-                  ))
-                }
-              </select>
-              <span class="jobs-select-arrow" aria-hidden="true"></span>
-            </span>
-          </label>
-        </div>
-
-        <div class="jobs-search-actions">
-          <button class="jobs-search-primary" type="submit">
-            Search jobs <span aria-hidden="true">&#8599;</span>
-          </button>
-          <button
-            class="jobs-search-secondary"
-            type="button"
-            data-show-all-jobs
-          >
-            Show all jobs <span aria-hidden="true">&#8595;</span>
-          </button>
-        </div>
-      </form>
     </div>
 
     <div class="jobs-hero-art" aria-hidden="true">
@@ -90,11 +46,13 @@ const { locations, positions } = Astro.props;
   .jobs-hero {
     position: relative;
     isolation: isolate;
+    display: grid;
     min-height: 100vh;
+    align-items: center;
     overflow: hidden;
     background: var(--color-blush);
     color: var(--color-ink);
-    padding: 7.5rem 1.25rem 4rem;
+    padding: 7.5rem 1.25rem;
   }
 
   .jobs-hero::before,
@@ -152,7 +110,7 @@ const { locations, positions } = Astro.props;
   .jobs-hero h1 {
     max-width: 50rem;
     font-family: var(--font-hero);
-    font-size: clamp(3rem, 7vw, 7rem);
+    font-size: clamp(2.5rem, 6vw, 6rem);
     font-weight: 400;
     line-height: 0.9;
     text-wrap: balance;
@@ -171,39 +129,55 @@ const { locations, positions } = Astro.props;
     line-height: 1.5;
   }
 
-  .jobs-search {
-    position: relative;
-    z-index: 4;
-    width: min(100%, 57rem);
-    margin-top: 2.25rem;
-    border-radius: 1.25rem;
-    background: var(--color-cream);
-    padding: 0.75rem;
-  }
-
   .jobs-mode-switch {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    width: min(100%, 29rem);
-    margin-top: 2rem;
+    min-width: 0;
+    width: min(100%, 22rem);
+    margin-top: 2.25rem;
     border: 0;
-    border-radius: 1rem;
-    background: var(--color-cream);
-    padding: 0.4rem;
+    padding: 0;
   }
 
   .jobs-mode-switch legend {
+    margin-bottom: 0.85rem;
+    color: var(--color-cocoa);
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.4;
+    font-family: var(--font-display);
+  }
+
+  .jobs-mode-options {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border: 1px solid color-mix(in srgb, var(--color-cocoa) 35%, transparent);
+    border-radius: 999px;
+    background: var(--color-cream);
+    padding: 0.3rem;
+    box-shadow: 0 4px 0 color-mix(in srgb, var(--color-cocoa) 15%, transparent);
+  }
+
+  .jobs-mode-options::before {
     position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    clip-path: inset(50%);
-    white-space: nowrap;
+    top: 0.3rem;
+    bottom: 0.3rem;
+    left: 0.3rem;
+    width: calc(50% - 0.3rem);
+    border-radius: 999px;
+    background: var(--color-cocoa);
+    content: "";
+    transition: transform 320ms var(--ease-luxury);
+  }
+
+  .jobs-mode-options:has(input[value="temporary"]:checked)::before {
+    transform: translateX(100%);
   }
 
   .jobs-mode-switch label {
     position: relative;
+    z-index: 1;
+    min-width: 0;
     cursor: pointer;
   }
 
@@ -215,181 +189,30 @@ const { locations, positions } = Astro.props;
   }
 
   .jobs-mode-switch span {
-    display: grid;
-    min-height: 3.5rem;
-    place-items: center;
-    border-radius: 0.7rem;
+    display: flex;
+    min-height: 3.25rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 999px;
     color: var(--color-cocoa);
+    padding: 0.65rem 0.75rem;
     font-size: 0.82rem;
     font-weight: 900;
-    text-transform: uppercase;
-    transition: background-color 220ms ease, color 220ms ease, transform 280ms var(--ease-cartoon);
+    transition: background-color 220ms ease, color 220ms ease;
   }
 
   .jobs-mode-switch input:checked + span {
-    background: var(--color-flame);
     color: var(--color-cream);
   }
 
   .jobs-mode-switch input:focus-visible + span {
-    outline: 3px solid var(--color-ink);
+    outline: 3px solid var(--color-cocoa);
     outline-offset: 3px;
   }
 
-  .jobs-mode-switch label:hover span {
-    transform: translateY(-0.12rem);
-  }
-
-  .jobs-search-fields {
-    display: grid;
-    gap: 0.55rem;
-  }
-
-  .jobs-search label {
-    --select-accent: var(--color-flame);
-    --select-accent-text: var(--color-cream);
-    display: grid;
-    min-width: 0;
-    gap: 0.65rem;
-    border-radius: 0.85rem;
-    background: var(--color-paper);
-    padding: 0.7rem 0.7rem 0.7rem 0.85rem;
-    transition:
-      background-color 220ms ease,
-      transform 280ms var(--ease-cartoon);
-  }
-
-  .jobs-search label:nth-child(2) {
-    --select-accent: var(--color-cocoa);
-  }
-
-  .jobs-select-label {
-    width: fit-content;
-    border-radius: 999px;
-    background: var(--select-accent);
-    color: var(--select-accent-text);
-    padding: 0.35rem 0.55rem;
-    font-size: 0.7rem;
-    font-weight: 900;
-    line-height: 1;
-    text-transform: uppercase;
-  }
-
-  .jobs-select-control {
-    position: relative;
-    display: flex;
-    min-width: 0;
-    min-height: 2.75rem;
-    align-items: center;
-  }
-
-  .jobs-search select {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    min-width: 0;
-    min-height: 2.75rem;
-    appearance: none;
-    border: 0;
-    background: transparent;
-    color: var(--color-ink);
-    padding: 0 3.25rem 0 0.15rem;
-    font-size: 1rem;
-    font-weight: 900;
-    outline: 0;
-    cursor: pointer;
-  }
-
-  .jobs-search select option {
-    background: var(--color-cream);
-    color: var(--color-ink);
-    font-weight: 700;
-  }
-
-  .jobs-select-arrow {
-    position: absolute;
-    top: 50%;
-    right: 0;
-    display: grid;
-    width: 2.65rem;
-    aspect-ratio: 1;
-    place-items: center;
-    border-radius: 0.65rem;
-    background: var(--select-accent);
-    pointer-events: none;
-    transform: translateY(-50%);
-    transition: transform 280ms var(--ease-cartoon);
-  }
-
-  .jobs-select-arrow::before {
-    width: 0.58rem;
-    height: 0.58rem;
-    border-right: 0.16rem solid var(--select-accent-text);
-    border-bottom: 0.16rem solid var(--select-accent-text);
-    content: "";
-    transform: translateY(-0.14rem) rotate(45deg);
-  }
-
-  .jobs-search label:hover {
-    background: var(--color-cream);
-    transform: translateY(-0.12rem);
-  }
-
-  .jobs-search label:focus-within {
-    background: var(--color-mint);
-    transform: translateY(-0.18rem);
-  }
-
-  .jobs-search label:focus-within .jobs-select-arrow {
-    transform: translateY(-50%) rotate(-4deg) scale(1.05);
-  }
-
-  .jobs-search-actions {
-    display: grid;
-    gap: 0.55rem;
-    margin-top: 0.75rem;
-  }
-
-  .jobs-search button {
-    display: inline-flex;
-    min-height: 4rem;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    border: 0;
-    border-radius: 0.8rem;
-    padding: 1rem 1.2rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition:
-      transform 300ms var(--ease-cartoon),
-      background-color 220ms ease;
-  }
-
-  .jobs-search button span {
-    font-size: 1.35rem;
-  }
-
-  .jobs-search button:hover,
-  .jobs-search button:focus-visible {
-    transform: translateY(-0.18rem) rotate(-1deg);
-  }
-
-  .jobs-search-primary {
-    background: var(--color-cocoa);
-    color: var(--color-cream);
-    /* font-family: var(--font-display); */
-  }
-
-  .jobs-search-primary:hover,
-  .jobs-search-primary:focus-visible {
-    background: var(--color-flame);
-  }
-
-  .jobs-search-secondary {
-    background: var(--color-citron);
-    color: var(--color-ink);
+  .jobs-mode-switch label:hover input:not(:checked) + span {
+    background: color-mix(in srgb, var(--color-cocoa) 8%, transparent);
   }
 
   .jobs-hero-art {
@@ -404,12 +227,10 @@ const { locations, positions } = Astro.props;
     justify-content: flex-end;
   }
 
-  @media (min-width: 640px) {
-    .jobs-search-fields {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-    .jobs-search-actions {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+  @media (prefers-reduced-motion: reduce) {
+    .jobs-mode-options::before,
+    .jobs-mode-switch span {
+      transition: none;
     }
   }
 
@@ -429,6 +250,7 @@ const { locations, positions } = Astro.props;
     .jobs-hero {
       min-height: auto;
       padding-top: 7rem;
+      padding-bottom: 4rem;
     }
     .jobs-hero::before {
       left: -10rem;
@@ -439,7 +261,7 @@ const { locations, positions } = Astro.props;
       right: -12rem;
     }
     .jobs-hero h1 {
-      font-size: clamp(3.25rem, 16vw, 5.1rem);
+      font-size: clamp(2.75rem, 13.5vw, 4.25rem);
     }
     .jobs-hero-art {
       --egg-width: min(18rem, 74vw);

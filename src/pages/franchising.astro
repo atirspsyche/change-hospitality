@@ -1,6 +1,10 @@
 ---
-import { ArrowDown, ArrowUp, ArrowUpRight, Clapperboard, Mail, Phone } from '@lucide/astro';
+import { ArrowUp, ArrowUpRight } from '@lucide/astro';
+import { ArrowDown, Mail, Phone } from 'lucide-react';
+import { PrimaryButton, SecondaryButton } from '../components/Button';
+import FranchiseFilm from '../components/FranchiseFilm.astro';
 import FunMenu from '../components/FunMenu.astro';
+import PageMotion from '../components/PageMotion.astro';
 import StoryIllustration from '../components/StoryIllustration.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
@@ -12,6 +16,12 @@ const franchiseFilm = {
   captions: '',
   transcriptUrl: '',
 };
+const sectionLinks = [
+  { label: 'The opportunity', href: '#the-opportunity', meta: 'Your next chapter' },
+  { label: 'The Change way', href: '#the-change-way', meta: 'Get to know us' },
+  { label: "Let's talk", href: '#lets-talk', meta: 'Start a conversation' },
+];
+const locations = ['London', 'Manchester', 'Hampshire'];
 ---
 
 <BaseLayout
@@ -19,785 +29,466 @@ const franchiseFilm = {
   description="Build your own hospitality recruitment agency with Change Hospitality: over 20 years of experience, proven systems, established processes and national client agreements."
 >
   <FunMenu
+    sectionLinks={sectionLinks}
     menuButtonBackground="var(--color-blush)"
-    menuButtonBorderColor="var(--color-ink)"
-    menuButtonTextColor="var(--color-ink)"
+    menuButtonBorderColor="var(--color-cocoa)"
+    menuButtonTextColor="var(--color-cocoa)"
   />
+  <PageMotion page="franchising" />
 
-  <main class="franchising-page">
+  <main class="franchising-page brand-page">
     <section class="franchise-hero" aria-labelledby="franchise-title">
-      <div class="franchise-hero-inner">
-      <div class="hero-copy">
-        <p class="eyebrow hero-eyebrow">Your ambition. Our next chapter.</p>
-        <h1 id="franchise-title" tabindex="-1">Franchise with <span>Change.</span></h1>
-        <p class="hero-intro">
-          You bring the drive and the local knowledge.<br />
-          We bring two decades of knowing what works.
-        </p>
-        <a class="conversation-link" href="#lets-talk">Let's talk franchising <ArrowDown size={18} aria-hidden="true" /></a>
-      </div>
+      <div class="franchise-hero-orbit" aria-hidden="true"></div>
+      <div class="franchise-shell hero-layout">
+        <div class="hero-copy">
+          <p class="franchise-kicker">Independent spirit. Shared DNA.</p>
+          <h1 id="franchise-title" tabindex="-1">Franchise<br />with <span>Change.</span></h1>
+          <p class="hero-intro">
+            You bring the drive and the local knowledge.<br class="desktop-break" />
+            We bring two decades of knowing what works.
+          </p>
+          <div class="franchise-actions">
+            <PrimaryButton
+              href="#lets-talk"
+              shadow={false}
+              backgroundColor="var(--color-cocoa)"
+              textColor="var(--color-cream)"
+            >
+              Let's talk franchising
+            </PrimaryButton>
+            <SecondaryButton href="#the-opportunity" icon={ArrowDown} borderColor="var(--color-cocoa)" textColor="var(--color-cocoa)">
+              The opportunity
+            </SecondaryButton>
+          </div>
+        </div>
 
-      <div class="hero-baseline">
-        <div class="hero-character hero-character--chef" aria-hidden="true"><StoryIllustration kind="chef" /></div>
-        <p><strong>3</strong><span>Franchise locations.<br /><b>One shared ambition.</b></span></p>
-        <div class="hero-character hero-character--growth" aria-hidden="true"><StoryIllustration kind="sprout" /></div>
-      </div>
+        <div class="hero-composition">
+          <div class="hero-composition-shape" aria-hidden="true"></div>
+          <div class="franchise-hero-card">
+            <p class="card-eyebrow">Your ambition. Our next chapter.</p>
+            <p class="hero-card-title">Your business.<br /><span>Our know-how.</span></p>
+            <div class="hero-card-bottom">
+              <p><strong>20+</strong><span>years of<br />people-first recruitment</span></p>
+              <div class="hero-chef" aria-hidden="true"><StoryIllustration kind="chef" /></div>
+            </div>
+          </div>
+          <p class="franchise-hero-note"><ArrowUpRight size={28} aria-hidden="true" /><span>The next location?<br /><strong>That could be you.</strong></span></p>
+        </div>
+
+        <div class="hero-baseline">
+          <p>Good people. Great hospitality. <strong>Your next chapter.</strong></p>
+          <a href="#the-opportunity" aria-label="Explore the franchising opportunity"><ArrowDown size={20} aria-hidden="true" /></a>
+        </div>
       </div>
     </section>
 
-    <section class="franchise-next" id="the-opportunity" aria-labelledby="opportunity-title">
-      <div class="opportunity">
-        <div class="opportunity-heading">
-          <p class="eyebrow">Independent spirit. Shared DNA.</p>
-          <h2 id="opportunity-title">A proven model.<br />Your own business.</h2>
+    <section class="franchise-opportunity" id="the-opportunity" aria-labelledby="opportunity-title" tabindex="-1">
+      <div class="franchise-shell">
+        <div class="chapter-heading" data-franchise-reveal>
+          <span class="chapter-number" aria-hidden="true">01</span>
+          <p>The opportunity</p>
         </div>
-        <div class="opportunity-copy">
-          <p>
-            Hospitality is one of the UK's biggest employers with 3.5 million
-            people and a sector worth £93 billion. It's also one of the most
-            demanding to staff with the highest employee turnover of any industry
-            in the country, at over 50%. That means constant, year-round demand
-            for good recruitment, that doesn't disappear when the economy shifts.
-          </p>
-          <p>
-            We've spent over 20 years turning that demand into a profitable,
-            award-winning business - first in London, and now in Manchester and
-            Hampshire. It works because the model works: proven systems,
-            established processes, and a brand hospitality businesses already
-            trust. We currently cover London, Greater Manchester and the Hampshire
-            area, which leaves the rest of the UK wide open, and that's where you
-            come in.
-          </p>
-          <p>
-            What makes this different from starting out alone is that we already
-            hold national agreements with most of the UK's biggest caterers but
-            outside our current office areas, we can't service them. So the day
-            you open, that work is yours. You'd be supplying demand we already
-            have but can't yet reach.
-          </p>
-          <p>
-            As a Change franchisee, you'd build your own hospitality recruitment
-            agency in a location of your choice, under a name the industry already
-            knows, using the exact systems and support that got us here. You bring
-            the drive and the local knowledge; we bring two decades of knowing
-            what works, and we'll be alongside you at every step.
-          </p>
-        </div>
-      </div>
-
-      <section class="office-gallery" aria-labelledby="office-title">
-        <div class="office-gallery-heading">
-          <p class="eyebrow">Growing, together</p>
-          <h2 id="office-title">Three places.<br class="mobile-break" /> One Change.</h2>
-        </div>
-        <figure class="franchise-film" data-franchise-film>
-          <div class="franchise-film-frame">
-            <span class="film-tape" aria-hidden="true"></span>
-            <div class="franchise-film-screen">
-              {franchiseFilm.src ? (
-                <video
-                  src={franchiseFilm.src}
-                  poster={franchiseFilm.poster || undefined}
-                  controls
-                  playsinline
-                  preload="none"
-                  crossorigin="anonymous"
-                  aria-label="The Change Hospitality franchise film"
-                  aria-describedby="franchise-film-caption"
-                >
-                  {franchiseFilm.captions && (
-                    <track kind="captions" src={franchiseFilm.captions} srclang="en" label="English" default />
-                  )}
-                  <a href={franchiseFilm.src}>Watch the Change Hospitality franchise film</a>
-                </video>
-              ) : (
-                <div class="film-placeholder">
-                  <span class="film-wordmark">Change Hospitality</span>
-                  <div class="film-art film-art--chef" aria-hidden="true"><StoryIllustration kind="chef" /></div>
-                  <p class="film-placeholder-title">Good people.<br /><span>One Change.</span></p>
-                  <div class="film-art film-art--growth" aria-hidden="true"><StoryIllustration kind="sprout" /></div>
-                </div>
-              )}
-            </div>
-            <figcaption id="franchise-film-caption">
-              <span>Our people. Our places. One Change.</span>
-              {!franchiseFilm.src && <span class="film-status"><Clapperboard size={18} aria-hidden="true" /> Film coming soon</span>}
-              {franchiseFilm.src && franchiseFilm.transcriptUrl && <a href={franchiseFilm.transcriptUrl}>Read the transcript <ArrowUpRight size={16} aria-hidden="true" /></a>}
-            </figcaption>
+        <div class="opportunity-layout">
+          <h2 id="opportunity-title" data-franchise-reveal>Good hospitality.<br /><span>Great opportunity.</span></h2>
+          <div class="opportunity-copy" data-franchise-reveal>
+            <p>
+              Hospitality is one of the UK's biggest employers with 3.5 million
+              people and a sector worth £93 billion. It's also one of the most
+              demanding to staff with the highest employee turnover of any industry
+              in the country, at over 50%. That means constant, year-round demand
+              for good recruitment, that doesn't disappear when the economy shifts.
+            </p>
           </div>
-        </figure>
-      </section>
-
-      <div class="franchise-contact" id="lets-talk" aria-labelledby="contact-title" tabindex="-1">
-        <div class="contact-heading">
-          <p class="eyebrow">The next location could be yours</p>
-          <h2 id="contact-title">It starts with<br /><span>a hello.</span></h2>
-          <p>If that sounds like something you'd like to build, tell us a little about yourself by email or phone and we'll be in touch.</p>
         </div>
-        <div class="contact-links">
-          <a class="contact-link contact-link--email" href={emailLink}>
-            <span class="contact-label"><span><Mail size={16} aria-hidden="true" /> Drop us a line</span><ArrowUpRight size={24} aria-hidden="true" /></span>
-            <span class="contact-value">info@<wbr />changehospitality.co.uk</span>
-            <span class="contact-detail">Let's talk about your idea</span>
-          </a>
-          <a class="contact-link contact-link--phone" href="tel:+442080506312">
-            <span class="contact-label"><span><Phone size={16} aria-hidden="true" /> Have a conversation</span><ArrowUpRight size={24} aria-hidden="true" /></span>
-            <span class="contact-value">020 8050 6312</span>
-            <span class="contact-detail">Ask the team about franchising</span>
-          </a>
+        <dl class="opportunity-figures" aria-label="The UK hospitality sector" data-franchise-reveal>
+          <div><dt>3.5 million</dt><dd>people working in hospitality</dd></div>
+          <div><dt>£93 billion</dt><dd>a sector full of possibility</dd></div>
+          <div><dt>Year-round</dt><dd>demand for good recruitment</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="franchise-model" aria-labelledby="model-title">
+      <div class="franchise-shell model-layout">
+        <div class="model-copy">
+          <div class="chapter-heading" data-franchise-reveal>
+            <span class="chapter-number" aria-hidden="true">02</span>
+            <p>A proven model</p>
+          </div>
+          <h2 id="model-title" data-franchise-reveal>Built on experience.<br /><span>Ready for you.</span></h2>
+          <div class="opportunity-copy" data-franchise-reveal>
+            <p>
+              We've spent over 20 years turning that demand into a profitable,
+              award-winning business - first in London, and now in Manchester and
+              Hampshire. It works because the model works: proven systems,
+              established processes, and a brand hospitality businesses already
+              trust. We currently cover London, Greater Manchester and the Hampshire
+              area, which leaves the rest of the UK wide open, and that's where you
+              come in.
+            </p>
+          </div>
+          <a class="franchise-text-link" href="/our-story/">A little more about our story <ArrowUpRight size={20} aria-hidden="true" /></a>
+        </div>
+        <div class="location-board" data-franchise-reveal>
+          <p class="board-kicker">Three places. One Change.</p>
+          <ol class="location-list" aria-label="Our current locations">
+            {locations.map((location, index) => (
+              <li><span aria-hidden="true">0{index + 1}</span><strong>{location}</strong><span class="location-dot" aria-hidden="true"></span></li>
+            ))}
+          </ol>
+          <div class="location-next">
+            <span class="location-next-icon" aria-hidden="true"><ArrowUpRight size={30} /></span>
+            <p>And next?<br /><strong>Somewhere with you.</strong></p>
+          </div>
+          <p class="board-footnote">One shared ambition. Room to grow.</p>
         </div>
       </div>
+    </section>
 
-      <footer class="franchise-footer">
-        <a href="/">Change Hospitality</a>
-        <span>Good people. Great hospitality. Your next chapter.</span>
-        <a href="#franchise-title">Back to top <ArrowUp size={16} aria-hidden="true" /></a>
-      </footer>
+    <section class="franchise-film-section" id="the-change-way" aria-labelledby="film-title" tabindex="-1">
+      <div class="franchise-shell">
+        <div class="film-section-heading" data-franchise-reveal>
+          <div>
+            <p class="section-eyebrow">More than a name above the door</p>
+            <h2 id="film-title">Get a feel<br />for <span>Change.</span></h2>
+          </div>
+          <p>A people-first business.<br />A shared way of doing things.</p>
+        </div>
+        <FranchiseFilm {...franchiseFilm} />
+      </div>
+    </section>
+
+    <section class="franchise-network" aria-labelledby="network-title">
+      <div class="franchise-shell">
+        <div class="chapter-heading" data-franchise-reveal>
+          <span class="chapter-number" aria-hidden="true">03</span>
+          <p>A head start, not a cold start</p>
+        </div>
+        <div class="network-layout">
+          <h2 id="network-title" data-franchise-reveal>A national network.<br /><span>Your local knowledge.</span></h2>
+          <div class="opportunity-copy" data-franchise-reveal>
+            <p>
+              What makes this different from starting out alone is that we already
+              hold national agreements with most of the UK's biggest caterers but
+              outside our current office areas, we can't service them. So the day
+              you open, that work is yours. You'd be supplying demand we already
+              have but can't yet reach.
+            </p>
+          </div>
+        </div>
+        <div class="network-path" data-franchise-reveal>
+          <div><span>We bring</span><strong>Established<br />relationships.</strong></div>
+          <span class="network-connector" aria-hidden="true">+</span>
+          <div><span>You bring</span><strong>Local insight.<br />Personal ambition.</strong></div>
+          <span class="network-connector" aria-hidden="true">=</span>
+          <div class="network-result"><span>Together</span><strong>Your own<br />Change business.</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="franchise-partnership" aria-labelledby="partnership-title">
+      <div class="franchise-shell partnership-layout">
+        <div class="partnership-art" aria-hidden="true" data-franchise-reveal>
+          <div class="partnership-art-shape"></div>
+          <div class="partnership-chef"><StoryIllustration kind="chef" /></div>
+          <div class="partnership-pan"><StoryIllustration kind="pan" /></div>
+          <p>Your business.<br />Our people in your corner.</p>
+        </div>
+        <div>
+          <div class="chapter-heading" data-franchise-reveal>
+            <span class="chapter-number" aria-hidden="true">04</span>
+            <p>Growing, together</p>
+          </div>
+          <h2 id="partnership-title" data-franchise-reveal>Independent.<br /><span>Never on your own.</span></h2>
+          <div class="opportunity-copy" data-franchise-reveal>
+            <p>
+              As a Change franchisee, you'd build your own hospitality recruitment
+              agency in a location of your choice, under a name the industry already
+              knows, using the exact systems and support that got us here. You bring
+              the drive and the local knowledge; we bring two decades of knowing
+              what works, and we'll be alongside you at every step.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="franchise-contact" id="lets-talk" aria-labelledby="contact-title" tabindex="-1">
+      <div class="franchise-shell contact-layout">
+        <div class="contact-heading" data-franchise-reveal>
+          <p class="franchise-kicker">The next location could be yours</p>
+          <h2 id="contact-title">Big plans?<br /><span>Start with a hello.</span></h2>
+        </div>
+        <div class="contact-copy" data-franchise-reveal>
+          <p>If that sounds like something you'd like to build, tell us a little about yourself by email or phone and we'll be in touch.</p>
+          <div class="contact-actions">
+            <PrimaryButton href={emailLink} icon={Mail} shadow={false} backgroundColor="var(--color-cocoa)" textColor="var(--color-cream)">
+              Let's talk franchising
+            </PrimaryButton>
+            <SecondaryButton href="tel:+442080506312" icon={Phone} borderColor="var(--color-cocoa)" textColor="var(--color-cocoa)">
+              Call 020 8050 6312
+            </SecondaryButton>
+          </div>
+          <a class="contact-email" href={emailLink}>info@<wbr />changehospitality.co.uk <ArrowUpRight size={18} aria-hidden="true" /></a>
+        </div>
+      </div>
     </section>
   </main>
+
+  <footer class="franchise-footer">
+    <div class="franchise-shell">
+      <a class="footer-brand" href="/">Change Hospitality</a>
+      <nav aria-label="Footer navigation">
+        <a href="/recruit-talent/">Recruit talent</a>
+        <a href="/our-story/">Our story</a>
+        <a href="/team/">Our people</a>
+      </nav>
+      <a href="#franchise-title">Back to top <ArrowUp size={16} aria-hidden="true" /></a>
+    </div>
+  </footer>
 </BaseLayout>
 
 <style>
-  :global(html:has(.franchising-page)),
-  :global(body:has(.franchising-page)) {
-    background: var(--color-citron);
-    color: var(--color-ink);
-  }
-
   .franchising-page {
-    background: var(--color-citron);
-    color: var(--color-ink);
-    letter-spacing: 0;
     overflow: clip;
+    background: var(--color-cream);
+    color: var(--color-cocoa);
   }
 
-  .franchising-page :focus-visible {
-    outline: 2px solid var(--color-ink);
-    outline-offset: 6px;
+  .franchise-shell { width: min(100% - 6rem, 80rem); margin-inline: auto; }
+  .franchising-page section[id] { scroll-margin-top: 2rem; }
+  .franchising-page h2 {
+    font-size: clamp(2.5rem, 4.3vw, 4.4rem);
+    font-weight: 600;
+    line-height: 1.06;
+    letter-spacing: -0.045em;
+    text-wrap: balance;
   }
-
-  .franchising-page ::selection {
-    background: var(--color-ink);
-    color: var(--color-citron);
-  }
+  .franchising-page h2 span { font-weight: 400; }
 
   .franchise-hero {
-    display: grid;
-    min-height: max(42rem, calc(100svh - 2rem));
-    align-items: center;
-    padding: 6rem 2.5rem 3rem;
-  }
-
-  .franchise-hero-inner {
-    display: grid;
-    width: min(100%, 80rem);
-    grid-template-columns: 1.02fr 0.98fr;
-    align-items: center;
-    gap: 2rem;
-    margin-inline: auto;
-  }
-
-  .hero-copy {
     position: relative;
-    z-index: 1;
+    isolation: isolate;
     display: flex;
-    min-width: 0;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    padding-block: 1rem;
-    text-align: left;
-  }
-
-  .eyebrow {
-    width: fit-content;
-    border-radius: 0.8rem;
+    min-height: min(58rem, max(48rem, 100svh));
+    overflow: hidden;
     background: var(--color-mint);
-    padding: 0.65rem 0.9rem;
-    font-size: 0.75rem;
-    font-weight: 700;
-    line-height: 1.5;
-    text-transform: uppercase;
-    transform: rotate(-2deg);
+    padding-block: 9rem 2rem;
   }
-
-  .hero-eyebrow {
-    margin-bottom: 1.5rem;
-    background: var(--color-blush);
-  }
-
-  .hero-copy h1 {
-    font-family: var(--font-hero);
-    font-size: 3rem;
-    font-weight: 400;
-    line-height: 1.15;
-  }
-
-  .hero-copy h1 > span {
-    display: block;
-    color: var(--color-cocoa);
-    font-size: 6.5rem;
-    font-weight: 400;
-    line-height: 1.1;
-    text-shadow: 3px 4px 0 var(--color-blush);
-  }
-
-  .hero-intro {
-    max-width: 31rem;
-    margin: 1.5rem 0 2rem;
-    font-size: 1.15rem;
-    line-height: 1.55;
-    text-wrap: pretty;
-  }
-
-  .conversation-link {
-    display: inline-flex;
-    min-height: 3.4rem;
-    align-items: center;
-    justify-content: center;
-    gap: 1.75rem;
-    border: 2px solid var(--color-ink);
-    border-radius: 1.2rem;
-    background: var(--color-mint);
-    padding: 0.8rem 1.25rem;
-    color: var(--color-ink);
-    font-size: 0.9rem;
-    font-weight: 700;
-    box-shadow: 4px 5px 0 var(--color-ink);
-    transition: background 200ms ease, box-shadow 200ms ease, transform 300ms var(--ease-cartoon);
-  }
-
-  .conversation-link:hover,
-  .conversation-link:focus-visible {
-    transform: translateY(-3px) rotate(-2deg);
-    background: var(--color-blush);
-    box-shadow: 6px 8px 0 var(--color-ink);
-  }
-
-  .hero-baseline {
+  .hero-layout {
     position: relative;
-    width: 100%;
-    aspect-ratio: 1.05;
-  }
-
-  .hero-baseline > p {
-    position: absolute;
-    z-index: 2;
-    bottom: 6%;
-    left: 4%;
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
     align-items: center;
-    gap: 1.25rem;
-    border: 2px solid var(--color-ink);
-    border-radius: 1.2rem;
-    background: var(--color-mint);
-    padding: 0.8rem 1.5rem;
-    color: var(--color-ink);
-    box-shadow: 5px 6px 0 var(--color-ink);
-    line-height: 1.4;
-    transform: rotate(-2deg);
+    gap: 4rem 2rem;
   }
-
-  .hero-baseline strong {
-    color: var(--color-cocoa);
-    font-family: var(--font-hero);
-    font-size: 4rem;
-    font-weight: 400;
-    line-height: 1;
-  }
-
-  .hero-baseline > p > span { font-family: var(--font-display); font-size: 1.3rem; font-weight: 600; }
-  .hero-baseline b { font-family: var(--font-sans); font-size: 0.9rem; font-weight: 400; }
-
-  .hero-character {
+  .franchise-hero-orbit {
     position: absolute;
+    z-index: -1;
+    top: -12rem;
+    right: -13rem;
+    width: 42rem;
+    height: 36rem;
+    border-radius: 48% 52% 37% 63%;
+    background: var(--color-cream);
+    transform: rotate(-22deg);
     pointer-events: none;
   }
-
-  .hero-character--chef { top: 0; left: 4%; width: 78%; transform: rotate(-8deg); }
-  .hero-character--growth { right: -2%; bottom: 13%; width: 40%; transform: rotate(8deg); }
-
-  .franchise-next {
-    display: flex;
-    min-height: 100svh;
-    flex-direction: column;
-    border-radius: 50% 50% 0 0 / 2rem 2rem 0 0;
+  .hero-copy { position: relative; z-index: 2; }
+  .franchise-kicker {
+    display: inline-block;
+    width: fit-content;
+    border-radius: 999px;
     background: var(--color-blush);
-    scroll-margin-top: 2rem;
-  }
-
-  .opportunity,
-  .franchise-contact {
-    display: grid;
-    width: min(100%, 86rem);
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
-    margin-inline: auto;
-    padding: 3.5rem 3rem;
-  }
-
-  .opportunity-heading h2 {
-    margin-top: 1.25rem;
-    font-family: var(--font-hero);
-    font-size: 2.75rem;
-    font-weight: 400;
-    line-height: 1.15;
-  }
-
-  .opportunity-copy {
-    align-self: center;
-    max-width: 34rem;
-    font-size: 1rem;
-    line-height: 1.6;
-  }
-
-  .opportunity-copy p + p {
-    margin-top: 0.9rem;
-  }
-
-  .opportunity-signoff {
-    color: var(--color-cocoa);
-    font-weight: 700;
-  }
-
-  .office-gallery {
-    width: min(100%, 86rem);
-    margin-inline: auto;
-    padding: 0.5rem 3rem 3rem;
-  }
-
-  .office-gallery-heading { text-align: center; }
-  .office-gallery-heading .eyebrow { margin: 0 auto 1rem; background: var(--color-mist); transform: rotate(2deg); }
-  .office-gallery h2 { font-family: var(--font-hero); font-size: 2.25rem; line-height: 1.2; }
-  .mobile-break { display: none; }
-
-  .franchise-film {
-    width: min(100%, 68rem);
-    margin: 2.75rem auto 0;
-  }
-
-  .franchise-film-frame {
-    position: relative;
-    border: 2px solid var(--color-ink);
-    border-radius: 0.5rem;
-    background: var(--color-paper);
-    padding: 0.75rem 0.75rem 0;
-    box-shadow: 6px 8px 0 var(--color-ink);
-  }
-
-  .film-tape {
-    position: absolute;
-    z-index: 1;
-    top: -0.8rem;
-    left: calc(50% - 2.5rem);
-    width: 5rem;
-    height: 1.65rem;
-    background: var(--color-flame);
-    clip-path: polygon(0 10%, 97% 0, 100% 90%, 3% 100%);
-    transform: rotate(-5deg);
-  }
-
-  .franchise-film-screen {
-    aspect-ratio: 16 / 9;
-    background: var(--color-ink);
-    overflow: hidden;
-  }
-
-  .franchise-film-screen video {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-
-  .film-placeholder {
-    position: relative;
-    display: grid;
-    height: 100%;
-    grid-template-columns: 0.8fr 1.4fr 0.8fr;
-    align-items: center;
-    background: var(--color-mint);
-    padding: 2.5rem 2rem;
-  }
-
-  .film-wordmark {
-    position: absolute;
-    top: 1.25rem;
-    left: 1.5rem;
-    font-family: var(--font-display);
-    font-size: 0.85rem;
-    font-weight: 600;
-  }
-
-  .film-placeholder-title {
-    font-family: var(--font-hero);
-    font-size: 3.5rem;
-    line-height: 1.15;
-    text-align: center;
-  }
-
-  .film-placeholder-title span { color: var(--color-cocoa); }
-  .film-art--chef { transform: rotate(-8deg); }
-  .film-art--growth { transform: rotate(8deg); }
-
-  .franchise-film figcaption {
-    display: flex;
-    min-height: 4.5rem;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.5rem;
-    padding: 1rem 0.5rem;
-    font-family: var(--font-display);
-    font-size: 1.15rem;
-    font-weight: 500;
-  }
-
-  .film-status,
-  .franchise-film figcaption a {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: var(--font-sans);
-    font-size: 0.75rem;
-  }
-
-  .franchise-film figcaption a {
-    min-height: 2.75rem;
-    text-decoration: underline;
-    text-underline-offset: 0.25rem;
-  }
-
-  .franchise-contact {
-    flex: 1;
-    align-items: center;
-    scroll-margin-top: 2rem;
-  }
-
-  .contact-heading > .eyebrow { background: var(--color-citron); }
-
-  .contact-heading h2 {
-    margin: 1.2rem 0;
-    font-family: var(--font-hero);
-    font-size: 3.5rem;
-    font-weight: 400;
-    line-height: 1.15;
-  }
-
-  .contact-heading h2 span {
-    color: var(--color-cocoa);
-  }
-
-  .contact-heading > p:last-child {
-    max-width: 30rem;
-    font-size: 0.9rem;
-    line-height: 1.6;
-  }
-
-  .contact-links {
-    display: grid;
-    gap: 1.25rem;
-    min-width: 0;
-    padding: 0.5rem;
-  }
-
-  .contact-link {
-    display: block;
-    border: 2px solid var(--color-ink);
-    border-radius: 1.2rem;
-    background: var(--color-mint);
-    padding: 1.3rem 1.5rem;
-    box-shadow: 5px 6px 0 var(--color-ink);
-    transform: rotate(-2deg);
-    transition: background 200ms ease, box-shadow 200ms ease, transform 300ms var(--ease-cartoon);
-  }
-
-  .contact-link--phone { background: var(--color-mist); transform: rotate(2deg); }
-
-  .contact-link:hover,
-  .contact-link:focus-visible {
-    background: var(--color-citron);
-    box-shadow: 7px 9px 0 var(--color-ink);
-    transform: translateY(-3px) rotate(0);
-  }
-
-  .contact-label {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-  }
-
-  .contact-label > span {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-  }
-
-  .contact-value {
-    display: block;
-    margin-block: 0.9rem 0.5rem;
-    font-family: var(--font-display);
-    font-size: 1.75rem;
-    font-weight: 500;
-    line-height: 1.2;
-    overflow-wrap: anywhere;
-  }
-
-  .contact-link--phone .contact-value {
-    font-size: 2.5rem;
-  }
-
-  .contact-detail {
-    font-size: 0.78rem;
-  }
-
-  .franchise-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    background: var(--color-mint);
-    padding: 0.75rem 3rem;
+    padding: 0.7rem 1rem;
     font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1.4;
+    transform: rotate(-3deg);
   }
+  .hero-copy h1 {
+    margin-top: 1.8rem;
+    font-family: var(--font-hero);
+    font-size: clamp(3.5rem, 6.6vw, 6.5rem);
+    font-weight: 400;
+    line-height: 1.06;
+    letter-spacing: -0.045em;
+  }
+  .hero-copy h1 span { white-space: nowrap; }
+  .hero-intro { max-width: 35rem; margin-top: 1.75rem; font-size: 1.15rem; line-height: 1.65; }
+  .franchise-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
+  .hero-composition { position: relative; width: 100%; max-width: 30rem; justify-self: end; padding-block: 2rem 4rem; }
+  .hero-composition-shape {
+    position: absolute;
+    inset: 0 -2rem 0 -1.5rem;
+    border-radius: 44% 56% 61% 39%;
+    background: var(--color-blush);
+    transform: rotate(12deg);
+  }
+  .franchise-hero-card {
+    position: relative;
+    border: 1px solid color-mix(in srgb, var(--color-cocoa) 20%, transparent);
+    border-radius: 1.8rem;
+    background: var(--color-cream);
+    padding: 2rem;
+    transform: rotate(5deg);
+  }
+  .card-eyebrow, .board-kicker, .section-eyebrow { font-size: 0.7rem; font-weight: 700; line-height: 1.5; text-transform: uppercase; letter-spacing: 0.08em; }
+  .hero-card-title { margin-block: 2rem; font-family: var(--font-display); font-size: clamp(2rem, 3.3vw, 3.4rem); font-weight: 600; line-height: 1.08; letter-spacing: -0.045em; }
+  .hero-card-title span { font-weight: 400; }
+  .hero-card-bottom { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid color-mix(in srgb, var(--color-cocoa) 25%, transparent); padding-top: 1rem; }
+  .hero-card-bottom strong { display: block; font-family: var(--font-display); font-size: 3.6rem; font-weight: 600; line-height: 1; }
+  .hero-card-bottom p > span { display: block; margin-top: 0.5rem; font-size: 0.8rem; line-height: 1.4; }
+  .hero-chef { width: 8.5rem; transform: rotate(-8deg); }
+  .franchise-hero-note { position: absolute; bottom: 0; left: -1rem; display: flex; align-items: center; gap: 1rem; border-radius: 1.3rem; background: var(--color-citron); padding: 1rem 1.4rem; font-family: var(--font-display); font-size: 1.1rem; line-height: 1.35; transform: rotate(-7deg); }
+  .hero-baseline { display: flex; grid-column: 1 / -1; align-items: center; justify-content: space-between; gap: 1rem; border-top: 1px solid color-mix(in srgb, var(--color-cocoa) 25%, transparent); padding-top: 1.2rem; font-size: 0.78rem; }
+  .hero-baseline strong { font-weight: 700; }
+  .hero-baseline a { display: grid; width: 2.75rem; height: 2.75rem; flex-shrink: 0; place-items: center; border: 1px solid var(--color-cocoa); border-radius: 50%; }
 
-  .franchise-footer a {
-    display: inline-flex;
-    min-height: 2.75rem;
-    align-items: center;
-    gap: 0.75rem;
-  }
+  .franchise-opportunity { position: relative; margin-top: -1px; border-radius: 3rem 3rem 0 0; background: var(--color-cream); padding-block: 6.5rem; }
+  .chapter-heading { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 2rem; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .chapter-number { display: grid; width: 2.4rem; height: 2.4rem; flex-shrink: 0; place-items: center; border: 1px solid currentColor; border-radius: 50%; font-size: 0.7rem; letter-spacing: 0; }
+  .opportunity-layout, .network-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 4rem; align-items: start; }
+  .opportunity-copy { max-width: 39rem; font-size: 1.05rem; line-height: 1.8; text-wrap: pretty; }
+  .opportunity-figures { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; margin-top: 4rem; }
+  .opportunity-figures > div { border-top: 1px solid color-mix(in srgb, var(--color-cocoa) 35%, transparent); padding-top: 1.3rem; }
+  .opportunity-figures dt { font-family: var(--font-display); font-size: clamp(2rem, 3.4vw, 3.3rem); font-weight: 500; line-height: 1.2; letter-spacing: -0.045em; }
+  .opportunity-figures dd { margin-top: 0.5rem; font-size: 0.8rem; }
 
-  .franchise-footer a:first-child {
-    font-family: var(--font-display);
-    font-size: 1rem;
-    font-weight: 600;
-  }
+  .franchise-model { background: var(--color-mist); padding-block: 6.5rem; }
+  .model-layout { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); align-items: center; gap: 6rem; }
+  .model-copy .opportunity-copy, .partnership-layout .opportunity-copy { margin-top: 1.8rem; }
+  .franchise-text-link { display: inline-flex; min-height: 2.75rem; align-items: center; gap: 1.5rem; margin-top: 1.5rem; font-size: 0.85rem; font-weight: 700; text-decoration: underline; text-underline-offset: 0.3rem; }
+  .location-board { border-radius: 2rem; background: var(--color-cream); padding: 2.25rem; transform: rotate(3deg); }
+  .board-kicker { margin-bottom: 1.5rem; }
+  .location-list li { display: flex; align-items: center; gap: 1rem; border-top: 1px solid color-mix(in srgb, var(--color-cocoa) 20%, transparent); padding-block: 1.3rem; }
+  .location-list li > span:first-child { font-size: 0.65rem; }
+  .location-list strong { font-family: var(--font-display); font-size: clamp(1.65rem, 2.3vw, 2.4rem); font-weight: 500; line-height: 1.2; letter-spacing: -0.035em; }
+  .location-dot { width: 0.6rem; height: 0.6rem; flex-shrink: 0; margin-left: auto; border-radius: 50%; background: var(--color-cocoa); }
+  .location-next { display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem; border-radius: 1rem; background: var(--color-citron); padding: 1.2rem; font-family: var(--font-display); font-size: 1.1rem; line-height: 1.4; }
+  .location-next-icon { flex-shrink: 0; }
+  .board-footnote { margin-top: 1.5rem; font-size: 0.7rem; }
 
-  .franchise-footer a:hover {
-    text-decoration: underline;
-    text-underline-offset: 0.25rem;
-  }
+  .franchise-film-section { background: var(--color-paper); padding-block: 6.5rem; }
+  .film-section-heading { display: flex; align-items: end; justify-content: space-between; gap: 2rem; margin-bottom: 2.5rem; }
+  .film-section-heading h2 { margin-top: 1.2rem; }
+  .film-section-heading > p { max-width: 21rem; padding-bottom: 0.4rem; font-size: 1rem; line-height: 1.6; }
 
-  @keyframes arrive {
-    from { opacity: 0; transform: translateY(1rem); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+  .franchise-network { background: var(--color-cocoa); color: var(--color-cream); padding-block: 6.5rem; }
+  .network-path { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; gap: 1.5rem; margin-top: 3.5rem; border-top: 1px solid color-mix(in srgb, var(--color-cream) 35%, transparent); padding-top: 2.5rem; }
+  .network-path > div > span { display: block; margin-bottom: 1rem; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+  .network-path strong { font-family: var(--font-display); font-size: clamp(1.5rem, 2.4vw, 2.2rem); font-weight: 500; line-height: 1.15; letter-spacing: -0.025em; }
+  .network-connector { font-family: var(--font-display); font-size: 2rem; }
+  .network-result { border-radius: 1.4rem; background: var(--color-mint); padding: 1.5rem; color: var(--color-cocoa); }
+
+  .franchise-partnership { background: var(--color-cream); padding-block: 6.5rem; }
+  .partnership-layout { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 5rem; align-items: center; }
+  .partnership-art { position: relative; min-height: 26rem; }
+  .partnership-art-shape { position: absolute; inset: 1rem 0 2rem; border-radius: 45% 55% 40% 60%; background: var(--color-blush); transform: rotate(-10deg); }
+  .partnership-chef { position: absolute; top: 1rem; left: 0; width: 62%; transform: rotate(-12deg); }
+  .partnership-pan { position: absolute; top: 5rem; right: -1rem; width: 52%; transform: rotate(12deg); }
+  .partnership-art > p { position: absolute; bottom: 0; left: 15%; border-radius: 1rem; background: var(--color-mint); padding: 1rem 1.4rem; font-family: var(--font-display); font-size: 1.1rem; font-weight: 500; line-height: 1.4; transform: rotate(-4deg); }
+
+  .franchise-contact { border-radius: 3rem 3rem 0 0; background: var(--color-blush); padding-block: 6.5rem; }
+  .contact-layout { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 5rem; align-items: center; }
+  .contact-heading .franchise-kicker { background: var(--color-cream); }
+  .contact-heading h2 { margin-top: 1.8rem; font-size: clamp(3rem, 5vw, 5rem); }
+  .contact-copy > p { max-width: 30rem; font-size: 1.05rem; line-height: 1.75; }
+  .contact-actions { display: grid; justify-items: start; gap: 0.85rem; margin-top: 1.8rem; }
+  .contact-email { display: flex; width: fit-content; min-height: 2.75rem; align-items: center; gap: 0.6rem; margin-top: 1.25rem; font-size: 0.85rem; text-decoration: underline; text-underline-offset: 0.25rem; overflow-wrap: anywhere; }
+  .contact-email svg { flex-shrink: 0; }
+  .franchise-footer { background: var(--color-blush); color: var(--color-cocoa); }
+  .franchise-footer > div { display: flex; min-height: 7rem; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem 2rem; border-top: 1px solid color-mix(in srgb, var(--color-cocoa) 30%, transparent); padding-block: 1.5rem; font-size: 0.78rem; }
+  .footer-brand { font-family: var(--font-display); font-size: 1.2rem; font-weight: 600; }
+  .franchise-footer nav { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
+  .franchise-footer a { display: inline-flex; min-height: 2.75rem; align-items: center; gap: 0.7rem; }
+  .franchise-footer a:hover, .contact-email:hover { text-decoration: underline; text-underline-offset: 0.3rem; }
 
   @media (prefers-reduced-motion: no-preference) {
-    .hero-copy h1 { animation: arrive 650ms ease both; }
-    .hero-intro { animation: arrive 650ms 100ms ease both; }
-    .conversation-link { animation: arrive 650ms 200ms ease backwards; }
+    .hero-copy > * { animation: franchise-arrive 800ms var(--ease-luxury) both; }
+    .hero-copy > :nth-child(2) { animation-delay: 80ms; }
+    .hero-copy > :nth-child(3) { animation-delay: 160ms; }
+    .hero-copy > :nth-child(4) { animation-delay: 240ms; }
+  }
+  @keyframes franchise-arrive {
+    from { opacity: 0; translate: 0 1.5rem; }
+    to { opacity: 1; translate: 0 0; }
   }
 
-  @media (min-width: 1600px) {
-    .hero-copy h1 { font-size: 3.75rem; }
-    .hero-copy h1 > span { font-size: 8rem; }
+  @media (max-width: 1100px) {
+    .franchise-shell { width: calc(100% - 4rem); }
+    .hero-copy h1 { font-size: clamp(3.5rem, 6.5vw, 5rem); }
+    .hero-composition { padding-inline: 0.5rem; }
+    .franchise-hero-card { padding: 1.5rem; }
+    .hero-card-title { font-size: 2.6rem; }
+    .model-layout, .partnership-layout, .contact-layout { gap: 3rem; }
+    .location-board { padding: 1.6rem; }
   }
-
   @media (max-width: 1023px) {
-    .franchise-hero { padding-inline: 1.5rem; }
-    .franchise-hero-inner { grid-template-columns: 1fr; gap: 0.5rem; }
-    .hero-copy { max-width: 40rem; }
-    .hero-baseline { width: min(27rem, 65%); justify-self: end; margin-top: -3rem; }
-    .opportunity, .franchise-contact { gap: 2rem; padding: 3rem 1.5rem; }
-    .office-gallery { padding-inline: 1.5rem; }
-    .film-placeholder-title { font-size: 2.75rem; }
-    .opportunity-heading h2 { font-size: 2.25rem; }
-    .contact-heading h2 { font-size: 3rem; }
-    .contact-value { font-size: 1.4rem; }
-    .contact-link--phone .contact-value { font-size: 2rem; }
-    .franchise-footer { padding-inline: 1.5rem; }
-  }
-
-  @media (max-width: 639px) {
-    .franchise-hero { min-height: calc(100svh - 1.25rem); padding: 5.5rem 1.25rem 2rem; }
-    .hero-copy { padding: 0; }
-    .hero-eyebrow { margin-bottom: 1.25rem; font-size: 0.6rem; }
-    .hero-copy h1 { font-size: 2rem; }
-    .hero-copy h1 > span { margin-top: 0.3rem; font-size: 4.75rem; }
-    .hero-intro { margin: 1.1rem 0 1.5rem; font-size: 1rem; }
-    .hero-intro br { display: none; }
-    .hero-baseline { width: min(21rem, 100%); aspect-ratio: 1.3; margin-top: 0.5rem; }
-    .hero-baseline > p { bottom: 0; left: 0; gap: 0.85rem; padding: 0.65rem 1rem; }
-    .hero-baseline > p > span { font-size: 1.1rem; }
-    .hero-baseline b { font-size: 0.8rem; }
-    .hero-baseline strong { font-size: 3rem; }
-    .hero-character--chef { left: 8%; width: 65%; }
-    .hero-character--growth { right: 0; bottom: 24%; width: 32%; }
-    .opportunity, .franchise-contact { grid-template-columns: 1fr; gap: 1.5rem; padding: 2.5rem 1.25rem; }
-    .opportunity-heading h2 { font-size: 2rem; }
-    .opportunity-copy { font-size: 0.9rem; }
-    .office-gallery { padding: 0.5rem 1.5rem 2rem; }
-    .office-gallery h2 { font-size: 1.8rem; }
-    .mobile-break { display: block; }
-    .franchise-film { margin-top: 2rem; }
-    .franchise-film-frame { padding: 0.4rem 0.4rem 0; box-shadow: 4px 5px 0 var(--color-ink); }
-    .film-placeholder { padding: 1.75rem 0.5rem 0.75rem; grid-template-columns: 0.7fr 1.6fr 0.7fr; }
-    .film-wordmark { top: 0.6rem; left: 0.75rem; font-size: 0.6rem; }
-    .film-placeholder-title { font-size: 1.5rem; }
-    .franchise-film figcaption { min-height: 4rem; padding: 0.75rem 0.5rem; font-size: 0.85rem; }
-    .film-status { font-size: 0.65rem; }
-    .contact-heading h2 { font-size: 2.75rem; }
-    .contact-link { padding: 1.1rem; }
-    .contact-value { font-size: 1.4rem; }
-    .contact-link--phone .contact-value { font-size: 2.15rem; }
-    .franchise-footer { flex-wrap: wrap; gap: 0.25rem 1rem; padding: 0.75rem 1.25rem; }
-    .franchise-footer > span { flex-basis: 100%; order: 3; padding-bottom: 0.5rem; }
-    .franchise-footer a:last-child { margin-left: auto; }
+    .franchise-hero { min-height: auto; padding-top: 8rem; }
+    .hero-layout { grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr); gap: 3rem 1.5rem; }
+    .hero-copy h1 { font-size: clamp(3rem, 6vw, 4rem); }
+    .hero-intro { font-size: 1rem; }
+    .hero-card-title { font-size: 2.2rem; }
+    .card-eyebrow { font-size: 0.6rem; }
+    .hero-card-bottom strong { font-size: 3rem; }
+    .hero-chef { width: 6rem; }
+    .franchise-hero-note { left: 0; font-size: 0.9rem; }
+    .opportunity-layout, .network-layout { gap: 2rem; }
+    .model-layout, .partnership-layout { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2rem; }
+    .partnership-art { min-height: 21rem; }
+    .network-path { gap: 1rem; }
+    .network-result { padding: 1.2rem; }
     .desktop-break { display: none; }
   }
-
-  @media (max-width: 359px) {
-    .hero-copy h1 { font-size: 1.8rem; }
-    .hero-copy h1 > span { font-size: 3.5rem; }
-    .contact-value { font-size: 1.25rem; }
+  @media (max-width: 767px) {
+    .franchise-shell { width: calc(100% - 2.5rem); }
+    .franchise-hero { padding-top: 7rem; }
+    .hero-layout { grid-template-columns: 1fr; gap: 2.5rem; }
+    .hero-copy h1 { font-size: clamp(3.1rem, 10vw, 4.5rem); }
+    .hero-intro { max-width: 27rem; margin-top: 1.3rem; }
+    .franchise-kicker { font-size: 0.65rem; }
+    .franchise-actions { margin-top: 1.5rem; gap: 0.75rem; }
+    .hero-composition { max-width: 28rem; justify-self: center; padding: 1rem 1rem 3.5rem; }
+    .hero-composition-shape { inset: 0 -1rem; }
+    .hero-card-title { margin-block: 1.4rem; font-size: clamp(2rem, 7vw, 2.8rem); }
+    .hero-card-bottom strong { font-size: 3.1rem; }
+    .hero-chef { width: 7rem; }
+    .franchise-hero-note { bottom: 0; left: 0.5rem; padding: 0.85rem 1rem; }
+    .hero-baseline { margin-top: 0.5rem; font-size: 0.7rem; line-height: 1.6; }
+    .hero-baseline strong { display: block; }
+    .franchising-page h2 { font-size: clamp(2.2rem, 7.5vw, 3rem); }
+    .franchise-opportunity, .franchise-model, .franchise-film-section, .franchise-network, .franchise-partnership, .franchise-contact { padding-block: 4rem; }
+    .franchise-opportunity, .franchise-contact { border-radius: 2rem 2rem 0 0; }
+    .chapter-heading { margin-bottom: 1.5rem; font-size: 0.65rem; }
+    .opportunity-layout, .model-layout, .network-layout, .partnership-layout, .contact-layout { grid-template-columns: 1fr; gap: 1.8rem; }
+    .opportunity-copy { font-size: 1rem; line-height: 1.75; }
+    .opportunity-figures { grid-template-columns: 1fr; gap: 1.25rem; margin-top: 2.5rem; }
+    .opportunity-figures > div { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-top: 1rem; }
+    .opportunity-figures dt { font-size: clamp(1.55rem, 6.5vw, 2.2rem); white-space: nowrap; }
+    .opportunity-figures dd { max-width: 8rem; margin: 0; font-size: 0.7rem; line-height: 1.5; }
+    .location-board { width: min(100% - 0.75rem, 28rem); justify-self: center; margin-top: 1.25rem; padding: 1.5rem; transform: rotate(2deg); }
+    .location-list strong { font-size: 2rem; }
+    .film-section-heading { display: block; margin-bottom: 2rem; }
+    .film-section-heading > p { margin-top: 1.3rem; font-size: 0.9rem; }
+    .network-path { grid-template-columns: 1fr; justify-items: stretch; gap: 1.25rem; margin-top: 2rem; padding-top: 2rem; }
+    .network-path strong { font-size: 1.8rem; }
+    .network-path > div > span { margin-bottom: 0.6rem; }
+    .network-connector { font-size: 1.7rem; }
+    .network-result { padding: 1.5rem; }
+    .partnership-art { order: 2; width: min(100%, 24rem); min-height: 23rem; justify-self: center; margin-top: 0.5rem; }
+    .contact-heading h2 { font-size: clamp(2.7rem, 9vw, 4rem); }
+    .contact-actions { justify-items: stretch; }
+    .contact-email { font-size: 0.8rem; }
+    .franchise-footer > div { gap: 0.5rem 1.5rem; }
+    .franchise-footer nav { order: 3; width: 100%; }
   }
-
-  @media (max-height: 740px) and (min-width: 640px) {
-    .franchise-hero { padding-top: 5rem; }
-    .hero-eyebrow { margin-bottom: 0.65rem; }
-    .hero-copy h1 { font-size: 2.5rem; }
-    .hero-copy h1 > span { font-size: 5rem; }
-    .hero-intro { margin-block: 0.75rem 1rem; }
+  @media print {
+    .franchise-hero { min-height: 0; padding-top: 2rem; }
+    .hero-layout, .opportunity-layout, .model-layout, .network-layout, .partnership-layout, .contact-layout { display: block; }
+    .hero-composition, .hero-baseline, .partnership-art, .franchise-footer, .franchise-actions, .contact-actions { display: none; }
+    .franchise-opportunity, .franchise-model, .franchise-film-section, .franchise-network, .franchise-partnership, .franchise-contact { padding-block: 2rem; }
+    .location-board { margin-top: 2rem; transform: none; }
+    .franchise-network { background: var(--color-cream); color: var(--color-cocoa); }
   }
 </style>
-
-<script>
-  import Lenis from 'lenis';
-  import gsap from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-  gsap.registerPlugin(ScrollTrigger);
-  let cleanupFranchising: (() => void) | undefined;
-
-  function initFranchising() {
-    cleanupFranchising?.();
-    const root = document.querySelector<HTMLElement>('.franchising-page');
-    if (!root) return;
-    const video = root.querySelector<HTMLVideoElement>('.franchise-film-screen video');
-
-    const media = gsap.matchMedia();
-    media.add({
-      motion: '(prefers-reduced-motion: no-preference)',
-      desktop: '(min-width: 1024px)',
-    }, (context) => {
-      if (!context.conditions?.motion) return;
-
-      const listeners = new AbortController();
-      const lenis = new Lenis({
-        duration: 1.2,
-        smoothWheel: true,
-        prevent: (node) => Boolean(node.closest('[data-funmenu-overlay]')),
-      });
-      const tick = (time: number) => lenis.raf(time * 1000);
-      lenis.on('scroll', ScrollTrigger.update);
-      gsap.ticker.add(tick);
-
-      root.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((link) => {
-        link.addEventListener('click', (event) => {
-          if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-          const target = root.querySelector<HTMLElement>(link.hash);
-          if (!target) return;
-          event.preventDefault();
-          lenis.scrollTo(target, {
-            offset: -32,
-            duration: 2.6,
-            easing: (time) => (1 - Math.cos(Math.PI * time)) / 2,
-            onComplete: () => {
-              history.pushState(history.state, '', link.hash);
-              target.focus({ preventScroll: true });
-            },
-          });
-        }, { signal: listeners.signal });
-      });
-
-      const revealTargets = root.querySelectorAll<HTMLElement>(
-        '.opportunity-heading, .opportunity-copy, .office-gallery-heading, .contact-heading, .contact-links',
-      );
-      revealTargets.forEach((element) => {
-        ScrollTrigger.create({
-          trigger: element,
-          start: 'top 94%',
-          once: true,
-          onEnter: () => context.add(() => {
-            gsap.fromTo(element, { y: 24, opacity: 0.35 }, {
-              y: 0,
-              opacity: 1,
-              duration: 0.8,
-              ease: 'power2.out',
-              clearProps: 'transform,opacity',
-            });
-          }),
-        });
-      });
-
-      root.querySelectorAll<HTMLElement>('.franchise-film-frame').forEach((film) => {
-        ScrollTrigger.create({
-          trigger: film,
-          start: 'top 96%',
-          once: true,
-          onEnter: () => context.add(() => {
-            gsap.fromTo(film, { opacity: 0.3 }, {
-              opacity: 1,
-              duration: 0.8,
-              clearProps: 'opacity',
-            });
-          }),
-        });
-      });
-
-      if (context.conditions.desktop) {
-        gsap.to(root.querySelector('.hero-character--chef'), {
-          y: -70,
-          rotation: -16,
-          ease: 'none',
-          scrollTrigger: { trigger: root.querySelector('.franchise-hero'), start: 'top top', end: 'bottom top', scrub: 0.8 },
-        });
-        gsap.to(root.querySelector('.hero-character--growth'), {
-          y: -110,
-          rotation: 16,
-          ease: 'none',
-          scrollTrigger: { trigger: root.querySelector('.franchise-hero'), start: 'top top', end: 'bottom top', scrub: 0.8 },
-        });
-
-        ScrollTrigger.create({
-          trigger: root.querySelector('.office-gallery'),
-          start: 'top bottom',
-          once: true,
-          onEnter: () => context.add(() => {
-            root.querySelectorAll<HTMLElement>('[data-franchise-film]').forEach((film) => {
-              gsap.fromTo(film, { y: 16 }, {
-                y: -16,
-                ease: 'none',
-                scrollTrigger: { trigger: root.querySelector('.office-gallery'), start: 'top bottom', end: 'bottom top', scrub: 0.8 },
-              });
-            });
-          }),
-        });
-      }
-
-      return () => {
-        listeners.abort();
-        gsap.ticker.remove(tick);
-        lenis.destroy();
-      };
-    }, root);
-
-    cleanupFranchising = () => {
-      video?.pause();
-      media.revert();
-    };
-  }
-
-  initFranchising();
-  document.addEventListener('astro:page-load', initFranchising);
-  document.addEventListener('astro:before-swap', () => {
-    cleanupFranchising?.();
-    cleanupFranchising = undefined;
-  });
-</script>

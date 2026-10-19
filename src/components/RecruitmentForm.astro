@@ -1,4 +1,6 @@
 ---
+import { PrimaryButton } from './Button';
+
 interface Props {
   action?: string;
   id?: string;
@@ -110,10 +112,17 @@ const staffingGroups = [
   </label>
 
   <div class="recruit-form-actions">
-    <button class="recruit-submit" type="submit" data-submit-button data-default-label="Send staffing brief">
-      <span>Send staffing brief</span>
-      <span aria-hidden="true">&rarr;</span>
-    </button>
+    <PrimaryButton
+      className="recruit-submit"
+      type="submit"
+      shadow={false}
+      backgroundColor="var(--color-cocoa)"
+      textColor="var(--color-cream)"
+      data-submit-button
+      data-default-label="Send staffing brief"
+    >
+      Send staffing brief
+    </PrimaryButton>
     <p class="recruit-form-status" role="status" aria-live="polite" data-form-status></p>
   </div>
 </form>
@@ -397,38 +406,6 @@ const staffingGroups = [
     margin-top: 2rem;
   }
 
-  .recruit-submit {
-    display: inline-flex;
-    min-height: 4rem;
-    align-items: center;
-    justify-content: space-between;
-    gap: 2rem;
-    border: 0;
-    border-radius: 1.25rem;
-    background: var(--color-flame);
-    color: var(--color-cream);
-    padding: 1rem 1.35rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    transition: transform 280ms var(--ease-cartoon), background-color 220ms ease;
-  }
-
-  .recruit-submit:hover,
-  .recruit-submit:focus-visible {
-    background: var(--color-cocoa);
-    transform: translateY(-0.3rem) rotate(-1deg);
-  }
-
-  .recruit-submit:disabled {
-    cursor: wait;
-    opacity: 0.68;
-  }
-
-  .recruit-submit span:last-child {
-    font-size: 1.6rem;
-    line-height: 0;
-  }
-
   .recruit-form-status {
     min-height: 1.5rem;
     color: var(--color-cocoa);
@@ -474,8 +451,7 @@ const staffingGroups = [
 
   @media (prefers-reduced-motion: reduce) {
     .recruit-field,
-    .recruit-option,
-    .recruit-submit {
+    .recruit-option {
       transition: none;
     }
   }
@@ -488,7 +464,7 @@ const staffingGroups = [
       form.dataset.ready = 'true';
 
       const button = form.querySelector<HTMLButtonElement>('[data-submit-button]');
-      const buttonLabel = button?.querySelector('span');
+      const buttonLabel = button?.querySelector<HTMLElement>('[data-button-label]');
       const status = form.querySelector<HTMLElement>('[data-form-status]');
       const staffingGroup = form.querySelector<HTMLElement>('[data-choice-group="jobTypes"]');
       const staffingError = staffingGroup?.querySelector<HTMLElement>('[data-group-error]');
@@ -535,6 +511,7 @@ const staffingGroups = [
         };
 
         button.disabled = true;
+        button.setAttribute('aria-busy', 'true');
         buttonLabel.textContent = 'Sending brief...';
         setStatus('Passing your brief to the recruitment team.');
 
@@ -560,6 +537,7 @@ const staffingGroups = [
           setStatus(message, 'error');
         } finally {
           button.disabled = false;
+          button.removeAttribute('aria-busy');
           buttonLabel.textContent = button.dataset.defaultLabel || 'Send staffing brief';
         }
       });

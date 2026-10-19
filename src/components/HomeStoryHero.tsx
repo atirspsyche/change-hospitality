@@ -5,6 +5,7 @@ import {
   useState,
   type CSSProperties,
 } from "react";
+import { PrimaryButton } from "./Button";
 import {
   getStoryFrameUrl,
   homeStory,
@@ -15,6 +16,7 @@ import {
 } from "../data/homeStory";
 import { frameForProgress, storyTimeline, clamp } from "../lib/homeStoryTimeline";
 import {
+  getCartonCopyBounds,
   getStoryScene,
   sequenceFrameForPosition,
   storyKeyFrames,
@@ -55,14 +57,15 @@ function HeadingWords({ text }: { text: string }) {
 
 function StoryButton({ action }: { action: StoryAction }) {
   return (
-    <a
-      className={`story-button story-button--${action.tone ?? "cream"}`}
+    <PrimaryButton
+      className="story-button"
       href={action.href}
+      backgroundColor={`var(--color-${action.tone ?? "cream"})`}
+      textColor={action.tone === "flame" ? "var(--color-cream)" : "var(--color-ink)"}
       data-story-reveal
     >
       {action.label}
-      <span aria-hidden="true">&rarr;</span>
-    </a>
+    </PrimaryButton>
   );
 }
 
@@ -134,8 +137,8 @@ function BeatContent({ beat }: { beat: StoryBeat }) {
         </HeadingTag>
       )}
       {overlay.body && (
-        <p className="story-body" data-story-reveal>
-          {overlay.body}
+        <p className="story-body" data-story-reveal={overlay.layout !== "brand" || undefined}>
+          {overlay.layout === "brand" ? <HeadingWords text={overlay.body} /> : overlay.body}
         </p>
       )}
       {overlay.action && <StoryButton action={overlay.action} />}
@@ -150,7 +153,7 @@ function FallbackStory({ className }: { className: string }) {
         <img
           src={getStoryFrameUrl(homeStory.fallbackFrame)}
           alt="A plated breakfast marking the end of the Change Hospitality story"
-          loading={className === "story-nojs" ? "eager" : "lazy"}
+          loading="lazy"
           decoding="async"
         />
       </figure>
@@ -193,13 +196,17 @@ export default function HomeStoryHero() {
   const experienceRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [loadProgress, setLoadProgress] = useState(0);
-  const [isInitialChunkReady, setIsInitialChunkReady] = useState(false);
   const [motionEnabled, setMotionEnabled] = useState(false);
 
   useEffect(() => {
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setMotionEnabled(!preference.matches);
+    const update = () => {
+      setMotionEnabled(!preference.matches);
+      if (preference.matches) {
+        document.documentElement.dataset.homeStoryReady = "true";
+        document.dispatchEvent(new Event("home-story-ready"));
+      }
+    };
     update();
     preference.addEventListener("change", update);
     return () => preference.removeEventListener("change", update);
@@ -209,9 +216,9 @@ export default function HomeStoryHero() {
     const experience = experienceRef.current;
     const hero = heroRef.current;
     const canvas = canvasRef.current;
-    if (!experience || !hero || !canvas || !motionEnabled) return;
-    setLoadProgress(0);
-    setIsInitialChunkReady(false);
+    if (!experience || !hero || !canvas || !motionEnabled
+      || document.documentElement.dataset.homeStoryFallback === "true") return;
+    document.documentElement.dataset.homeStoryProgress = "0";
     experience.classList.remove("is-failed");
 
     const notifyReady = () => {
@@ -221,7 +228,9 @@ export default function HomeStoryHero() {
 
     const context = canvas.getContext("2d", { alpha: false });
     if (!context) {
+      console.warn("Canvas is unavailable. Showing the readable Change Hospitality story.");
       experience.classList.add("is-failed");
+      document.documentElement.dataset.homeStoryFallback = "true";
       notifyReady();
       return () => { delete document.documentElement.dataset.homeStoryReady; };
     }
@@ -293,7 +302,8 @@ export default function HomeStoryHero() {
 
     const updateLoadingProgress = () => {
       if (destroyed) return;
-      setLoadProgress(Math.round((loadedAssetCount / initialAssetCount) * 100));
+      document.documentElement.dataset.homeStoryProgress = String(Math.round((loadedAssetCount / initialAssetCount) * 100));
+      document.dispatchEvent(new Event("home-story-progress"));
     };
 
     const fetchBlobFrom = async (frame: number, prefix: string) => {
@@ -316,10 +326,6 @@ export default function HomeStoryHero() {
           if (destroyed) return blob;
           blobs.set(frame, blob);
           blobRequests.delete(frame);
-          if (initialFrames.has(frame)) {
-            loadedAssetCount += 1;
-            updateLoadingProgress();
-          }
           return blob;
         })
         .catch((error) => {
@@ -398,6 +404,10 @@ export default function HomeStoryHero() {
             return decoded;
           }
           decodedFrames.set(frame, decoded);
+          if (initialFrames.has(frame)) {
+            loadedAssetCount += 1;
+            updateLoadingProgress();
+          }
           trimDecodedFrames();
           return decoded;
         } catch (error) {
@@ -480,6 +490,11 @@ export default function HomeStoryHero() {
 
     const resizeCanvas = () => {
       const bounds = canvas.getBoundingClientRect();
+      const carton = getCartonCopyBounds(bounds.width, bounds.height);
+      hero.style.setProperty("--story-carton-x", `${carton.x}px`);
+      hero.style.setProperty("--story-carton-y", `${carton.y}px`);
+      hero.style.setProperty("--story-carton-width", `${carton.width}px`);
+      hero.style.setProperty("--story-carton-height", `${carton.height}px`);
       const width = Math.max(1, Math.round(bounds.width * renderDpr));
       const height = Math.max(1, Math.round(bounds.height * renderDpr));
       if (canvas.width !== width || canvas.height !== height) {
@@ -552,6 +567,8 @@ export default function HomeStoryHero() {
             scrub: desktop ? true : 0.12,
             anticipatePin: 1,
             invalidateOnRefresh: true,
+            // Refresh seeks the timeline with tween callbacks suppressed.
+            onRefresh: (trigger) => requestFrame(frameForProgress(trigger.progress)),
             onEnter: () => {
               isVisible = true;
               void streamRemainingFrames();
@@ -588,10 +605,11 @@ export default function HomeStoryHero() {
           );
           const windowLength =
             overlayWindow.progressEnd - overlayWindow.progressStart;
+          const isBrand = overlayWindow.id === "carton-open-brand";
           const enterDuration = Math.min(0.018, windowLength * 0.22);
           const exitDuration = Math.min(0.014, windowLength * 0.18);
 
-          if (desktop) {
+          if (desktop && !isBrand) {
             timeline.fromTo(overlay, { "--story-depth-y": "10px" }, {
               "--story-depth-y": "-10px",
               duration: windowLength,
@@ -601,7 +619,7 @@ export default function HomeStoryHero() {
 
           timeline.fromTo(
             overlay,
-            { autoAlpha: 0, y: desktop ? 28 : 0 },
+            { autoAlpha: 0, y: desktop && !isBrand ? 28 : 0 },
             {
               autoAlpha: 1,
               y: 0,
@@ -622,31 +640,27 @@ export default function HomeStoryHero() {
             },
             overlayWindow.progressStart + enterDuration * 0.25,
           );
-          timeline.fromTo(
-            supportingCopy,
-            { y: desktop ? 18 : 0, opacity: 0 },
-            {
-              y: 0,
-              opacity: 1,
-              duration: enterDuration * 1.4,
-              stagger: desktop ? 0.003 : 0,
-              ease: "power2.out",
-            },
-            overlayWindow.progressStart + enterDuration * 0.6,
-          );
-
-          if (overlayWindow.hideAtEnd) {
-            timeline.set(
-              overlay,
-              { autoAlpha: 0, y: -22 },
-              overlayWindow.progressEnd,
+          if (supportingCopy.length) {
+            timeline.fromTo(
+              supportingCopy,
+              { y: desktop ? 18 : 0, opacity: 0 },
+              {
+                y: 0,
+                opacity: 1,
+                duration: enterDuration * 1.4,
+                stagger: desktop ? 0.003 : 0,
+                ease: "power2.out",
+              },
+              overlayWindow.progressStart + enterDuration * 0.6,
             );
-          } else if (overlayWindow.progressEnd < 0.999) {
+          }
+
+          if (overlayWindow.hideAtEnd || overlayWindow.progressEnd < 0.999) {
             timeline.to(
               overlay,
               {
                 autoAlpha: 0,
-                y: -22,
+                y: isBrand ? 0 : -22,
                 duration: exitDuration,
                 ease: "power2.in",
               },
@@ -657,6 +671,11 @@ export default function HomeStoryHero() {
       }, hero);
 
       ScrollTrigger.refresh();
+      const scene = getStoryScene(requestedPosition, canvas.width, canvas.height);
+      await Promise.all(scene.layers.flatMap(({ asset }) =>
+        typeof asset === "number" ? [decodeFrame(asset)] : []));
+      if (destroyed) return;
+      renderScene();
       notifyReady();
     };
 
@@ -682,8 +701,6 @@ export default function HomeStoryHero() {
             );
             if (destroyed) return;
             blobs.set(homeStory.posterFrame, mobilePoster);
-            loadedAssetCount = 1;
-            updateLoadingProgress();
           } catch {
             activePrefix = homeStory.desktopFramePrefix;
           }
@@ -712,16 +729,19 @@ export default function HomeStoryHero() {
           }),
         ]);
         if (destroyed) return;
+        await document.fonts.ready;
+        if (destroyed) return;
         // No scroll-driven scene can run before its composite assets exist.
         await setupGsap();
         if (destroyed) return;
         canStream = true;
-        setIsInitialChunkReady(true);
         void streamRemainingFrames();
-      } catch {
+      } catch (error) {
         if (!abortController.signal.aborted) {
-          gsapCleanup?.();
+          console.error("The opening story could not load. Showing the readable story instead.", error);
+          dispose();
           experience.classList.add("is-failed");
+          document.documentElement.dataset.homeStoryFallback = "true";
           notifyReady();
         }
       }
@@ -745,17 +765,26 @@ export default function HomeStoryHero() {
       hero.classList.remove("has-canvas-frame");
       hero.style.removeProperty("--story-copy-x");
       hero.style.removeProperty("--story-copy-y");
+      for (const property of ["x", "y", "width", "height"]) {
+        hero.style.removeProperty(`--story-carton-${property}`);
+      }
       delete document.documentElement.dataset.homeStoryReady;
     };
+    document.addEventListener("home-story-cancel", dispose, { once: true });
     document.addEventListener("astro:before-swap", dispose, { once: true });
     return () => {
+      document.removeEventListener("home-story-cancel", dispose);
       document.removeEventListener("astro:before-swap", dispose);
       dispose();
     };
   }, [motionEnabled]);
 
   return (
-    <div className="story-experience" ref={experienceRef}>
+    <div
+      className="story-experience"
+      ref={experienceRef}
+      style={{ "--story-scroll-screens": storyTimeline.scrollScreens } as CSSProperties}
+    >
       <section
         className="story-hero"
         ref={heroRef}
@@ -770,16 +799,6 @@ export default function HomeStoryHero() {
           fetchPriority="high"
         />
         <canvas className="story-canvas" ref={canvasRef} aria-hidden="true" />
-
-        <div
-          className={`story-loader ${isInitialChunkReady ? "is-ready" : ""}`}
-          role="status"
-          aria-live="polite"
-        >
-          <span className="story-loader-egg" aria-hidden="true" />
-          <span>Preparing the pass</span>
-          <strong>{loadProgress}%</strong>
-        </div>
 
         <div className="story-overlays">
           {homeStory.beats
@@ -802,11 +821,10 @@ export default function HomeStoryHero() {
         </div>
       </section>
 
+      <p className="story-fallback-notice" role="status">
+        The animated story couldn&apos;t load this time. Here&apos;s the same story, at your own pace.
+      </p>
       <FallbackStory className="story-reduced" />
-      <noscript>
-        <style>{`.story-hero, .story-reduced { display: none !important; } .story-nojs { display: block !important; }`}</style>
-        <FallbackStory className="story-nojs" />
-      </noscript>
     </div>
   );
 }

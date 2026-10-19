@@ -1,5 +1,6 @@
 import type { JobPosting } from '../data/jobs';
 import type { OfficeLocation, TeamMember } from '../data/team';
+import { requireImpactNumbers } from '../lib/impactNumbers';
 import { sanityClient } from './client';
 
 const jobsQuery = `
@@ -53,6 +54,15 @@ const activeLocationsQuery = `
   }
 `;
 
+const impactNumbersQuery = `
+  *[_type == "environmentalImpact" && _id == "environmental-impact"][0].metrics[] {
+    number,
+    label,
+    unit,
+    shape
+  }
+`;
+
 export const getJobs = () => sanityClient.fetch<JobPosting[]>(jobsQuery);
 
 export const getTeamMembers = () =>
@@ -60,3 +70,10 @@ export const getTeamMembers = () =>
 
 export const getActiveLocations = () =>
   sanityClient.fetch<OfficeLocation[]>(activeLocationsQuery);
+
+export const getImpactNumbers = async () =>
+  requireImpactNumbers(await sanityClient.fetch<unknown>(
+    impactNumbersQuery,
+    {},
+    { perspective: 'published' },
+  ));

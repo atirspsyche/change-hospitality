@@ -3,7 +3,7 @@ import { existsSync } from "node:fs";
 import test from "node:test";
 import { homeStory, getStoryFrameUrl } from "../data/homeStory.ts";
 import { frameForProgress, storyTimeline } from "./homeStoryTimeline.ts";
-import { getStoryScene, sequenceFrameForPosition, storySequenceFrames } from "./homeStoryScene.ts";
+import { getCartonCopyBounds, getStoryScene, sequenceFrameForPosition, storySequenceFrames } from "./homeStoryScene.ts";
 
 const close = (actual, expected) => assert.ok(Math.abs(actual - expected) < 0.00001, `${actual} ≠ ${expected}`);
 const { animation } = homeStory;
@@ -18,7 +18,7 @@ test("the opening brand overlay contains only the recruitment line", () => {
 
 test("the storyboard omits egg-four-ways and has no terminal hold", () => {
   const plateaus = storyTimeline.segments.filter((segment) => segment.frameStart === segment.frameEnd);
-  assert.deepEqual(plateaus.map((segment) => segment.frameStart), [40, 70, 256, 259]);
+  assert.deepEqual(plateaus.map((segment) => segment.frameStart), [40, 70, 256, 256]);
   assert.ok(!homeStory.beats.some((beat) => beat.id === "egg-four-ways"));
   assert.ok(!homeStory.beats.some((beat) => beat.id === "egg-close-up"));
   for (const plateau of plateaus) {
@@ -28,15 +28,22 @@ test("the storyboard omits egg-four-ways and has no terminal hold", () => {
   close(frameForProgress(1), 279);
 });
 
-test("coded plate movement gains scroll distance without changing other movement speed", () => {
-  close(storyTimeline.scrollScreens / storyTimeline.totalWeight, 20 / 14.8);
-  const outgoing = storyTimeline.segments.find((segment) => segment.frameStart === 256 && segment.frameEnd === 259);
-  const returning = storyTimeline.segments.find((segment) => segment.frameStart === 259 && segment.frameEnd === 266);
-  assert.ok((outgoing.progressEnd - outgoing.progressStart) * storyTimeline.scrollScreens > 1);
-  assert.ok((returning.progressEnd - returning.progressStart) * storyTimeline.scrollScreens > 0.8);
-  const cutlery = storyTimeline.segments.find((segment) => segment.frameStart === 266 && segment.frameEnd === 279);
-  close((cutlery.progressEnd - cutlery.progressStart) * storyTimeline.scrollScreens / 13,
-    homeStory.movementWeight / (homeStory.frameCount - homeStory.posterFrame) * 20 / 14.8);
+test("the story uses a shorter fixed scroll budget with two consecutive centered reveals", () => {
+  close(storyTimeline.scrollScreens, 10);
+  const first = storyTimeline.overlayWindows.find((overlay) => overlay.id === "plate-center");
+  const second = storyTimeline.overlayWindows.find((overlay) => overlay.id === "plate-center-next");
+  assert.ok(!homeStory.beats.some((beat) => beat.id === "plate-left"));
+  close(first.progressEnd, second.progressStart);
+  for (const overlay of [first, second]) {
+    close(frameForProgress((overlay.progressStart + overlay.progressEnd) / 2), 256);
+    const beat = homeStory.beats.find((beat) => beat.id === overlay.id);
+    assert.equal(beat.overlay.layout, "sides");
+    assert.equal(beat.overlay.columns.length, 2);
+    assert.ok((overlay.progressEnd - overlay.progressStart) * storyTimeline.scrollScreens >= 0.85);
+  }
+  assert.notDeepEqual(homeStory.beats.find((beat) => beat.id === first.id).overlay.columns,
+    homeStory.beats.find((beat) => beat.id === second.id).overlay.columns);
+  assert.ok(second.progressEnd < storyTimeline.progressForFrame(266));
 });
 
 test("logical frames stay fractional through coded animations", () => {
@@ -48,8 +55,7 @@ test("logical frames stay fractional through coded animations", () => {
 });
 
 test("moving frames share one scroll speed and segment boundaries are continuous", () => {
-  const moving = storyTimeline.segments.filter((segment) => segment.frameEnd > segment.frameStart
-    && segment.frameStart !== 256 && segment.frameStart !== 259);
+  const moving = storyTimeline.segments.filter((segment) => segment.frameEnd > segment.frameStart);
   const speed = (segment) => (segment.frameEnd - segment.frameStart) / (segment.progressEnd - segment.progressStart);
   for (const segment of moving) close(speed(segment), speed(moving[0]));
   storyTimeline.segments.forEach((segment, index) => {
@@ -111,33 +117,21 @@ test("coded transitions switch back to the correct sequence frames", () => {
   assert.equal(getStoryScene(109, 1440, 900).layers.at(-1).opacity, 1);
 });
 
-test("plate moves smoothly to the left hold and rotates back before cutlery", () => {
+test("plate stays centered through both holds and the cutlery handoff", () => {
   for (const [width, height] of [[1920, 1080], [1440, 900], [390, 844]]) {
-    const scale = height / animation.referenceHeight;
     const start = getStoryScene(256, width, height).layers[0];
-    const leaving = getStoryScene(257.5, width, height).layers[0];
-    const held = getStoryScene(259, width, height).layers[0];
-    const returning = getStoryScene(262.5, width, height).layers[0];
-    const end = getStoryScene(266 - 0.000001, width, height).layers[0];
-    const cutlery = getStoryScene(266, width, height).layers[0];
-    const plateWidth = (animation.cutlery.plateBounds.right - animation.cutlery.plateBounds.left) * scale;
-    const margin = Math.min(260 * scale, width * animation.plate.leftMargin);
-    const targetLeft = plateWidth + 2 * margin <= width ? margin : (width - plateWidth) / 2;
-
     close(start.x, (width - start.width) / 2);
-    close(start.rotation.radians, 0);
-    assert.ok(leaving.x < start.x && leaving.x > held.x);
-    close(held.x + animation.cutlery.plateBounds.left * scale, targetLeft);
-    close(held.rotation.radians, animation.plate.rotation * Math.PI / 180);
-    assert.ok(animation.plate.leftMargin < 0.135);
-    assert.ok(returning.x > held.x && returning.x < start.x);
-    assert.ok(returning.rotation.radians > held.rotation.radians && returning.rotation.radians < 0);
-    assert.ok(Math.abs(end.x - cutlery.x) < 0.001);
-    assert.ok(Math.abs(end.rotation.radians) < 0.000001);
-    const hold = storyTimeline.segments.find((segment) => segment.frameStart === 259 && segment.frameEnd === 259);
-    assert.deepEqual(getStoryScene(frameForProgress((hold.progressStart + hold.progressEnd) / 2), width, height).layers[0], held);
-    getStoryScene(260, width * 2, height);
-    assert.deepEqual(getStoryScene(262.5, width, height).layers[0], returning);
+    assert.equal(start.rotation, undefined);
+    for (let frame = 256; frame <= 279; frame += 0.125) {
+      assert.deepEqual(getStoryScene(frame, width, height).layers[0], start);
+    }
+    const holds = storyTimeline.segments.filter((segment) => segment.frameStart === 256 && segment.frameEnd === 256);
+    assert.equal(holds.length, 2);
+    for (const hold of holds) {
+      assert.deepEqual(getStoryScene(frameForProgress((hold.progressStart + hold.progressEnd) / 2), width, height).layers[0], start);
+    }
+    getStoryScene(279, width * 2, height);
+    assert.deepEqual(getStoryScene(262.5, width, height).layers[0], start);
   }
 });
 
@@ -190,6 +184,19 @@ test("hand key poses match the reference at its original aspect ratio", () => {
 });
 
 for (const [width, height] of [[1440, 900], [1438, 768], [1512, 982], [1920, 1080], [2560, 1080], [3440, 1440], [5120, 1440], [390, 844], [320, 568], [1024, 600]]) {
+  test(`${width}x${height}: opening copy stays within the carton print area and viewport`, () => {
+    const artboard = getStoryScene(40, width, height).layers[0];
+    const scale = height / animation.referenceHeight;
+    const bounds = animation.carton.copyBounds;
+    const copy = getCartonCopyBounds(width, height);
+    assert.ok(copy.width > 0 && copy.height > 0);
+    assert.ok(copy.x >= 0 && copy.x + copy.width <= width);
+    assert.ok(copy.x >= artboard.x + bounds.left * scale - 0.00001);
+    assert.ok(copy.x + copy.width <= artboard.x + bounds.right * scale + 0.00001);
+    close(copy.y, bounds.top * scale);
+    close(copy.y + copy.height, bounds.bottom * scale);
+  });
+
   test(`${width}×${height}: height-fit, offscreen shell exits and visible final cutlery`, () => {
     const scale = height / animation.referenceHeight;
     const ordinary = getStoryScene(40, width, height).layers[0];
