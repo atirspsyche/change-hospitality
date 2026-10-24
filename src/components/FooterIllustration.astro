@@ -1,0 +1,51 @@
+<div class="footer-illustration" aria-hidden="true">
+  <img class="footer-hand" src="/illustrations/hand.webp" alt="" width="1920" height="1080" loading="lazy" decoding="async" />
+  <svg class="footer-sparks" viewBox="0 0 600 400" fill="none" focusable="false">
+    <g class="serving-spark serving-spark-one">
+      <path d="m120 87 4 19 19 4-19 4-4 19-4-19-19-4 19-4Z" />
+    </g>
+    <g class="serving-spark serving-spark-two">
+      <path d="m470 48 3 14 14 3-14 3-3 14-3-14-14-3 14-3Z" />
+    </g>
+    <g class="serving-spark serving-spark-three">
+      <path d="m108 273 2 10 10 2-10 2-2 10-2-10-10-2 10-2Z" />
+    </g>
+    <g class="serving-rays">
+      <path d="m159 56-9-13m22 8-2-13m285 158 13-5m-7 21 14 3" />
+      <circle cx="77" cy="199" r="3" />
+      <circle cx="437" cy="111" r="3" />
+    </g>
+  </svg>
+</div>
+
+<style>
+  .footer-illustration { position: relative; width: 100%; height: 100%; min-height: 0; }
+  .footer-hand { width: 100%; height: 100%; object-fit: contain; object-position: right center; }
+  .footer-sparks { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; stroke: var(--color-cocoa); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .serving-spark { transform-box: fill-box; transform-origin: center; }
+  .serving-spark,
+  .serving-rays { transition: transform 700ms var(--ease-cartoon); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global([data-footer-in-view]) .serving-spark { animation: footer-spark-arrive 1s ease-in-out; }
+    :global([data-footer-in-view]) .serving-spark-two { animation-delay: 120ms; }
+    :global([data-footer-in-view]) .serving-spark-three { animation-delay: 240ms; }
+  }
+
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .footer-illustration:hover .serving-spark-one { transform: translate(-9px, -8px) rotate(-22deg) scale(1.15); }
+    .footer-illustration:hover .serving-spark-two { transform: translate(10px, -6px) rotate(28deg) scale(1.2); }
+    .footer-illustration:hover .serving-spark-three { transform: translate(-5px, 8px) rotate(18deg); }
+    .footer-illustration:hover .serving-rays { transform: translate(4px, -5px); }
+  }
+
+  @keyframes footer-spark-arrive {
+    0%, 100% { transform: scale(1) rotate(0); }
+    50% { transform: scale(1.25) rotate(18deg); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .serving-spark,
+    .serving-rays { transition: none; }
+  }
+</style>

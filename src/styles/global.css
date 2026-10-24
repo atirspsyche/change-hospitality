@@ -168,10 +168,6 @@ body:has(.brand-page) :focus-visible {
   outline-color: var(--color-cocoa);
 }
 
-.brand-footer .site-footer {
-  border-radius: 50% 50% 0 0 / 2.5rem 2.5rem 0 0;
-}
-
 @media print {
   .brand-footer { display: none; }
 }

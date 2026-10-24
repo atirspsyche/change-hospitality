@@ -4,13 +4,15 @@ import FunMenu from '../components/FunMenu.astro';
 import JobListings from '../components/JobListings.astro';
 import JobsHero from '../components/JobsHero.astro';
 import PageMotion from '../components/PageMotion.astro';
+import SectionCurve from '../components/SectionCurve.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import StoryboardGallery from '../components/StoryboardGallery.astro';
 import TemporaryJobsExperience from '../components/TemporaryJobsExperience.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getJobs } from '../sanity/queries';
+import { getDisplayJobs } from '../data/jobs';
 
-const jobs = await getJobs();
+const jobs = getDisplayJobs(await getJobs());
 
 const sectionLinks = [
   { label: 'Search', href: '#job-search-form', meta: 'Choose what matters' },
@@ -35,21 +37,37 @@ const sectionLinks = [
   <main class="jobs-page">
     <JobsHero />
     <div data-jobs-mode-panel="permanent">
-      <JobListings {jobs} pageSize={6} />
+      <SectionCurve backdropColor="var(--color-blush)">
+        <JobListings {jobs} pageSize={6} />
+      </SectionCurve>
     </div>
     <TemporaryJobsExperience />
-    <CandidateTestimonials />
-    <StoryboardGallery />
-    <SiteFooter />
+    <SectionCurve backdropColor="var(--jobs-mode-surface)">
+      <CandidateTestimonials />
+    </SectionCurve>
+    <SectionCurve backdropColor="var(--jobs-gallery-backdrop)">
+      <StoryboardGallery />
+    </SectionCurve>
+    <SiteFooter backdropColor="var(--color-cocoa)" />
   </main>
 </BaseLayout>
 
 <style>
   .jobs-page {
+    --jobs-mode-surface: var(--color-mint);
+    --jobs-gallery-backdrop: var(--color-cream);
     min-height: 100vh;
     overflow: hidden;
     background: var(--color-blush);
     color: var(--color-ink);
+  }
+
+  .jobs-page:has(:global([data-jobs-mode-panel="temporary"]:not([hidden]))) {
+    --jobs-mode-surface: var(--color-blush);
+  }
+
+  .jobs-page:has(:global(.candidate-stories[hidden])) {
+    --jobs-gallery-backdrop: var(--jobs-mode-surface);
   }
 </style>
 
@@ -84,35 +102,6 @@ const sectionLinks = [
     setMode(inputs.find((input) => input.checked)?.value || 'permanent');
   }
 
-  function initJobsHeroMotion() {
-    const hero = document.querySelector<HTMLElement>('[data-jobs-hero]');
-    if (!hero || hero.dataset.motionReady === 'true') return;
-    hero.dataset.motionReady = 'true';
-    if (window.matchMedia('(prefers-reduced-motion: reduce), (max-width: 1023px)').matches) return;
-
-    const items = Array.from(hero.querySelectorAll<HTMLElement>('[data-hero-depth]'));
-    let frame = 0;
-    let pointerX = 0;
-    let pointerY = 0;
-
-    const render = () => {
-      frame = 0;
-      items.forEach((item) => {
-        const depth = Number(item.dataset.heroDepth || 0);
-        item.style.translate = `${(pointerX * depth).toFixed(1)}px ${(pointerY * depth).toFixed(1)}px`;
-      });
-    };
-
-    hero.addEventListener('pointermove', (event) => {
-      const rect = hero.getBoundingClientRect();
-      pointerX = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
-      pointerY = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
-      if (!frame) frame = window.requestAnimationFrame(render);
-    }, { passive: true });
-  }
-
   initJobsModeSwitch();
-  initJobsHeroMotion();
   document.addEventListener('astro:page-load', initJobsModeSwitch);
-  document.addEventListener('astro:page-load', initJobsHeroMotion);
 </script>

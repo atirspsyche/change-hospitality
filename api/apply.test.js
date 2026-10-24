@@ -139,3 +139,14 @@ test('rejects an application when the trusted job relationship is not found', as
   assert.equal(response.statusCode, 422);
   assert.match(response.body.message, /no longer available/i);
 });
+
+test('sample vacancies cannot send real applications', async () => {
+  const response = createResponse();
+  let called = false;
+  await handler(createMultipartRequest({ ...validFields, jobId: 'TEST-1', jobSlug: 'test-sample' }), response, {
+    resolveJob: async () => { called = true; return resolvedJob; },
+    sendMail: async () => { called = true; },
+  });
+  assert.equal(response.statusCode, 422);
+  assert.equal(called, false);
+});

@@ -1,14 +1,18 @@
 ---
-import { ArrowUp, ArrowUpRight } from '@lucide/astro';
+import { ArrowUpRight } from '@lucide/astro';
 import { ArrowDown, Mail, Phone } from 'lucide-react';
 import { PrimaryButton, SecondaryButton } from '../components/Button';
 import FranchiseFilm from '../components/FranchiseFilm.astro';
 import FunMenu from '../components/FunMenu.astro';
 import PageMotion from '../components/PageMotion.astro';
+import SiteFooter from '../components/SiteFooter.astro';
 import StoryIllustration from '../components/StoryIllustration.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getPublicContacts } from '../sanity/queries';
+import { telephoneHref } from '../data/editorial';
 
-const email = 'info@changehospitality.co.uk';
+const contacts = await getPublicContacts();
+const email = contacts.franchisingEmail;
 const emailLink = `mailto:${email}?subject=Franchising%20with%20Change%20Hospitality`;
 const franchiseFilm = {
   src: '',
@@ -225,27 +229,19 @@ const locations = ['London', 'Manchester', 'Hampshire'];
             <PrimaryButton href={emailLink} icon={Mail} shadow={false} backgroundColor="var(--color-cocoa)" textColor="var(--color-cream)">
               Let's talk franchising
             </PrimaryButton>
-            <SecondaryButton href="tel:+442080506312" icon={Phone} borderColor="var(--color-cocoa)" textColor="var(--color-cocoa)">
-              Call 020 8050 6312
+            <SecondaryButton href={telephoneHref(contacts.phone)} icon={Phone} borderColor="var(--color-cocoa)" textColor="var(--color-cocoa)">
+              Call {contacts.phone}
             </SecondaryButton>
           </div>
-          <a class="contact-email" href={emailLink}>info@<wbr />changehospitality.co.uk <ArrowUpRight size={18} aria-hidden="true" /></a>
+          <a class="contact-email" href={emailLink}>{email} <ArrowUpRight size={18} aria-hidden="true" /></a>
         </div>
       </div>
     </section>
   </main>
 
-  <footer class="franchise-footer">
-    <div class="franchise-shell">
-      <a class="footer-brand" href="/">Change Hospitality</a>
-      <nav aria-label="Footer navigation">
-        <a href="/recruit-talent/">Recruit talent</a>
-        <a href="/our-story/">Our story</a>
-        <a href="/team/">Our people</a>
-      </nav>
-      <a href="#franchise-title">Back to top <ArrowUp size={16} aria-hidden="true" /></a>
-    </div>
-  </footer>
+  <div class="franchise-common-footer">
+    <SiteFooter backdropColor="var(--color-blush)" backToTopHref="#franchise-title" />
+  </div>
 </BaseLayout>
 
 <style>
@@ -397,12 +393,8 @@ const locations = ['London', 'Manchester', 'Hampshire'];
   .contact-actions { display: grid; justify-items: start; gap: 0.85rem; margin-top: 1.8rem; }
   .contact-email { display: flex; width: fit-content; min-height: 2.75rem; align-items: center; gap: 0.6rem; margin-top: 1.25rem; font-size: 0.85rem; text-decoration: underline; text-underline-offset: 0.25rem; overflow-wrap: anywhere; }
   .contact-email svg { flex-shrink: 0; }
-  .franchise-footer { background: var(--color-blush); color: var(--color-cocoa); }
-  .franchise-footer > div { display: flex; min-height: 7rem; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem 2rem; border-top: 1px solid color-mix(in srgb, var(--color-cocoa) 30%, transparent); padding-block: 1.5rem; font-size: 0.78rem; }
-  .footer-brand { font-family: var(--font-display); font-size: 1.2rem; font-weight: 600; }
-  .franchise-footer nav { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
-  .franchise-footer a { display: inline-flex; min-height: 2.75rem; align-items: center; gap: 0.7rem; }
-  .franchise-footer a:hover, .contact-email:hover { text-decoration: underline; text-underline-offset: 0.3rem; }
+  .franchise-common-footer { background: var(--color-blush); }
+  .contact-email:hover { text-decoration: underline; text-underline-offset: 0.3rem; }
 
   @media (prefers-reduced-motion: no-preference) {
     .hero-copy > * { animation: franchise-arrive 800ms var(--ease-luxury) both; }
@@ -480,13 +472,11 @@ const locations = ['London', 'Manchester', 'Hampshire'];
     .contact-heading h2 { font-size: clamp(2.7rem, 9vw, 4rem); }
     .contact-actions { justify-items: stretch; }
     .contact-email { font-size: 0.8rem; }
-    .franchise-footer > div { gap: 0.5rem 1.5rem; }
-    .franchise-footer nav { order: 3; width: 100%; }
   }
   @media print {
     .franchise-hero { min-height: 0; padding-top: 2rem; }
     .hero-layout, .opportunity-layout, .model-layout, .network-layout, .partnership-layout, .contact-layout { display: block; }
-    .hero-composition, .hero-baseline, .partnership-art, .franchise-footer, .franchise-actions, .contact-actions { display: none; }
+    .hero-composition, .hero-baseline, .partnership-art, .franchise-actions, .contact-actions { display: none; }
     .franchise-opportunity, .franchise-model, .franchise-film-section, .franchise-network, .franchise-partnership, .franchise-contact { padding-block: 2rem; }
     .location-board { margin-top: 2rem; transform: none; }
     .franchise-network { background: var(--color-cream); color: var(--color-cocoa); }

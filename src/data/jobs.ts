@@ -36,6 +36,7 @@ export interface JobPosting {
   offer: string[];
   publishedAt: string;
   isNew: boolean;
+  isTest?: boolean;
 }
 
 type JobSeed = Omit<
@@ -308,3 +309,17 @@ export const jobs: JobPosting[] = jobSeeds.map((job) => ({
 
 export const getJobBySlug = (slug: string) =>
   jobs.find((job) => job.slug.current === slug);
+
+export const testJobs: JobPosting[] = jobs.slice(0, 3).map((job, index) => ({
+  ...job,
+  _id: `test-job-${index + 1}`,
+  jobId: `TEST-${index + 1}`,
+  slug: { current: `test-${job.slug.current}` },
+  role: `[Test] ${job.role}`,
+  description: 'Sample vacancy for testing only. This is not an open position.',
+  overview: 'This is a sample vacancy, not an open position.',
+  isTest: true,
+  isNew: false,
+}));
+
+export const getDisplayJobs = (publishedJobs: JobPosting[]) => publishedJobs.length ? publishedJobs : testJobs;

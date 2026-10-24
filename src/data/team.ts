@@ -3,9 +3,13 @@ export interface TeamMember {
   _type: 'consultant';
   name: string;
   title: string;
-  email: string;
-  phone: string;
+  email?: string;
+  phone?: string;
   avatarUrl?: string;
+  avatarSrcSet?: string;
+  avatarAlt?: string;
+  shareImageUrl?: string;
+  summary?: string;
   accent: 'pink' | 'blue' | 'lime' | 'pale';
   note: string;
   signal: string;

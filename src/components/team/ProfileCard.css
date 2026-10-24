@@ -1,0 +1,251 @@
+.team-profile-card {
+  --team-note-peek: 7.25rem;
+}
+
+.team-profile-card--with-note {
+  padding-bottom: calc(var(--team-note-peek) + 0.875rem);
+}
+
+.team-card-front {
+  min-width: 0;
+}
+
+.team-card-photo-frame {
+  flex-shrink: 0;
+}
+
+.team-card-contact-stack,
+.team-contact-links--icons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.team-contact-link {
+  display: flex;
+  align-items: center;
+  color: var(--color-cocoa);
+  transition: background 220ms ease, color 220ms ease, transform 280ms var(--ease-luxury);
+}
+
+.team-contact-links--icons .team-contact-link {
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid color-mix(in srgb, var(--color-cocoa) 12%, transparent);
+  border-radius: 50%;
+  background: var(--color-cream);
+  box-shadow: 0 3px 12px color-mix(in srgb, var(--color-ink) 8%, transparent);
+}
+
+.team-contact-link:hover {
+  background: var(--color-cocoa);
+  color: var(--color-cream);
+  transform: translateY(-2px);
+}
+
+.team-profile-card :is(a, button, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-cocoa);
+  outline-offset: 3px;
+}
+
+.team-note-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.team-note-sheet {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 1.5rem 1.5rem 0 0;
+  background: var(--color-paper);
+  box-shadow: 0 -5px 22px color-mix(in srgb, var(--color-cocoa) 9%, transparent);
+  transform: translateY(calc(100% - var(--team-note-peek)));
+  transition: transform 720ms var(--ease-luxury), border-radius 720ms var(--ease-luxury);
+  pointer-events: auto;
+}
+
+.team-note-grip {
+  position: absolute;
+  top: 0.6rem;
+  left: calc(50% - 1rem);
+  width: 2rem;
+  height: 3px;
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--color-cocoa) 22%, transparent);
+}
+
+.team-note-preview {
+  position: absolute;
+  inset: 1.35rem 1.1rem auto;
+  height: 2.8rem;
+  overflow: hidden;
+  color: var(--color-cocoa);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4rem;
+  mask-image: linear-gradient(to bottom, var(--color-ink) 30%, transparent 100%);
+  transition: opacity 180ms ease;
+}
+
+.team-note-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding: 1.75rem 1.1rem 4.1rem;
+  opacity: 0;
+  transform: translateY(0.75rem);
+  transition: opacity 180ms ease, transform 280ms var(--ease-luxury);
+}
+
+.team-note-heading {
+  flex-shrink: 0;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-cocoa) 14%, transparent);
+}
+
+.team-note-kicker {
+  margin-bottom: 0.6rem;
+  color: var(--color-cocoa);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.team-note-name {
+  color: var(--color-ink);
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  font-weight: 600;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.team-note-role {
+  margin-top: 0.5rem;
+  color: var(--color-cocoa);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.team-note-scroll {
+  flex: 1;
+  min-height: 0;
+  margin: 0.9rem -0.3rem;
+  padding: 0.15rem 0.3rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--color-cocoa) 35%, transparent) transparent;
+  color: var(--color-cocoa);
+  font-size: 0.9rem;
+  line-height: 1.75;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.team-contact-links--details {
+  display: grid;
+  flex-shrink: 0;
+  gap: 0.2rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid color-mix(in srgb, var(--color-cocoa) 14%, transparent);
+}
+
+.team-contact-links--details .team-contact-link {
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  padding: 0.4rem 0.25rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.team-contact-link svg {
+  flex-shrink: 0;
+}
+
+.team-contact-links--details .team-contact-link span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.team-contact-arrow {
+  margin-left: auto;
+}
+
+.team-note-controls {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 0.55rem 0.9rem 0.7rem;
+  background: var(--color-paper);
+  pointer-events: auto;
+}
+
+.team-note-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 2.5rem;
+  padding-left: 0.25rem;
+  border-radius: 0.6rem;
+  color: var(--color-cocoa);
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.team-note-toggle-icon {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid color-mix(in srgb, var(--color-cocoa) 18%, transparent);
+  border-radius: 50%;
+  transition: transform 600ms var(--ease-luxury), background 220ms ease, color 220ms ease;
+}
+
+.team-note-toggle:hover .team-note-toggle-icon {
+  background: var(--color-cocoa);
+  color: var(--color-paper);
+}
+
+.team-note-layer[data-open="true"] .team-note-sheet {
+  border-radius: inherit;
+  transform: translateY(0);
+}
+
+.team-note-layer[data-open="true"] .team-note-preview {
+  opacity: 0;
+}
+
+.team-note-layer[data-open="true"] .team-note-panel {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 400ms ease 150ms, transform 600ms var(--ease-luxury) 100ms;
+}
+
+.team-note-layer[data-open="true"] .team-note-toggle-icon {
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .team-note-sheet,
+  .team-note-panel,
+  .team-note-layer[data-open="true"] .team-note-panel,
+  .team-note-preview,
+  .team-note-toggle-icon,
+  .team-contact-link {
+    transition: none;
+  }
+}

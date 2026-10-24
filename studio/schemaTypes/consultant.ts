@@ -1,4 +1,6 @@
 import { defineField, defineType } from 'sanity';
+import { portraitSource } from '../lib/mediaSources.ts';
+import { validateImage } from '../lib/mediaRules.ts';
 
 export const consultant = defineType({
   name: 'consultant',
@@ -21,19 +23,22 @@ export const consultant = defineType({
       name: 'email',
       title: 'Email address',
       type: 'string',
-      validation: (rule) => rule.required().email(),
+      description: 'Public work email. Leave empty while contact details are pending.',
+      validation: (rule) => rule.email(),
     }),
     defineField({
       name: 'phone',
       title: 'Phone number',
       type: 'string',
-      validation: (rule) => rule.required(),
+      description: 'Verified public work number. Leave empty if it is not confirmed.',
+      validation: (rule) => rule.max(40),
     }),
     defineField({
       name: 'avatar',
       title: 'Portrait',
       type: 'image',
-      options: { hotspot: true },
+      options: { hotspot: true, sources: [portraitSource] },
+      validation: (rule) => rule.custom((value, context) => validateImage(value, context, 'portrait')),
       fields: [
         defineField({
           name: 'alt',
@@ -85,10 +90,18 @@ export const consultant = defineType({
     }),
     defineField({
       name: 'note',
-      title: 'Profile note',
+      title: 'Full biography',
       type: 'text',
-      rows: 3,
-      validation: (rule) => rule.required().max(180),
+      rows: 8,
+      validation: (rule) => rule.required().max(5000),
+    }),
+    defineField({
+      name: 'summary',
+      title: 'Card summary',
+      type: 'text',
+      rows: 2,
+      description: 'Optional short introduction for compact cards. The full biography is preserved separately.',
+      validation: (rule) => rule.max(180),
     }),
   ],
   orderings: [

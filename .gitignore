@@ -5,6 +5,9 @@ test-results/
 # generated types
 .astro/
 
+# local deployment metadata
+.vercel/
+
 # dependencies
 node_modules/
 
@@ -25,3 +28,6 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Local client intake and original portraits
+temp/

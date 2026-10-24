@@ -1,9 +1,10 @@
 ---
 import { PrimaryButton } from "../components/Button";
 import ProfileCard from "../components/team/ProfileCard";
-import EggIllustration from "../components/EggIllustration.astro";
+import HeroIllustration from "../components/HeroIllustration.astro";
 import FunMenu from "../components/FunMenu.astro";
 import PageMotion from "../components/PageMotion.astro";
+import SectionCurve from "../components/SectionCurve.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import { getTeamGroups, teamPassSteps } from "../data/team";
 import BaseLayout from "../layouts/BaseLayout.astro";
@@ -56,13 +57,7 @@ const teamSectionLinks = [
       </div> -->
       <div
         class="team-hero-oval team-hero-oval-1"
-        data-parallax="56"
-        aria-hidden="true"
-      >
-      </div>
-      <div
-        class="team-hero-oval team-hero-oval-2"
-        data-parallax="-42"
+        data-hero-shape="1"
         aria-hidden="true"
       >
       </div>
@@ -74,7 +69,7 @@ const teamSectionLinks = [
       </div> -->
 
       <div
-        class="relative z-10 mx-auto grid h-full max-w-7xl gap-6 lg:-translate-y-4 lg:grid-cols-[1.02fr_0.98fr] lg:items-center"
+        class="relative z-10 mx-auto grid w-full max-w-7xl gap-6 lg:grid-cols-[1.02fr_0.98fr] lg:items-center"
       >
         <div class="team-hero-copy relative z-20 max-w-4xl">
           <p class="team-hero-kicker mb-6">
@@ -115,16 +110,10 @@ const teamSectionLinks = [
         </div>
 
         <div
-          class="team-pass-stage relative min-h-144 lg:h-full lg:min-h-0"
-          role="img"
-          aria-label="A fried egg representing people-first recruitment"
+          class="team-pass-stage relative"
         >
-          <div class="team-hero-composition" data-parallax="10">
-            <span class="team-hero-egg-backdrop" aria-hidden="true"></span>
-            <EggIllustration class="team-hero-egg" />
-            <!-- <p class="team-hero-tag">
-              Good people.<br />Great instincts.
-            </p> -->
+          <div class="team-hero-composition">
+            <HeroIllustration kind="salt" />
             <p class="team-hero-stamp">
               <strong>20+</strong>
               <span>years of people first</span>
@@ -134,6 +123,7 @@ const teamSectionLinks = [
       </div>
     </section>
 
+    <SectionCurve backdropColor="var(--color-blush)">
     <section
       id="profiles"
       class="team-profiles-section relative overflow-hidden bg-paper px-5 py-18 md:px-10 md:py-24"
@@ -244,9 +234,13 @@ const teamSectionLinks = [
                               name={member.name}
                               title={member.title}
                               avatarUrl={member.avatarUrl}
+                              avatarSrcSet={member.avatarSrcSet}
+                              avatarAlt={member.avatarAlt}
                               accent={member.accent}
                               note={member.note}
                               signal={member.signal}
+                              email={member.email}
+                              phone={member.phone}
                               enableTilt={true}
                             />
                           ))}
@@ -265,12 +259,14 @@ const teamSectionLinks = [
         </div>
       </div>
     </section>
+    </SectionCurve>
 
     {
       /* Temporarily disabled; set showTeamPass to true to restore this section. */
     }
     {
       showTeamPass && (
+        <SectionCurve backdropColor="var(--color-cream)">
         <section
           id="pass"
           class="team-pass-section relative overflow-hidden bg-flame px-5 py-18 md:px-10 md:py-24"
@@ -310,10 +306,11 @@ const teamSectionLinks = [
             </div>
           </div>
         </section>
+        </SectionCurve>
       )
     }
 
-    <SiteFooter />
+    <SiteFooter backdropColor={showTeamPass ? "var(--color-flame)" : "var(--color-cream)"} />
   </main>
 </BaseLayout>
 
@@ -363,24 +360,20 @@ const teamSectionLinks = [
   .team-hero-oval-1 {
     top: 3%;
     right: -13rem;
-    height: 31rem;
-    width: 45rem;
-    background: var(--color-mint);
+    height: 24rem;
+    width: 35rem;
+    border: 1px solid color-mix(in srgb, var(--color-cocoa) 18%, transparent);
+    border-radius: 43% 57% 62% 38% / 52% 40% 60% 48%;
+    background: radial-gradient(color-mix(in srgb, var(--color-cocoa) 16%, transparent) 1px, transparent 1px) 0 0 / 12px 12px,
+      var(--color-mist);
     transform: rotate(-10deg);
   }
 
-  .team-hero-oval-2 {
-    bottom: -16rem;
-    left: -12rem;
-    height: 27rem;
-    width: 48rem;
-    background: var(--color-paper);
-    transform: rotate(8deg);
-  }
-
   .team-hero {
-    height: calc(100svh - 2rem);
-    min-height: 100vh;
+    display: grid;
+    align-items: center;
+    min-height: 100svh;
+    padding-bottom: 3rem;
     background: var(--color-blush);
   }
 
@@ -542,29 +535,10 @@ const teamSectionLinks = [
   .team-hero-composition {
     position: relative;
     display: grid;
-    width: min(38rem, 100%);
-    aspect-ratio: 1.28;
+    width: min(36rem, 100%);
+    aspect-ratio: 1;
     place-items: center;
-    animation: team-hero-egg-in 900ms 120ms var(--ease-cartoon) both;
-    transition: transform 220ms ease-out;
-    will-change: transform;
-  }
-
-  .team-hero-egg-backdrop {
-    position: absolute;
-    z-index: 0;
-    height: 92%;
-    width: 92%;
-    border: 3px solid var(--color-ink);
-    border-radius: 46% 54% 62% 38% / 56% 44% 56% 44%;
-    background: var(--color-citron);
-    transform: rotate(8deg);
-  }
-
-  :global(.team-hero-egg) {
-    --egg-width: min(31rem, 74vw);
-    --egg-rotate: -12deg;
-    z-index: 2;
+    animation: team-hero-art-in 900ms 120ms var(--ease-cartoon) both;
   }
 
   .team-hero-tag {
@@ -1126,7 +1100,7 @@ const teamSectionLinks = [
     }
   }
 
-  @keyframes team-hero-egg-in {
+  @keyframes team-hero-art-in {
     from {
       opacity: 0;
       transform: translateY(2rem) rotate(4deg) scale(0.92);
@@ -1144,12 +1118,8 @@ const teamSectionLinks = [
     }
 
     .team-pass-stage {
-      position: absolute;
-      right: -7rem;
-      bottom: -9rem;
-      height: 32rem;
-      width: 32rem;
-      min-height: 0;
+      width: min(30rem, 100%);
+      justify-self: center;
     }
   }
 
@@ -1189,9 +1159,9 @@ const teamSectionLinks = [
 
   @media (max-width: 767px) {
     .team-hero {
-      height: calc(100svh - 1.25rem);
-      min-height: 46rem;
+      min-height: 100svh;
       padding-top: 5rem;
+      padding-bottom: 2rem;
     }
 
     .team-cloud-1 {
@@ -1206,17 +1176,9 @@ const teamSectionLinks = [
     }
 
     .team-hero-oval-1 {
-      top: auto;
+      top: 4rem;
       right: -13rem;
-      bottom: -2rem;
       height: 22rem;
-      width: 31rem;
-    }
-
-    .team-hero-oval-2 {
-      bottom: -19rem;
-      left: -11rem;
-      height: 24rem;
       width: 31rem;
     }
 
@@ -1258,18 +1220,11 @@ const teamSectionLinks = [
     }
 
     .team-pass-stage {
-      right: -5rem;
-      bottom: -3rem;
-      height: 17rem;
-      width: 17rem;
+      width: min(21rem, 100%);
     }
 
     .team-hero-composition {
-      width: 17rem;
-    }
-
-    :global(.team-hero-egg) {
-      --egg-width: 13.5rem;
+      width: 100%;
     }
 
     .team-hero-tag {
@@ -1282,8 +1237,8 @@ const teamSectionLinks = [
     }
 
     .team-hero-stamp {
-      top: -2%;
-      left: 32%;
+      top: 0;
+      left: 0;
       height: 5.4rem;
       width: 5.4rem;
       padding: 0.55rem;
@@ -1410,66 +1365,6 @@ const teamSectionLinks = [
       });
   }
 
-  function initTeamParallax() {
-    const page = document.querySelector<HTMLElement>("[data-team-page]");
-    if (!page || page.dataset.parallaxReady === "true") return;
-    page.dataset.parallaxReady = "true";
-
-    const items = Array.from(
-      page.querySelectorAll<HTMLElement>("[data-parallax]"),
-    );
-    if (!items.length) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    const state = { pointerX: 0, pointerY: 0, scrollY: window.scrollY };
-    items.forEach((el) => {
-      if (!el.dataset.baseTransform) {
-        el.dataset.baseTransform =
-          window.getComputedStyle(el).transform === "none"
-            ? ""
-            : window.getComputedStyle(el).transform;
-      }
-    });
-
-    const render = () => {
-      items.forEach((el) => {
-        const rect = el.getBoundingClientRect();
-        const depth = Number(el.getAttribute("data-parallax") || 0);
-        const sectionOffset =
-          ((rect.top + rect.height / 2 - window.innerHeight / 2) /
-            window.innerHeight) *
-          depth *
-          -0.42;
-        const pointerX = state.pointerX * depth;
-        const pointerY = state.pointerY * depth;
-        const base = el.dataset.baseTransform || "";
-        el.style.transform = `${base} translate3d(${pointerX.toFixed(1)}px, ${(pointerY + sectionOffset).toFixed(1)}px, 0)`;
-      });
-    };
-
-    const requestRender = () => {
-      render();
-    };
-
-    const onMove = (event: PointerEvent) => {
-      state.pointerX = (event.clientX / window.innerWidth - 0.5) * 2;
-      state.pointerY = (event.clientY / window.innerHeight - 0.5) * 2;
-      requestRender();
-    };
-
-    const onScroll = () => {
-      state.scrollY = window.scrollY;
-      requestRender();
-    };
-
-    window.addEventListener("pointermove", onMove, { passive: true });
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", requestRender, { passive: true });
-    requestRender();
-  }
-
   initTeamAccordion();
-  initTeamParallax();
   document.addEventListener("astro:page-load", initTeamAccordion);
-  document.addEventListener("astro:page-load", initTeamParallax);
 </script>

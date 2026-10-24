@@ -1,11 +1,13 @@
 ---
 import { PrimaryButton, SecondaryButton } from './Button';
-import EggIllustration from './EggIllustration.astro';
+import HeroIllustration from './HeroIllustration.astro';
+import { getPublicContacts } from '../sanity/queries';
+import { telephoneHref } from '../data/editorial';
+const contacts = await getPublicContacts();
 ---
 
 <section class="recruit-hero" aria-labelledby="recruit-hero-title" data-recruit-hero>
-  <div class="recruit-hero-oval recruit-hero-oval-one" data-hero-parallax="-14" aria-hidden="true"></div>
-  <div class="recruit-hero-oval recruit-hero-oval-two" data-hero-parallax="20" aria-hidden="true"></div>
+  <div class="recruit-hero-oval recruit-hero-oval-one" data-hero-shape="1" aria-hidden="true"></div>
 
   <div class="recruit-hero-inner">
     <div class="recruit-hero-copy">
@@ -26,9 +28,9 @@ import EggIllustration from './EggIllustration.astro';
         </PrimaryButton>
         <SecondaryButton
           className="recruit-hero-button recruit-hero-button-secondary"
-          href="tel:02080506312"
+          href={telephoneHref(contacts.phone)}
         >
-          Call US - 020 8050 6312
+          Call us - {contacts.phone}
         </SecondaryButton>
       </div>
       <dl class="recruit-hero-proof" aria-label="Change Hospitality recruitment approach">
@@ -37,19 +39,9 @@ import EggIllustration from './EggIllustration.astro';
       </dl>
     </div>
 
-    <div class="recruit-brief-stage" role="img" aria-label="A fried egg surrounded by a new hospitality staffing brief">
-      <div class="recruit-stage-oval" data-hero-parallax="10" aria-hidden="true"></div>
-      <div class="recruit-hero-egg-anchor" data-hero-parallax="-7" aria-hidden="true">
-        <EggIllustration class="recruit-hero-egg" />
-      </div>
-      <div class="recruit-ticket recruit-ticket-main" data-hero-parallax="18" aria-hidden="true">
-        <span>New opening</span>
-        <strong>3 people<br />London</strong>
-        <i>Ready for the pass</i>
-      </div>
-      <div class="recruit-ticket recruit-ticket-note" data-hero-parallax="-22" aria-hidden="true">
-        Brief taken<br />by a human
-      </div>
+    <div class="recruit-hero-art" aria-hidden="true">
+      <HeroIllustration kind="bart" />
+      <div class="recruit-hero-note">Brief taken<br />by a human</div>
       <p class="recruit-stage-caption">Every good hire starts with a clear order.</p>
     </div>
   </div>
@@ -59,32 +51,26 @@ import EggIllustration from './EggIllustration.astro';
   .recruit-hero {
     position: relative;
     isolation: isolate;
-    box-sizing: border-box;
-    height: 100vh;
-    height: 100svh;
+    display: grid;
+    min-height: 100svh;
+    align-items: center;
     overflow: hidden;
     background: var(--color-mist);
     color: var(--color-ink);
-    padding: 6.5rem 1.25rem 2rem;
+    padding: 7rem 1.25rem 3rem;
   }
 
   .recruit-hero-inner {
     position: relative;
     z-index: 2;
-    display: block;
+    display: grid;
     width: min(100%, 80rem);
-    height: 100%;
     margin: 0 auto;
     gap: 2.5rem;
     align-items: center;
   }
 
-  .recruit-hero-copy {
-    position: relative;
-    z-index: 3;
-    max-width: 48rem;
-  }
-
+  .recruit-hero-copy { position: relative; z-index: 3; max-width: 48rem; }
   .recruit-hero-kicker {
     width: fit-content;
     margin-bottom: 1.25rem;
@@ -96,16 +82,14 @@ import EggIllustration from './EggIllustration.astro';
     text-transform: uppercase;
     transform: rotate(-2deg);
   }
-
   .recruit-hero h1 {
     max-width: 48rem;
     font-family: var(--font-hero);
-    font-size: 3.6rem;
+    font-size: clamp(2.5rem, 5.3vw, 5rem);
     font-weight: 650;
-    line-height: 0.88;
+    line-height: 0.94;
     text-wrap: balance;
   }
-
   .recruit-hero-intro {
     max-width: 39rem;
     margin-top: 1.75rem;
@@ -114,21 +98,8 @@ import EggIllustration from './EggIllustration.astro';
     font-weight: 700;
     line-height: 1.6;
   }
-
-  .recruit-hero-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    margin-top: 2rem;
-  }
-
-  .recruit-hero-proof {
-    display: grid;
-    max-width: 37rem;
-    margin-top: 2rem;
-    gap: 0.7rem;
-  }
-
+  .recruit-hero-actions { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 2rem; }
+  .recruit-hero-proof { display: grid; max-width: 37rem; margin-top: 2rem; gap: 0.7rem; }
   .recruit-hero-proof div {
     display: grid;
     grid-template-columns: 4.25rem 1fr;
@@ -137,487 +108,97 @@ import EggIllustration from './EggIllustration.astro';
     border-top: 1px solid color-mix(in srgb, var(--color-ink) 34%, transparent);
     padding-top: 0.75rem;
   }
-
-  .recruit-hero-proof dt {
-    font-family: var(--font-display);
-    font-size: 1.8rem;
-    font-weight: 600;
-  }
-
-  .recruit-hero-proof dd {
-    color: var(--color-cocoa);
-    font-size: 0.75rem;
-    font-weight: 900;
-    text-transform: uppercase;
-  }
-
-  .recruit-hero-oval,
-  .recruit-stage-oval {
+  .recruit-hero-proof dt { font-family: var(--font-display); font-size: 1.8rem; font-weight: 600; }
+  .recruit-hero-proof dd { color: var(--color-cocoa); font-size: 0.75rem; font-weight: 900; text-transform: uppercase; }
+  .recruit-hero-oval {
     position: absolute;
-    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--color-cocoa) 18%, transparent);
+    border-radius: 43% 57% 62% 38% / 52% 40% 60% 48%;
+    background: var(--color-cream);
     pointer-events: none;
-    transform: translate3d(var(--parallax-x, 0), var(--parallax-y, 0), 0) rotate(var(--oval-rotate, 0deg));
-    will-change: transform;
   }
-
   .recruit-hero-oval-one {
-    --oval-rotate: -10deg;
-    top: 6rem;
-    right: -15rem;
-    width: 34rem;
-    height: 20rem;
-    background: var(--color-cream);
+    top: 4rem;
+    right: -13rem;
+    width: 27rem;
+    height: 17rem;
+    background: radial-gradient(color-mix(in srgb, var(--color-cocoa) 18%, transparent) 1px, transparent 1px) 0 0 / 12px 12px,
+      var(--color-cream);
+    transform: rotate(-10deg);
   }
-
-  .recruit-hero-oval-two {
-    --oval-rotate: 13deg;
-    bottom: -9rem;
-    left: -15rem;
-    width: 36rem;
-    height: 21rem;
-    background: var(--color-cream);
-  }
-
-  .recruit-brief-stage {
-    position: relative;
-    min-height: 31rem;
-  }
-
-  .recruit-hero-egg-anchor {
+  .recruit-hero-art { position: relative; width: min(100%, 34rem); justify-self: center; margin-bottom: 1.5rem; }
+  .recruit-hero-note {
     position: absolute;
-    z-index: 2;
-    inset: 8% -12% auto auto;
-    display: grid;
-    width: 100%;
-    height: 82%;
-    place-items: center;
-    transform: translate3d(var(--parallax-x, 0), var(--parallax-y, 0), 0);
-    will-change: transform;
-  }
-
-  :global(.recruit-hero-egg) {
-    --egg-width: 17.5rem;
-  }
-
-  .recruit-stage-oval {
-    --oval-rotate: -8deg;
-    inset: 8% -12% auto auto;
-    width: 100%;
-    height: 82%;
-    background: var(--color-citron);
-  }
-
-  .recruit-ticket {
-    position: absolute;
-    z-index: 4;
-    color: var(--color-ink);
-    transform: translate3d(var(--parallax-x, 0), var(--parallax-y, 0), 0) rotate(var(--ticket-rotate));
-    will-change: transform;
-  }
-
-  .recruit-ticket-main {
-    --ticket-rotate: 5deg;
-    top: -2%;
-    right: 2%;
-    width: 13.5rem;
-    border-radius: 0.45rem;
-    background: var(--color-paper);
-    padding: 1.2rem;
-  }
-
-  .recruit-ticket-main span,
-  .recruit-ticket-main i {
-    display: block;
-    font-size: 0.68rem;
-    font-style: normal;
-    font-weight: 900;
-    text-transform: uppercase;
-  }
-
-  .recruit-ticket-main strong {
-    display: block;
-    margin: 1rem 0 1.6rem;
-    font-family: var(--font-display);
-    font-size: 2.1rem;
-    line-height: 0.9;
-  }
-
-  .recruit-ticket-main i {
-    padding-top: 0.25rem;
-    color: var(--color-flame);
-  }
-
-  .recruit-ticket-note {
-    --ticket-rotate: -7deg;
-    right: 8%;
-    bottom: 10%;
-    border-radius: 1rem;
-    background: var(--color-blush);
-    padding: 0.85rem 1rem;
-    font-size: 0.8rem;
-    font-weight: 900;
-    line-height: 1.2;
-    text-transform: uppercase;
-  }
-
-  .recruit-stage-caption {
-    position: absolute;
-    z-index: 5;
-    left: 4%;
+    z-index: 3;
     bottom: 8%;
-    width: 13rem;
-    border-radius: 1rem;
-    background: var(--color-flame);
-    color: var(--color-cream);
-    padding: 0.8rem 1rem;
-    font-size: 0.72rem;
+    left: -1%;
+    border: 1px solid color-mix(in srgb, var(--color-cocoa) 25%, transparent);
+    border-radius: 0.4rem;
+    background: var(--color-paper);
+    color: var(--color-cocoa);
+    padding: 0.85rem 1rem;
+    font-size: 0.7rem;
     font-weight: 900;
     line-height: 1.35;
     text-transform: uppercase;
-    transform: rotate(-3deg);
+    transform: rotate(-7deg);
+  }
+  .recruit-hero-note::before { display: block; margin-bottom: 0.6rem; border-top: 1px dashed currentColor; content: ""; }
+  .recruit-stage-caption {
+    position: absolute;
+    bottom: -1.5rem;
+    left: 12%;
+    width: 76%;
+    color: var(--color-cocoa);
+    font-size: 0.7rem;
+    font-weight: 900;
+    line-height: 1.5;
+    text-align: center;
+    text-transform: uppercase;
   }
 
-  .recruit-hero-copy > *,
-  .recruit-brief-stage > * {
-    opacity: 0;
-    transition: opacity 600ms ease, translate 700ms var(--ease-cartoon);
-    translate: 0 1.5rem;
+  @media (prefers-reduced-motion: no-preference) {
+    .recruit-hero-copy > *,
+    .recruit-hero-art { animation: recruit-hero-arrive 700ms var(--ease-luxury) both; }
+    .recruit-hero-copy > :nth-child(2) { animation-delay: 80ms; }
+    .recruit-hero-copy > :nth-child(3) { animation-delay: 140ms; }
+    .recruit-hero-copy > :nth-child(4) { animation-delay: 200ms; }
+    .recruit-hero-copy > :nth-child(5) { animation-delay: 260ms; }
+    .recruit-hero-art { animation-delay: 170ms; }
   }
-
-  .recruit-hero.is-ready .recruit-hero-copy > *,
-  .recruit-hero.is-ready .recruit-brief-stage > * {
-    opacity: 1;
-    translate: 0 0;
+  @keyframes recruit-hero-arrive {
+    from { opacity: 0; transform: translateY(1.5rem); }
+    to { opacity: 1; transform: translateY(0); }
   }
-
-  .recruit-hero.is-ready .recruit-hero-copy > :nth-child(2) { transition-delay: 80ms; }
-  .recruit-hero.is-ready .recruit-hero-copy > :nth-child(3) { transition-delay: 140ms; }
-  .recruit-hero.is-ready .recruit-hero-copy > :nth-child(4) { transition-delay: 200ms; }
-  .recruit-hero.is-ready .recruit-hero-copy > :nth-child(5) { transition-delay: 260ms; }
-  .recruit-hero.is-ready .recruit-brief-stage > :nth-child(2) { transition-delay: 170ms; }
-  .recruit-hero.is-ready .recruit-brief-stage > :nth-child(3) { transition-delay: 250ms; }
-  .recruit-hero.is-ready .recruit-brief-stage > :nth-child(4) { transition-delay: 320ms; }
-  .recruit-hero.is-ready .recruit-brief-stage > :nth-child(5) { transition-delay: 390ms; }
 
   @media (min-width: 640px) {
-    .recruit-hero {
-      padding-inline: 2.5rem;
-    }
-
-    .recruit-hero h1 {
-      font-size: 4.4rem;
-    }
-
-    .recruit-hero-actions {
-      flex-direction: row;
-    }
+    .recruit-hero { padding-inline: 2.5rem; }
+    .recruit-hero-actions { flex-direction: row; flex-wrap: wrap; }
   }
-
   @media (min-width: 1024px) {
-    .recruit-hero-inner {
-      display: grid;
-      min-height: 0;
-      grid-template-columns: minmax(0, 1.04fr) minmax(26rem, 0.96fr);
-    }
-
-    .recruit-hero h1 {
-      font-size: 5rem;
-    }
-
-    .recruit-brief-stage {
-      height: 100%;
-      min-height: 0;
-      max-height: 39rem;
-    }
-
-    .recruit-ticket-main {
-      right: -1%;
-      width: 15rem;
-    }
+    .recruit-hero-inner { grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr); }
   }
-
-  @media (max-width: 639px) {
-    .recruit-hero {
-      padding: 5.7rem 1.25rem 1.5rem;
-    }
-
-    .recruit-hero h1 {
-      font-size: 2.5rem;
-    }
-
-    .recruit-hero-intro {
-      max-width: 21rem;
-      margin-top: 1rem;
-      font-size: 0.92rem;
-      line-height: 1.45;
-    }
-
-    .recruit-hero-actions {
-      margin-top: 1.15rem;
-    }
-
-    .recruit-hero-button-secondary,
-    .recruit-hero-proof {
-      display: none;
-    }
-
-    .recruit-brief-stage {
-      right: -1.5rem;
-      bottom: -0.4rem;
-      width: 16rem;
-      min-height: 11.5rem;
-    }
-
-    .recruit-ticket-main {
-      top: 1rem;
-      right: 0;
-      width: 7.8rem;
-      padding: 0.65rem;
-    }
-
-    .recruit-ticket-main strong {
-      margin: 0.5rem 0 0.7rem;
-      font-size: 1.15rem;
-    }
-
-    .recruit-ticket-main span,
-    .recruit-ticket-main i {
-      font-size: 0.48rem;
-    }
-
-    .recruit-ticket-note,
-    .recruit-stage-caption {
-      display: none;
-    }
-  }
-
-  @media (min-width: 640px) and (max-width: 1023px) {
-    .recruit-hero-copy {
-      max-width: 70%;
-    }
-
-    .recruit-hero h1 {
-      font-size: 3.8rem;
-    }
-
-    .recruit-hero-proof {
-      display: none;
-    }
-
-    .recruit-brief-stage {
-      right: 0;
-      bottom: -2rem;
-      width: 25rem;
-      min-height: 28rem;
-    }
-
-  }
-
-  @media (max-height: 800px) and (min-width: 640px) {
-    .recruit-hero {
-      padding-top: 5.5rem;
-      padding-bottom: 1.5rem;
-    }
-
-    .recruit-hero-kicker {
-      margin-bottom: 1rem;
-    }
-
-    .recruit-hero h1 {
-      font-size: 3.8rem;
-    }
-
-    .recruit-hero-intro {
-      margin-top: 1rem;
-      font-size: 1rem;
-      line-height: 1.45;
-    }
-
-    .recruit-hero-actions,
-    .recruit-hero-proof {
-      margin-top: 1.25rem;
-    }
-  }
-
-  @media (max-height: 800px) and (min-width: 1024px) {
-    .recruit-hero-proof {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1rem;
-    }
-
-    .recruit-hero-proof div {
-      grid-template-columns: auto 1fr;
-      gap: 0.75rem;
-    }
-  }
-
-  @media (max-height: 700px) and (max-width: 639px) {
-    .recruit-brief-stage {
-      right: 0;
-      bottom: 0;
-      width: 10rem;
-      min-height: 5rem;
-    }
-
-    :global(.recruit-hero-egg) {
-      --egg-width: 5rem;
-    }
-
-    .recruit-ticket-main {
-      display: none;
-    }
-  }
-
-  @media (max-height: 500px) {
-    .recruit-hero {
-      padding-top: 4.75rem;
-      padding-bottom: 1rem;
-    }
-
-    .recruit-hero-kicker {
-      margin-bottom: 0.75rem;
-      padding: 0.5rem 0.75rem;
-      font-size: 0.625rem;
-    }
-
-    .recruit-hero h1 {
-      font-size: 2.5rem;
-      line-height: 0.95;
-    }
-
-    .recruit-hero-intro {
-      margin-top: 0.75rem;
-      font-size: 0.875rem;
-      line-height: 1.4;
-    }
-
-    .recruit-hero-actions {
-      margin-top: 0.75rem;
-    }
-
-    .recruit-hero-button {
-      --button-min-height: 2.75rem;
-      --button-padding: 0.6rem 0.8rem;
-      --button-font-size: 0.75rem;
-    }
-
-    .recruit-brief-stage {
-      right: 0;
-      bottom: 0;
-      width: 14rem;
-      height: 100%;
-      min-height: 0;
-    }
-
-    :global(.recruit-hero-egg) {
-      --egg-width: 9rem;
-    }
-
-    .recruit-ticket-main {
-      top: 4%;
-      right: 0;
-      width: 9rem;
-      padding: 0.65rem;
-    }
-
-    .recruit-ticket-main strong {
-      margin: 0.5rem 0 0.7rem;
-      font-size: 1.3rem;
-    }
-
-    .recruit-ticket-note,
-    .recruit-stage-caption {
-      display: none;
-    }
-  }
-
-  @media (max-height: 500px) and (max-width: 639px) {
-    .recruit-hero h1 {
-      font-size: 2rem;
-    }
-
-    .recruit-hero-intro {
-      max-width: none;
-      font-size: 0.8rem;
-    }
-
-    .recruit-brief-stage {
-      display: none;
-    }
-  }
-
   @media (max-width: 1023px) {
-    .recruit-brief-stage {
-      position: absolute;
-      pointer-events: none;
-    }
-
-    .recruit-stage-oval {
-      inset: 8% -5% auto auto;
-      width: 100%;
-      height: 88%;
-    }
+    .recruit-hero-copy { max-width: 42rem; }
+    .recruit-hero-art { width: min(100%, 27rem); }
+    .recruit-hero-proof { display: none; }
   }
-
-  @media (prefers-reduced-motion: reduce) {
-    .recruit-hero-copy > *,
-    .recruit-brief-stage > * {
-      opacity: 1;
-      transition: none;
-      translate: none;
-    }
-
-    :global(.recruit-hero-egg) {
-      will-change: auto;
-    }
-
-    .recruit-hero-egg-anchor {
-      will-change: auto;
-    }
+  @media (max-width: 639px) {
+    .recruit-hero { padding-top: 6rem; }
+    .recruit-hero-intro { margin-top: 1rem; font-size: 1rem; line-height: 1.5; }
+    .recruit-hero-actions { margin-top: 1.25rem; }
+    .recruit-hero-button-secondary { display: none; }
+    .recruit-hero-art { width: min(100%, 23rem); }
+    .recruit-hero-note { left: 0; padding: 0.65rem 0.75rem; font-size: 0.6rem; }
+    .recruit-stage-caption { font-size: 0.6rem; }
+  }
+  @media (max-height: 800px) and (min-width: 1024px) {
+    .recruit-hero { padding-top: 6rem; padding-bottom: 2rem; }
+    .recruit-hero h1 { font-size: clamp(3rem, 4.5vw, 4rem); }
+    .recruit-hero-intro { margin-top: 1rem; font-size: 1rem; line-height: 1.45; }
+    .recruit-hero-actions,
+    .recruit-hero-proof { margin-top: 1.25rem; }
+    .recruit-hero-proof { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .recruit-hero-proof div { grid-template-columns: auto 1fr; gap: 0.75rem; }
   }
 </style>
-
-<script>
-  function initRecruitHero() {
-    const hero = document.querySelector<HTMLElement>('[data-recruit-hero]');
-    if (!hero || hero.dataset.ready === 'true') return;
-    hero.dataset.ready = 'true';
-    window.requestAnimationFrame(() => hero.classList.add('is-ready'));
-
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const desktop = window.matchMedia('(min-width: 1024px)');
-    if (reduceMotion.matches || !desktop.matches) return;
-
-    const layers = Array.from(hero.querySelectorAll<HTMLElement>('[data-hero-parallax]'));
-    let pointerX = 0;
-    let pointerY = 0;
-    let frame = 0;
-
-    const render = () => {
-      frame = 0;
-      const heroRect = hero.getBoundingClientRect();
-      const scrollProgress = Math.max(-1, Math.min(1, -heroRect.top / window.innerHeight));
-
-      layers.forEach((layer) => {
-        const depth = Number(layer.dataset.heroParallax || 0);
-        layer.style.setProperty('--parallax-x', `${(pointerX * depth).toFixed(1)}px`);
-        layer.style.setProperty('--parallax-y', `${(pointerY * depth + scrollProgress * depth * 1.8).toFixed(1)}px`);
-      });
-    };
-
-    const requestRender = () => {
-      if (!frame) frame = window.requestAnimationFrame(render);
-    };
-
-    hero.addEventListener('pointermove', (event) => {
-      pointerX = event.clientX / window.innerWidth - 0.5;
-      pointerY = event.clientY / window.innerHeight - 0.5;
-      requestRender();
-    }, { passive: true });
-    window.addEventListener('scroll', requestRender, { passive: true });
-    requestRender();
-  }
-
-  initRecruitHero();
-  document.addEventListener('astro:page-load', initRecruitHero);
-</script>

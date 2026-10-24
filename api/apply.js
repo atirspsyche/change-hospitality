@@ -3,18 +3,14 @@ import path from 'node:path';
 import { createClient } from '@sanity/client';
 import Busboy from 'busboy';
 import { MailConfigurationError, sendEmail } from '../server/mail.js';
+import { getSanityConfig } from '../server/sanity-config.js';
 
 const MAX_RESUME_SIZE = 4 * 1024 * 1024;
 const MAX_REQUEST_SIZE = 4_400_000;
 const ALLOWED_NATIONALITIES = new Set(['British', 'EU', 'Other']);
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const sanityClient = createClient({
-  projectId: '3z2hqf8g',
-  dataset: 'production',
-  apiVersion: '2026-09-08',
-  useCdn: false,
-});
+const sanityClient = createClient(getSanityConfig(process.env));
 
 class RequestError extends Error {
   constructor(status, message) {
@@ -165,6 +161,7 @@ export function validateApplication(fields, resume) {
   const errors = {};
 
   if (!data.jobId || !data.jobSlug || !data.consultantId) errors.job = 'This job could not be identified.';
+  if (data.jobId.startsWith('TEST-') || data.jobSlug.startsWith('test-')) errors.job = 'Sample vacancies do not accept applications.';
   if (!data.name) errors.name = 'Enter your name.';
   if (!EMAIL_PATTERN.test(data.email)) errors.email = 'Enter a valid email address.';
   if (!data.phone) errors.phone = 'Enter a contact number.';

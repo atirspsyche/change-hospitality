@@ -4,21 +4,22 @@ import JobApplicationForm from '../../components/JobApplicationForm.astro';
 import JobDetail from '../../components/JobDetail.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import type { JobPosting } from '../../data/jobs';
+import { getDisplayJobs } from '../../data/jobs';
 import type { TeamMember } from '../../data/team';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getJobs, getTeamMembers } from '../../sanity/queries';
 
 interface Props {
   job: JobPosting;
-  consultant: TeamMember;
+  consultant?: TeamMember;
 }
 
 export async function getStaticPaths() {
   const [jobs, teamMembers] = await Promise.all([getJobs(), getTeamMembers()]);
 
-  return jobs.map((job) => {
-    const consultant = teamMembers.find((member) => member._id === job.consultant._ref);
-    if (!consultant) {
+  return getDisplayJobs(jobs).map((job) => {
+    const consultant = job.isTest ? undefined : teamMembers.find((member) => member._id === job.consultant._ref);
+    if (!job.isTest && !consultant) {
       throw new Error(`Consultant ${job.consultant._ref} was not found for ${job.slug.current}`);
     }
 
@@ -76,15 +77,16 @@ const jobSchema = {
 
 const sectionLinks = [
   { label: 'Job details', href: '#job-detail-title', meta: job.role },
-  { label: 'Apply', href: '#job-application', meta: 'Send your application' },
+  ...(!job.isTest ? [{ label: 'Apply', href: '#job-application', meta: 'Send your application' }] : []),
 ];
 ---
 
 <BaseLayout
   title={`${job.role} | Change Hospitality Jobs`}
   description={`${job.role} in ${job.location}. ${job.description}`}
-  image={consultant.avatarUrl}
-  structuredData={jobSchema}
+  image={consultant?.shareImageUrl}
+  structuredData={job.isTest ? [] : jobSchema}
+  noindex={job.isTest}
 >
   <FunMenu
     sectionLinks={sectionLinks}
@@ -94,16 +96,21 @@ const sectionLinks = [
   />
   <main class="job-page">
     <JobDetail {job} {consultant} />
-    <JobApplicationForm {job} {consultant} />
-    <SiteFooter />
+    {!job.isTest && consultant && <JobApplicationForm {job} {consultant} />}
+    <SiteFooter backdropColor="var(--job-footer-backdrop)" />
   </main>
 </BaseLayout>
 
 <style>
   .job-page {
+    --job-footer-backdrop: var(--color-blush);
     min-height: 100vh;
     overflow: clip;
     background: var(--color-blush);
     color: var(--color-ink);
+  }
+
+  .job-page:has(.job-application:not([hidden])) {
+    --job-footer-backdrop: var(--color-mint);
   }
 </style>

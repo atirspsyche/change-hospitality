@@ -1,5 +1,6 @@
 ---
 import StoryIllustration from "./StoryIllustration.astro";
+import HeroIllustration from "./HeroIllustration.astro";
 import { getImpactNumbers } from "../sanity/queries";
 
 const impact = await getImpactNumbers();
@@ -75,9 +76,9 @@ const social = [
     <h1 id="impact-title">Sustainability<br />&amp; Impact</h1>
     <p class="hero-note">Good business should<br />do a little good.</p>
     <div class="hero-sprout" aria-hidden="true">
-      <StoryIllustration kind="sprout" />
+      <HeroIllustration kind="plant" />
     </div>
-    <a href="#our-commitment" class="hero-scroll"
+    <a href="#our-commitment" class="hero-scroll" aria-label="Explore our commitment"
       ><span aria-hidden="true">↓</span></a
     >
     <aside
@@ -222,7 +223,7 @@ const social = [
         </h3>
       </div>
       <div class="environment-sprout" aria-hidden="true">
-        <StoryIllustration kind="sprout" />
+        <HeroIllustration kind="plant" loading="lazy" />
       </div>
     </div>
     <div class="copy environment-copy">
@@ -368,6 +369,13 @@ const social = [
     background: var(--color-mint);
     transform: rotate(-6deg);
   }
+  .hero-puddle::after {
+    position: absolute;
+    inset: 1rem;
+    border: 1px dashed color-mix(in srgb, var(--color-bcorp-green) 28%, transparent);
+    border-radius: inherit;
+    content: "";
+  }
   .sticker {
     padding: 0.9rem 1.5rem;
     border-radius: 50%;
@@ -408,10 +416,9 @@ const social = [
   }
   .hero-sprout {
     position: absolute;
-    width: clamp(8rem, 19vw, 17rem);
-    bottom: 8%;
-    left: 3%;
-    transform: rotate(-9deg);
+    width: clamp(15rem, 25vw, 23rem);
+    bottom: 3%;
+    left: 1%;
   }
   .bcorp-badge {
     position: absolute;
@@ -602,7 +609,7 @@ const social = [
     margin-top: 1.75rem;
   }
   .environment-sprout {
-    width: min(22%, 14rem);
+    width: min(30%, 18rem);
     flex-shrink: 0;
     transform: rotate(8deg);
   }
@@ -712,7 +719,7 @@ const social = [
     border-radius: 2rem 4rem 2rem 4rem;
   }
   .social-illustration {
-    width: 10rem;
+    width: 14rem;
     margin: 0 auto 1rem;
   }
   .social-note {
@@ -817,7 +824,8 @@ const social = [
       inset: 19% -15% 29%;
     }
     .hero-sprout {
-      left: 6%;
+      left: 0;
+      width: 12rem;
     }
     .bcorp-badge {
       right: 9%;

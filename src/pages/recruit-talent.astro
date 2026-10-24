@@ -6,7 +6,12 @@ import PageMotion from '../components/PageMotion.astro';
 import RecruitTalentHero from '../components/RecruitTalentHero.astro';
 import RecruitmentDivisions from '../components/RecruitmentDivisions.astro';
 import RecruitmentForm from '../components/RecruitmentForm.astro';
+import SectionCurve from '../components/SectionCurve.astro';
+import SiteFooter from '../components/SiteFooter.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getPublicContacts } from '../sanity/queries';
+import { telephoneHref } from '../data/editorial';
+const contacts = await getPublicContacts();
 
 const showHandoff = false;
 
@@ -51,6 +56,7 @@ const handoffSteps = [
     <RecruitTalentHero />
 
     {showHandoff && (
+      <SectionCurve backdropColor="var(--color-mist)">
       <section id="how-it-works" class="recruit-handoff" aria-labelledby="handoff-title" data-section-reveal>
         <div class="recruit-handoff-inner">
           <div class="recruit-handoff-heading">
@@ -68,12 +74,15 @@ const handoffSteps = [
           </div>
         </div>
       </section>
+      </SectionCurve>
     )}
 
-    <RecruitmentDivisions />
+    <SectionCurve backdropColor={showHandoff ? "var(--color-mint)" : "var(--color-mist)"}>
+      <RecruitmentDivisions />
+    </SectionCurve>
 
+    <SectionCurve backdropColor="var(--color-citron)">
     <section class="recruit-form-section" aria-label="Submit a staffing requirement">
-      <div class="recruit-form-shape" aria-hidden="true"></div>
       <div class="recruit-form-layout">
         <aside class="recruit-form-intro" data-section-reveal>
           <p class="recruit-form-eyebrow">Recruit talent</p>
@@ -83,8 +92,8 @@ const handoffSteps = [
           </p>
           <div class="recruit-form-note">
             <span>Prefer to talk?</span>
-            <a href="tel:02080506312">020 8050 6312</a>
-            <a href="mailto:info@changehospitality.co.uk">info@changehospitality.co.uk</a>
+            <a href={telephoneHref(contacts.phone)}>{contacts.phone}</a>
+            <a href={`mailto:${contacts.recruitmentEmail}`}>{contacts.recruitmentEmail}</a>
           </div>
         </aside>
 
@@ -93,24 +102,28 @@ const handoffSteps = [
         </div>
       </div>
     </section>
+    </SectionCurve>
 
-    <ClientTestimonials />
+    <SectionCurve backdropColor="var(--color-flame)">
+      <ClientTestimonials />
+    </SectionCurve>
 
-    <footer class="recruit-footer">
+    <!-- <section class="recruit-footer" aria-labelledby="recruit-conversation-title">
       <EggIllustration class="recruit-footer-egg" />
       <div class="recruit-footer-inner">
         <p>Still shaping the role?</p>
-        <h2>We can take it<br />from a conversation.</h2>
+        <h2 id="recruit-conversation-title">We can take it<br />from a conversation.</h2>
         <div class="recruit-footer-actions">
-          <a href="tel:02080506312">Call the team</a>
-          <a href="mailto:info@changehospitality.co.uk">Send an email</a>
+          <a href={telephoneHref(contacts.phone)}>Call the team</a>
+          <a href={`mailto:${contacts.recruitmentEmail}`}>Send an email</a>
         </div>
         <div class="recruit-footer-base">
           <a href="/">Change Hospitality</a>
           <span>Front of House / Back of House / Events &amp; Commercial</span>
         </div>
       </div>
-    </footer>
+    </section> -->
+    <SiteFooter backdropColor="var(--color-paper)" />
   </main>
 </BaseLayout>
 
@@ -193,17 +206,6 @@ const handoffSteps = [
     overflow: hidden;
     background: var(--color-flame);
     padding: 5rem 1.25rem;
-  }
-
-  .recruit-form-shape {
-    position: absolute;
-    top: 4rem;
-    right: -16rem;
-    width: 34rem;
-    height: 18rem;
-    border-radius: 999px;
-    background: var(--color-citron);
-    transform: rotate(-9deg);
   }
 
   .recruit-form-layout {

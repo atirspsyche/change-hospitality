@@ -1,12 +1,16 @@
 import { defineConfig } from 'sanity';
 import { structureTool } from 'sanity/structure';
 import { schemaTypes } from './schemaTypes';
+import { getSanityConfig } from '../server/sanity-config.js';
 
 export default defineConfig({
   name: 'change-hospitality',
   title: 'Change Hospitality',
-  projectId: '3z2hqf8g',
-  dataset: 'production',
+  form: { image: { directUploads: false } },
+  ...getSanityConfig({
+    SANITY_PROJECT_ID: process.env.SANITY_STUDIO_PROJECT_ID,
+    SANITY_DATASET: process.env.SANITY_STUDIO_DATASET,
+  }),
   plugins: [
     structureTool({
       structure: (S) =>
@@ -16,6 +20,11 @@ export default defineConfig({
             S.documentTypeListItem('job').title('Jobs'),
             S.documentTypeListItem('consultant').title('Team members'),
             S.documentTypeListItem('location').title('Locations'),
+            S.documentTypeListItem('client').title('Client logos'),
+            S.documentTypeListItem('testimonial').title('Testimonials'),
+            S.documentTypeListItem('policy').title('Policy links'),
+            ...[['siteSettings', 'public-contacts', 'Public contacts'], ['temporaryWork', 'temporary-work', 'Temporary worker guidance']].map(([type, id, title]) =>
+              S.listItem().id(id).title(title).child(S.document().schemaType(type).documentId(id))),
             S.listItem()
               .id('environmental-impact')
               .title('Environmental impact')
@@ -29,10 +38,10 @@ export default defineConfig({
   ],
   schema: {
     types: schemaTypes,
-    templates: (templates) => templates.filter((template) => template.schemaType !== 'environmentalImpact'),
+    templates: (templates) => templates.filter((template) => !['environmentalImpact', 'siteSettings', 'temporaryWork'].includes(template.schemaType)),
   },
   document: {
-    actions: (actions, context) => context.schemaType === 'environmentalImpact'
+    actions: (actions, context) => ['environmentalImpact', 'siteSettings', 'temporaryWork'].includes(context.schemaType)
       ? actions.filter((action) => action.action !== 'duplicate' && action.action !== 'delete')
       : actions,
   },

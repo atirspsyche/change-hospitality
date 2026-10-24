@@ -1,70 +1,10 @@
 ---
 import { PrimaryButton } from "./Button";
-
-const benefits = [
-  [
-    "Be in charge of your work",
-    "Casual work with us gives you full autonomy over your hours and where you work. Take the shifts that suit you, in the places you want to be.",
-  ],
-  [
-    "Shifts turn into careers",
-    "Casual work can be a foot in the door. Plenty of our candidates are taken on permanently by venues that loved having them, and if that's where you want to go, we'll help you get there.",
-  ],
-  [
-    "A mix of venues",
-    "Events, restaurants, luxury venues, stadiums and more. There's genuine variety here, so no two weeks have to look the same.",
-  ],
-  [
-    "Work across the region",
-    "Our offices are spread across London, Manchester and Hampshire, so there's work for wherever you are.",
-  ],
-  [
-    "Easy to book, paid on time",
-    "Book your shifts through our app, and get paid every Friday.",
-  ],
-  [
-    "Extra support when you need it",
-    "For our front-of-house team, we run training days in our office to build skills and confidence. Whether you're just starting out or levelling up, you won't be left to figure it out alone.",
-  ],
-];
+import SectionCurve from "./SectionCurve.astro";
+import { getTemporaryWork, getPublicContacts } from '../sanity/queries';
+const [{ benefits, faqs }, contacts] = await Promise.all([getTemporaryWork(), getPublicContacts()]);
 
 const roles = ["Back of house", "Front of house", "Sales", "Events", "Admin"];
-
-const faqs: Array<{ question: string; paragraphs: string[] }> = [
-  {
-    question: "How do I join your temp team?",
-    paragraphs: [
-      "Once you apply, our recruitment team will get in touch with you. You'll be invited to meet us in our office or join a quick video call for an assessment. Once you pass, you're part of the team.",
-    ],
-  },
-  {
-    question: "How soon after applying can I start working?",
-    paragraphs: [
-      "Once you complete the registration process, you can start working straight away.",
-    ],
-  },
-  {
-    question:
-      "I don't live in the UK. Can I still apply for one of your positions?",
-    paragraphs: [
-      "If you are applying for one of our UK roles, you will need to have a UK address. We will also need to see your Right to Work in the UK before you can join us.",
-    ],
-  },
-  {
-    question: "Do I need hospitality experience?",
-    paragraphs: [
-      "It depends on the role. For front-of-house work, the right attitude matters most, and we can help with the rest. Back-of-house and kitchen roles usually call for more hands-on experience.",
-      "Some roles also require specific certifications, such as food hygiene or health-and-safety qualifications, depending on where and what you'll be working. Whatever the role needs, your consultant will talk you through it and point you in the right direction.",
-    ],
-  },
-  {
-    question: "What kind of roles and venues can I work in?",
-    paragraphs: [
-      "On the front-of-house side, our roles include waiting staff, bar staff, baristas, hosts, event staff and supervisors. Behind the scenes, we cover kitchen roles from kitchen porters to chefs of every level.",
-      "Our shifts span events, contract catering, pubs, restaurants, hotels, private venues, schools, hospitals and stadiums. Depending on what you like, there's work here to suit you.",
-    ],
-  },
-];
 ---
 
 <section
@@ -75,7 +15,8 @@ const faqs: Array<{ question: string; paragraphs: string[] }> = [
   data-temp-experience
   hidden
 >
-  <div class="temp-benefits">
+  <SectionCurve backdropColor="var(--color-blush)">
+  <section class="temp-benefits" aria-labelledby="temporary-work-title">
     <div class="temp-inner">
       <header class="temp-section-header">
         <p>Temporary work, your way</p>
@@ -84,23 +25,25 @@ const faqs: Array<{ question: string; paragraphs: string[] }> = [
       </header>
       <div class="temp-benefit-grid">
         {
-          benefits.map(([title, copy], index) => (
+          benefits.map(({ title, text }, index) => (
             <article class="temp-benefit">
               <span>{String(index + 1).padStart(2, "0")}</span>
               <h3>{title}</h3>
-              <p>{copy}</p>
+              <p>{text}</p>
             </article>
           ))
         }
       </div>
     </div>
-  </div>
+  </section>
+  </SectionCurve>
 
-  <div class="temp-application" id="temporary-application">
+  <SectionCurve backdropColor="var(--color-mint)">
+  <section class="temp-application" id="temporary-application" aria-labelledby="temporary-application-title">
     <div class="temp-inner temp-application-layout">
       <header class="temp-form-intro">
         <p>Join the team</p>
-        <h2>Tell us what works for you.</h2>
+        <h2 id="temporary-application-title">Tell us what works for you.</h2>
         <p>
           Share your details and the roles you want. Our temporary recruitment
           team will be in touch when the right shifts come up.
@@ -227,14 +170,16 @@ const faqs: Array<{ question: string; paragraphs: string[] }> = [
         </h3><p data-temp-success-message></p>
       </div>
     </div>
-  </div>
+  </section>
+  </SectionCurve>
 
-  <div class="temp-faqs">
+  <SectionCurve backdropColor="var(--color-cocoa)">
+  <section class="temp-faqs" aria-labelledby="temporary-faqs-title">
     <div class="temp-inner temp-faq-layout">
-      <header class="temp-faq-header"><p>Good to know</p><h2>FAQs</h2></header>
+      <header class="temp-faq-header"><p>Good to know</p><h2 id="temporary-faqs-title">FAQs</h2></header>
       <div class="temp-faq-list">
         {
-          faqs.map(({ question, paragraphs }, index) => (
+          faqs.map(({ question, paragraphs, contact }, index) => (
             <details class="temp-faq">
               <summary>
                 <>
@@ -247,36 +192,13 @@ const faqs: Array<{ question: string; paragraphs: string[] }> = [
                 {paragraphs.map((paragraph: string) => (
                   <p>{paragraph}</p>
                 ))}
-              </div>
+                {contact === 'team' && <p><a href="/team/">Contact a consultant</a></p>}
+                {contact === 'timesheets' && <p><a href={`mailto:${contacts.timesheetsEmail}`}>{contacts.timesheetsEmail}</a></p>}
+              </section>
+              </SectionCurve>
             </details>
           ))
         }
-        <details class="temp-faq">
-          <summary
-            ><span>06</span><strong
-              >If there is an issue with my app, what do I do?</strong
-            ><i aria-hidden="true"></i></summary
-          >
-          <div>
-            <p>
-              <a href="/team/">Contact a consultant</a> and our team will help.
-            </p>
-          </div>
-        </details>
-        <details class="temp-faq">
-          <summary
-            ><span>07</span><strong
-              >If I can't submit my hours on the app, what do I do?</strong
-            ><i aria-hidden="true"></i></summary
-          >
-          <div>
-            <p>
-              Email <a href="mailto:timesheets@changehospitality.co.uk"
-                >timesheets@changehospitality.co.uk</a
-              >.
-            </p>
-          </div>
-        </details>
       </div>
     </div>
   </div>

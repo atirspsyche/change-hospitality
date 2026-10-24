@@ -1,5 +1,4 @@
 ---
-import FranchiseMap from '../components/FranchiseMap.astro';
 import { PrimaryButton, SecondaryButton } from '../components/Button';
 import FunMenu from '../components/FunMenu.astro';
 import HomeStoryHero from '../components/HomeStoryHero';
@@ -34,8 +33,7 @@ const homeSectionLinks = [
   />
   <main class="home-page bg-cream text-ink">
     <HomeStoryHero client:load />
-    <FranchiseMap />
-    <div class="home-story-link">
+    <!-- <div class="home-story-link">
       <p>A little idea. A lot of heart.</p>
       <PrimaryButton
         href="/our-story/"
@@ -58,7 +56,7 @@ const homeSectionLinks = [
       >
         Sustainability &amp; Impact
       </SecondaryButton>
-    </div>
+    </div> -->
     <!--
       <PhilosophyReveal />
       <DivisionSplit />
@@ -67,7 +65,7 @@ const homeSectionLinks = [
       <TestimonialsStack />
       <ApplicationSection />
     -->
-    <SiteFooter />
+    <SiteFooter backdropColor="var(--color-flame)" />
   </main>
   <PageMotion page="home" />
 </BaseLayout>

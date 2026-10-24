@@ -1,6 +1,42 @@
 # Change Hospitality Studio
 
-Standalone Sanity Studio for project `3z2hqf8g` and the `production` dataset.
+Standalone Sanity Studio for client project `thyjjqzv` and the `production` dataset.
+
+Hosted Studio: [Change Hospitality Studio](https://change-hospitality.sanity.studio/). Sign in with a Sanity account that is a member of the client project.
+
+## Client Production Handoff
+
+The website build and application API share `SANITY_PROJECT_ID` and `SANITY_DATASET`; Studio and its CLI use `SANITY_STUDIO_PROJECT_ID` and `SANITY_STUDIO_DATASET`. Defaults point to the client project. Examples are provided in each package's `.env.example`. Project identifiers are public, not login credentials. Keep write tokens and SMTP/deploy-hook secrets outside source control and public content.
+
+First verify access with `npx sanity projects list` from this directory. The signed-in account must have write permission on `thyjjqzv`. Authenticate through `npx sanity login` locally when needed; never send credentials through chat. The CLI defaults to the client Studio deployment ID; `SANITY_STUDIO_APP_ID` is an optional override. The old Studio deployment ID is not reused. Automatic Studio package updates are disabled so deployments use the repository's installed versions.
+
+### Import Approved Real Content
+
+From the repository root, `npm --prefix studio run import:content` is a **dry run**. It validates `temp/team-members.md`, all named portraits and existing logo files, and performs no writes. Originals under `temp/` are intentionally ignored by Git and are not website assets. Eighteen real profiles are assigned to London (15, head office), Manchester (2) and Hampshire (1). Full biographies are preserved up to 5,000 characters; four missing biographies receive factual temporary one-liners. Unconfirmed work contacts remain empty and their public links are hidden.
+
+The import includes 42 marquee logos named `Client 01` to `Client 42` in existing numeric order, plus five named testimonial clients. Names, display order and visibility are editable. Renaming a client does not change its ID or references.
+
+After reviewing the dry run and confirming access, apply with `npm --prefix studio run import:content -- -- --apply --project=thyjjqzv`. The importer refuses any other target, validates every source image before writing, saves a document snapshot under ignored `temp/sanity-backups/`, and uses create-if-absent writes. It never overwrites existing editorial records or deletes documents. Review conflicts before rerunning. Sanity content-deduplicates uploaded assets.
+
+Impact figures and temporary-worker guidance are initially created as **drafts**, requiring client review and publication. Only after approval, include `--approve-impact` and/or `--approve-guidance` in the apply arguments. These flags also publish existing drafts on a later run, using the stored draft content and revision checks rather than replacing editorial changes with seed copy. Existing published records are preserved. Required published documents are `public-contacts`, `temporary-work` and `environmental-impact`; missing required content intentionally fails builds. No fake vacancies are imported.
+
+### Image Delivery and Limits
+
+Portrait uploads are capped at **2 MiB (2,097,152 bytes)** and must be at least 600 by 600 pixels. Logos are capped at **250 KiB (256,000 bytes)**. Use the guarded image source for selection, drop or paste; default direct uploads are disabled. Oversized files are rejected before passing them to Sanity. Existing selected assets are checked again before publishing. The importer verifies actual format, dimensions and animation metadata. Studio rules are editing safeguards, not server-side access controls on authorised API clients.
+
+The Astro static build fetches source images, honours portrait crop/hotspot, generates responsive WebP variants and a JPEG sharing image, and emits local deployment assets. Logos retain their aspect ratio and transparent backgrounds; SVG logos are copied into local deployment assets as vectors without enabling SVG rasterisation. Visitors receive these copies from the website host. Build downloads and Studio previews still use Sanity bandwidth; visitor delivery uses Vercel bandwidth. Preserve the Astro image cache between builds where supported.
+
+### Publishing and Cutover
+
+Configure a private Vercel Deploy Hook and one Sanity webhook for published `job`, `consultant`, `location`, `client`, `testimonial`, `siteSettings`, `policy`, `temporaryWork` and `environmentalImpact` changes. Exclude draft IDs, asset documents and system documents; include create/update/delete events so publishing, replacements and unpublishing rebuild the site. Do not put the deploy-hook URL in frontend code or public Sanity content. Changes appear after the build completes.
+
+Verify a Vercel Preview against the new project before changing live production. Website builds and `api/apply.js` must select the same project. Keep the previous Vercel deployment and its matching environment settings for rollback; leave both Sanity projects intact during acceptance. This repository does not create remote webhooks, CORS origins, memberships or deployments automatically.
+
+When a successful published jobs query returns no vacancies, three code-defined `[Test]` roles appear. Their detail pages are noindex, omitted from the sitemap, omit JobPosting metadata, and do not accept applications. CMS failures never trigger samples. One real published job replaces all samples on the next build.
+
+### Verification
+
+Run `npm --prefix studio test`, `npm exec --prefix studio -- tsc --project studio/tsconfig.json --noEmit`, `npm --prefix studio run build`, root `npm test`, and root `npm run build`. A Studio build alone does not typecheck. Before cutover, inspect generated HTML, responsive sources and sharing URLs; open all office groups on desktop/mobile and confirm portrait/logo network requests use the website host after hydration. Exercise the guarded picker with oversized files via selection, drop and paste. Do not send test applications to real staff.
 
 ## Commands
 

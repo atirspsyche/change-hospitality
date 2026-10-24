@@ -9,8 +9,9 @@ const { page } = Astro.props;
 <span data-page-motion={page} hidden></span>
 
 <style is:global>
-  [data-page-motion-layer] {
-    translate: 0 var(--page-motion-y, 0px);
+  [data-page-motion-layer],
+  [data-pointer-motion-layer] {
+    translate: var(--pointer-motion-x, 0px) calc(var(--page-motion-y, 0px) + var(--pointer-motion-y, 0px));
   }
 </style>
 
@@ -35,7 +36,7 @@ const { page } = Astro.props;
       reveals: '.story-next h2, .story-next p',
     },
     recruit: {
-      layers: '.recruit-hero-egg-anchor, .recruit-ticket, .recruit-form-shape, .recruit-footer-egg',
+      layers: '.recruit-hero-art, .recruit-footer-egg',
       reveals: '.division-flow-heading, .recruit-footer-inner > h2, .recruit-footer-actions',
     },
     impact: {
@@ -66,11 +67,69 @@ const { page } = Astro.props;
     media.add({
       motion: '(prefers-reduced-motion: no-preference)',
       desktop: '(min-width: 1024px)',
+      finePointer: '(hover: hover) and (pointer: fine)',
       print: 'print',
     }, (context) => {
       if (!context.conditions?.motion || context.conditions.print) return;
 
       const listeners = new AbortController();
+      const pointerLayers = new Set<HTMLElement>();
+      const pointerCleanups: Array<() => void> = [];
+      if (context.conditions.desktop && context.conditions.finePointer) {
+        const sections = new Map<HTMLElement, HTMLElement[]>();
+        root.querySelectorAll<HTMLElement>('[data-hero-shape], [data-parallax]').forEach((element) => {
+          const section = element.closest('section');
+          if (!section) return;
+          const layers = sections.get(section) || [];
+          layers.push(element);
+          sections.set(section, layers);
+        });
+
+        sections.forEach((elements, section) => {
+          const layers = elements.map((element) => {
+            pointerLayers.add(element);
+            element.setAttribute('data-pointer-motion-layer', '');
+            gsap.set(element, { '--pointer-motion-x': '0px', '--pointer-motion-y': '0px' });
+            const strength = Math.max(-1, Math.min(1,
+              element.dataset.heroShape ? Number(element.dataset.heroShape) : Number(element.dataset.parallax) / 56,
+            ));
+            return {
+              strength,
+              x: gsap.quickTo(element, '--pointer-motion-x', { duration: 0.8, ease: 'power2.out' }),
+              y: gsap.quickTo(element, '--pointer-motion-y', { duration: 0.8, ease: 'power2.out' }),
+            };
+          });
+          let frame = 0;
+          let clientX = 0;
+          let clientY = 0;
+          const render = () => {
+            frame = 0;
+            const bounds = section.getBoundingClientRect();
+            const x = Math.max(-1, Math.min(1, (clientX - bounds.left) / bounds.width * 2 - 1));
+            const y = Math.max(-1, Math.min(1, (clientY - bounds.top) / bounds.height * 2 - 1));
+            layers.forEach((layer) => {
+              layer.x(x * 6 * layer.strength);
+              layer.y(y * 4 * layer.strength);
+            });
+          };
+          const reset = () => {
+            cancelAnimationFrame(frame);
+            frame = 0;
+            layers.forEach((layer) => { layer.x(0); layer.y(0); });
+          };
+          section.addEventListener('pointermove', (event) => {
+            if (event.pointerType !== 'mouse') return;
+            clientX = event.clientX;
+            clientY = event.clientY;
+            if (!frame) frame = requestAnimationFrame(render);
+          }, { passive: true, signal: listeners.signal });
+          section.addEventListener('pointerleave', reset, { signal: listeners.signal });
+          section.addEventListener('pointercancel', reset, { signal: listeners.signal });
+          window.addEventListener('blur', reset, { signal: listeners.signal });
+          pointerCleanups.push(() => cancelAnimationFrame(frame));
+        });
+      }
+
       const lenis = new Lenis({
         duration: 1.2,
         smoothWheel: true,
@@ -193,6 +252,8 @@ const { page } = Astro.props;
 
       return () => {
         listeners.abort();
+        pointerCleanups.forEach((cleanup) => cleanup());
+        pointerLayers.forEach((element) => element.removeAttribute('data-pointer-motion-layer'));
         resizeObserver.disconnect();
         cancelAnimationFrame(resizeFrame);
         gsap.ticker.remove(tick);

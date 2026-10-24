@@ -4,11 +4,11 @@ import type { TeamMember } from '../data/team';
 
 interface Props {
   job: JobPosting;
-  consultant: TeamMember;
+  consultant?: TeamMember;
 }
 
 const { job, consultant } = Astro.props;
-const phoneHref = `tel:${consultant.phone.replace(/[^+\d]/g, '')}`;
+const phoneHref = consultant?.phone ? `tel:${consultant.phone.replace(/[^+\d]/g, '')}` : undefined;
 ---
 
 <section class="job-detail" data-job-detail>
@@ -85,27 +85,27 @@ const phoneHref = `tel:${consultant.phone.replace(/[^+\d]/g, '')}`;
             </ul>
           </section>
 
-          <button class="job-detail-apply" type="button" data-open-job-application>
+          {!job.isTest && <button class="job-detail-apply" type="button" data-open-job-application>
             Apply for this role <span aria-hidden="true">&#8595;</span>
-          </button>
+          </button>}
         </div>
 
-        <aside class="job-consultant" aria-labelledby="job-consultant-title" data-job-consultant>
+        {consultant && <aside class="job-consultant" aria-labelledby="job-consultant-title" data-job-consultant>
           <p class="job-detail-section-label">Your consultant</p>
           {consultant.avatarUrl && (
-            <img src={consultant.avatarUrl} alt="" width="480" height="480" loading="eager" />
+            <img src={consultant.avatarUrl} srcset={consultant.avatarSrcSet} sizes="(min-width: 1024px) 320px, 90vw" alt={consultant.avatarAlt || ''} width="480" height="480" loading="eager" />
           )}
           <h2 id="job-consultant-title">{consultant.name}</h2>
           <p class="job-consultant-title">{consultant.title}</p>
           <p class="job-consultant-note">{consultant.note}</p>
           <div class="job-consultant-actions">
-            <a href={`mailto:${consultant.email}?subject=${encodeURIComponent(`${job.jobId}: ${job.role}`)}`}>
+            {consultant.email && <a href={`mailto:${consultant.email}?subject=${encodeURIComponent(`${job.jobId}: ${job.role}`)}`}>
               Email {consultant.name.split(' ')[0]}
-            </a>
-            <a href={phoneHref}>{consultant.phone}</a>
+            </a>}
+            {phoneHref && <a href={phoneHref}>{consultant.phone}</a>}
           </div>
           <p class="job-consultant-reference">Quote <strong>{job.jobId}</strong> when enquiring.</p>
-        </aside>
+        </aside>}
       </div>
     </article>
   </div>

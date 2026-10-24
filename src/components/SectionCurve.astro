@@ -1,0 +1,17 @@
+---
+interface Props {
+  backdropColor: string;
+}
+
+const { backdropColor } = Astro.props;
+---
+
+<div class="section-curve" style={{ backgroundColor: backdropColor }}>
+  <slot />
+</div>
+
+<style>
+  .section-curve > :global(section) {
+    border-radius: 50% 50% 0 0 / 3rem 3rem 0 0;
+  }
+</style>

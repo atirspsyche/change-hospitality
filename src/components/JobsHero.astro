@@ -1,14 +1,15 @@
 ---
-import { BriefcaseBusiness, Clock3 } from "@lucide/astro";
-import EggIllustration from "./EggIllustration.astro";
+import HeroIllustration from "./HeroIllustration.astro";
 ---
 
 <section class="jobs-hero" aria-labelledby="jobs-page-title" data-jobs-hero>
+  <!-- <div class="jobs-hero-shape jobs-hero-shape-one" data-hero-shape="1" aria-hidden="true"></div> -->
+  <div class="jobs-hero-shape jobs-hero-shape-two" data-hero-shape="-1" aria-hidden="true"></div>
   <div class="jobs-hero-inner">
     <div class="jobs-hero-copy">
       <p class="jobs-hero-kicker">Live roles</p>
       <h1 id="jobs-page-title">
-        <span>Your next move</span> <br /> is closer than you think
+        <span>Your next move</span> is closer than you think
       </h1>
       <p class="jobs-hero-intro">
         From small independents to biggest names in the industry, and everything in between. 
@@ -20,15 +21,29 @@ import EggIllustration from "./EggIllustration.astro";
         <div class="jobs-mode-options">
           <label>
             <input type="radio" name="jobsMode" value="permanent" aria-controls="jobs" checked />
-            <span>
-              <BriefcaseBusiness size={18} aria-hidden="true" focusable="false" />
+            <span class="jobs-mode-choice">
+              <svg class="jobs-mode-outline" viewBox="0 0 240 44" preserveAspectRatio="none" fill="none" aria-hidden="true" focusable="false">
+                <path d="M22 3C72 1 161 4 216 2C243 1 244 40 218 41C161 44 79 40 23 42C-3 43-4 4 22 3Z" />
+              </svg>
+              <span class="jobs-mode-indicator" aria-hidden="true">
+                <svg viewBox="0 0 16 16" fill="none" focusable="false">
+                  <path d="m3 8 3.5 3.5L13 4" />
+                </svg>
+              </span>
               Permanent
             </span>
           </label>
           <label>
             <input type="radio" name="jobsMode" value="temporary" aria-controls="temporary-work" />
-            <span>
-              <Clock3 size={18} aria-hidden="true" focusable="false" />
+            <span class="jobs-mode-choice">
+              <svg class="jobs-mode-outline" viewBox="0 0 240 44" preserveAspectRatio="none" fill="none" aria-hidden="true" focusable="false">
+                <path d="M22 3C72 1 161 4 216 2C243 1 244 40 218 41C161 44 79 40 23 42C-3 43-4 4 22 3Z" />
+              </svg>
+              <span class="jobs-mode-indicator" aria-hidden="true">
+                <svg viewBox="0 0 16 16" fill="none" focusable="false">
+                  <path d="m3 8 3.5 3.5L13 4" />
+                </svg>
+              </span>
               Temporary
             </span>
           </label>
@@ -37,7 +52,7 @@ import EggIllustration from "./EggIllustration.astro";
     </div>
 
     <div class="jobs-hero-art" aria-hidden="true">
-      <EggIllustration class="jobs-art-egg" />
+      <HeroIllustration kind="chef" />
     </div>
   </div>
 </section>
@@ -55,29 +70,30 @@ import EggIllustration from "./EggIllustration.astro";
     padding: 7.5rem 1.25rem;
   }
 
-  .jobs-hero::before,
-  .jobs-hero::after {
+  .jobs-hero-shape {
     position: absolute;
     z-index: -1;
-    border-radius: 999px;
-    content: "";
+    border-radius: 43% 57% 62% 38% / 52% 40% 60% 48%;
+    border: 1px solid color-mix(in srgb, var(--color-cocoa) 18%, transparent);
+    pointer-events: none;
   }
 
-  .jobs-hero::before {
+  .jobs-hero-shape-one {
     left: -8rem;
     bottom: -3rem;
     width: 24rem;
     height: 13rem;
-    background: var(--color-citron);
+    background: var(--color-cream);
     transform: rotate(18deg);
   }
 
-  .jobs-hero::after {
-    top: 6rem;
-    right: -15rem;
-    width: 30rem;
-    height: 20rem;
-    background: var(--color-flame);
+  .jobs-hero-shape-two {
+    top: 4rem;
+    right: -12rem;
+    width: 24rem;
+    height: 16rem;
+    background: radial-gradient(color-mix(in srgb, var(--color-flame) 30%, transparent) 1px, transparent 1px) 0 0 / 12px 12px,
+      color-mix(in srgb, var(--color-flame) 12%, var(--color-blush));
     transform: rotate(-18deg);
   }
 
@@ -110,10 +126,12 @@ import EggIllustration from "./EggIllustration.astro";
   .jobs-hero h1 {
     max-width: 50rem;
     font-family: var(--font-hero);
-    font-size: clamp(2.5rem, 6vw, 6rem);
+    /* font-size: clamp(2.5rem, 6vw, 6rem); */
+    font-size: clamp(2.5rem, 5.3vw, 5rem);;
     font-weight: 400;
     line-height: 0.9;
     text-wrap: balance;
+    color: var(--color-cocoa);
   }
 
   .jobs-hero h1 span {
@@ -122,16 +140,18 @@ import EggIllustration from "./EggIllustration.astro";
 
   .jobs-hero-intro {
     max-width: 38rem;
-    margin-top: 1.75rem;
-    color: var(--color-cocoa);
+    margin-top: 2rem;
+    color: var(--color-ink);
     font-size: clamp(1.05rem, 1.5vw, 1.3rem);
     font-weight: 800;
     line-height: 1.5;
+    font-family: var(--font-body);
+
   }
 
   .jobs-mode-switch {
     min-width: 0;
-    width: min(100%, 22rem);
+    width: min(100%, 23rem);
     margin-top: 2.25rem;
     border: 0;
     padding: 0;
@@ -139,7 +159,7 @@ import EggIllustration from "./EggIllustration.astro";
 
   .jobs-mode-switch legend {
     margin-bottom: 0.85rem;
-    color: var(--color-cocoa);
+    color: var(--color-ink);
     font-size: 1.5rem;
     font-weight: 600;
     line-height: 1.4;
@@ -147,36 +167,13 @@ import EggIllustration from "./EggIllustration.astro";
   }
 
   .jobs-mode-options {
-    position: relative;
-    isolation: isolate;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    border: 1px solid color-mix(in srgb, var(--color-cocoa) 35%, transparent);
-    border-radius: 999px;
-    background: var(--color-cream);
-    padding: 0.3rem;
-    box-shadow: 0 4px 0 color-mix(in srgb, var(--color-cocoa) 15%, transparent);
-  }
-
-  .jobs-mode-options::before {
-    position: absolute;
-    top: 0.3rem;
-    bottom: 0.3rem;
-    left: 0.3rem;
-    width: calc(50% - 0.3rem);
-    border-radius: 999px;
-    background: var(--color-cocoa);
-    content: "";
-    transition: transform 320ms var(--ease-luxury);
-  }
-
-  .jobs-mode-options:has(input[value="temporary"]:checked)::before {
-    transform: translateX(100%);
+    gap: 0.85rem;
   }
 
   .jobs-mode-switch label {
     position: relative;
-    z-index: 1;
     min-width: 0;
     cursor: pointer;
   }
@@ -188,49 +185,102 @@ import EggIllustration from "./EggIllustration.astro";
     opacity: 0;
   }
 
-  .jobs-mode-switch span {
+  .jobs-mode-choice {
+    position: relative;
     display: flex;
-    min-height: 3.25rem;
+    min-height: 3.5rem;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-    border-radius: 999px;
+    gap: 0.6rem;
+    border-radius: 1.7rem 1.4rem 1.8rem 1.5rem;
+    background: var(--color-cream);
     color: var(--color-cocoa);
-    padding: 0.65rem 0.75rem;
-    font-size: 0.82rem;
-    font-weight: 900;
-    transition: background-color 220ms ease, color 220ms ease;
+    padding: 0.75rem;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.25;
+    transition:
+      background-color 300ms ease,
+      color 300ms ease,
+      transform 450ms var(--ease-luxury);
   }
 
-  .jobs-mode-switch input:checked + span {
-    color: var(--color-cream);
+  .jobs-mode-outline {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+    stroke: var(--color-cocoa);
+    stroke-width: 1.4;
   }
 
-  .jobs-mode-switch input:focus-visible + span {
+  .jobs-mode-outline path {
+    vector-effect: non-scaling-stroke;
+  }
+
+  .jobs-mode-indicator {
+    display: grid;
+    width: 1.1rem;
+    height: 1.1rem;
+    flex-shrink: 0;
+    place-items: center;
+    border: 1.4px solid currentColor;
+    border-radius: 45% 55% 48% 52%;
+  }
+
+  .jobs-mode-indicator svg {
+    width: 0.8rem;
+    height: 0.8rem;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 250ms ease, transform 350ms var(--ease-cartoon);
+  }
+
+  .jobs-mode-switch input:checked + .jobs-mode-choice {
+    background: var(--color-citron);
+    transform: rotate(-1.5deg);
+  }
+
+  .jobs-mode-switch input:checked + .jobs-mode-choice .jobs-mode-indicator svg {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .jobs-mode-switch input:focus-visible + .jobs-mode-choice {
     outline: 3px solid var(--color-cocoa);
-    outline-offset: 3px;
+    outline-offset: 4px;
   }
 
-  .jobs-mode-switch label:hover input:not(:checked) + span {
-    background: color-mix(in srgb, var(--color-cocoa) 8%, transparent);
+  @media (hover: hover) {
+    .jobs-mode-switch label:hover input:not(:checked) + .jobs-mode-choice {
+      background: color-mix(in srgb, var(--color-citron) 35%, var(--color-cream));
+      transform: translateY(-2px);
+    }
   }
 
   .jobs-hero-art {
-    --egg-position: relative;
-    --egg-width: min(29rem, 38vw);
-    --egg-rotate: -10deg;
     position: relative;
     z-index: 1;
-    display: flex;
-    min-height: 27rem;
-    align-items: center;
-    justify-content: flex-end;
+    width: min(100%, 36rem);
+    justify-self: center;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .jobs-mode-options::before,
-    .jobs-mode-switch span {
+    .jobs-mode-choice,
+    .jobs-mode-indicator svg {
       transition: none;
+    }
+
+    .jobs-mode-switch input:checked + .jobs-mode-choice,
+    .jobs-mode-switch label:hover input:not(:checked) + .jobs-mode-choice {
+      transform: none;
     }
   }
 
@@ -239,10 +289,7 @@ import EggIllustration from "./EggIllustration.astro";
       padding-inline: 2.5rem;
     }
     .jobs-hero-inner {
-      grid-template-columns: minmax(0, 1.18fr) minmax(22rem, 0.82fr);
-    }
-    .jobs-hero-art {
-      min-height: 34rem;
+      grid-template-columns: minmax(0, 1.08fr) minmax(22rem, 0.92fr);
     }
   }
 
@@ -252,11 +299,11 @@ import EggIllustration from "./EggIllustration.astro";
       padding-top: 7rem;
       padding-bottom: 4rem;
     }
-    .jobs-hero::before {
+    .jobs-hero-shape-one {
       left: -10rem;
       bottom: -2rem;
     }
-    .jobs-hero::after {
+    .jobs-hero-shape-two {
       top: 5.5rem;
       right: -12rem;
     }
@@ -264,8 +311,7 @@ import EggIllustration from "./EggIllustration.astro";
       font-size: clamp(2.75rem, 13.5vw, 4.25rem);
     }
     .jobs-hero-art {
-      --egg-width: min(18rem, 74vw);
-      min-height: 20rem;
+      width: min(100%, 23rem);
     }
   }
 </style>

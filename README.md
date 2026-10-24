@@ -8,9 +8,10 @@ Premium Astro website concept for Change Hospitality, focused on editorial luxur
 - Tailwind tokens for Obsidian, Champagne, Off-White and B-Corp Green.
 - GSAP + ScrollTrigger effects wrapped in responsive `matchMedia()` rules, with simplified mobile motion and reduced-motion support.
 - Lenis smooth scrolling for desktop polish.
-- Recruiter-page client logos scroll only while the logo strip is in view, pausing off-screen and resuming from the same position. Hover, keyboard focus, the pause control and reduced-motion preferences remain respected.
+- Recruiter-page client logos scroll only while the logo strip is in view, pausing off-screen and resuming from the same position. Hover, keyboard focus, the pause control and reduced-motion preferences remain respected. Logo optimisation scales both dimensions together (at most 400px wide, without upscaling), ignores portrait crop/hotspot settings and uses containment to keep the complete artwork. Missing or invalid CMS dimensions are inferred from the source; SVGs stay vector. Partial logos at the strip's outer edges are the intentional scrolling boundary, not cropped source images.
 - Role-specific candidate applications with server-validated CV attachments and consultant email routing.
 - Sanity-managed job listings, team profiles and environmental impact numbers, with a standalone Studio in `studio/`.
+- Team cards retain their hover effects, with direct email/call shortcuts and an accessible sliding biography sheet. Notes scroll inside the card without resizing the grid; Escape or Show less closes the sheet, and reduced-motion preferences disable its animation.
 - Shareable `/jobs/[slug]/` detail routes with assigned consultant contacts and role-specific stepped applications.
 - Reusable recruiter staffing brief with accessible multi-select controls, responsive motion and SMTP delivery.
 - SEO metadata, Open Graph tags, JSON-LD and sitemap generation.
@@ -23,7 +24,7 @@ Premium Astro website concept for Change Hospitality, focused on editorial luxur
 | `npm run dev` | Start local development at `localhost:4321` |
 | `npm run build` | Build the production site to `dist/` |
 | `npm test` | Run the Vercel function and SMTP configuration tests |
-| `npm run test:e2e` | Run homepage scroll/reload and franchising regressions in desktop and mobile Chromium |
+| `npm run test:e2e` | Run homepage scroll/reload, franchising and team-card regressions in desktop and mobile Chromium |
 | `npm run preview` | Preview the built site locally |
 
 ## Email Flows
@@ -38,7 +39,9 @@ The `/jobs/` hero uses a compact, keyboard-accessible Permanent / Temporary sele
 
 The hero content is vertically centred on larger screens, with content-driven height on mobile. Focused filter fields underline their labels instead of adding a second outer border.
 
-The recruiter experience lives at `/recruit-talent/`. Its form posts JSON to `/api/recruit-talent`, which validates and sanitizes the staffing brief before sending it to `RECRUITMENT_INBOX`.
+The recruiter experience lives at `/recruit-talent/`. Its form posts JSON to `/api/recruit-talent`, which validates and sanitizes the staffing brief before sending it to `RECRUITMENT_INBOX`. Division separators stay between rows only, leaving the curved transition from Events & Commercial into the staffing form unbroken. The form section has no oversized decorative side capsule.
+
+Run `npx playwright test client-logos.spec.js` for logo aspect ratios, responsive containment, seamless looping, pause controls and reduced-motion scrolling. Run `npx playwright test section-curves.spec.js --grep Recruit` for the staffing-form transition with the last division open and closed.
 
 The temporary-work option on `/jobs/` posts candidate details to `/api/temporary-application`. The endpoint validates every field and the selected role list before emailing `TEMP_APPLICATIONS_INBOX`, falling back to `APPLICATIONS_INBOX` when no dedicated temporary-work inbox is configured.
 
@@ -84,6 +87,14 @@ If the opening assets fail, or initialization exceeds 15 seconds, the loader rel
 
 [404.astro](src/pages/404.astro) generates the static host's `404.html` with a noindex directive. Its main button returns home by default; missing `/jobs/{slug}/` URLs (and the singular `/job/{slug}/` form) instead offer **Explore jobs**. Client-side URL detection handles static hosts that reuse the same 404 document for every missing path.
 
+## Page Illustrations
+
+[HeroIllustration.astro](src/components/HeroIllustration.astro) frames the supplied transparent WebP artwork from [public/illustrations](public/illustrations): `chef.webp` for Jobs, `bart.webp` for Recruit Talent, `salt.webp` for Team, and `plant.webp` for both plants on Sustainability & Impact. Frame coordinates remove empty canvas space without stretching the drawings; update them if the source artwork changes. Jobs uses a larger chef over a smooth, clockwise-tilted citron oval; Team shows the salt-and-pepper artwork without a backdrop or extra marks. The plants retain their deep B Corp green arches, and Recruit Talent retains its blush organic shape. Dashed outlines and small hand-drawn accents on the backed illustrations echo the shared footer.
+
+Fine-pointer desktop visitors get a gently eased mouse-follow effect, limited to 4px horizontally, 3px vertically and one degree of tilt. [PageMotion.astro](src/components/PageMotion.astro) also moves the corner shapes on Jobs, Recruit Talent and Team by at most 6px horizontally and 4px vertically, preserving their existing rotation and scroll motion. Team's other decorative layers use the same reduced movement. All cursor effects reset on pointer exit and are disabled on touch devices, narrow screens and for reduced-motion preferences. Event listeners and pending frames are cleaned up on Astro navigation and preference changes. The images are decorative, have reserved layout space and remain visible without JavaScript; the below-fold plant loads lazily.
+
+Run `npx playwright test hero-illustrations.spec.js` for asset mapping, responsive fit, hover/reset, touch, reduced motion, client navigation and no-JavaScript coverage.
+
 ## Shared Buttons
 
 `PrimaryButton` and `SecondaryButton` are named exports from [src/components/Button.tsx](src/components/Button.tsx). Both use Lucide React icons and the original story button's 2px border, rounded shape, 450ms left-to-right colour wipe, slight lift and diagonal icon movement. Their styles live in [src/components/Button.module.css](src/components/Button.module.css), not the global stylesheet.
@@ -124,9 +135,25 @@ Use the same props in React/TSX. Without `href`, either component renders a nati
 
 Choose existing colour tokens with sufficient text contrast for both resting and hover states. Home keeps raised shadows; Jobs, Team and Recruit opt out. The temporary form and Recruit page use cocoa rather than flame behind light button text for AA contrast. “Show all jobs”, the homepage sustainability CTA and Recruit's hero telephone link use the outlined Secondary variant. Keyboard focus triggers the same fill, disabled native buttons skip the effect, and reduced-motion preferences disable spatial motion. Page styles retain only placement or context-specific sizing via `--button-min-height`, `--button-padding`, `--button-gap`, `--button-font-size` and `--button-icon-size`.
 
-Home, Jobs, Team, Recruit and Our Story content CTAs use these components, including Recruit's staffing-brief submit button and Our Story's letter controls. Recruit retains its compact short-viewport button sizing and hides the hero telephone link on small screens as before. Menu toggles, work-mode switches, pagination, accordion controls, map markers, inline links and footers remain unchanged. Other page-specific global styles are outside this button extraction.
+Home, Jobs, Team, Recruit and Our Story content CTAs use these components, including Recruit's staffing-brief submit button and Our Story's letter controls. Recruit retains its compact short-viewport button sizing and hides the hero telephone link on small screens as before. The shared footer also uses both button variants. Menu toggles, work-mode switches, pagination, accordion controls, map markers and inline links remain unchanged. Other page-specific global styles are outside this button extraction.
 
 Focused component tests run with `node --experimental-strip-types --test src/lib/buttons.test.js` and are also included in `npm test`.
+
+## Shared Footer
+
+[SiteFooter](src/components/SiteFooter.astro) provides the citron footer on the main website pages, including Franchising and Recruit. It occupies exactly one dynamic viewport in height and the available viewport width, with height-aware type and spacing for short screens. Its rounded top is component-owned, so it also applies without a `brand-footer` wrapper. The lower footer has two vertical columns: large stacked page links on the left (Home, Jobs, Recruit, Team, Our story, Franchising and Sustainability), and policies, Sanity-managed contact/social links, then the smaller logo on the right. The right-hand groups share one left alignment. Policies use two compact columns on desktop and a single column on narrow screens. The original square logo is framed by an SVG viewBox containing the complete wordmark and Hospitality line, rather than an oversized, positioned image. All content remains server-rendered without React hydration. Recruit keeps its existing conversation CTA above the shared footer; Franchising passes `backToTopHref="#franchise-title"` to preserve its return link.
+
+[FooterIllustration](src/components/FooterIllustration.astro) uses the supplied [hand illustration](public/illustrations/hand.webp), with decorative SVG stars and rays. The illustration stays contained inside the original content column; no edge extension or sleeve manipulation is applied. A one-shot intersection observer starts a short star animation only when the footer enters view; it is disconnected on Astro navigation. Hovering the artwork moves the stars smoothly without transforming the image. Link lettering retains its staggered bounce on hover and keyboard focus, without duplicating accessible link names. Reduced motion disables these animations, and all content and links work without JavaScript. Compact policy and contact links retain at least 24px target heights.
+
+Very short viewports reserve room for the floating site navigation and use a single-line footer heading. Below 640px wide and 500px tall, the decorative hand is omitted so the buttons, complete directory, all policies and contact links remain available without overflow.
+
+Run `npx playwright test footer.spec.js` for desktop/mobile coverage of exact viewport dimensions and content bounds from 320px to 1920px (including short portrait and landscape screens), all four policies, shared buttons, complete branding, contrast, keyboard focus, star hover effects, motion preferences, Astro navigation and no-JavaScript use.
+
+## Curved Section Transitions
+
+[SectionCurve.astro](src/components/SectionCurve.astro) brings the shallow, full-width arch from Our Story's `story-next` section to the content section transitions on Team, Recruit and Jobs. Wrap a section in `SectionCurve` and set `backdropColor` to the preceding surface's colour token. The wrapper paints the exposed corners without negative margins or overlapping content; section spacing, anchors and interactive behaviour remain unchanged. Jobs includes the temporary-work benefits, application and FAQ sections; the testimonial backdrop follows the selected work mode, and the gallery follows the active work surface when no testimonials are published. Hero tops stay flat, and their lower decorative capsules are omitted (commented out on Jobs) so they do not end abruptly above the arch. The upper accents remain, with Team's accent kept above the transition on mobile too. Footers are deliberately excluded and retain their original rounded-corner design.
+
+Run `npx playwright test section-curves.spec.js` for desktop/mobile curve geometry, corner colours, responsive overflow and interactive/no-JavaScript coverage.
 
 ## Our Story Page
 
@@ -144,7 +171,9 @@ The hero's "Meet the team" link uses the shared `PrimaryButton` with a cocoa fac
 
 ## Sanity Studio
 
-Sanity Studio is maintained as an independent project in `studio/` and is configured for project `3z2hqf8g`, dataset `production`. Editors can create, publish, update and remove jobs and team members there. A job must reference a team member, so Sanity will prevent deleting a team member while a published job still uses them.
+Sanity Studio is maintained as an independent project in `studio/` and defaults to client project `thyjjqzv`, dataset `production`. Website builds and the application API share configurable project settings; Studio uses corresponding `SANITY_STUDIO_` settings. Editors can manage jobs, profiles, offices, impact figures, testimonials, client logos, public contacts, policy Drive links and temporary-worker guidance. Referenced team members cannot be deleted while jobs still use them.
+
+Portraits and client logos are optimised during the static build and emitted with the deployment, rather than delivered from Sanity to each visitor. Upload limits are 2 MiB for portraits and 250 KiB for logos. Full biographies allow 5,000 characters; unconfirmed contacts are optional. The importer defaults to a no-write dry run and preserves client edits. See [studio/README.md](studio/README.md#client-production-handoff) for access checks, import approval, draft review, verification, webhooks and coordinated cutover.
 
 Install and run the Studio locally:
 
@@ -164,6 +193,16 @@ npm run deploy
 The deployed `*.sanity.studio` URL uses Sanity login and project roles. Uploaded team portraits are preferred; the external portrait URL field remains available for the imported starter content.
 
 Because the site is statically generated, publishing in Studio requires a new Vercel deployment before the public pages change. Configure a Vercel Deploy Hook and a Sanity webhook for document creates, updates and deletes on `job` and `consultant` documents.
+
+## Illustrated Menu Control
+
+The shared navigation trigger reads "The Menu" inside its original hand-drawn SVG contour, retaining each page's existing colour overrides. On desktop hover or keyboard focus, a citron highlight rises behind the lettering, the letters roll through a masked reveal and a second outline draws around the seal. Opening the existing drawer continuously morphs the same opaque SVG surface into an icon-only close control over 540ms; the icon stays anchored while its strokes become a cross. The existing GSAP dependency interpolates matching path segments inside `matchMedia()`, reversing from the current outline when interrupted. There is no separate close surface to crossfade or swap, and no additional dependency or hydrated island.
+
+Touch devices do not depend on hover. Reduced-motion preferences remove the transitions, SVG tween and letter movement. The control retains its accessible name, expanded state and visible keyboard focus; Escape closes the drawer and returns focus to the trigger. The rotated drawer starts fully beyond the viewport so its decorative shapes cannot flash on screen before its entrance begins.
+
+The drawer's slightly irregular SVG pen line is its outer border, with a cream keyline and no inset frame or drop shadow. The decorative surface clips to the same contour so its colours meet the border. Hover and keyboard focus transition the background and both decorative shapes together through coordinated token-based palettes. Seven equally prominent navigation rows include Franchising; responsive sizing preserves the existing drawer footprint, with internal scrolling on short screens. The current row stays citron with a dark outline and a visible, unrotated "You're here" capsule, including on hover and keyboard focus. On mobile the capsule sits below the label so long page names retain their space. `aria-current` identifies the page (`location` for a parent section on detail pages); directional arrows ease in on hover or keyboard focus. Reduced motion also removes the drawer's entrance delays and palette/arrow transitions.
+
+Run `npm run test:e2e -- menu` for desktop/mobile layout, seven-link navigation, current-page markers, palette separation, hover and focus, open/close interruptions, reduced motion and client-navigation coverage.
 
 ## Franchising Page & Film
 

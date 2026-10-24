@@ -4,6 +4,56 @@ import { consultant } from './consultant.ts';
 import { location as locationSchema } from './location.ts';
 import { getTeamGroups, teamMembers } from '../../src/data/team.ts';
 import { englishCities, seedLocations } from '../data/locations.ts';
+import { mediaLimits, uploadError, validateImage } from '../lib/mediaRules.ts';
+
+test('portrait and logo upload guards enforce exact byte boundaries and supported types', () => {
+  for (const kind of ['portrait', 'logo']) {
+    assert.equal(uploadError({ size: mediaLimits[kind], type: 'image/webp' }, kind), true);
+    assert.notEqual(uploadError({ size: mediaLimits[kind] + 1, type: 'image/webp' }, kind), true);
+    assert.notEqual(uploadError({ size: 0, type: 'image/webp' }, kind), true);
+    assert.notEqual(uploadError({ size: 100, type: 'image/gif' }, kind), true);
+  }
+  assert.notEqual(uploadError({ size: 100, type: 'image/svg+xml' }, 'portrait'), true);
+  assert.equal(uploadError({ size: 100, type: 'image/svg+xml' }, 'logo'), true);
+});
+
+test('publish validation resolves existing asset size and dimensions rather than trusting its reference', async () => {
+  let asset = { size: 2000, mimeType: 'image/webp', metadata: { dimensions: { width: 768, height: 768 } } };
+  const context = { getClient: () => ({ fetch: async () => asset }) };
+  const value = { asset: { _ref: 'image-example' } };
+  assert.equal(await validateImage(value, context, 'portrait'), true);
+  asset = { ...asset, size: mediaLimits.portrait + 1 };
+  assert.match(await validateImage(value, context, 'portrait'), /2 MiB/);
+  asset = { ...asset, size: 2000, metadata: { dimensions: { width: 100, height: 100 } } };
+  assert.match(await validateImage(value, context, 'portrait'), /600/);
+  asset = null;
+  assert.match(await validateImage(value, context, 'portrait'), /verified/);
+});
+
+test('biographies preserve long descriptions while card summaries stay compact', () => {
+  const calls = [];
+  const rule = {
+    required() { calls.push('required'); return this; },
+    max(length) { calls.push(length); return this; },
+  };
+  consultant.fields.find((field) => field.name === 'note').validation(rule);
+  assert.deepEqual(calls, ['required', 5000]);
+  calls.length = 0;
+  consultant.fields.find((field) => field.name === 'summary').validation(rule);
+  assert.deepEqual(calls, [180]);
+});
+
+test('pending work contacts are optional but supplied emails are validated', () => {
+  const calls = [];
+  const rule = {
+    required() { calls.push('required'); return this; },
+    email() { calls.push('email'); return this; },
+    max(length) { calls.push(length); return this; },
+  };
+  consultant.fields.find((field) => field.name === 'email').validation(rule);
+  consultant.fields.find((field) => field.name === 'phone').validation(rule);
+  assert.deepEqual(calls, ['email', 40]);
+});
 
 test('team members reference active location documents without a fixed office list', () => {
   const location = consultant.fields.find((field) => field.name === 'location');

@@ -1,8 +1,4 @@
 import { createClient } from '@sanity/client';
+import { getSanityConfig } from '../../server/sanity-config.js';
 
-export const sanityClient = createClient({
-  projectId: '3z2hqf8g',
-  dataset: 'production',
-  apiVersion: '2026-09-08',
-  useCdn: false,
-});
+export const sanityClient = createClient(getSanityConfig(import.meta.env));

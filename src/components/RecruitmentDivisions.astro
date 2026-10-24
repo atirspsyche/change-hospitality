@@ -1,10 +1,7 @@
 ---
 import { Pause, Play } from '@lucide/astro';
-
-const clientLogoSources = Array.from(
-  { length: 42 },
-  (_, index) => `/client-logos/logo-scroll/${index + 1}.png`,
-);
+import { getClientLogos } from '../sanity/queries';
+const clients = (await getClientLogos()).filter((client) => client.marquee && client.logo);
 
 const divisions = [
   {
@@ -84,6 +81,7 @@ const divisions = [
       aria-pressed="false"
       title="Pause client logos"
       data-logo-pause
+      hidden={!clients.length}
     >
       <Pause class="division-client-pause-icon" size={18} aria-hidden="true" />
       <Play class="division-client-play-icon" size={18} aria-hidden="true" />
@@ -93,7 +91,8 @@ const divisions = [
   <div
     class="division-client-marquee"
     role="img"
-    aria-label="Our clients include Wembley, Tate, Searcys, Royal Bank of Canada, Four Seasons, Tobacco Dock, Shangri-La, and The Goring."
+    aria-label={`Our clients: ${clients.map((client) => client.name).join(', ')}`}
+    hidden={!clients.length}
     tabindex="0"
     data-client-marquee
     data-paused="false"
@@ -102,9 +101,9 @@ const divisions = [
     <div class="division-client-track">
       {[0, 1].map(() => (
         <div class="division-client-group" aria-hidden="true">
-          {clientLogoSources.map((src) => (
+          {clients.map((client) => (
             <div class="division-client-logo">
-              <img src={src} alt="" width="500" height="500" loading="lazy" decoding="async" />
+              <img src={client.logo!.src} alt="" width={client.logo!.width} height={client.logo!.height} loading="lazy" decoding="async" />
             </div>
           ))}
         </div>
@@ -319,8 +318,6 @@ const divisions = [
   }
 
   .division-flow-item {
-    border-bottom: 1px solid
-      color-mix(in srgb, var(--color-ink) 24%, transparent);
     background: var(--item-tone);
     color: var(--color-ink);
     opacity: 0;
@@ -329,6 +326,11 @@ const divisions = [
       opacity 500ms ease,
       translate 650ms var(--ease-cartoon);
     transition-delay: calc(var(--item-index) * 80ms);
+  }
+
+  .division-flow-item:not(:last-child) {
+    border-bottom: 1px solid
+      color-mix(in srgb, var(--color-ink) 24%, transparent);
   }
 
   .division-flow.is-visible .division-flow-item {

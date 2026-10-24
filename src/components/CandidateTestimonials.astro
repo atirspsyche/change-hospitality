@@ -1,31 +1,11 @@
 ---
 import { Quote } from '@lucide/astro';
-
-const testimonials = [
-  {
-    name: 'Céline',
-    quote: "I've genuinely loved my time with the agency and have always appreciated how supportive and well-organised everything has been. I've learned a lot through the shifts and it's been a pleasure working with both the team and the venues.",
-  },
-  {
-    name: 'Victor',
-    quote: 'Change has been excellent in providing me with the exact level of work I require. They have a good spread of clients which means the work assignments can get you into some wonderful places: top London hotels, premiership football clubs, west end theatres, street food pop-ups, festivals, city offices.',
-  },
-  {
-    name: 'Sami',
-    quote: 'I had a great experience with Change Hospitality Agency. The team is professional, supportive, and always responsive to any questions or concerns. They provide excellent opportunities and genuinely care about their staff.',
-  },
-  {
-    name: 'Jack',
-    quote: "I have been with change for a bit now. A lot of agencies don't look after their chefs. They just send them out to not nice places and make money of our backs and our hard work. BUT NOT change. They check up on us to make sure we are happy, any questions you have for them they reply within minutes.",
-  },
-  {
-    name: 'Robenpreet',
-    quote: 'Everyone in the agency is very kind and helpful. I would highly recommend Change Hospitality because they provide good shifts at good locations. The team is very supportive - they help you with everything, provide shifts regularly, and are always understanding if you face any problems.',
-  },
-];
+import { getTestimonials } from '../sanity/queries';
+const testimonials = await getTestimonials('candidate');
+const total = String(testimonials.length).padStart(2, '0');
 ---
 
-<section id="candidate-testimonials" class="candidate-stories" aria-labelledby="candidate-stories-title" data-candidate-stories>
+<section id="candidate-testimonials" class="candidate-stories" aria-labelledby="candidate-stories-title" data-candidate-stories hidden={!testimonials.length}>
   <div class="candidate-stories-inner">
     <header class="candidate-stories-heading">
       <div>
@@ -43,7 +23,7 @@ const testimonials = [
         <figure class="candidate-note" data-candidate-note>
           <div class="candidate-note-top" aria-hidden="true">
             <Quote size={30} stroke-width={1.8} />
-            <span>{String(index + 1).padStart(2, '0')} / 05</span>
+            <span>{String(index + 1).padStart(2, '0')} / {total}</span>
           </div>
           <blockquote><p>&ldquo;{quote}&rdquo;</p></blockquote>
           <figcaption><span class="candidate-note-dot" aria-hidden="true"></span>{name}<span class="candidate-note-name">A Change candidate</span></figcaption>

@@ -9,13 +9,17 @@
     "test": "node --experimental-strip-types --test schemaTypes/*.test.js",
     "seed:locations": "sanity exec scripts/seed-locations.ts --with-user-token",
     "seed:impact": "sanity exec scripts/seed-impact.ts --with-user-token",
+    "import:content": "sanity exec scripts/import-content.ts --with-user-token",
     "deploy": "sanity deploy"
   },
   "dependencies": {
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "remark-parse": "^11.0.0",
     "sanity": "^6.13.0",
-    "styled-components": "^6.5.3"
+    "sharp": "^0.35.5",
+    "styled-components": "^6.5.3",
+    "unified": "^11.0.5"
   },
   "devDependencies": {
     "@types/react": "^19.2.2",

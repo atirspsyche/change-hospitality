@@ -1,4 +1,6 @@
 ---
+import { getPublicContacts } from '../sanity/queries';
+const contacts = await getPublicContacts();
 export interface FunMenuLink {
   label: string;
   href: string;
@@ -14,10 +16,14 @@ interface Props {
 
 const {
   sectionLinks = [],
-  menuButtonBackground = 'var(--color-flame)',
-  menuButtonBorderColor = 'var(--color-ink)',
-  menuButtonTextColor = 'var(--color-cream)',
+  menuButtonBackground = 'var(--color-cream)',
+  menuButtonBorderColor = 'var(--color-cocoa)',
+  menuButtonTextColor = 'var(--color-cocoa)',
 } = Astro.props;
+
+const menuLabel = 'The Menu';
+const sealOutline = 'M33 5C66 2 119 4 150 5C168 5 179 15 179 31C180 48 168 58 150 59C113 61 69 58 33 59C15 60 5 50 5 33C4 16 15 5 33 5Z';
+const frameOutline = 'M52 10C251 6 529 15 731 9C837 6 925 9 962 12C979 14 989 27 990 49C995 292 986 558 990 778C992 865 991 925 983 956C977 979 960 990 930 990C668 995 399 985 139 991C83 992 51 989 31 974C11 961 10 940 10 911C6 668 15 395 9 150C8 95 8 57 17 35C24 17 35 11 52 10Z';
 
 const siteLinks: FunMenuLink[] = [
   { label: 'Home', href: '/', meta: 'Back to the start' },
@@ -25,16 +31,21 @@ const siteLinks: FunMenuLink[] = [
   { label: 'Recruit', href: '/recruit-talent/', meta: 'Build your team' },
   { label: 'Team', href: '/team/', meta: 'Meet the team' },
   { label: 'Our Story', href: '/our-story/', meta: 'How it all started' },
+  { label: 'Franchising', href: '/franchising/', meta: 'Build your own future' },
   { label: 'Sustainability', href: '/sustainability-impact/', meta: 'People & planet' },
 ];
 
-// Rotating accent colours the big links flash through on hover.
-const flashColors = [
-  'var(--color-flame)',
-  'var(--color-citron)',
-  'var(--color-mint)',
-  'var(--color-blush)',
-  'var(--color-mist)',
+const currentPath = `${Astro.url.pathname.replace(/\/+$/, '')}/`;
+const currentLink = siteLinks.find((link) =>
+  link.href === currentPath || (link.href !== '/' && currentPath.startsWith(link.href))
+);
+
+const menuPalettes = [
+  { background: 'flame', upper: 'blush', lower: 'cocoa' },
+  { background: 'citron', upper: 'cocoa', lower: 'flame' },
+  { background: 'mint', upper: 'flame', lower: 'cocoa' },
+  { background: 'blush', upper: 'cocoa', lower: 'flame' },
+  { background: 'mist', upper: 'cocoa', lower: 'flame' },
 ];
 ---
 
@@ -59,12 +70,31 @@ const flashColors = [
       <button
         class="funmenu-toggle"
         type="button"
-        aria-label="Open menu"
+        aria-label="The Menu, open navigation"
         aria-expanded="false"
         aria-controls="funmenu-overlay"
         data-funmenu-toggle
       >
-        <span class="funmenu-toggle-label" data-toggle-label>Menu</span>
+        <svg class="funmenu-toggle-seal" viewBox="0 0 184 64" preserveAspectRatio="none" fill="none" aria-hidden="true" focusable="false">
+          <defs>
+            <clipPath id="funmenu-seal-clip"><path d={sealOutline} data-seal-shape /></clipPath>
+          </defs>
+          <path class="funmenu-toggle-paper" d={sealOutline} data-seal-shape />
+          <g clip-path="url(#funmenu-seal-clip)">
+            <path class="funmenu-toggle-highlight" d={sealOutline} data-seal-shape />
+          </g>
+          <path class="funmenu-toggle-outline" d={sealOutline} data-seal-shape />
+          <path
+            class="funmenu-toggle-trace"
+            d="M13 19C25-1 60 1 94 2C124 2 159-1 175 15C188 29 182 49 165 59C146 66 108 61 78 62C48 63 17 64 7 47C1 37 3 27 8 21"
+            pathLength="1"
+          />
+        </svg>
+        <span class="funmenu-toggle-label" aria-hidden="true">
+          {[...menuLabel].map((letter, index) => (
+            <span class="funmenu-toggle-letter" data-letter={letter === ' ' ? '\u00a0' : letter} style={`--letter-index: ${index}`}>{letter === ' ' ? '\u00a0' : letter}</span>
+          ))}
+        </span>
         <span class="funmenu-toggle-bars" aria-hidden="true">
           <span></span>
           <span></span>
@@ -83,31 +113,50 @@ const flashColors = [
     data-funmenu-overlay
     hidden
   >
-    <div class="funmenu-blob funmenu-blob-1" data-parallax="6" aria-hidden="true"></div>
-    <div class="funmenu-blob funmenu-blob-2" data-parallax="-10" aria-hidden="true"></div>
-    <!-- <div class="funmenu-blob funmenu-blob-3" data-parallax="14" aria-hidden="true"></div> -->
-    <div class="funmenu-cursor" data-funmenu-cursor aria-hidden="true"></div>
+    <div class="funmenu-surface" aria-hidden="true">
+      <div class="funmenu-blob funmenu-blob-1" data-parallax="6"></div>
+      <div class="funmenu-blob funmenu-blob-2" data-parallax="-10"></div>
+      <div class="funmenu-cursor" data-funmenu-cursor></div>
+    </div>
+    <svg class="funmenu-frame" viewBox="0 0 1000 1000" preserveAspectRatio="none" fill="none" aria-hidden="true" focusable="false">
+      <defs>
+        <clipPath id="funmenu-surface-clip" clipPathUnits="objectBoundingBox">
+          <path d={frameOutline} transform="scale(0.001)" />
+        </clipPath>
+      </defs>
+      <path class="funmenu-frame-paper" d={frameOutline} />
+      <path class="funmenu-frame-ink" d={frameOutline} />
+    </svg>
 
     <div class="funmenu-overlay-header">
       <p class="funmenu-eyebrow">Change Hospitality / people first</p>
     </div>
     <div class="funmenu-overlay-inner">
       <nav class="funmenu-list" aria-label="Site navigation">
-        {siteLinks.map((link, index) => (
-          <a
-            class="funmenu-link"
-            href={link.href}
-            style={`--flash:${flashColors[index % flashColors.length]}`}
-            data-funmenu-link
-          >
-            <span class="funmenu-link-index">{String(index + 1).padStart(2, '0')}</span>
-            <span class="funmenu-link-text" data-text={link.label}>{link.label}</span>
-            {link.meta && <span class="funmenu-link-meta">{link.meta}</span>}
-          </a>
-        ))}
+        {siteLinks.map((link, index) => {
+          const palette = menuPalettes[index % menuPalettes.length];
+          return (
+            <a
+              class="funmenu-link"
+              href={link.href}
+              aria-current={link === currentLink ? (currentPath === link.href ? 'page' : 'location') : undefined}
+              style={`--menu-flash: var(--color-${palette.background}); --menu-blob-upper: var(--color-${palette.upper}); --menu-blob-lower: var(--color-${palette.lower}); --link-index: ${index};`}
+              data-funmenu-link
+            >
+              <span class="funmenu-link-index">{String(index + 1).padStart(2, '0')}</span>
+              <span class="funmenu-link-text" data-text={link.label}>{link.label}</span>
+              {link === currentLink
+                ? <span class="funmenu-current-badge" aria-hidden="true">You're here</span>
+                : link.meta && <span class="funmenu-link-meta">{link.meta}</span>}
+              <svg class="funmenu-link-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <path d="M5 19 19 5M5 5h14v14" />
+              </svg>
+            </a>
+          );
+        })}
       </nav>
       <div class="funmenu-footer">
-        <span>hello@changehospitality.co.uk</span>
+        <a href={`mailto:${contacts.generalEmail}`}>{contacts.generalEmail}</a>
         <span>Front of House · Back of House · Events &amp; Commercial</span>
       </div>
     </div>
@@ -117,6 +166,8 @@ const flashColors = [
 <style>
   .funmenu {
     --menu-flash: var(--color-flame);
+    --menu-blob-upper: var(--color-blush);
+    --menu-blob-lower: var(--color-cocoa);
     position: fixed;
     inset: 0 0 auto 0;
     z-index: 60;
@@ -240,50 +291,216 @@ const flashColors = [
   }
 
   .funmenu-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    min-height: 3.6rem;
-    border: 2px solid var(--menu-toggle-border);
-    border-radius: 1.2rem;
-    background: var(--menu-toggle-background);
-    padding: 0.9rem 1.25rem;
+    --menu-toggle-width: 11.5rem;
+    --menu-toggle-size: 4rem;
+    position: relative;
+    isolation: isolate;
+    flex: none;
+    width: var(--menu-toggle-width);
+    height: var(--menu-toggle-size);
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    padding: 0;
     color: var(--menu-toggle-text);
-    font-size: 0.96rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
     transition:
-      transform 350ms var(--ease-cartoon),
-      background-color 300ms ease;
+      width 540ms var(--ease-luxury),
+      color 350ms ease;
   }
 
-  .funmenu-toggle:hover,
   .funmenu-toggle:focus-visible {
-    transform: translateY(-3px) rotate(2deg) scale(1.04);
+    outline: 2px solid var(--color-cocoa);
+    outline-offset: 4px;
+    box-shadow: 0 0 0 4px var(--color-cream);
+  }
+
+  .funmenu-toggle-seal {
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: var(--menu-toggle-width);
+    max-width: none;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .funmenu-toggle-paper {
+    fill: var(--menu-toggle-background);
+    transition: fill 450ms ease;
+  }
+
+  .funmenu-toggle-highlight {
+    fill: var(--color-citron);
+    transform-box: view-box;
+    transform: translateY(105%);
+    transition: transform 550ms var(--ease-luxury);
+  }
+
+  .funmenu-toggle-outline {
+    stroke: var(--menu-toggle-border);
+    stroke-width: 1.7;
+    vector-effect: non-scaling-stroke;
+    transition: stroke 450ms ease;
+  }
+
+  .funmenu-toggle-trace {
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+    stroke: var(--color-cocoa);
+    stroke-width: 1.15;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    opacity: 0;
+    transition:
+      stroke-dashoffset 650ms var(--ease-luxury),
+      opacity 250ms ease;
+  }
+
+  .funmenu-toggle-label {
+    position: absolute;
+    top: 50%;
+    right: 3.8rem;
+    width: calc(var(--menu-toggle-width) - 5.2rem);
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    font-family: var(--font-hero);
+    font-size: 1.2rem;
+    font-weight: 400;
+    line-height: 1.6;
+    white-space: nowrap;
+    pointer-events: none;
+    transform: translateY(-50%);
+    transition:
+      opacity 220ms ease 100ms,
+      transform 500ms var(--ease-luxury);
+  }
+
+  .funmenu-toggle-letter {
+    position: relative;
+    display: block;
+    transition: transform 500ms var(--ease-luxury);
+    transition-delay: calc(var(--letter-index) * 16ms);
+  }
+
+  .funmenu-toggle-letter::after {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    content: attr(data-letter);
   }
 
   .funmenu-toggle-bars {
-    display: grid;
-    gap: 0.28rem;
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: block;
+    width: var(--menu-toggle-size);
+    height: var(--menu-toggle-size);
+    pointer-events: none;
   }
 
   .funmenu-toggle-bars span {
+    position: absolute;
+    top: calc(50% - 1px);
+    left: calc(50% - 0.65rem);
     display: block;
-    height: 0.16rem;
+    height: 2px;
     width: 1.3rem;
     border-radius: 999px;
     background: currentColor;
-    transition: transform 350ms var(--ease-cartoon);
+    transition: transform 450ms var(--ease-luxury);
+  }
+
+  .funmenu-toggle-bars span:first-child {
+    transform: translateY(-4px) rotate(-3deg);
+  }
+
+  .funmenu-toggle-bars span:last-child {
+    transform: translateY(4px) rotate(2deg);
+  }
+
+  .funmenu-toggle[aria-expanded='true'] {
+    width: var(--menu-toggle-size);
+    color: var(--color-cocoa);
+  }
+
+  .funmenu-toggle[aria-expanded='true'] .funmenu-toggle-paper {
+    fill: var(--color-cream);
+  }
+
+  .funmenu-toggle[aria-expanded='true'] .funmenu-toggle-outline {
+    stroke: var(--color-cocoa);
+  }
+
+  .funmenu-toggle[aria-expanded='true'] .funmenu-toggle-label {
+    opacity: 0;
+    transform: translate(8px, -65%);
+    transition-delay: 0ms;
   }
 
   .funmenu-toggle[aria-expanded='true'] .funmenu-toggle-bars span:first-child {
-    transform: translateY(0.22rem) rotate(42deg);
+    transform: rotate(43deg);
   }
 
   .funmenu-toggle[aria-expanded='true'] .funmenu-toggle-bars span:last-child {
-    transform: translateY(-0.22rem) rotate(-42deg);
+    transform: rotate(-46deg);
+  }
+
+  .funmenu-toggle[aria-expanded='false']:focus-visible {
+    color: var(--color-cocoa);
+  }
+
+  .funmenu-toggle[aria-expanded='false']:focus-visible .funmenu-toggle-highlight {
+    transform: translateY(0);
+  }
+
+  .funmenu-toggle[aria-expanded='false']:focus-visible .funmenu-toggle-trace {
+    stroke-dashoffset: 0;
+    opacity: 0.7;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .funmenu-toggle[aria-expanded='false']:focus-visible .funmenu-toggle-letter {
+      transform: translateY(-100%);
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .funmenu-toggle:hover {
+      color: var(--color-cocoa);
+    }
+
+    .funmenu-toggle[aria-expanded='false']:hover .funmenu-toggle-highlight {
+      transform: translateY(0);
+    }
+
+    .funmenu-toggle[aria-expanded='false']:hover .funmenu-toggle-trace {
+      stroke-dashoffset: 0;
+      opacity: 0.7;
+    }
+
+    .funmenu-toggle[aria-expanded='true']:hover .funmenu-toggle-paper {
+      fill: var(--color-citron);
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .funmenu-toggle[aria-expanded='false']:hover .funmenu-toggle-letter {
+      transform: translateY(-100%);
+    }
+
+    .funmenu-toggle[aria-expanded='false']:hover .funmenu-toggle-bars span:first-child {
+      transform: translateY(-5px) rotate(-3deg);
+    }
+
+    .funmenu-toggle[aria-expanded='false']:hover .funmenu-toggle-bars span:last-child {
+      transform: translateY(5px) rotate(2deg);
+    }
   }
 
   /* ---------- Partial overlay drawer ---------- */
@@ -297,20 +514,54 @@ const flashColors = [
     place-items: stretch;
     width: min(52rem, calc(100vw - 1.5rem));
     height: min(50rem, calc(100dvh - 1.5rem));
-    overflow: hidden;
-    background: var(--menu-flash);
+    overflow: visible;
     border-radius: 2.3rem 1rem 2.6rem 2.1rem;
-    transform: translate3d(calc(100% + 1rem), -1rem, 0) rotate(7deg) scale(0.94);
+    transform: translate3d(calc(100% + 8rem), -1rem, 0) rotate(7deg) scale(0.94);
     transform-origin: 100% 0;
     transition:
       border-radius 720ms var(--ease-cartoon),
-      transform 720ms var(--ease-cartoon),
-      background-color 550ms var(--ease-cartoon);
+      transform 720ms var(--ease-cartoon);
   }
 
   .funmenu-overlay.is-open {
     border-radius: 2rem 0.85rem 2.8rem 2.45rem;
     transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+
+  .funmenu-surface {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    clip-path: url(#funmenu-surface-clip);
+    background: var(--menu-flash);
+    pointer-events: none;
+    transition: background-color 550ms var(--ease-luxury);
+  }
+
+  .funmenu-frame {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .funmenu-frame path {
+    vector-effect: non-scaling-stroke;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .funmenu-frame-paper {
+    stroke: var(--color-cream);
+    stroke-width: 4.5;
+  }
+
+  .funmenu-frame-ink {
+    stroke: var(--color-cocoa);
+    stroke-width: 1.6;
   }
 
   .funmenu-overlay::before {
@@ -356,6 +607,7 @@ const flashColors = [
 
   .funmenu-eyebrow {
     margin: 0;
+    margin-top: 1.5rem; 
     width: fit-content;
     border-radius: 0.5rem;
     background: var(--color-cream);
@@ -376,7 +628,7 @@ const flashColors = [
   .funmenu-list {
     display: grid;
     flex-shrink: 0;
-    gap: 0.45rem;
+    gap: 0.4rem;
   }
 
   .funmenu-link {
@@ -384,12 +636,13 @@ const flashColors = [
     display: flex;
     align-items: center;
     gap: 0.85rem;
-    min-height: 6rem;
+    min-height: clamp(3.5rem, 9dvh, 5rem);
     overflow: hidden;
+    border: 2px solid transparent;
     border-radius: 1.45rem;
     background: var(--color-cream);
     color: var(--color-ink);
-    padding: 0.75rem 1rem;
+    padding: 0.5rem 0.875rem;
     opacity: 0;
     transform: translateY(28px) rotate(-2deg);
     transition:
@@ -410,20 +663,53 @@ const flashColors = [
   .funmenu-link-index {
     position: relative;
     z-index: 1;
-    font-size: 0.85rem;
+    flex-shrink: 0;
+    font-size: 0.75rem;
     font-weight: 900;
+  }
+
+  .funmenu-link[aria-current] {
+    border-color: var(--color-ink);
+    background: var(--color-citron);
+  }
+
+  .funmenu-link[aria-current]::before {
+    background: var(--color-citron);
+  }
+
+  .funmenu-link[aria-current]:hover,
+  .funmenu-link[aria-current]:focus-visible {
+    color: var(--color-ink);
+  }
+
+  .funmenu-current-badge {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    margin-left: auto;
+    border: 1.5px solid var(--color-cocoa);
+    border-radius: 999px;
+    background: var(--color-cream);
+    padding: 0.32rem 0.55rem;
+    color: var(--color-cocoa);
+    font-size: 0.6rem;
+    font-weight: 900;
+    line-height: 1.2;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
   }
 
   .funmenu-link-text {
     position: relative;
     z-index: 1;
     font-family: var(--font-serif);
-    font-size: 4.5rem;
+    font-size: clamp(2rem, min(4.6vw, 6.7dvh), 3.9rem);
     font-weight: 400;
     line-height: 0.94;
     letter-spacing: 0;
     white-space: nowrap;
-    transition: transform 380ms var(--ease-cartoon);
+    transition: transform 380ms var(--ease-luxury);
   }
 
   .funmenu-link-text::after {
@@ -433,15 +719,29 @@ const flashColors = [
   .funmenu-link-meta {
     position: relative;
     z-index: 1;
+    flex-shrink: 0;
     margin-left: auto;
     max-width: 9rem;
     text-align: right;
-    font-size: 0.78rem;
+    font-size: 0.7rem;
     font-weight: 900;
     text-transform: uppercase;
     transform: translateX(-6px);
     transition:
       transform 360ms var(--ease-cartoon);
+  }
+
+  .funmenu-link-arrow {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    width: 1.1rem;
+    height: 1.1rem;
+    opacity: 0;
+    transform: translate(-0.3rem, 0.3rem);
+    transition:
+      opacity 240ms ease,
+      transform 380ms var(--ease-luxury);
   }
 
   .funmenu-link:nth-child(2n) {
@@ -450,7 +750,7 @@ const flashColors = [
 
   .funmenu-link:hover .funmenu-link-text,
   .funmenu-link:focus-visible .funmenu-link-text {
-    transform: translateX(0.6rem) rotate(-1.2deg) scale(1.02);
+    transform: translateX(0.35rem);
   }
 
   .funmenu-link:hover,
@@ -469,6 +769,12 @@ const flashColors = [
     transform: translateX(0);
   }
 
+  .funmenu-link:hover .funmenu-link-arrow,
+  .funmenu-link:focus-visible .funmenu-link-arrow {
+    opacity: 1;
+    transform: none;
+  }
+
   .funmenu-overlay.is-open .funmenu-eyebrow,
   .funmenu-overlay.is-open .funmenu-link {
     opacity: 1;
@@ -479,12 +785,12 @@ const flashColors = [
     transition-delay: 160ms;
   }
 
-  .funmenu-overlay.is-open .funmenu-link:nth-child(1) { transition-delay: 220ms, 220ms, 0ms; }
-  .funmenu-overlay.is-open .funmenu-link:nth-child(2) { transition-delay: 285ms, 285ms, 0ms; }
-  .funmenu-overlay.is-open .funmenu-link:nth-child(3) { transition-delay: 350ms, 350ms, 0ms; }
-  .funmenu-overlay.is-open .funmenu-link:nth-child(4) { transition-delay: 415ms, 415ms, 0ms; }
-  .funmenu-overlay.is-open .funmenu-link:nth-child(5) { transition-delay: 480ms, 480ms, 0ms; }
-  .funmenu-overlay.is-open .funmenu-link:nth-child(6) { transition-delay: 545ms, 545ms, 0ms; }
+  .funmenu-overlay.is-open .funmenu-link {
+    transition-delay:
+      calc(180ms + var(--link-index) * 45ms),
+      calc(180ms + var(--link-index) * 45ms),
+      0ms;
+  }
 
   .funmenu-overlay.is-open .funmenu-link:hover,
   .funmenu-overlay.is-open .funmenu-link:focus-visible {
@@ -516,6 +822,7 @@ const flashColors = [
     position: absolute;
     border-radius: 32% 68% 58% 42% / 48% 42% 58% 52%;
     will-change: transform;
+    transition: background-color 550ms var(--ease-luxury);
   }
 
   .funmenu-blob-1 {
@@ -523,7 +830,7 @@ const flashColors = [
     right: -4rem;
     height: 26rem;
     width: 26rem;
-    background: var(--color-blush);
+    background: var(--menu-blob-upper);
   }
 
   .funmenu-blob-2 {
@@ -531,7 +838,7 @@ const flashColors = [
     left: -6rem;
     height: 30rem;
     width: 30rem;
-    background: var(--color-cocoa);
+    background: var(--menu-blob-lower);
   }
 
   .funmenu-blob-3 {
@@ -576,13 +883,39 @@ const flashColors = [
   }
 
   @media (max-width: 767px) {
+    .funmenu-toggle {
+      --menu-toggle-width: 10rem;
+      --menu-toggle-size: 3.6rem;
+    }
+
+    .funmenu-toggle-label {
+      right: 3.4rem;
+      width: calc(var(--menu-toggle-width) - 4.4rem);
+      font-size: 1.05rem;
+    }
+
     .funmenu-link-meta { display: none; }
     .funmenu-link {
       gap: 0.6rem;
-      min-height: 5rem;
+      min-height: clamp(2.75rem, 8.5dvh, 4.25rem);
     }
 
-    .funmenu-link-text { font-size: 2.5rem; }
+    .funmenu-link-text { font-size: clamp(1.9rem, 9vw, 2.5rem); }
+
+    .funmenu-link-arrow { margin-left: auto; }
+
+    .funmenu-link[aria-current] {
+      padding-top: 0.4rem;
+      padding-bottom: 1.25rem;
+    }
+
+    .funmenu-current-badge {
+      position: absolute;
+      right: 0.875rem;
+      bottom: 0.2rem;
+      padding: 0.13rem 0.4rem;
+      font-size: 0.55rem;
+    }
 
     .funmenu-overlay {
       width: calc(100vw - 1rem);
@@ -604,16 +937,32 @@ const flashColors = [
   }
 
   @media (max-width: 374px) {
-    .funmenu-link-text { font-size: 2rem; }
+    .funmenu-bar {
+      gap: 0.5rem;
+      padding: 0.75rem;
+    }
+
+    .funmenu-toggle {
+      --menu-toggle-width: 9rem;
+    }
+
+    .funmenu-toggle-label {
+      right: 3.1rem;
+      width: calc(var(--menu-toggle-width) - 3.85rem);
+      font-size: 0.95rem;
+    }
+
+    .funmenu-link-text { font-size: 1.9rem; }
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .funmenu-toggle,
+    .funmenu-toggle *,
     .funmenu-overlay,
-    .funmenu-overlay-inner *,
-    .funmenu-bar,
-    .funmenu-blob,
-    .funmenu-cursor {
+    .funmenu-overlay *,
+    .funmenu-bar {
       transition-duration: 0.001ms !important;
+      transition-delay: 0ms !important;
     }
 
     .funmenu-overlay {
@@ -623,6 +972,8 @@ const flashColors = [
 </style>
 
 <script>
+  import { gsap } from 'gsap';
+
   function initFunMenu() {
     const root = document.querySelector<HTMLElement>('[data-funmenu]');
     if (!root || root.dataset.funmenuReady === 'true') return;
@@ -630,33 +981,88 @@ const flashColors = [
 
     const toggle = root.querySelector<HTMLButtonElement>('[data-funmenu-toggle]');
     const overlay = root.querySelector<HTMLElement>('[data-funmenu-overlay]');
+    const seal = root.querySelector<SVGSVGElement>('.funmenu-toggle-seal');
+    const sealShapes = Array.from(root.querySelectorAll<SVGPathElement>('[data-seal-shape]'));
+    const closedOutline = sealShapes[0]?.getAttribute('d');
     const bar = root.querySelector<HTMLElement>('[data-funmenu-bar]');
-    const toggleLabel = root.querySelector<HTMLElement>('[data-toggle-label]');
     const cursor = root.querySelector<HTMLElement>('[data-funmenu-cursor]');
     const links = Array.from(root.querySelectorAll<HTMLElement>('[data-funmenu-link]'));
     const blobs = Array.from(root.querySelectorAll<HTMLElement>('.funmenu-blob'));
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!toggle || !overlay) return;
+    const paletteProperties = ['--menu-flash', '--menu-blob-upper', '--menu-blob-lower'];
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (!toggle || !overlay || !seal || !closedOutline) return;
 
     let open = false;
+    let openFrame = 0;
+    let closeTimer = 0;
+    const listeners = new AbortController();
+    const media = gsap.matchMedia();
+    const setSealOutline = (outline: string) => {
+      sealShapes.forEach((shape) => shape.setAttribute('d', outline));
+    };
+    let animateSeal: (outline: string) => void = setSealOutline;
+
+    const closeOutline = () => {
+      const { width, height } = seal.getBoundingClientRect();
+      const radius = height / 2 - 3;
+      const rx = radius * 184 / width;
+      const ry = radius * 64 / height;
+      const cx = 184 - height / 2 * 184 / width;
+      const point = (x: number, y: number) => `${(cx + x * rx).toFixed(3)} ${(32 + y * ry).toFixed(3)}`;
+      const step = Math.PI / 3;
+      const handle = 4 / 3 * Math.tan(step / 4);
+      let angle = -2 * Math.PI / 3;
+      let outline = `M${point(Math.cos(angle), Math.sin(angle))}`;
+      // Match the original seal's six cubic segments for a continuous, reversible morph.
+      for (let index = 0; index < 6; index += 1) {
+        const next = angle + step;
+        outline += `C${point(Math.cos(angle) - handle * Math.sin(angle), Math.sin(angle) + handle * Math.cos(angle))} ${point(Math.cos(next) + handle * Math.sin(next), Math.sin(next) - handle * Math.cos(next))} ${point(Math.cos(next), Math.sin(next))}`;
+        angle = next;
+      }
+      return `${outline}Z`;
+    };
+
+    media.add('(prefers-reduced-motion: no-preference)', (context) => {
+      animateSeal = (outline) => context.add(() => {
+        gsap.to(sealShapes, {
+          attr: { d: outline },
+          duration: 0.54,
+          ease: 'power3.out',
+          overwrite: true,
+        });
+      });
+      return () => {
+        animateSeal = setSealOutline;
+        setSealOutline(open ? closeOutline() : closedOutline);
+      };
+    });
+
+    const resize = new ResizeObserver(() => {
+      if (open) animateSeal(closeOutline());
+    });
+    resize.observe(seal);
 
     const setOpen = (next: boolean) => {
+      cancelAnimationFrame(openFrame);
+      clearTimeout(closeTimer);
       open = next;
       toggle.setAttribute('aria-expanded', String(next));
-      toggle.setAttribute('aria-label', next ? 'Close menu' : 'Open menu');
-      if (toggleLabel) toggleLabel.textContent = next ? 'Close' : 'Menu';
+      toggle.setAttribute('aria-label', next ? 'Close menu' : 'The Menu, open navigation');
+      animateSeal(next ? closeOutline() : closedOutline);
       document.body.classList.toggle('funmenu-open', next);
       if (next) {
         overlay.hidden = false;
-        // allow the browser to paint the un-clipped state before animating
-        requestAnimationFrame(() => overlay.classList.add('is-open'));
-        (links[0] as HTMLElement | undefined)?.focus?.();
+        overlay.inert = false;
+        links[0]?.focus({ preventScroll: true });
+        openFrame = requestAnimationFrame(() => overlay.classList.add('is-open'));
       } else {
+        toggle.focus({ preventScroll: true });
+        overlay.inert = true;
         overlay.classList.remove('is-open');
-        overlay.style.setProperty('--menu-flash', 'var(--color-flame)');
-        window.setTimeout(() => {
+        paletteProperties.forEach((property) => overlay.style.removeProperty(property));
+        closeTimer = window.setTimeout(() => {
           if (!open) overlay.hidden = true;
-        }, prefersReduced ? 0 : 640);
+        }, prefersReduced.matches ? 0 : 720);
       }
     };
 
@@ -664,20 +1070,22 @@ const flashColors = [
 
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && open) setOpen(false);
-    });
+    }, { signal: listeners.signal });
 
-    // Colour-flash: the whole overlay shifts to the link's accent on hover.
+    // Keep both decorative shapes distinct as the drawer changes colour.
     links.forEach((link) => {
-      const flash = link.style.getPropertyValue('--flash');
-      const apply = () => overlay.style.setProperty('--menu-flash', flash);
+      const apply = () => paletteProperties.forEach((property) => {
+        overlay.style.setProperty(property, link.style.getPropertyValue(property));
+      });
       link.addEventListener('mouseenter', apply);
       link.addEventListener('focus', apply);
       link.addEventListener('click', () => setOpen(false));
     });
 
     // Reactive cursor follower + blob parallax inside the overlay.
-    if (!prefersReduced) {
+    if (!prefersReduced.matches) {
       overlay.addEventListener('pointermove', (event) => {
+        if (prefersReduced.matches) return;
         if (cursor) {
           cursor.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
         }
@@ -704,8 +1112,17 @@ const flashColors = [
         }
         lastScroll = current;
       },
-      { passive: true }
+      { passive: true, signal: listeners.signal }
     );
+
+    document.addEventListener('astro:before-swap', () => {
+      listeners.abort();
+      resize.disconnect();
+      media.revert();
+      cancelAnimationFrame(openFrame);
+      clearTimeout(closeTimer);
+      document.body.classList.remove('funmenu-open');
+    }, { once: true });
   }
 
   initFunMenu();

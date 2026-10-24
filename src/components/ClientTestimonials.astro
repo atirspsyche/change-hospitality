@@ -1,46 +1,11 @@
 ---
 import { Quote } from '@lucide/astro';
-
-const testimonials = [
-  {
-    client: 'Searcys',
-    logo: 'searcys',
-    quote: "The team at Change are a pure joy to work with - responsive, proactive, and genuinely invested in Searcy's success. I can say with confidence: if you're in hospitality and you're not working with Change, you're missing out. Five stars isn't enough.",
-    name: 'Laura Maddams',
-    role: 'Head of Talent and Development',
-  },
-  {
-    client: 'Tate',
-    logo: 'tate',
-    quote: "Change provided a highly professional service, carefully listening to our brief and delivering exactly what we needed by introducing us to Chloe, who's already excelling in our Catering team as a Hospitality Manager.",
-    name: 'Ali Gannage-Stewart',
-    role: 'Director, Events and Corporate Membership',
-  },
-  {
-    client: 'Tobacco Dock',
-    logo: 'tobacco-dock',
-    quote: "Following two successful hires via Change Hospitality in the last 18months, Charley at Change remains our 'go to' for all our new recruitment needs. We've found a recruitment partner in Change who have really taken the time to understand our business and in turn the experience, skills and characteristics that are likely to result in the best pairings.",
-    name: 'Charlotte Smart',
-    role: 'Commercial Director',
-  },
-  {
-    client: 'Royal Bank of Canada',
-    logo: 'rbc',
-    quote: "You are always so responsive, especially with last minute bookings and special requests. You constantly provide amazing staff even when under pressure. Your reliability and professionalism has made my job be easier, it's been so great to build such a strong relationship and I appreciate all of your hard work.",
-    name: 'Tara Dempsey',
-    role: 'Catering Manager',
-  },
-  {
-    client: 'Four Seasons',
-    logo: 'four-seasons',
-    quote: "Working with Change Hospitality has been a life saver on countless occasions. They're prompt responses, availability at short notice and most of all, the level of professionalism and care from each individual they've sent us has been unparalleled.",
-    name: 'Robert Siddu',
-    role: 'Breakfast Manager',
-  },
-];
+import { getTestimonials } from '../sanity/queries';
+const testimonials = await getTestimonials('client');
+const total = String(testimonials.length).padStart(2, '0');
 ---
 
-<section id="client-testimonials" class="client-stories" aria-labelledby="client-stories-title" data-client-stories>
+<section id="client-testimonials" class="client-stories" aria-labelledby="client-stories-title" data-client-stories hidden={!testimonials.length}>
   <div class="client-stories-inner">
     <div class="client-stories-stage" data-client-stage>
       <header class="client-stories-heading">
@@ -49,7 +14,7 @@ const testimonials = [
         <p class="client-stories-intro">Behind every great partnership?<br />People who just get it.</p>
         <div class="client-stories-mark" aria-hidden="true"><Quote size={72} stroke-width={1.4} /></div>
         <div class="client-stories-position" aria-hidden="true">
-          <p><span data-client-current>01</span><span class="client-stories-total"> / 05</span></p>
+          <p><span data-client-current>01</span><span class="client-stories-total"> / {total}</span></p>
           <div class="client-stories-track"><span data-client-progress></span></div>
           <span>People-first partnerships</span>
         </div>
@@ -59,10 +24,10 @@ const testimonials = [
         {testimonials.map((testimonial, index) => (
           <figure class="client-quote" data-client-quote style={`--sheet-index: ${index};`}>
             <div class="client-quote-header">
-              <img class:list={['client-logo', `client-logo-${testimonial.logo}`]} src={`/client-logos/${testimonial.logo}.svg`} alt={`${testimonial.client} logo`} width="160" height="80" loading="lazy" decoding="async" />
-              <span class="client-quote-number" aria-hidden="true">{String(index + 1).padStart(2, '0')} / 05</span>
+              {testimonial.client?.logo && <img class="client-logo" src={testimonial.client.logo.src} alt={`${testimonial.client.name} logo`} width={testimonial.client.logo.width} height={testimonial.client.logo.height} loading="lazy" decoding="async" />}
+              <span class="client-quote-number" aria-hidden="true">{String(index + 1).padStart(2, '0')} / {total}</span>
             </div>
-            <p class="client-quote-brand">{testimonial.client}</p>
+            {testimonial.client && <p class="client-quote-brand">{testimonial.client.name}</p>}
             <blockquote><p>&ldquo;{testimonial.quote}&rdquo;</p></blockquote>
             <figcaption>
               <span class="client-quote-signature" aria-hidden="true"><Quote size={22} stroke-width={1.7} /></span>
