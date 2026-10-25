@@ -23,7 +23,7 @@ export default defineConfig({
             S.documentTypeListItem('client').title('Client logos'),
             S.documentTypeListItem('testimonial').title('Testimonials'),
             S.documentTypeListItem('policy').title('Policy links'),
-            ...[['siteSettings', 'public-contacts', 'Public contacts'], ['temporaryWork', 'temporary-work', 'Temporary worker guidance']].map(([type, id, title]) =>
+            ...[['siteSettings', 'public-contacts', 'Public contacts'], ['temporaryWork', 'temporary-work', 'Temporary worker guidance'], ['candidateGallery', 'candidate-gallery', 'Candidate gallery']].map(([type, id, title]) =>
               S.listItem().id(id).title(title).child(S.document().schemaType(type).documentId(id))),
             S.listItem()
               .id('environmental-impact')
@@ -38,10 +38,10 @@ export default defineConfig({
   ],
   schema: {
     types: schemaTypes,
-    templates: (templates) => templates.filter((template) => !['environmentalImpact', 'siteSettings', 'temporaryWork'].includes(template.schemaType)),
+    templates: (templates) => templates.filter((template) => !['environmentalImpact', 'siteSettings', 'temporaryWork', 'candidateGallery'].includes(template.schemaType)),
   },
   document: {
-    actions: (actions, context) => ['environmentalImpact', 'siteSettings', 'temporaryWork'].includes(context.schemaType)
+    actions: (actions, context) => ['environmentalImpact', 'siteSettings', 'temporaryWork', 'candidateGallery'].includes(context.schemaType)
       ? actions.filter((action) => action.action !== 'duplicate' && action.action !== 'delete')
       : actions,
   },

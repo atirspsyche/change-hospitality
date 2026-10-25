@@ -30,7 +30,13 @@ const positions = [
   { name: "halfway through the animation", progress: 0.5 },
   { name: "the plate copy", progress: 0.8 },
   { name: "the closing animation", progress: 0.97 },
-  { name: "the locations section", selector: "#locations" },
+  {
+    name: "the franchise map beat",
+    progress: (() => {
+      const beat = storyTimeline.overlayWindows.find(({ id }) => id === "plate-center-next");
+      return (beat.progressStart + beat.progressEnd) / 2;
+    })(),
+  },
   { name: "the footer", selector: ".site-footer" },
 ];
 

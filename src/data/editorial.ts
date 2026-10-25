@@ -9,6 +9,7 @@ export interface PublicContacts {
   socialLinks: Array<{ label: string; href: string }>;
 }
 export interface ClientLogo { _id: string; name: string; marquee: boolean; logo?: LocalImage }
+export interface CandidatePhoto { key: string; alt: string; image: LocalImage }
 export interface Testimonial { _id: string; name: string; role?: string; quote: string; client?: ClientLogo }
 export interface PolicyLink { _id: string; label: string; href: string }
 export interface TemporaryWork {

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { before, after, test } from 'node:test';
+import { readFile } from 'node:fs/promises';
 import sharpService from 'astro/assets/services/sharp';
 import { imageMetadata } from 'astro/assets/utils';
 import { createServer } from 'vite';
@@ -7,6 +8,7 @@ import { createServer } from 'vite';
 let server;
 let buildImage;
 let getTeamMembers;
+let getCandidateGallery;
 let sanityClient;
 let calls;
 let probes;
@@ -36,7 +38,7 @@ before(async () => {
     }],
   });
   ({ buildImage } = await server.ssrLoadModule('/src/lib/sanityImages.ts'));
-  ({ getTeamMembers } = await server.ssrLoadModule('/src/sanity/queries.ts'));
+  ({ getTeamMembers, getCandidateGallery } = await server.ssrLoadModule('/src/sanity/queries.ts'));
   ({ sanityClient } = await server.ssrLoadModule('/src/sanity/client.ts'));
   ({ calls, probes } = await server.ssrLoadModule('astro:assets'));
 });
@@ -129,4 +131,76 @@ test('team query never passes original asset URLs to hydrated profile cards', as
   assert.equal(member.avatar, undefined);
   assert.equal(member.note, 'A full biography.');
   assert.doesNotMatch(JSON.stringify(member), /cdn\.sanity\.io/);
+});
+
+test('gallery photos use cacheable local WebP variants, a 4:3 crop and no sharing JPEG', async () => {
+  const start = calls.length;
+  const source = { ...portrait, crop: { left: 0.25, right: 0, top: 0, bottom: 0 } };
+  const image = await buildImage(source, 'gallery');
+  const generated = calls.slice(start);
+  assert.match(image.src, /^\/_astro\//);
+  assert.deepEqual([image.width, image.height], [900, 675]);
+  assert.deepEqual(generated.map((options) => options.width), [400, 640, 900]);
+  for (const options of generated) {
+    assert.equal(options.format, 'webp');
+    assert.equal(options.quality, 75);
+    assert.equal(options.height, options.width * 0.75);
+    assert.ok(new URL(options.src).searchParams.has('rect'), 'respect the CMS hotspot');
+  }
+  assert.equal(image.shareSrc, undefined);
+  assert.doesNotMatch(JSON.stringify(image), /cdn\.sanity\.io/);
+  assert.deepEqual(await buildImage(source, 'gallery'), image);
+  assert.equal(calls.length, start + 3);
+});
+
+test('gallery outputs never upscale a smaller original and deduplicate responsive widths', async () => {
+  for (const width of [640, 901, 1024, 2000]) {
+    const height = Math.ceil(width * 0.75);
+    const start = calls.length;
+    const image = await buildImage({
+      asset: {
+        _id: `image-gallery${width}-${width}x${height}-webp`,
+        url: `https://cdn.sanity.io/images/thyjjqzv/production/gallery${width}-${width}x${height}.webp`,
+        metadata: { dimensions: { width, height } },
+      },
+    }, 'gallery');
+    const widths = calls.slice(start).map((options) => options.width);
+    assert.equal(image.width, Math.min(1280, width));
+    assert.equal(new Set(widths).size, widths.length);
+    assert.ok(widths.every((size) => size <= width && size <= 1280));
+    assert.equal(widths.at(-1), image.width);
+  }
+});
+
+test('candidate gallery query returns only optimized local sources and preserves editorial order and descriptions', async (context) => {
+  let query;
+  context.mock.method(sanityClient, 'fetch', async (value) => {
+    query = value;
+    return [{ ...portrait, _key: 'photo-two', alt: ' A team at work. ' }, { ...portrait, _key: 'photo-one' }];
+  });
+  const gallery = await getCandidateGallery();
+  assert.match(query, /candidateGallery/);
+  assert.match(query, /candidate-gallery/);
+  assert.match(query, /crop, hotspot/);
+  assert.deepEqual(gallery.map((photo) => photo.key), ['photo-two', 'photo-one']);
+  assert.equal(gallery[0].alt, 'A team at work.');
+  assert.doesNotMatch(JSON.stringify(gallery), /cdn\.sanity\.io/);
+  for (const photo of gallery) assert.match(photo.image.src, /^\/_astro\//);
+});
+
+test('missing or invalid gallery content fails explicitly rather than returning placeholders', async (context) => {
+  for (const value of [null, [], Array(7).fill(portrait), [{ ...portrait, _key: 'photo', alt: ' ' }], [{ _key: 'photo', alt: 'Missing asset' }]]) {
+    const mock = context.mock.method(sanityClient, 'fetch', async () => value);
+    await assert.rejects(getCandidateGallery(), /Candidate gallery/);
+    mock.mock.restore();
+  }
+  context.mock.method(sanityClient, 'fetch', async () => { throw new Error('CMS unavailable'); });
+  await assert.rejects(getCandidateGallery(), /CMS unavailable/);
+});
+
+test('hashed website assets retain an immutable one-year browser cache on Vercel', async () => {
+  const config = JSON.parse(await readFile(new URL('../../vercel.json', import.meta.url), 'utf8'));
+  const rule = config.headers.find((entry) => entry.source === '/_astro/(.*)');
+  assert.ok(rule);
+  assert.ok(rule.headers.some(({ key, value }) => key === 'Cache-Control' && value === 'public, max-age=31536000, immutable'));
 });

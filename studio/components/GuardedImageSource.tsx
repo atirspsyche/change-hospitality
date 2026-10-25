@@ -73,7 +73,7 @@ export default function ImagePicker({
     >
       <label>
         Upload {kind} (
-        {kind === "portrait" ? "2 MiB maximum" : "250 KiB maximum"})
+        {kind === "logo" ? "250 KiB maximum" : "2 MiB maximum"})
         <input
           type="file"
           accept={mediaAccept[kind]}

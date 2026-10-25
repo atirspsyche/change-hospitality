@@ -98,6 +98,26 @@
   width: min(42rem, 100%);
 }
 
+.story-locations-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(2rem, 9vw, 9rem);
+  width: 100%;
+}
+
+.story-locations-layout .story-copy {
+  width: 100%;
+  max-width: min(24vw, 24rem);
+}
+
+.story-locations-map {
+  width: min(100%, 34vw, 38svh);
+  justify-self: end;
+  margin-right: clamp(0.5rem, 1vw, 1rem);
+  pointer-events: auto;
+}
+
 .story-overlay--brand .story-copy {
   width: 100%;
 }
@@ -447,6 +467,15 @@ html[data-home-story-fallback="true"] .story-fallback-notice {
   color: var(--color-ink);
 }
 
+.story-fallback-beat--locations {
+  grid-column: 1 / -1;
+}
+
+.story-fallback-beat--locations .franchise-map__heading,
+.story-fallback-beat--locations .franchise-map__caption {
+  color: var(--color-cocoa);
+}
+
 @keyframes story-scroll-line {
   from {
     transform: translateX(-110%);
@@ -470,6 +499,48 @@ html[data-home-story-fallback="true"] .story-fallback-notice {
 
   .story-overlay--brand {
     padding: 0;
+  }
+
+  .story-overlay--locations {
+    align-items: center;
+    padding: 5.5rem 1.25rem 1.5rem;
+  }
+
+  .story-locations-layout {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .story-locations-layout .story-copy {
+    max-width: 30rem;
+  }
+
+  .story-locations-layout .story-heading {
+    max-width: 18rem;
+    font-size: clamp(1.7rem, 7.5vw, 2.6rem);
+  }
+
+  .story-locations-layout .story-body {
+    max-width: 28rem;
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+
+  .story-locations-map {
+    width: min(58vw, 25svh);
+    justify-self: center;
+    margin-right: 0;
+  }
+
+  .story-locations-layout .story-button {
+    --button-min-height: 44px;
+    --button-padding: 0.6rem 0.8rem;
+    --button-font-size: 0.75rem;
+    margin-top: 0.8rem;
+  }
+
+  .story-fallback-beat--locations .story-locations-map {
+    width: min(65vw, 22rem);
   }
 
   .story-overlay--brand .story-copy,
@@ -618,6 +689,23 @@ html[data-home-story-fallback="true"] .story-fallback-notice {
 }
 
 @media (max-width: 767px) and (max-height: 700px) {
+  .story-overlay--locations {
+    padding-top: 4.5rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .story-overlay--locations .story-locations-map {
+    width: min(48vw, 22svh);
+  }
+
+  .story-overlay--locations .story-heading {
+    font-size: 1.5rem;
+  }
+
+  .story-overlay--locations .story-body {
+    font-size: 0.72rem;
+  }
+
   .story-overlay--sides {
     padding: 5.25rem 0.75rem 1rem;
   }
@@ -655,6 +743,61 @@ html[data-home-story-fallback="true"] .story-fallback-notice {
     --button-padding: 0.6rem 0.8rem;
     --button-font-size: 0.7rem;
     margin-top: 0.55rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) and (min-height: 501px) {
+  .story-overlay--locations {
+    padding: 5.5rem 2rem 1.5rem;
+  }
+
+  .story-locations-layout {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .story-locations-layout .story-copy {
+    max-width: 30rem;
+  }
+
+  .story-locations-layout .story-heading {
+    font-size: 2rem;
+  }
+
+  .story-locations-map {
+    width: min(40vw, 30svh);
+    justify-self: center;
+    margin-right: 0;
+  }
+}
+
+@media (min-width: 768px) and (max-height: 500px) {
+  .story-overlay--locations {
+    padding: 4.5rem 1.5rem 1rem;
+  }
+
+  .story-overlay--locations .story-heading {
+    font-size: 1.6rem;
+  }
+
+  .story-overlay--locations .story-copy {
+    max-width: 24rem;
+  }
+
+  .story-overlay--locations .story-body {
+    margin-top: 0.6rem;
+    font-size: 0.72rem;
+  }
+
+  .story-overlay--locations .story-button {
+    --button-min-height: 44px;
+    --button-padding: 0.6rem 0.8rem;
+    --button-font-size: 0.75rem;
+    margin-top: 0.75rem;
+  }
+
+  .story-overlay--locations .story-locations-map {
+    width: min(30vw, 35svh);
   }
 }
 

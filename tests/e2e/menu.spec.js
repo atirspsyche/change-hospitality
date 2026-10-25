@@ -22,6 +22,94 @@ test.beforeEach(async ({ page }) => {
   await page.evaluate(() => document.fonts.ready);
 });
 
+test("the header matches the loading-screen logo without shadows or borders", async ({ page }, testInfo) => {
+  const brand = page.getByRole("link", { name: "Change Hospitality home", exact: true }).first();
+  const logo = brand.getByRole("img", { name: "Change Hospitality" });
+  await expect(logo).toHaveAttribute("src", "/change-hospitality-logo-new.svg");
+  await expect(logo).toHaveJSProperty("naturalWidth", 2000);
+  await expect(logo).toHaveJSProperty("naturalHeight", 2000);
+  await expect(brand).toHaveCSS("filter", "none");
+  await expect(logo).toHaveCSS("filter", "brightness(0)");
+  await expect(logo).toHaveCSS("opacity", "0.85");
+
+  for (const element of [brand, logo]) {
+    await expect(element).toHaveCSS("box-shadow", "none");
+    await expect(element).toHaveCSS("border-top-width", "0px");
+    await expect(element).toHaveCSS("border-right-width", "0px");
+    await expect(element).toHaveCSS("border-bottom-width", "0px");
+    await expect(element).toHaveCSS("border-left-width", "0px");
+  }
+
+  const widths = testInfo.project.name === "mobile" ? [320, 360, 390, 767] : [768, 1024, 1440];
+  for (const width of widths) {
+    await page.setViewportSize({ width, height: 900 });
+    const bounds = await logo.boundingBox();
+    const brandBounds = await brand.boundingBox();
+    const toggleBounds = await page.locator(toggleSelector).boundingBox();
+    expect(bounds.width).toBeGreaterThanOrEqual(136);
+    expect(bounds.width).toBeLessThanOrEqual(208);
+    expect(bounds.width).toBeCloseTo(bounds.height, 1);
+    expect(bounds.width / brandBounds.height).toBeCloseTo(130 / 43, 2);
+    expect(bounds.x).toBeCloseTo(brandBounds.x, 1);
+    expect(bounds.y + bounds.height / 2).toBeCloseTo(brandBounds.y + brandBounds.height / 2, 1);
+    expect(brandBounds.x).toBeGreaterThanOrEqual(0);
+    expect(brandBounds.x + brandBounds.width).toBeLessThanOrEqual(toggleBounds.x);
+  }
+
+  const initialBounds = await brand.boundingBox();
+  await brand.hover();
+  await expect(logo).toHaveCSS("filter", "brightness(0)");
+  expect(await brand.boundingBox()).toEqual(initialBounds);
+  await brand.focus();
+  await expect(brand).toBeFocused();
+  await expect(brand).toHaveCSS("outline-style", "solid");
+  await expect(logo).toHaveCSS("filter", "brightness(0)");
+
+  await page.goto("/");
+  const loadingLogo = page.locator(".loading-brand img");
+  await expect(loadingLogo).toHaveAttribute("src", await logo.getAttribute("src"));
+  await expect(loadingLogo).toHaveCSS("filter", await logo.evaluate(image => getComputedStyle(image).filter));
+  await expect(loadingLogo).toHaveCSS("opacity", await logo.evaluate(image => getComputedStyle(image).opacity));
+});
+
+test("the logo hover is springy without moving its link and respects motion preferences", async ({ page }, testInfo) => {
+  const brand = page.locator(".funmenu-brand");
+  const artwork = brand.locator(".funmenu-brand-artwork");
+  const initialBounds = await brand.boundingBox();
+  await expect(artwork).toHaveCSS("transform", "none");
+  await brand.hover();
+
+  if (testInfo.project.name === "mobile") {
+    await expect(artwork).toHaveCSS("transform", "none");
+    await expect(artwork).toHaveCSS("transition-duration", "0s");
+    return;
+  }
+
+  await expect(artwork).toHaveCSS("transition-duration", "0.65s");
+  await expect(artwork).toHaveCSS("transition-timing-function", "cubic-bezier(0.34, 1.56, 0.64, 1)");
+  await expect.poll(() => artwork.evaluate(element => {
+    const matrix = new DOMMatrixReadOnly(getComputedStyle(element).transform);
+    return {
+      angle: Math.round(Math.atan2(matrix.b, matrix.a) * 180 / Math.PI),
+      scaleX: Math.round(Math.hypot(matrix.a, matrix.b) * 1000),
+      scaleY: Math.round(Math.hypot(matrix.c, matrix.d) * 1000),
+      x: Math.round(matrix.e),
+      y: Math.round(matrix.f),
+    };
+  })).toEqual({ angle: -3, scaleX: 1035, scaleY: 1015, x: 0, y: -2 });
+  expect(await brand.boundingBox()).toEqual(initialBounds);
+  await expect(artwork).toHaveCSS("box-shadow", "none");
+  await expect(brand.getByRole("img")).toHaveCSS("filter", "brightness(0)");
+
+  await page.mouse.move(0, 200);
+  await expect(artwork).toHaveCSS("transform", "none");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await brand.hover();
+  await expect(artwork).toHaveCSS("transform", "none");
+  await expect(artwork).toHaveCSS("transition-duration", "0s");
+  expect(await brand.boundingBox()).toEqual(initialBounds);
+});
+
 test("the illustrated seal opens the existing drawer and becomes an anchored close icon", async ({ page }) => {
   const toggle = page.locator(toggleSelector);
   const overlay = page.locator(overlaySelector);

@@ -36,13 +36,16 @@ test("the story uses a shorter fixed scroll budget with two consecutive centered
   close(first.progressEnd, second.progressStart);
   for (const overlay of [first, second]) {
     close(frameForProgress((overlay.progressStart + overlay.progressEnd) / 2), 256);
-    const beat = homeStory.beats.find((beat) => beat.id === overlay.id);
-    assert.equal(beat.overlay.layout, "sides");
-    assert.equal(beat.overlay.columns.length, 2);
     assert.ok((overlay.progressEnd - overlay.progressStart) * storyTimeline.scrollScreens >= 0.85);
   }
-  assert.notDeepEqual(homeStory.beats.find((beat) => beat.id === first.id).overlay.columns,
-    homeStory.beats.find((beat) => beat.id === second.id).overlay.columns);
+  const team = homeStory.beats.find((beat) => beat.id === first.id);
+  assert.equal(team.overlay.layout, "sides");
+  assert.equal(team.overlay.columns.length, 2);
+  const franchises = homeStory.beats.find((beat) => beat.id === second.id);
+  assert.equal(franchises.overlay.layout, "locations");
+  assert.equal(franchises.overlay.columns, undefined);
+  assert.equal(franchises.overlay.heading, "Build something of your own");
+  assert.equal(franchises.overlay.action.href, "/franchising/");
   assert.ok(second.progressEnd < storyTimeline.progressForFrame(266));
 });
 

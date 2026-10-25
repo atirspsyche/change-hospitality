@@ -1,15 +1,7 @@
 ---
-const galleryItems = [
-  { image: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1', alt: 'Preview photo: friends sharing food around a table' },
-  { image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c', alt: 'Preview photo: a team gathered around a laptop' },
-  { image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4', alt: 'Preview photo: colleagues getting together in a shared workspace' },
-  { image: 'https://images.unsplash.com/photo-1556761175-b413da4baf72', alt: 'Preview photo: a group catching up around a meeting table' },
-  { image: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902', alt: 'Preview photo: colleagues spending time together at work' },
-  { image: 'https://images.unsplash.com/photo-1511632765486-a01980e01a18', alt: 'Preview photo: a group celebrating together outdoors' },
-];
+import { getCandidateGallery } from '../sanity/queries';
 
-const photoUrl = (image: string, width: number) =>
-  `${image}?auto=format&fit=crop&w=${width}&h=${Math.round(width * 0.75)}&q=85`;
+const galleryItems = await getCandidateGallery();
 ---
 
 <section
@@ -47,23 +39,30 @@ const photoUrl = (image: string, width: number) =>
     </div>
     <div class="storyboard-gallery-pictures">
       <div class="storyboard-gallery-oval" aria-hidden="true"></div>
-      <ol class="storyboard-gallery-photos" aria-label="Candidate gallery preview with placeholder photos">
-        {galleryItems.map(({ image, alt }) => (
-          <li class="storyboard-gallery-photo" data-gallery-photo>
-            <img
-              src={photoUrl(image, 1200)}
-              srcset={[640, 960, 1200].map((width) => `${photoUrl(image, width)} ${width}w`).join(', ')}
-              sizes="(min-width: 1280px) 640px, (min-width: 1024px) 50vw, (min-width: 600px) 50vw, 100vw"
-              {alt}
-              width="1200"
-              height="900"
-              loading="lazy"
-              decoding="async"
-            />
-          </li>
-        ))}
+      <ol class="storyboard-gallery-photos" aria-label="Change Hospitality candidates at work and with their teams">
+        {galleryItems.map(({ key, image, alt }) => {
+          const attributes = {
+            src: image.src,
+            srcset: image.srcSet,
+            sizes: '(min-width: 1280px) 640px, (min-width: 1024px) 50vw, (min-width: 600px) calc((100vw - 6.5rem) / 2), calc(100vw - 2.5rem)',
+            alt,
+            width: image.width,
+            height: image.height,
+            loading: 'lazy' as const,
+            decoding: 'async' as const,
+            fetchpriority: 'low' as const,
+          };
+          return (
+            <li class="storyboard-gallery-photo" data-gallery-photo={key}>
+              <template data-gallery-image><img {...attributes} /></template>
+              <noscript><img {...attributes} /></noscript>
+              <p class="storyboard-gallery-error" data-gallery-error role="status" hidden>
+                This photo could not be loaded. Please try again later.
+              </p>
+            </li>
+          );
+        })}
       </ol>
-      <p class="storyboard-gallery-preview">Photo preview / candidate pictures coming soon</p>
     </div>
   </div>
 </section>
@@ -129,6 +128,7 @@ const photoUrl = (image: string, width: number) =>
   }
 
   .storyboard-gallery-photo {
+    position: relative;
     overflow: hidden;
     aspect-ratio: 4 / 3;
     border-radius: 0.65rem;
@@ -136,22 +136,18 @@ const photoUrl = (image: string, width: number) =>
     box-shadow: 0 1.25rem 3rem color-mix(in srgb, var(--color-obsidian) 18%, transparent);
   }
 
-  .storyboard-gallery-photo img {
+  .storyboard-gallery-photo :global(img) {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 
-  .storyboard-gallery-preview {
-    position: relative;
-    width: fit-content;
-    margin: 2rem auto 0;
-    border-radius: 999px;
+  .storyboard-gallery-error {
+    position: absolute;
+    inset: auto 1rem 1rem;
+    padding: 0.75rem;
     background: var(--color-cocoa);
-    padding: 0.35rem 0.75rem;
-    font-size: 0.75rem;
-    line-height: 1.6;
-    text-align: center;
+    font-size: 0.875rem;
   }
 
   .storyboard-gallery-scroll {
@@ -263,17 +259,61 @@ const photoUrl = (image: string, width: number) =>
     const photos = Array.from(section?.querySelectorAll<HTMLElement>('[data-gallery-photo]') ?? []);
     const closing = section?.querySelector<HTMLElement>('[data-gallery-closing]');
     const progress = section?.querySelector<HTMLElement>('[data-gallery-progress]');
-    if (!section || !stage || photos.length < 2 || !closing || !progress) return;
+    if (!section || !stage || !photos.length || !closing || !progress) return;
+
+    const controller = new AbortController();
+    let imageObserver: IntersectionObserver | undefined;
+
+    function loadPhoto(index: number) {
+      const photo = photos[index];
+      const template = photo?.querySelector<HTMLTemplateElement>('template[data-gallery-image]');
+      const image = template?.content.querySelector('img')?.cloneNode(true);
+      if (!template || !(image instanceof HTMLImageElement)) return;
+      image.addEventListener('error', () => {
+        console.error('Candidate gallery photo could not be loaded:', image.currentSrc || image.src);
+        const message = photo.querySelector<HTMLElement>('[data-gallery-error]');
+        if (message) message.hidden = false;
+      }, { signal: controller.signal });
+      // The observer/timeline already decides when to fetch; do not add a second lazy-load delay.
+      image.loading = 'eager';
+      template.replaceWith(image);
+    }
+
+    function observePhotos(stacked: boolean) {
+      imageObserver?.disconnect();
+      if (!('IntersectionObserver' in window)) {
+        photos.forEach((_, index) => loadPhoto(index));
+        return;
+      }
+      imageObserver = new IntersectionObserver((entries) => {
+        entries.filter((entry) => entry.isIntersecting).forEach((entry) => {
+          if (entry.target === section) {
+            loadPhoto(0);
+            loadPhoto(1);
+          } else {
+            loadPhoto(photos.indexOf(entry.target as HTMLElement));
+          }
+          imageObserver?.unobserve(entry.target);
+        });
+      }, { rootMargin: '200px 0px' });
+      if (stacked) imageObserver.observe(section);
+      else photos.forEach((photo) => imageObserver?.observe(photo));
+    }
+
+    window.addEventListener('beforeprint', () => photos.forEach((_, index) => loadPhoto(index)), { signal: controller.signal });
 
     const media = gsap.matchMedia();
     media.add({
+      all: 'all',
       desktop: '(min-width: 1024px) and (min-height: 700px)',
       motion: '(prefers-reduced-motion: no-preference)',
       print: 'print',
     }, (context) => {
-      if (!context.conditions?.desktop || !context.conditions.motion || context.conditions.print) return;
+      const stacked = Boolean(context.conditions?.desktop && context.conditions.motion && !context.conditions.print && photos.length > 1);
+      section.classList.toggle('is-stacked', stacked);
+      observePhotos(stacked);
+      if (!stacked) return () => imageObserver?.disconnect();
 
-      section.classList.add('is-stacked');
       gsap.set(photos, { opacity: 0, yPercent: 110, xPercent: 12, rotation: 10, scale: 1.04 });
       gsap.set(photos[0], { opacity: 1, yPercent: 0, xPercent: 0, rotation: -6, scale: 1 });
       gsap.set(closing, { opacity: 0, y: 18 });
@@ -283,7 +323,13 @@ const photoUrl = (image: string, width: number) =>
         start: 'top bottom',
         once: true,
         onEnter: () => context.add(() => {
+          const photoStarts = photos.map((_, index) => index === 0 ? 0 : 0.3 + (index - 1) * 1.25);
           const timeline = gsap.timeline({
+            onUpdate() {
+              const active = photoStarts.findLastIndex((start) => timeline.time() >= start);
+              loadPhoto(active);
+              loadPhoto(active + 1);
+            },
             scrollTrigger: {
               id: 'candidate-photo-stack',
               trigger: section,
@@ -296,7 +342,7 @@ const photoUrl = (image: string, width: number) =>
           });
 
           photos.slice(1).forEach((photo, index) => {
-            const at = 0.3 + index * 1.25;
+            const at = photoStarts[index + 1];
             timeline.to(photos.slice(0, index + 1), {
               y: (photoIndex) => -(index + 1 - photoIndex) * 8,
               scale: (photoIndex) => 1 - (index + 1 - photoIndex) * 0.012,
@@ -321,10 +367,17 @@ const photoUrl = (image: string, width: number) =>
         }),
       });
 
-      return () => section.classList.remove('is-stacked');
+      return () => {
+        section.classList.remove('is-stacked');
+        imageObserver?.disconnect();
+      };
     }, section);
 
-    disposeGallery = () => media.revert();
+    disposeGallery = () => {
+      media.revert();
+      imageObserver?.disconnect();
+      controller.abort();
+    };
   }
 
   initStoryboardGallery();

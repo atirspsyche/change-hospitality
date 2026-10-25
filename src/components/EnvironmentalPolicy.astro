@@ -1,69 +1,108 @@
 ---
-import StoryIllustration from "./StoryIllustration.astro";
 import HeroIllustration from "./HeroIllustration.astro";
 import { getImpactNumbers } from "../sanity/queries";
 
 const impact = await getImpactNumbers();
 
-// Only use supplied artwork; keep missing logos explicitly labelled.
+const bcorpLogo = {
+  src: "/client-logos/sustainability-logo/EN-B-Corp-logo.png",
+  width: 781,
+  height: 1153,
+  alt: "Certified B Corporation",
+};
+const isoLogos = [
+  {
+    src: "/client-logos/sustainability-logo/iso-14001.webp",
+    width: 300,
+    height: 272,
+    alt: "ISO 14001",
+    caption: "Environmental management",
+  },
+  {
+    src: "/client-logos/sustainability-logo/ISO_9001-2015.png",
+    width: 960,
+    height: 878,
+    alt: "ISO 9001:2015",
+    caption: "Quality & consistency",
+  },
+];
+const livingWageLogo = {
+  src: "/client-logos/sustainability-logo/living-wage.png",
+  width: 802,
+  height: 1075,
+  alt: "Living Wage Recognised Service Provider",
+};
+const goodAppleLogo = {
+  src: "/client-logos/sustainability-logo/The-Good-Apple-Effect.png",
+  width: 1629,
+  height: 966,
+  alt: "The Good Apple Effect",
+};
+const beyondFoodLogo = {
+  src: "/client-logos/sustainability-logo/beyond-food.svg",
+  width: 1200,
+  height: 630,
+  alt: "Beyond Food",
+};
 const partners = [
+  bcorpLogo,
+  ...isoLogos,
   {
-    name: "Certified B Corporation",
-    logo: { src: "/bcorp-logo.webp", width: 771, height: 905 },
+    src: "/client-logos/sustainability-logo/ecologi.svg",
+    width: 393,
+    height: 334,
+    alt: "Ecologi",
   },
   {
-    name: "ISO 14001",
-    logo: {
-      src: "/client-logos/sustainability-logo/iso-14001.webp",
-      width: 300,
-      height: 272,
-    },
+    src: "/client-logos/sustainability-logo/UNDO-logo.png",
+    width: 1858,
+    height: 977,
+    alt: "UNDO",
   },
-  { name: "ISO 9001", logo: null },
+  livingWageLogo,
+  goodAppleLogo,
+  beyondFoodLogo,
+];
+const certificationPhotos = [
   {
-    name: "Ecologi",
-    logo: {
-      src: "/client-logos/sustainability-logo/ecologi.svg",
-      width: 393,
-      height: 334,
-    },
+    src: "/client-logos/sustainability-logo/sustainability-pics/01.webp",
+    width: 1200,
+    height: 900,
+    alt: "A Change team member holding our wooden B Corp certification plaque on a yellow sofa",
+    caption: "Something worth holding on to.",
   },
-  { name: "UNDO", logo: null },
   {
-    name: "Living Wage",
-    logo: {
-      src: "/client-logos/sustainability-logo/living-wage.png",
-      width: 802,
-      height: 1075,
-    },
+    src: "/client-logos/sustainability-logo/sustainability-pics/02.webp",
+    width: 1200,
+    height: 1200,
+    alt: "A Change team member balancing our B Corp plaque on her head while holding a reusable cup at her desk",
+    caption: "A little pride in the everyday.",
   },
-  { name: "The Good Apple Effect", logo: null },
   {
-    name: "Beyond Food",
-    logo: {
-      src: "/client-logos/sustainability-logo/beyond-food.svg",
-      width: 1200,
-      height: 630,
-    },
+    src: "/client-logos/sustainability-logo/sustainability-pics/03.webp",
+    width: 900,
+    height: 1200,
+    alt: "A Change team member holding our B Corp plaque beside an open office microwave",
+    caption: "Good business. Real people.",
   },
 ];
 const social = [
   {
     title: "Living Wage",
     note: "Good work deserves fair pay.",
-    illustration: "chef" as const,
+    logo: livingWageLogo,
     text: "As a recognised Living Wage service provider, accredited by the Living Wage Foundation, we advocate for fair pay across every business we work with because paying a real living wage isn’t just the fair thing to do, it’s also the smart thing to do. When people feel valued, they show up with pride and passion, and that’s the heart of great hospitality.",
   },
   {
     title: "The Good Apple Effect",
     note: "A little kinder. A lot better.",
-    illustration: "apple" as const,
+    logo: goodAppleLogo,
     text: "We’re incredibly proud to support The Good Apple Effect, a movement working to stamp out bullying and the misuse of power in hospitality. It’s an issue the industry has too often stayed quiet about, and one we think matters deeply — everyone deserves to work somewhere they feel safe and respected. We’re constantly using our voice within the industry to help push the conversation forward.",
   },
   {
     title: "Beyond Food",
     note: "Room at the table for everyone.",
-    illustration: "plate" as const,
+    logo: beyondFoodLogo,
     text: "Our volunteering work with Beyond Food focuses on helping people facing barriers build careers in hospitality. Through mentoring and kitchen sessions, our team is working directly with people to share experience, build confidence and open a way into an industry we love.",
   },
 ];
@@ -87,11 +126,9 @@ const social = [
     >
       <span>Proud to be</span>
       <img
-        src="/bcorp-logo.webp"
-        width="771"
-        height="905"
-        alt="Certified B Corporation"
+        {...bcorpLogo}
         fetchpriority="high"
+        decoding="async"
       />
       <span>A force for good.<br />Since October 2025.</span>
     </aside>
@@ -127,22 +164,21 @@ const social = [
       {
         partners.map((partner) => (
           <div class="partner-name" role="listitem">
-            {partner.logo ? (
-              <img
-                class="partner-logo"
-                src={partner.logo.src}
-                width={partner.logo.width}
-                height={partner.logo.height}
-                alt={partner.name}
-                loading="lazy"
-                decoding="async"
-              />
-            ) : (
-              <>
-                <span>{partner.name}</span>
-                <small>Logo not available</small>
-              </>
-            )}
+            <img
+              class:list={[
+                "partner-logo",
+                {
+                  "partner-logo-portrait": partner.height > partner.width * 1.2,
+                  "partner-logo-wide": partner.width > partner.height * 1.5,
+                },
+              ]}
+              src={partner.src}
+              width={partner.width}
+              height={partner.height}
+              alt={partner.alt}
+              loading="lazy"
+              decoding="async"
+            />
           </div>
         ))
       }
@@ -176,38 +212,48 @@ const social = [
         </p>
       </div>
     </div>
-    <div class="certification-scrapbook">
+    <div class="certification-credentials">
       <div class="certification-seal">
         <img
-          src="/bcorp-logo.webp"
-          width="771"
-          height="905"
-          alt="Certified B Corporation"
+          {...bcorpLogo}
           loading="lazy"
+          decoding="async"
         /><span>People.<br />Planet.<br />Purpose.</span>
       </div>
-      <figure class="certification-photo photo-one">
-        <img
-          src="/recruit-talent-images/boh.png"
-          width="309"
-          height="150"
-          loading="lazy"
-          alt="A chef cooking over flames in a professional kitchen"
-        /><figcaption>For the people behind the pass.</figcaption>
-      </figure>
       <div class="iso-badges">
-        <span><strong>ISO 14001</strong>Environmental<br />management</span
-        ><span><strong>ISO 9001</strong>Quality &amp;<br />consistency</span>
+        {
+          isoLogos.map((logo) => (
+            <figure>
+              <img
+                src={logo.src}
+                width={logo.width}
+                height={logo.height}
+                alt={logo.alt}
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption>{logo.caption}</figcaption>
+            </figure>
+          ))
+        }
       </div>
-      <figure class="certification-photo photo-two">
-        <img
-          src="/recruit-talent-images/event1.png"
-          width="309"
-          height="150"
-          loading="lazy"
-          alt="A hospitality table setting with flowers, plates and glassware"
-        /><figcaption>And the moments they make.</figcaption>
-      </figure>
+    </div>
+    <div class="certification-scrapbook">
+      {
+        certificationPhotos.map((photo) => (
+          <figure class="certification-photo">
+            <img
+              src={photo.src}
+              width={photo.width}
+              height={photo.height}
+              alt={photo.alt}
+              loading="lazy"
+              decoding="async"
+            />
+            <figcaption>{photo.caption}</figcaption>
+          </figure>
+        ))
+      }
     </div>
   </section>
 
@@ -275,16 +321,16 @@ const social = [
     aria-labelledby="social-title"
   >
     <header class="social-header">
-      <p class="eyebrow">Our social impact</p><h2 id="social-title">
-        Fair pay, safe workplaces,<br />and open doors.
+      <p class="eyebrow">Fair pay, safe workplaces, and open doors.</p><h2 id="social-title">
+        Our social impact
       </h2><p>Hospitality is about people. So are we.</p>
     </header>
     <div class="social-cards">
       {
         social.map((item, index) => (
           <article class={`social-card social-card-${index + 1}`}>
-            <div class="social-illustration">
-              <StoryIllustration kind={item.illustration} />
+            <div class="social-logo">
+              <img {...item.logo} loading="lazy" decoding="async" />
             </div>
             <p class="social-note">{item.note}</p>
             <h3>{item.title}</h3>
@@ -438,9 +484,8 @@ const social = [
     font-weight: 600;
   }
   .bcorp-badge img {
-    width: 4.6rem;
+    width: 5.25rem;
     height: auto;
-    mix-blend-mode: multiply;
   }
   .impact-intro {
     display: grid;
@@ -468,7 +513,7 @@ const social = [
   .partner-garden > div {
     display: flex;
     min-width: 0;
-    min-height: 12rem;
+    min-height: 14rem;
     aspect-ratio: 4 / 3;
     flex-direction: column;
     align-items: center;
@@ -488,23 +533,15 @@ const social = [
     border-color: var(--color-mist);
   }
   .partner-logo {
-    width: min(100%, 10rem);
-    height: 7rem;
+    width: min(100%, 11rem);
+    height: 8rem;
     object-fit: contain;
   }
-  .partner-logo[src="/bcorp-logo.webp"] {
-    mix-blend-mode: multiply;
+  .partner-logo-portrait {
+    height: 10rem;
   }
-  .partner-name span {
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: clamp(1rem, 1.6vw, 1.4rem);
-    line-height: 1.2;
-    text-wrap: balance;
-  }
-  .partner-name small {
-    font-size: 0.7rem;
-    margin-top: 0.6rem;
+  .partner-logo-wide {
+    width: min(100%, 14rem);
   }
   .certifications {
     background: var(--color-mint);
@@ -516,11 +553,12 @@ const social = [
   .certification-copy h2 {
     margin-bottom: 2rem;
   }
-  .certification-scrapbook {
+  .certification-credentials {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
+    gap: 2rem;
+    min-width: 0;
   }
   .certification-seal {
     display: flex;
@@ -534,9 +572,8 @@ const social = [
     transform: rotate(4deg);
   }
   .certification-seal img {
-    width: 5.5rem;
+    width: 6rem;
     height: auto;
-    mix-blend-mode: multiply;
   }
   .certification-seal span {
     font-family: var(--font-display);
@@ -544,8 +581,17 @@ const social = [
     line-height: 1.1;
     font-weight: 600;
   }
+  .certification-scrapbook {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: center;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    padding-block: 1rem;
+  }
   .certification-photo {
-    width: min(100%, 21rem);
+    width: 100%;
+    min-width: 0;
     padding: 0.75rem 0.75rem 1rem;
     border-radius: 2rem;
     background: var(--color-paper);
@@ -554,6 +600,8 @@ const social = [
   .certification-photo img {
     width: 100%;
     height: auto;
+    object-fit: contain;
+    display: block;
     border-radius: 1.5rem;
   }
   .certification-photo figcaption {
@@ -562,13 +610,14 @@ const social = [
     font-size: 0.8rem;
     font-weight: 500;
   }
-  .photo-one {
-    transform: rotate(-5deg);
-    align-self: flex-start;
+  .certification-photo:nth-child(1) {
+    transform: rotate(-3deg);
   }
-  .photo-two {
-    transform: rotate(5deg);
-    align-self: flex-end;
+  .certification-photo:nth-child(2) {
+    transform: rotate(2deg);
+  }
+  .certification-photo:nth-child(3) {
+    transform: rotate(-2deg);
   }
   .iso-badges {
     width: 100%;
@@ -576,25 +625,27 @@ const social = [
     justify-content: center;
     gap: 1rem;
   }
-  .iso-badges > span {
+  .iso-badges > figure {
     display: grid;
-    place-content: center;
-    background: var(--color-citron);
-    border-radius: 50%;
-    width: 9rem;
-    height: 9rem;
+    justify-items: center;
+    align-content: center;
+    gap: 0.75rem;
+    flex: 1;
+    min-width: 0;
+    padding: 1.25rem 0.75rem;
+    background: var(--color-cream);
+    border-radius: 2rem;
     font-size: 0.75rem;
     text-align: center;
   }
-  .iso-badges > span:last-child {
-    background: var(--color-blush);
-    transform: rotate(7deg);
-  }
-  .iso-badges strong {
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 1.3rem;
-    margin-bottom: 0.5rem;
+  /* .iso-badges > figure:last-child {
+    background: var(--color-cream);
+    transform: rotate(3deg);
+  } */
+  .iso-badges img {
+    width: min(100%, 8rem);
+    height: 8rem;
+    object-fit: contain;
   }
   .environment {
     background: var(--color-cream);
@@ -700,27 +751,37 @@ const social = [
   .social-cards {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    align-items: start;
+    align-items: stretch;
     gap: 1.5rem;
     margin-top: 4rem;
   }
   .social-card {
+    display: grid;
+    grid-row: span 4;
+    grid-template-rows: subgrid;
+    row-gap: 0;
     padding: 1.5rem 1.7rem 2.5rem;
     background: var(--color-cream);
     border-radius: 3rem 3rem 2rem 4rem;
   }
   .social-card-2 {
     background: var(--color-mint);
-    margin-top: 3rem;
     border-radius: 4rem 2rem 4rem 2rem;
   }
   .social-card-3 {
-    margin-top: 1rem;
     border-radius: 2rem 4rem 2rem 4rem;
   }
-  .social-illustration {
-    width: 14rem;
+  .social-logo {
+    width: min(100%, 14rem);
+    height: 12rem;
     margin: 0 auto 1rem;
+  }
+  .social-logo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center top;
   }
   .social-note {
     font-family: var(--font-display);
@@ -771,7 +832,7 @@ const social = [
       font-size: 0.6rem;
     }
     .bcorp-badge img {
-      width: 3.5rem;
+      width: 4.5rem;
     }
     .impact-intro,
     .certifications {
@@ -784,12 +845,18 @@ const social = [
     .partner-garden {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+    .certification-credentials {
+      width: min(100%, 30rem);
+      margin-inline: auto;
+    }
     .certification-scrapbook {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 2rem;
-      max-width: 46rem;
-      margin: 1rem auto;
+    }
+    .certification-photo:last-child {
+      grid-column: 1 / -1;
+      width: calc((100% - 2rem) / 2);
+      justify-self: center;
     }
     .impact-numbers {
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -801,12 +868,13 @@ const social = [
     }
     .social-card {
       display: grid;
+      grid-row: auto;
       grid-template-columns: 9rem 1fr;
+      grid-template-rows: auto auto 1fr;
       gap: 0 1.5rem;
-      margin-top: 0;
       padding: 2rem;
     }
-    .social-illustration {
+    .social-logo {
       width: 9rem;
       grid-row: 1 / 4;
       align-self: center;
@@ -835,46 +903,42 @@ const social = [
       gap: 0.75rem;
     }
     .partner-garden > div {
-      min-height: 10rem;
+      min-height: 11rem;
       padding: 1rem;
     }
     .partner-logo {
-      height: 5.5rem;
+      height: 6.5rem;
+    }
+    .partner-logo-portrait {
+      height: 8rem;
     }
     .certification-scrapbook {
-      gap: 1rem;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      width: 100%;
+      max-width: 25rem;
+      margin-inline: auto;
+    }
+    .certification-photo:last-child {
+      grid-column: auto;
+      width: 100%;
     }
     .certification-seal {
-      flex-direction: column;
-      gap: 0.75rem;
+      gap: 1.5rem;
       padding: 1.25rem;
-      text-align: center;
     }
     .certification-seal span {
       font-size: 1.1rem;
     }
     .certification-seal img {
-      width: 3.5rem;
+      width: 5rem;
     }
     .certification-photo {
       padding: 0.5rem 0.5rem 1rem;
       border-radius: 1.2rem;
     }
     .certification-photo figcaption {
-      font-size: 0.65rem;
-    }
-    .iso-badges {
-      flex-direction: column;
-      align-items: center;
-      gap: 0.75rem;
-    }
-    .iso-badges > span {
-      width: 7.5rem;
-      height: 7.5rem;
-      font-size: 0.65rem;
-    }
-    .iso-badges strong {
-      font-size: 1rem;
+      font-size: 0.8rem;
     }
     .environment-header {
       position: relative;
@@ -911,8 +975,8 @@ const social = [
       display: block;
       padding: 1.5rem 1.5rem 2rem;
     }
-    .social-illustration {
-      width: 10rem;
+    .social-logo {
+      width: min(100%, 14rem);
     }
   }
   @media print {

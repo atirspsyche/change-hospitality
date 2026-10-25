@@ -10,17 +10,38 @@ export interface SourceImage {
 export interface LocalImage { src: string; srcSet?: string; width: number; height: number; shareSrc?: string }
 const builder = createImageUrlBuilder(getSanityConfig(import.meta.env));
 const images = new Map<string, Promise<LocalImage>>();
+type ImageKind = 'portrait' | 'logo' | 'gallery';
 
-export function buildImage(image: SourceImage | undefined, kind: 'portrait' | 'logo'): Promise<LocalImage | undefined> {
+export function buildImage(image: SourceImage | undefined, kind: ImageKind): Promise<LocalImage | undefined> {
   if (!image?.asset?.url) return Promise.resolve(undefined);
   const key = JSON.stringify([image, kind]);
   if (!images.has(key)) images.set(key, generateImage(image, kind));
   return images.get(key)!;
 }
 
-async function generateImage(image: SourceImage, kind: 'portrait' | 'logo'): Promise<LocalImage> {
+async function generateImage(image: SourceImage, kind: ImageKind): Promise<LocalImage> {
   const { getImage, inferRemoteSize } = await import('astro:assets');
   const dimensions = image.asset!.metadata?.dimensions;
+  if (kind === 'gallery') {
+    const source = dimensions && Number.isFinite(dimensions.width) && dimensions.width > 0
+      && Number.isFinite(dimensions.height) && dimensions.height > 0
+      ? dimensions : await inferRemoteSize(image.asset!.url);
+    const cropWidth = Math.floor(source.width * (1 - (image.crop?.left || 0) - (image.crop?.right || 0)));
+    const cropHeight = Math.floor(source.height * (1 - (image.crop?.top || 0) - (image.crop?.bottom || 0)));
+    const width = Math.max(1, Math.min(1280, cropWidth, Math.floor(cropHeight * 4 / 3)));
+    const height = Math.max(1, Math.round(width * 0.75));
+    const src = builder.image(image as Parameters<typeof builder.image>[0]).width(width).height(height).fit('crop').quality(90).url();
+    const widths = [...new Set([400, 640, 960, width].filter((size) => size <= width))];
+    const variants = await Promise.all(widths.map((size) =>
+      getImage({ src, width: size, height: Math.max(1, Math.round(size * 0.75)), format: 'webp', quality: 75 }),
+    ));
+    return {
+      src: variants[variants.length - 1].src,
+      srcSet: variants.map((variant, index) => `${variant.src} ${widths[index]}w`).join(', '),
+      width,
+      height,
+    };
+  }
   if (kind === 'logo') {
     const src = image.asset!.url;
     const source = dimensions && Number.isFinite(dimensions.width) && dimensions.width > 0

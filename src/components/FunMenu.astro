@@ -57,7 +57,9 @@ const menuPalettes = [
   <!-- Floating flat cartoon bar -->
   <div class="funmenu-bar" data-funmenu-bar>
     <a class="funmenu-brand" href="/" aria-label="Change Hospitality home">
-      <img src="/change-hospitality-logo-new.svg" alt="Change Hospitality" />
+      <span class="funmenu-brand-artwork">
+        <img src="/change-hospitality-logo-new.svg" alt="Change Hospitality" width="2000" height="2000" />
+      </span>
     </a>
 
     <nav class="funmenu-inline" aria-label="Page sections">
@@ -198,31 +200,39 @@ const menuPalettes = [
 
   .funmenu-brand {
     position: relative;
-    isolation: isolate;
     display: block;
-    width: 8.5rem;
-    height: 3.6rem;
-    overflow: hidden;
+    width: clamp(8.5rem, 40vw, 13rem);
+    aspect-ratio: 130 / 43;
     justify-self: start;
+  }
+
+  .funmenu-brand-artwork {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    transform-origin: 50% 70%;
   }
 
   .funmenu-brand img {
     position: absolute;
     top: 50%;
-    left: 50%;
-    height: 8.5rem;
-    width: 8.5rem;
+    height: auto;
+    width: 100%;
     object-fit: contain;
-    transform: translate(-50%, -50%);
-    filter:
-      drop-shadow(2px 2px 0 var(--color-cocoa))
-      drop-shadow(0 3px 4px color-mix(in srgb, var(--color-cocoa) 32%, transparent));
-    transition: transform 400ms var(--ease-cartoon);
+    transform: translateY(-50%);
+    filter: brightness(0);
+    opacity: 0.85;
   }
 
-  .funmenu-brand:hover img,
-  .funmenu-brand:focus-visible img {
-    transform: translate(-50%, -50%) rotate(-8deg) scale(1.05);
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .funmenu-brand-artwork {
+      transition: transform 650ms var(--ease-cartoon);
+    }
+
+    .funmenu-brand:hover .funmenu-brand-artwork {
+      transform: translateY(-2px) rotate(-3deg) scale(1.035, 1.015);
+    }
   }
 
   .funmenu-inline {

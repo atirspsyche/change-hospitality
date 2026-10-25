@@ -22,13 +22,13 @@ Impact figures and temporary-worker guidance are initially created as **drafts**
 
 ### Image Delivery and Limits
 
-Portrait uploads are capped at **2 MiB (2,097,152 bytes)** and must be at least 600 by 600 pixels. Logos are capped at **250 KiB (256,000 bytes)**. Use the guarded image source for selection, drop or paste; default direct uploads are disabled. Oversized files are rejected before passing them to Sanity. Existing selected assets are checked again before publishing. The importer verifies actual format, dimensions and animation metadata. Studio rules are editing safeguards, not server-side access controls on authorised API clients.
+Portrait uploads are capped at **2 MiB (2,097,152 bytes)** and must be at least 600 by 600 pixels. Candidate gallery photos have the same size limit and must be at least 600 by 450 pixels. Logos are capped at **250 KiB (256,000 bytes)**. Use the guarded image source for selection, drop or paste; default direct uploads are disabled. Oversized files are rejected before passing them to Sanity. Existing selected assets are checked again before publishing. The importer verifies actual format, dimensions and animation metadata. Studio rules are editing safeguards, not server-side access controls on authorised API clients.
 
 The Astro static build fetches source images, honours portrait crop/hotspot, generates responsive WebP variants and a JPEG sharing image, and emits local deployment assets. Logos retain their aspect ratio and transparent backgrounds; SVG logos are copied into local deployment assets as vectors without enabling SVG rasterisation. Visitors receive these copies from the website host. Build downloads and Studio previews still use Sanity bandwidth; visitor delivery uses Vercel bandwidth. Preserve the Astro image cache between builds where supported.
 
 ### Publishing and Cutover
 
-Configure a private Vercel Deploy Hook and one Sanity webhook for published `job`, `consultant`, `location`, `client`, `testimonial`, `siteSettings`, `policy`, `temporaryWork` and `environmentalImpact` changes. Exclude draft IDs, asset documents and system documents; include create/update/delete events so publishing, replacements and unpublishing rebuild the site. Do not put the deploy-hook URL in frontend code or public Sanity content. Changes appear after the build completes.
+Configure a private Vercel Deploy Hook and one Sanity webhook for published `job`, `consultant`, `location`, `client`, `testimonial`, `siteSettings`, `policy`, `temporaryWork`, `candidateGallery` and `environmentalImpact` changes. Exclude draft IDs, asset documents and system documents; include create/update/delete events so publishing, replacements and unpublishing rebuild the site. Do not put the deploy-hook URL in frontend code or public Sanity content. Changes appear after the build completes.
 
 Verify a Vercel Preview against the new project before changing live production. Website builds and `api/apply.js` must select the same project. Keep the previous Vercel deployment and its matching environment settings for rollback; leave both Sanity projects intact during acceptance. This repository does not create remote webhooks, CORS origins, memberships or deployments automatically.
 
@@ -47,12 +47,23 @@ npm run build
 npm test
 npm run seed:locations
 npm run seed:impact
+npm run seed:gallery
 npm run deploy
 ```
 
 `npm run deploy` publishes the Studio to a Sanity-hosted `*.sanity.studio` URL. Access is controlled by Sanity project membership and roles.
 
 The public Astro website is a separate package in the repository root. It reads published jobs, team members, locations and environmental impact numbers from Content Lake during its static build.
+
+## Candidate Gallery
+
+Open **Candidate gallery** to manage the Jobs page's **People behind the placements** photos. The singleton ID is `candidate-gallery`; drag photos to reorder them, replace images using the guarded picker, set crop/hotspot and provide accurate, non-blank image descriptions. Use only approved candidate photos. The gallery accepts one to six JPEG, PNG or WebP images, each at most 2 MiB and at least 600 by 450 pixels.
+
+For the initial selection, run `npm --prefix studio run seed:gallery` from the repository root for a dry run. It validates all six source files under `public/candidate-pics/`: `09`, `03`, `07`, `04`, `08`, `02`, in display order. Apply with `npm --prefix studio run seed:gallery -- -- --apply --project=thyjjqzv`. The importer only targets `thyjjqzv / production`, uploads the six originals and creates the published gallery if absent. Existing published content is preserved without uploading more assets; an existing draft stops the import for review. It never overwrites other editorial documents. Sanity content-deduplicates repeated asset uploads.
+
+Publish changes, then rebuild/redeploy the Astro website. Include `candidateGallery` in the published-content webhook filter. Deploy the updated Studio with `npm run deploy` to expose the editor to the team.
+
+The build generates local responsive WebP variants, honours crop/hotspot, caps output at the source size or 1280px and uses quality 75. Visitors load only website-hosted assets, not Sanity URLs. The desktop stack fetches the first/current photo plus one ahead as needed; the mobile/reduced-motion grid fetches nearby cards. Inert image templates prevent early downloads, and native lazy-loaded images are available without JavaScript. The root Vercel configuration gives hashed `/_astro/` assets a one-year immutable browser cache. Only build-time source downloads and Studio previews use Sanity image bandwidth.
 
 ## Environmental Impact Numbers
 

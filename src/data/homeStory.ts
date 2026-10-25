@@ -5,6 +5,7 @@ export type StoryLayout =
   | "split"
   | "center"
   | "sides"
+  | "locations"
   | "edges"
   | "bottom"
   | "closing";
@@ -263,26 +264,20 @@ export const homeStory = {
     },
     {
       id: "plate-center-next",
-      label: "Plate stays centered for a second reveal",
+      label: "Our franchise network, with local teams across England",
       frames: [256, 256],
       holdFrame: 256,
       holdWeight: 1.3,
       overlay: {
-        layout: "sides",
-        columns: [
-          {
-            eyebrow: "Franchising",
-            heading: "Build something of your own",
-            body: "Bring your hospitality experience and local relationships to a business of your own. Explore franchising with Change Hospitality.",
-            action: { label: "Franchising", href: "/franchising/", tone: "citron" },
-          },
-          {
-            eyebrow: "Ready when you are",
-            heading: "Your next move is on the pass.",
-            body: "Great venues deserve great teams. Tell us who your team needs next and start a conversation with people who know hospitality.",
-            action: { label: "Start a conversation", href: "/recruit-talent/", tone: "citron" },
-          },
-        ],
+        layout: "locations",
+        eyebrow: "Franchising",
+        heading: "Build something of your own",
+        body: "Local people. Lasting relationships. From our London head office to Manchester and Hampshire, we're growing a business built on knowing hospitality face to face. Your patch could be next.",
+        typography: {
+          headingSize: "clamp(2rem, 4.2vw, 4.5rem)",
+          bodySize: "clamp(0.9rem, 1.25vw, 1.1rem)",
+        },
+        action: { label: "Explore franchising", href: "/franchising/", tone: "citron" },
       },
     },
     {

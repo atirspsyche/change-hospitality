@@ -3,7 +3,7 @@ import type { OfficeLocation, TeamMember } from '../data/team';
 import { requireImpactNumbers } from '../lib/impactNumbers';
 import { sanityClient } from './client';
 import { buildImage, type SourceImage } from '../lib/sanityImages';
-import type { PublicContacts, ClientLogo, Testimonial, PolicyLink, TemporaryWork } from '../data/editorial';
+import type { PublicContacts, ClientLogo, CandidatePhoto, Testimonial, PolicyLink, TemporaryWork } from '../data/editorial';
 
 const jobsQuery = `
   *[_type == "job" && defined(slug.current)] | order(publishedAt desc) {
@@ -104,6 +104,21 @@ export async function getTestimonials(audience: 'client' | 'candidate'): Promise
 export const getPolicyLinks = () => sanityClient.fetch<PolicyLink[]>(
   '*[_type == "policy" && visible != false] | order(sortOrder asc) {_id, label, href}',
 );
+
+export async function getCandidateGallery(): Promise<CandidatePhoto[]> {
+  const photos = await sanityClient.fetch<Array<SourceImage & { _key: string }> | null>(
+    '*[_type == "candidateGallery" && _id == "candidate-gallery"][0].photos[]{_key, alt, crop, hotspot, asset->{_id, url, metadata{dimensions}}}',
+  );
+  if (!photos?.length || photos.length > 6) {
+    throw new Error('Publish Candidate gallery in Sanity with between one and six photos before building the website.');
+  }
+  return Promise.all(photos.map(async (photo) => {
+    if (!photo._key || !photo.alt?.trim()) throw new Error('Every Candidate gallery photo needs a key and descriptive alt text.');
+    const image = await buildImage(photo, 'gallery');
+    if (!image) throw new Error(`Candidate gallery photo "${photo._key}" has no published image asset.`);
+    return { key: photo._key, alt: photo.alt.trim(), image };
+  }));
+}
 
 export async function getPublicContacts(): Promise<PublicContacts> {
   const contacts = await sanityClient.fetch<PublicContacts | null>('*[_type == "siteSettings" && _id == "public-contacts"][0]');

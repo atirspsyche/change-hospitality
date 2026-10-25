@@ -6,6 +6,7 @@ import {
   type CSSProperties,
 } from "react";
 import { PrimaryButton } from "./Button";
+import FranchiseMap from "./FranchiseMap";
 import {
   getStoryFrameUrl,
   homeStory,
@@ -124,7 +125,7 @@ function BeatContent({ beat }: { beat: StoryBeat }) {
 
   const HeadingTag = overlay.layout === "brand" ? "h1" : "h2";
 
-  return (
+  const copy = (
     <div className="story-copy">
       {overlay.eyebrow && (
         <p className="story-eyebrow" data-story-reveal>
@@ -144,6 +145,19 @@ function BeatContent({ beat }: { beat: StoryBeat }) {
       {overlay.action && <StoryButton action={overlay.action} />}
     </div>
   );
+
+  if (overlay.layout === "locations") {
+    return (
+      <div className="story-locations-layout">
+        {copy}
+        <div className="story-locations-map" data-story-reveal>
+          <FranchiseMap />
+        </div>
+      </div>
+    );
+  }
+
+  return copy;
 }
 
 function FallbackStory({ className }: { className: string }) {
@@ -162,7 +176,7 @@ function FallbackStory({ className }: { className: string }) {
           .filter((beat) => beat.overlay)
           .map((beat) => (
             <article
-              className="story-fallback-beat"
+              className={`story-fallback-beat story-fallback-beat--${beat.overlay?.layout}`}
               key={beat.id}
               style={getTypographyStyle(beat.overlay?.typography)}
             >
@@ -653,6 +667,17 @@ export default function HomeStoryHero() {
               },
               overlayWindow.progressStart + enterDuration * 0.6,
             );
+          }
+
+          const mapMarkers = overlay.querySelectorAll("[data-story-map-marker]");
+          if (mapMarkers.length && desktop) {
+            timeline.fromTo(mapMarkers, { scale: 0.6, opacity: 0 }, {
+              scale: 1,
+              opacity: 1,
+              duration: enterDuration * 1.5,
+              stagger: 0.004,
+              ease: "back.out(1.4)",
+            }, overlayWindow.progressStart + enterDuration);
           }
 
           if (overlayWindow.hideAtEnd || overlayWindow.progressEnd < 0.999) {

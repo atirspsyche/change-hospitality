@@ -1,16 +1,17 @@
 import type { ValidationContext } from 'sanity';
 
-export type MediaKind = 'portrait' | 'logo';
-export const mediaLimits = { portrait: 2 * 1024 * 1024, logo: 250 * 1024 };
+export type MediaKind = 'portrait' | 'logo' | 'gallery';
+export const mediaLimits = { portrait: 2 * 1024 * 1024, logo: 250 * 1024, gallery: 2 * 1024 * 1024 };
 export const mediaAccept = {
   portrait: 'image/jpeg,image/png,image/webp',
   logo: 'image/jpeg,image/png,image/webp,image/svg+xml',
+  gallery: 'image/jpeg,image/png,image/webp',
 };
 
 export function uploadError(file: { size: number; type: string }, kind: MediaKind) {
   if (!mediaAccept[kind].split(',').includes(file.type)) return 'Choose a supported, non-animated image format.';
   if (file.size <= 0 || file.size > mediaLimits[kind]) {
-    return `Choose a ${kind} no larger than ${kind === 'portrait' ? '2 MiB' : '250 KiB'}.`;
+    return `Choose a ${kind} no larger than ${kind === 'logo' ? '250 KiB' : '2 MiB'}.`;
   }
   return true;
 }
@@ -27,6 +28,9 @@ export async function validateImage(value: unknown, context: ValidationContext, 
   const dimensions = asset.metadata?.dimensions;
   if (kind === 'portrait' && (!dimensions || dimensions.width < 600 || dimensions.height < 600)) {
     return 'Portraits must be at least 600 by 600 pixels.';
+  }
+  if (kind === 'gallery' && (!dimensions || dimensions.width < 600 || dimensions.height < 450)) {
+    return 'Candidate photos must be at least 600 by 450 pixels.';
   }
   return true;
 }
