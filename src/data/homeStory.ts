@@ -59,18 +59,18 @@ export interface StoryBeat {
 
 export const homeStory = {
   // Logical frames include the coded transitions, not just downloaded images.
-  frameCount: 279,
+  frameCount: 305,
   framePadding: 4,
   extension: "webp",
-  movementWeight: 6.9,
-  scrollScreens: 10,
+  movementWeight: 7.55,
+  scrollScreens: 10.6,
   initialChunkSize: 24,
   streamChunkSize: 16,
-  desktopFramePrefix: "/story_sequence/",
+  desktopFramePrefix: "/story_sequence/new-sequence/",
   mobileFramePrefix: "/story_sequence/mobile/frame_",
   mobileFramesAvailable: false,
   posterFrame: 1,
-  fallbackFrame: 279,
+  fallbackFrame: 282,
   animation: {
     referenceWidth: 1920,
     referenceHeight: 1080,
@@ -125,16 +125,16 @@ export const homeStory = {
       textureBlendStart: 0.85,
     },
     shells: {
-      frames: [120, 138] as const,
+      frames: [130, 138] as const,
       backgroundFrame: 138,
     },
     plate: {
-      frames: [256, 266] as const,
-      sourceFrame: 256,
+      frames: [282, 292] as const,
+      sourceFrame: 282,
     },
     cutlery: {
-      frames: [266, 279] as const,
-      // Plate bounds in frame 256 and the gap visible in the final reference.
+      frames: [292, 305] as const,
+      // Plate bounds in the held frame and the gap visible in the final reference.
       plateBounds: { left: 680, right: 1243 },
       gap: 60,
     },
@@ -146,12 +146,12 @@ export const homeStory = {
         bounds: { left: 256, right: 1744, top: 176, bottom: 968 },
       },
       leftShell: {
-        src: "/story_sequence/utils/left-egg-shell.webp",
-        bounds: { left: 0, right: 1056, top: 0, bottom: 1080 },
+        src: "/story_sequence/utils/new-egg-shell-left.png",
+        bounds: { left: 0, right: 990, top: 0, bottom: 1080 },
       },
       rightShell: {
-        src: "/story_sequence/utils/right-egg-shell.webp",
-        bounds: { left: 984, right: 1920, top: 0, bottom: 1080 },
+        src: "/story_sequence/utils/new-egg-shell-right.png",
+        bounds: { left: 1344.375, right: 1920, top: 0, bottom: 1080 },
       },
       fork: {
         src: "/story_sequence/utils/fork.webp",
@@ -237,8 +237,8 @@ export const homeStory = {
     {
       id: "plate-center",
       label: "Plate in the middle",
-      frames: [214, 256],
-      holdFrame: 256,
+      frames: [214, 282],
+      holdFrame: 282,
       holdWeight: 1,
       overlay: {
         layout: "sides",
@@ -265,8 +265,8 @@ export const homeStory = {
     {
       id: "plate-center-next",
       label: "Our franchise network, with local teams across England",
-      frames: [256, 256],
-      holdFrame: 256,
+      frames: [282, 282],
+      holdFrame: 282,
       holdWeight: 1.3,
       overlay: {
         layout: "locations",
@@ -283,10 +283,10 @@ export const homeStory = {
     {
       id: "final-plate",
       label: "Centered plate and cutlery arrives",
-      frames: [256, 279],
-      holdFrame: 266,
+      frames: [282, 305],
+      holdFrame: 292,
       holdWeight: 0,
-      overlayFrames: [266, 279],
+      overlayFrames: [292, 305],
       overlay: {
         layout: "bottom",
         heading: "Great venues deserve great teams.",

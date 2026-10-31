@@ -572,6 +572,7 @@ html[data-home-story-fallback="true"] .story-fallback-notice {
     gap: 1rem;
   }
 
+  .story-overlay--locations .story-copy,
   .story-overlay--split .story-column,
   .story-overlay--sides .story-column {
     display: block;
@@ -581,6 +582,8 @@ html[data-home-story-fallback="true"] .story-fallback-notice {
     background: var(--color-cream);
   }
 
+  .story-overlay--locations .story-heading,
+  .story-overlay--locations .story-body,
   .story-overlay--sides .story-column-heading,
   .story-overlay--sides .story-body {
     color: var(--color-ink);

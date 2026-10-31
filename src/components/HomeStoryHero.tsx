@@ -578,7 +578,7 @@ export default function HomeStoryHero() {
             pin: true,
             // The story needs one pin on mobile too; omit secondary word
             // choreography and pointer motion there instead of extra pins.
-            scrub: desktop ? true : 0.12,
+            scrub: desktop ? 0.18 : 0.12,
             anticipatePin: 1,
             invalidateOnRefresh: true,
             // Refresh seeks the timeline with tween callbacks suppressed.

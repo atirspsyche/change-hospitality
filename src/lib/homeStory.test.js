@@ -18,24 +18,30 @@ test("the opening brand overlay contains only the recruitment line", () => {
 
 test("the storyboard omits egg-four-ways and has no terminal hold", () => {
   const plateaus = storyTimeline.segments.filter((segment) => segment.frameStart === segment.frameEnd);
-  assert.deepEqual(plateaus.map((segment) => segment.frameStart), [40, 70, 256, 256]);
+  assert.deepEqual(plateaus.map((segment) => segment.frameStart), [40, 70, 282, 282]);
   assert.ok(!homeStory.beats.some((beat) => beat.id === "egg-four-ways"));
   assert.ok(!homeStory.beats.some((beat) => beat.id === "egg-close-up"));
   for (const plateau of plateaus) {
     close(frameForProgress((plateau.progressStart + plateau.progressEnd) / 2), plateau.frameStart);
   }
   close(frameForProgress(0), 1);
-  close(frameForProgress(1), 279);
+  close(frameForProgress(1), 305);
 });
 
-test("the story uses a shorter fixed scroll budget with two consecutive centered reveals", () => {
-  close(storyTimeline.scrollScreens, 10);
+test("the story preserves its scroll pacing with two consecutive centered reveals", () => {
+  close(storyTimeline.scrollScreens, 10.6);
+  const screensPerWeight = storyTimeline.scrollScreens / storyTimeline.totalWeight;
+  const screensPerFrame = screensPerWeight * homeStory.movementWeight / (homeStory.frameCount - homeStory.posterFrame);
+  const previousScreensPerWeight = 10 / (6.9 + 0.75 + 1.15 + 1 + 1.3);
+  const previousScreensPerFrame = previousScreensPerWeight * 6.9 / 278;
+  assert.ok(Math.abs(screensPerFrame / previousScreensPerFrame - 1) < 0.01);
+  assert.ok(Math.abs(screensPerWeight / previousScreensPerWeight - 1) < 0.01);
   const first = storyTimeline.overlayWindows.find((overlay) => overlay.id === "plate-center");
   const second = storyTimeline.overlayWindows.find((overlay) => overlay.id === "plate-center-next");
   assert.ok(!homeStory.beats.some((beat) => beat.id === "plate-left"));
   close(first.progressEnd, second.progressStart);
   for (const overlay of [first, second]) {
-    close(frameForProgress((overlay.progressStart + overlay.progressEnd) / 2), 256);
+    close(frameForProgress((overlay.progressStart + overlay.progressEnd) / 2), 282);
     assert.ok((overlay.progressEnd - overlay.progressStart) * storyTimeline.scrollScreens >= 0.85);
   }
   const team = homeStory.beats.find((beat) => beat.id === first.id);
@@ -46,11 +52,11 @@ test("the story uses a shorter fixed scroll budget with two consecutive centered
   assert.equal(franchises.overlay.columns, undefined);
   assert.equal(franchises.overlay.heading, "Build something of your own");
   assert.equal(franchises.overlay.action.href, "/franchising/");
-  assert.ok(second.progressEnd < storyTimeline.progressForFrame(266));
+  assert.ok(second.progressEnd < storyTimeline.progressForFrame(292));
 });
 
 test("logical frames stay fractional through coded animations", () => {
-  for (const frame of [55.125, 60.25, 65.75, 66.999, 67.125, 69.5, 73.75, 83.5, 84.125, 96.5, 109, 120.25, 131.75, 138, 266.5, 274.125]) {
+  for (const frame of [55.125, 60.25, 65.75, 66.999, 67.125, 69.5, 73.75, 83.5, 84.125, 96.5, 109, 120.25, 131.75, 138, 254.5, 281.75, 292.5, 300.125]) {
     close(frameForProgress(storyTimeline.progressForFrame(frame)), frame);
   }
   const forward = Array.from({ length: 1001 }, (_, i) => frameForProgress(i / 1000));
@@ -79,19 +85,21 @@ test("transition copy starts after the shells exit and closing copy spans the fi
   close(transition.progressEnd, storyTimeline.progressForFrame(182));
   assert.equal(transition.hideAtEnd, true);
   const closing = storyTimeline.overlayWindows.find((overlay) => overlay.id === "final-plate");
-  close(closing.progressStart, storyTimeline.progressForFrame(266));
+  close(closing.progressStart, storyTimeline.progressForFrame(292));
   close(closing.progressEnd, 1);
   assert.equal(closing.hideAtEnd, false);
 });
 
 test("streaming and neighbour prefetch never request replaced or missing frames", () => {
-  const replaced = (frame) => (frame >= 67 && frame <= 108) || (frame >= 120 && frame <= 137)
-    || frame >= 257;
+  const replaced = (frame) => (frame >= 67 && frame <= 108) || (frame >= 130 && frame <= 137)
+    || frame >= 283;
   assert.ok(storySequenceFrames.every((frame) => !replaced(frame)));
   assert.ok(storySequenceFrames.includes(109)); // texture handoff only
-  for (let position = 1; position <= 279; position += 0.125) {
+  assert.ok(Array.from({ length: 20 }, (_, index) => index + 110).every((frame) => storySequenceFrames.includes(frame)));
+  assert.ok(Array.from({ length: 34 }, (_, index) => index + 249).every((frame) => storySequenceFrames.includes(frame)));
+  for (let position = 1; position <= homeStory.frameCount; position += 0.125) {
     for (const offset of [0, 1, -1, 2, -2]) {
-      assert.ok(!replaced(sequenceFrameForPosition(Math.min(279, Math.max(1, position + offset)))));
+      assert.ok(!replaced(sequenceFrameForPosition(Math.min(homeStory.frameCount, Math.max(1, position + offset)))));
     }
   }
   for (const frame of [...storySequenceFrames, homeStory.fallbackFrame]) {
@@ -102,15 +110,35 @@ test("streaming and neighbour prefetch never request replaced or missing frames"
   }
 });
 
+test("new sequence retains the crack and plate entrance before the existing holds", () => {
+  for (const [position, kind, background] of [
+    [110, "sequence", 110], [120, "sequence", 120], [129.999, "sequence", 129],
+    [130, "shells", 138], [138, "shells", 138], [139, "sequence", 139],
+    [249, "sequence", 249], [254, "sequence", 254], [256, "sequence", 256],
+    [266, "sequence", 266], [281, "sequence", 281], [282, "plate", 282],
+  ]) {
+    const scene = getStoryScene(position, 1920, 1080);
+    assert.equal(scene.kind, kind, `scene at ${position}`);
+    assert.equal(scene.layers[0].asset, background, `background at ${position}`);
+  }
+  assert.equal(homeStory.desktopFramePrefix, "/story_sequence/new-sequence/");
+  const holds = storyTimeline.segments.filter((segment) => segment.frameStart === segment.frameEnd);
+  assert.deepEqual(holds.map((segment) => segment.frameStart), [40, 70, 282, 282]);
+  assert.deepEqual(homeStory.beats.map((beat) => beat.id), [
+    "carton-open-brand", "egg-in-hand", "egg-zoom", "egg-transition",
+    "plate-center", "plate-center-next", "final-plate",
+  ]);
+});
+
 test("coded transitions switch back to the correct sequence frames", () => {
   for (const [position, kind, background] of [
     [54, "sequence", 54], [55, "hand", "handEgg"], [60, "hand", "handEgg"], [66.999, "hand", "handEgg"],
     [67, "hand", "handEgg"], [70, "hand", "handEgg"], [83, "hand", "handEgg"],
     [84, "zoom", "handEgg"], [109.5, "zoom", "handEgg"],
-    [110, "sequence", 110], [119.999, "sequence", 119],
-    [120, "shells", 138], [138, "shells", 138], [139, "sequence", 139],
-    [255.999, "sequence", 256], [256, "plate", 256], [259, "plate", 256],
-    [265.999, "plate", 256], [266, "cutlery", 256], [279, "cutlery", 256],
+    [110, "sequence", 110], [129.999, "sequence", 129],
+    [130, "shells", 138], [138, "shells", 138], [139, "sequence", 139],
+    [281.999, "sequence", 282], [282, "plate", 282], [285, "plate", 282],
+    [291.999, "plate", 282], [292, "cutlery", 282], [305, "cutlery", 282],
   ]) {
     const scene = getStoryScene(position, 1440, 900);
     assert.equal(scene.kind, kind);
@@ -122,19 +150,19 @@ test("coded transitions switch back to the correct sequence frames", () => {
 
 test("plate stays centered through both holds and the cutlery handoff", () => {
   for (const [width, height] of [[1920, 1080], [1440, 900], [390, 844]]) {
-    const start = getStoryScene(256, width, height).layers[0];
+    const start = getStoryScene(282, width, height).layers[0];
     close(start.x, (width - start.width) / 2);
     assert.equal(start.rotation, undefined);
-    for (let frame = 256; frame <= 279; frame += 0.125) {
+    for (let frame = 282; frame <= 305; frame += 0.125) {
       assert.deepEqual(getStoryScene(frame, width, height).layers[0], start);
     }
-    const holds = storyTimeline.segments.filter((segment) => segment.frameStart === 256 && segment.frameEnd === 256);
+    const holds = storyTimeline.segments.filter((segment) => segment.frameStart === 282 && segment.frameEnd === 282);
     assert.equal(holds.length, 2);
     for (const hold of holds) {
       assert.deepEqual(getStoryScene(frameForProgress((hold.progressStart + hold.progressEnd) / 2), width, height).layers[0], start);
     }
-    getStoryScene(279, width * 2, height);
-    assert.deepEqual(getStoryScene(262.5, width, height).layers[0], start);
+    getStoryScene(305, width * 2, height);
+    assert.deepEqual(getStoryScene(288.5, width, height).layers[0], start);
   }
 });
 
@@ -213,9 +241,9 @@ for (const [width, height] of [[1440, 900], [1438, 768], [1512, 982], [1920, 108
     assert.ok(left.x + animation.sprites.leftShell.bounds.right * scale < 0);
     assert.ok(right.x + animation.sprites.rightShell.bounds.left * scale > width);
 
-    const start = getStoryScene(266, width, height);
-    const middle = getStoryScene(272.5, width, height);
-    const final = getStoryScene(279, width, height);
+    const start = getStoryScene(292, width, height);
+    const middle = getStoryScene(298.5, width, height);
+    const final = getStoryScene(305, width, height);
     for (const asset of ["fork", "knife"]) {
       const bounds = animation.sprites[asset].bounds;
       const first = start.layers.find((layer) => layer.asset === asset);
@@ -228,8 +256,8 @@ for (const [width, height] of [[1440, 900], [1438, 768], [1512, 982], [1920, 108
       close(halfway.x, (first.x + last.x) / 2);
     }
     // Seeking backward/rebuilding after resize has no accumulated transforms.
-    getStoryScene(279, width * 2, height);
-    assert.deepEqual(getStoryScene(272.5, width, height), middle);
+    getStoryScene(305, width * 2, height);
+    assert.deepEqual(getStoryScene(298.5, width, height), middle);
   });
 
   test(`${width}×${height}: hand sleeve stays offscreen and zoom has no frame-84 swap`, () => {

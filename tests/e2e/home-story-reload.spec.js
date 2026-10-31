@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { homeStory } from "../../src/data/homeStory.ts";
 import { frameForProgress, storyTimeline } from "../../src/lib/homeStoryTimeline.ts";
 
 async function waitForStory(page) {
@@ -30,6 +31,8 @@ const positions = [
   { name: "halfway through the animation", progress: 0.5 },
   { name: "the plate copy", progress: 0.8 },
   { name: "the closing animation", progress: 0.97 },
+  { name: "the new shell exit", progress: storyTimeline.progressForFrame(134) },
+  { name: "the new plate entrance", progress: storyTimeline.progressForFrame(266) },
   {
     name: "the franchise map beat",
     progress: (() => {
@@ -93,6 +96,68 @@ for (const position of positions) {
     expect(Math.abs(afterWheel.frame - restored.frame)).toBeLessThan(2);
   });
 }
+
+test("new sequence renders coded shells and holds the cleared plate for both existing reveals", async ({ page }, testInfo) => {
+  const requestedFrames = new Set();
+  page.on("request", (request) => {
+    const path = new URL(request.url()).pathname;
+    if (path.startsWith(homeStory.desktopFramePrefix)) {
+      requestedFrames.add(Number(path.slice(homeStory.desktopFramePrefix.length, -5)));
+    }
+  });
+  await page.goto("/");
+  await waitForStory(page);
+  const checkpoints = [
+    { name: "shell-start", frame: 130, scene: "shells" },
+    { name: "shell-moving", frame: 134, scene: "shells" },
+    { name: "shell-exit", frame: 138, scene: "shells" },
+    { name: "plate-hand-entrance", frame: 254, scene: "sequence" },
+    { name: "plate-hand-rotation", frame: 266, scene: "sequence" },
+    ...["plate-center", "plate-center-next"].map((id) => {
+      const overlay = storyTimeline.overlayWindows.find((beat) => beat.id === id);
+      return { name: id, frame: 282, scene: "plate", progress: (overlay.progressStart + overlay.progressEnd) / 2, overlay: id };
+    }),
+    { name: "coded-cutlery", frame: 305, scene: "cutlery" },
+  ];
+  const fingerprints = new Map();
+  for (const checkpoint of checkpoints) {
+    const progress = checkpoint.progress ?? storyTimeline.progressForFrame(checkpoint.frame);
+    await page.evaluate(({ progress, screens }) => {
+      const spacer = document.querySelector(".story-hero").parentElement;
+      const start = spacer.getBoundingClientRect().top + scrollY;
+      scrollTo({ top: start + innerHeight * screens * progress, behavior: "instant" });
+    }, { progress, screens: storyTimeline.scrollScreens });
+    await expect.poll(async () => Math.abs((await readStory(page)).frame - checkpoint.frame)).toBeLessThan(0.08);
+    const state = await readStory(page);
+    expect(state.scene).toBe(checkpoint.scene);
+    if (checkpoint.overlay) expect(state.overlays).toEqual([checkpoint.overlay]);
+    const pixels = await page.locator(".story-canvas").evaluate((canvas) => {
+      const data = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data;
+      const colors = new Set();
+      let fingerprint = 2166136261;
+      for (let pixelIndex = 0; pixelIndex < data.length; pixelIndex += 4 * 97) {
+        const color = (data[pixelIndex] << 16) | (data[pixelIndex + 1] << 8) | data[pixelIndex + 2];
+        colors.add(color);
+        fingerprint = Math.imul(fingerprint ^ color, 16777619) >>> 0;
+      }
+      return { fingerprint, colors: colors.size };
+    });
+    expect(pixels.colors).toBeGreaterThan(16);
+    fingerprints.set(checkpoint.name, pixels.fingerprint);
+    await page.screenshot({ path: testInfo.outputPath(`new-story-${checkpoint.name}.png`) });
+  }
+  if (testInfo.project.name === "desktop") {
+    expect(fingerprints.get("shell-start")).not.toBe(fingerprints.get("shell-moving"));
+    expect(fingerprints.get("shell-moving")).not.toBe(fingerprints.get("shell-exit"));
+  }
+  expect(fingerprints.get("plate-hand-entrance")).not.toBe(fingerprints.get("plate-hand-rotation"));
+  expect(fingerprints.get("plate-center")).toBe(fingerprints.get("plate-center-next"));
+  expect(fingerprints.get("plate-center-next")).not.toBe(fingerprints.get("coded-cutlery"));
+  expect(requestedFrames.has(254)).toBe(true);
+  expect(requestedFrames.has(266)).toBe(true);
+  expect([...requestedFrames].every((frame) => !(frame >= 67 && frame <= 108)
+    && !(frame >= 130 && frame <= 137) && frame <= 282)).toBe(true);
+});
 
 test("reduced motion keeps the readable story without reserved pin space", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });

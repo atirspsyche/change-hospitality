@@ -41,8 +41,8 @@ export function sequenceFrameForPosition(frame: number) {
   if (frame >= shells.frames[0] && frame < shells.frames[1] + 1) return shells.backgroundFrame;
   if (frame >= plate.frames[0] && frame < plate.frames[1]) return plate.sourceFrame;
   if (frame >= cutlery.frames[0]) return plate.sourceFrame;
-  // Do not round into the first baked shell image on the approach to frame 120.
-  if (frame > zoom.frames[1] && frame < shells.frames[0]) return Math.min(119, Math.round(frame));
+  // Do not round into the first baked shell image on the approach to the coded exit.
+  if (frame > zoom.frames[1] && frame < shells.frames[0]) return Math.min(shells.frames[0] - 1, Math.round(frame));
   return clamp(Math.round(frame), 1, homeStory.frameCount);
 }
 

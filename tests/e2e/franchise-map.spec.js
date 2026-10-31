@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { homeStory } from "../../src/data/homeStory.ts";
 import { storyTimeline } from "../../src/lib/homeStoryTimeline.ts";
 
 const beatWindow = storyTimeline.overlayWindows.find(({ id }) => id === "plate-center-next");
@@ -14,7 +15,7 @@ async function showMapBeat(page) {
   }, { progress: beatProgress, screens: storyTimeline.scrollScreens });
   const beat = page.locator('[data-story-overlay="plate-center-next"]');
   await expect(beat).toHaveCSS("opacity", "1");
-  await expect(page.locator(".story-hero")).toHaveAttribute("data-story-frame", /^256(?:\.0+)?$/);
+  await expect(page.locator(".story-hero")).toHaveAttribute("data-story-frame", homeStory.animation.plate.sourceFrame.toFixed(3));
   return beat;
 }
 
