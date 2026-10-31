@@ -121,7 +121,7 @@ test("new sequence retains the crack and plate entrance before the existing hold
     assert.equal(scene.kind, kind, `scene at ${position}`);
     assert.equal(scene.layers[0].asset, background, `background at ${position}`);
   }
-  assert.equal(homeStory.desktopFramePrefix, "/story_sequence/new-sequence/");
+  assert.equal(homeStory.desktopFramePrefix, "/story_sequence/");
   const holds = storyTimeline.segments.filter((segment) => segment.frameStart === segment.frameEnd);
   assert.deepEqual(holds.map((segment) => segment.frameStart), [40, 70, 282, 282]);
   assert.deepEqual(homeStory.beats.map((beat) => beat.id), [

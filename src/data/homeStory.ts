@@ -66,7 +66,7 @@ export const homeStory = {
   scrollScreens: 10.6,
   initialChunkSize: 24,
   streamChunkSize: 16,
-  desktopFramePrefix: "/story_sequence/new-sequence/",
+  desktopFramePrefix: "/story_sequence/",
   mobileFramePrefix: "/story_sequence/mobile/frame_",
   mobileFramesAvailable: false,
   posterFrame: 1,
