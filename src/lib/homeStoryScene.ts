@@ -22,6 +22,17 @@ export interface StoryScene {
   layers: StoryLayer[];
 }
 
+export function getStoryLayerBounds(
+  layer: StoryLayer,
+  sourceWidth: number,
+  sourceHeight: number,
+  viewportWidth: number,
+): StoryLayer {
+  if (typeof layer.asset !== "number" || layer.crop) return layer;
+  const width = layer.height / sourceHeight * sourceWidth;
+  return { ...layer, x: (viewportWidth - width) / 2, width };
+}
+
 const { animation } = homeStory;
 const { referenceWidth, referenceHeight, hand, zoom, shells, plate, cutlery, sprites } = animation;
 const mix = (start: number, end: number, progress: number) => start + (end - start) * progress;

@@ -3,7 +3,7 @@ import { existsSync } from "node:fs";
 import test from "node:test";
 import { homeStory, getStoryFrameUrl } from "../data/homeStory.ts";
 import { frameForProgress, storyTimeline } from "./homeStoryTimeline.ts";
-import { getCartonCopyBounds, getStoryScene, sequenceFrameForPosition, storySequenceFrames } from "./homeStoryScene.ts";
+import { getCartonCopyBounds, getStoryLayerBounds, getStoryScene, sequenceFrameForPosition, storySequenceFrames } from "./homeStoryScene.ts";
 
 const close = (actual, expected) => assert.ok(Math.abs(actual - expected) < 0.00001, `${actual} ≠ ${expected}`);
 const { animation } = homeStory;
@@ -146,6 +146,36 @@ test("coded transitions switch back to the correct sequence frames", () => {
   }
   assert.ok(!getStoryScene(138, 1440, 900).layers.some((layer) => typeof layer.asset === "string"));
   assert.equal(getStoryScene(109, 1440, 900).layers.at(-1).opacity, 1);
+});
+
+test("wide sequence images keep their natural aspect ratio on desktop and mobile", () => {
+  for (const [width, height] of [[1422, 768], [1920, 1080], [2560, 1440], [3440, 1440], [390, 844], [320, 568]]) {
+    for (const frame of [249, 260, 281]) {
+      const original = getStoryScene(frame, width, height).layers[0];
+      const fitted = getStoryLayerBounds(original, 2500, 1080, width);
+      close(fitted.height, height);
+      close(fitted.width / 2500, fitted.height / 1080);
+      close(fitted.x, (width - fitted.width) / 2);
+      assert.equal(fitted.asset, frame);
+      if (width / height <= 2500 / 1080) {
+        assert.ok(fitted.x <= 0);
+        assert.ok(fitted.x + fitted.width >= width);
+      }
+      assert.deepEqual(getStoryScene(frame, width, height).layers[0], original);
+    }
+  }
+});
+
+test("intrinsic sequence sizing preserves the plate holds, coded sprites and cropped textures", () => {
+  for (const [width, height] of [[1920, 1080], [1440, 900], [3440, 1440], [390, 844]]) {
+    for (const frame of [40, 70, 109, 120, 134, 282, 292, 305]) {
+      for (const layer of getStoryScene(frame, width, height).layers) {
+        const sourceWidth = typeof layer.asset === "number" ? 1920 : 1024;
+        const sourceHeight = typeof layer.asset === "number" ? 1080 : 576;
+        assert.deepEqual(getStoryLayerBounds(layer, sourceWidth, sourceHeight, width), layer);
+      }
+    }
+  }
 });
 
 test("plate stays centered through both holds and the cutlery handoff", () => {

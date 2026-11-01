@@ -8,6 +8,7 @@ import { createServer } from 'vite';
 let server;
 let buildImage;
 let getTeamMembers;
+let getActiveLocations;
 let getCandidateGallery;
 let sanityClient;
 let calls;
@@ -38,7 +39,7 @@ before(async () => {
     }],
   });
   ({ buildImage } = await server.ssrLoadModule('/src/lib/sanityImages.ts'));
-  ({ getTeamMembers, getCandidateGallery } = await server.ssrLoadModule('/src/sanity/queries.ts'));
+  ({ getTeamMembers, getActiveLocations, getCandidateGallery } = await server.ssrLoadModule('/src/sanity/queries.ts'));
   ({ sanityClient } = await server.ssrLoadModule('/src/sanity/client.ts'));
   ({ calls, probes } = await server.ssrLoadModule('astro:assets'));
 });
@@ -131,6 +132,19 @@ test('team query never passes original asset URLs to hydrated profile cards', as
   assert.equal(member.avatar, undefined);
   assert.equal(member.note, 'A full biography.');
   assert.doesNotMatch(JSON.stringify(member), /cdn\.sanity\.io/);
+});
+
+test('active office queries include ordered member IDs without dereferencing or duplicating profiles', async (context) => {
+  const locations = [{
+    _id: 'location-london', name: 'London', slug: { current: 'london' }, active: true,
+    teamOrder: ['member-ceo', 'member-manager'],
+  }];
+  context.mock.method(sanityClient, 'fetch', async (query) => {
+    assert.match(query, /active == true/);
+    assert.match(query, /"teamOrder": teamOrder\[\]\._ref/);
+    return locations;
+  });
+  assert.deepEqual(await getActiveLocations(), locations);
 });
 
 test('gallery photos use cacheable local WebP variants, a 4:3 crop and no sharing JPEG', async () => {

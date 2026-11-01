@@ -1,12 +1,13 @@
 ---
 import { PrimaryButton } from "../components/Button";
 import ProfileCard from "../components/team/ProfileCard";
+import TeamMemberGrid from "../components/team/TeamMemberGrid";
 import HeroIllustration from "../components/HeroIllustration.astro";
 import FunMenu from "../components/FunMenu.astro";
 import PageMotion from "../components/PageMotion.astro";
 import SectionCurve from "../components/SectionCurve.astro";
 import SiteFooter from "../components/SiteFooter.astro";
-import { getTeamGroups, teamPassSteps } from "../data/team";
+import { getTeamGroups, teamPageSize, teamPassSteps } from "../data/team";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getActiveLocations, getTeamMembers } from "../sanity/queries";
 
@@ -227,24 +228,26 @@ const teamSectionLinks = [
                   >
                     <div class="team-accordion-panel-inner">
                       {category.members.length > 0 ? (
-                        <div class="team-card-grid grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-3">
-                          {category.members.map((member) => (
-                            <ProfileCard
-                              client:visible
-                              name={member.name}
-                              title={member.title}
-                              avatarUrl={member.avatarUrl}
-                              avatarSrcSet={member.avatarSrcSet}
-                              avatarAlt={member.avatarAlt}
-                              accent={member.accent}
-                              note={member.note}
-                              signal={member.signal}
-                              email={member.email}
-                              phone={member.phone}
-                              enableTilt={true}
-                            />
-                          ))}
-                        </div>
+                        <>
+                          <TeamMemberGrid
+                            client:visible
+                            members={category.members}
+                            officeName={category.label}
+                            gridId={`${panelId}-members`}
+                          />
+                          {category.members.length > teamPageSize && (
+                            <noscript>
+                              <p class="mb-6 px-3 text-sm font-bold">
+                                The rest of our {category.label} team
+                              </p>
+                              <div class="team-card-grid mb-10 grid gap-5 px-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                                {category.members.slice(teamPageSize).map((member) => (
+                                  <ProfileCard {...member} enableTilt={false} />
+                                ))}
+                              </div>
+                            </noscript>
+                          )}
+                        </>
                       ) : (
                         <p class="team-accordion-empty">
                           New profiles are joining this office soon.
@@ -913,7 +916,6 @@ const teamSectionLinks = [
     overflow: hidden;
   }
 
-  .team-card-grid,
   .team-accordion-empty {
     margin: 0 0.25rem 2.5rem;
   }
@@ -924,23 +926,6 @@ const teamSectionLinks = [
     color: var(--accordion-muted);
     font-size: 1rem;
     font-weight: 900;
-  }
-
-  /* ---------- Equal-height profile card grid ---------- */
-  .team-card-grid {
-    align-items: stretch;
-  }
-
-  :global(.team-card-grid astro-island) {
-    display: block;
-    width: 100%;
-    min-width: 0;
-  }
-
-  @media (min-width: 768px) {
-    .team-card-grid {
-      grid-auto-rows: 1fr;
-    }
   }
 
   :global(.team-card-wrap) {

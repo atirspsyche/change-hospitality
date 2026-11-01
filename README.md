@@ -12,6 +12,7 @@ Premium Astro website concept for Change Hospitality, focused on editorial luxur
 - Role-specific candidate applications with server-validated CV attachments and consultant email routing.
 - Sanity-managed job listings, team profiles and environmental impact numbers, with a standalone Studio in `studio/`.
 - Team cards retain their hover effects, with direct email/call shortcuts and an accessible sliding biography sheet. Notes scroll inside the card without resizing the grid; Escape or Show less closes the sheet, and reduced-motion preferences disable its animation.
+- Team offices fetch their member data once at build time and render eight cards per page in a single `client:visible` island per office. Off-page cards and portraits stay out of the live DOM; each office remembers its page when reopening. The themed controls support keyboard navigation, screen-reader range announcements and a compact mobile layout. Remaining profiles are available without JavaScript.
 - Shareable `/jobs/[slug]/` detail routes with assigned consultant contacts and role-specific stepped applications.
 - Reusable recruiter staffing brief with accessible multi-select controls, responsive motion and SMTP delivery.
 - SEO metadata, Open Graph tags, JSON-LD and sitemap generation.
@@ -24,7 +25,7 @@ Premium Astro website concept for Change Hospitality, focused on editorial luxur
 | `npm run dev` | Start local development at `localhost:4321` |
 | `npm run build` | Build the production site to `dist/` |
 | `npm test` | Run the Vercel function and SMTP configuration tests |
-| `npm run test:e2e` | Run homepage scroll/reload, franchising and team-card regressions in desktop and mobile Chromium |
+| `npm run test:e2e` | Run homepage scroll/reload, franchising, team-card and office-pagination regressions in desktop and mobile Chromium |
 | `npm run preview` | Preview the built site locally |
 
 ## Email Flows
@@ -179,13 +180,15 @@ All four story content actions use the shared `PrimaryButton` without React hydr
 
 The team page always lists London, Manchester, then Hampshire, using stable office slugs so existing Sanity display-order values and office renames do not change that sequence. Additional active offices follow, sorted by their display order and then name; inactive offices remain hidden.
 
+Within each office, profiles follow **Locations > office > Team display order** in Sanity. Editors add references to published members from that office and drag leadership to the top; the selected order is applied before the eight-person pagination. New or unlisted members remain visible at the end alphabetically. Offices without a list retain alphabetical display. Initialize existing rosters with the dry-run-first `npm --prefix studio run seed:team-order` workflow in [studio/README.md](studio/README.md#team-display-order).
+
 Profile cards consistently use the cream surface. The Sanity profile label colour controls only the small label over the portrait. Open office panels cycle through mint, flame, blush and citron, never cream. The team page uses a slightly darker, token-derived flame surface with off-white text for AA contrast, including the role badges. Closed panels retain dark text on paper, and the numbered badges keep their own light surface and dark text.
 
 The hero's "Meet the team" link uses the shared `PrimaryButton` with a cocoa face and no shadow, without additional client-side JavaScript.
 
 ## Sanity Studio
 
-Sanity Studio is maintained as an independent project in `studio/` and defaults to client project `thyjjqzv`, dataset `production`. Website builds and the application API share configurable project settings; Studio uses corresponding `SANITY_STUDIO_` settings. Editors can manage jobs, profiles, offices, impact figures, testimonials, client logos, public contacts, policy Drive links and temporary-worker guidance. Referenced team members cannot be deleted while jobs still use them.
+Sanity Studio is maintained as an independent project in `studio/` and defaults to client project `thyjjqzv`, dataset `production`. Website builds and the application API share configurable project settings; Studio uses corresponding `SANITY_STUDIO_` settings. Editors can manage jobs, profiles, offices, impact figures, testimonials, client logos, public contacts, policy Drive links and temporary-worker guidance. Referenced team members cannot be deleted while jobs or office order lists still use them.
 
 Portraits and client logos are optimised during the static build and emitted with the deployment, rather than delivered from Sanity to each visitor. Upload limits are 2 MiB for portraits and 250 KiB for logos. Full biographies allow 5,000 characters; unconfirmed contacts are optional. The importer defaults to a no-write dry run and preserves client edits. See [studio/README.md](studio/README.md#client-production-handoff) for access checks, import approval, draft review, verification, webhooks and coordinated cutover.
 
@@ -206,7 +209,7 @@ npm run deploy
 
 The deployed `*.sanity.studio` URL uses Sanity login and project roles. Uploaded team portraits are preferred; the external portrait URL field remains available for the imported starter content.
 
-Because the site is statically generated, publishing in Studio requires a new Vercel deployment before the public pages change. Configure a Vercel Deploy Hook and a Sanity webhook for document creates, updates and deletes on `job` and `consultant` documents.
+Because the site is statically generated, publishing in Studio requires a new Vercel deployment before the public pages change. Configure a Vercel Deploy Hook and a Sanity webhook for document creates, updates and deletes on `job`, `consultant` and `location` documents, including published team-order changes.
 
 ## Illustrated Menu Control
 

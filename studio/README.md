@@ -89,6 +89,28 @@ Locations are independent Sanity documents with an **Active office** switch, **H
 
 The team page reads published active locations and automatically creates an accordion for each, including offices that do not yet have profiles. Members are matched by location document ID, so renaming an office does not break assignments. Inactive offices and their assigned profiles are not shown on the team page. The shared `getActiveLocations()` query is available for other office-based views; job vacancy location fields remain separate.
 
+### Team Display Order
+
+Open **Locations > office > Team display order** to add references to that office's published profiles, then drag them into the preferred sequence (CEO/founder, management, remaining team). Existing profile previews show the name, job title, office and uploaded portrait. The list uses Sanity's native sortable array, with no ranking numbers or extra plugin. Each office has an independent order; bios, job references and office assignments are unchanged.
+
+The picker is restricted to the current office and publish validation rejects duplicates, missing/unpublished profiles and people assigned elsewhere. Publish a new member with their office selected before adding them here. New or unlisted members still appear at the end alphabetically, so forgetting to rank someone does not hide their profile. Missing or empty lists preserve alphabetical display. The order is applied before pagination.
+
+To populate existing rosters once, run from the repository root:
+
+```sh
+npm --prefix studio run seed:team-order
+```
+
+This is a **no-write dry run** against the client project. It reads published members and prepares alphabetical reference lists only for offices with members and no existing list. After reviewing and approving the target, apply:
+
+```sh
+npm --prefix studio run seed:team-order -- -- --apply --project=thyjjqzv
+```
+
+The initializer preserves existing lists (including deliberately empty ones), refuses offices with pending drafts, uses revision-checked atomic patches, and verifies the saved sequence and office membership. Rerunning does not reset editorial ordering. Run it after importing the roster; it does not guess seniority from job titles or change member documents.
+
+When moving someone, publish their new **Office location**, remove their reference from the old office order, and add/reposition them in the new office order. Stale old-office references cannot move a profile back; the website always uses the member's current office assignment. Before deleting a member, remove their office-order references and any job references.
+
 ### Initial Population
 
 `npm run seed:locations` uses the signed-in Sanity CLI user to create 56 published location documents: all 55 English cities from the [Cabinet Office list](https://www.gov.uk/government/publications/list-of-cities/list-of-cities-html), plus Hampshire, which is a county rather than a city. London, Hampshire and Manchester start active, in that order; London is head office. The other cities start inactive.
@@ -99,7 +121,8 @@ The seed uses stable document IDs and `createIfNotExists`, so rerunning it does 
 
 1. In **Locations**, enable **Active office** for a city, set the introduction and display order if needed, and **Publish**. Editors can also create new locations beyond the seed list; give each a unique slug.
 2. Open each team member, select their **Office location**, and **Publish**. Older documents with a plain-text location may show an invalid-type warning; reset that field and select the referenced location. Old `division` values are no longer used.
-3. Rebuild or redeploy the Astro website after publishing location or team changes.
+3. In **Locations > office > Team display order**, add members and drag them into the preferred sequence, then **Publish**.
+4. Rebuild or redeploy the Astro website after publishing location or team changes.
 
 No website code change is needed to add an office. The website is static, so Content Lake changes are visible on the public site after its next build, not immediately on publish. To automate that step, configure a Sanity webhook for location and consultant changes that calls a Vercel deploy hook; this is not configured by the seed or Studio deployment.
 

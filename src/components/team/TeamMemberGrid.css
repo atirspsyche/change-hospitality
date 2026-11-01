@@ -1,0 +1,140 @@
+.team-member-directory {
+  margin: 0 0.25rem 2.5rem;
+  padding-inline: 0.75rem;
+}
+
+.team-card-grid {
+  align-items: stretch;
+  scroll-margin-top: 2rem;
+}
+
+.team-card-grid:focus-visible {
+  outline: 2px solid var(--accordion-foreground);
+  outline-offset: 5px;
+  border-radius: 1rem;
+}
+
+.team-pagination-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid color-mix(in srgb, var(--accordion-foreground) 20%, transparent);
+}
+
+.team-pagination-range {
+  color: var(--accordion-foreground);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.team-pagination-range strong {
+  font-weight: 900;
+}
+
+.team-pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem;
+  border: 1px solid color-mix(in srgb, var(--color-cocoa) 18%, transparent);
+  border-radius: 999px;
+  background: var(--color-cream);
+  color: var(--color-cocoa);
+}
+
+.team-pagination-pages {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.team-page-button {
+  display: flex;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-cocoa);
+  font-size: 0.75rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background-color 180ms ease, color 180ms ease, transform 220ms var(--ease-luxury);
+}
+
+.team-page-button--direction {
+  padding-inline: 0.85rem;
+}
+
+.team-page-button:not(:disabled):hover {
+  background: color-mix(in srgb, var(--color-cocoa) 10%, var(--color-cream));
+  transform: translateY(-1px);
+}
+
+.team-page-button[aria-current='page'],
+.team-page-button[aria-current='page']:not(:disabled):hover {
+  background: var(--color-cocoa);
+  color: var(--color-cream);
+}
+
+.team-page-button:focus-visible {
+  outline: 2px solid var(--color-cocoa);
+  outline-offset: 2px;
+}
+
+.team-page-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.team-pagination-ellipsis {
+  min-width: 1rem;
+  text-align: center;
+}
+
+.team-pagination-position {
+  display: none;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 768px) {
+  .team-card-grid {
+    grid-auto-rows: 1fr;
+  }
+}
+
+@media (max-width: 639px) {
+  .team-pagination {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .team-pagination-pages,
+  .team-pagination-direction-label {
+    display: none;
+  }
+
+  .team-pagination-position {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .team-page-button {
+    transition: none;
+  }
+
+  .team-page-button:not(:disabled):hover {
+    transform: none;
+  }
+}

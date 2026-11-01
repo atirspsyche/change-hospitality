@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { homeStory } from "../../src/data/homeStory.ts";
+import { getStoryFrameUrl, homeStory } from "../../src/data/homeStory.ts";
 import { frameForProgress, storyTimeline } from "../../src/lib/homeStoryTimeline.ts";
 
 async function waitForStory(page) {
@@ -23,6 +23,34 @@ async function readStory(page) {
         .map((overlay) => overlay.dataset.storyOverlay),
     };
   }, storyTimeline.scrollScreens);
+}
+
+async function expectNaturalSequenceFrame(page, frame) {
+  const pixels = await page.locator(".story-canvas").evaluate(async (canvas, src) => {
+    const image = new Image();
+    image.src = src;
+    await image.decode();
+    const reference = document.createElement("canvas");
+    reference.width = canvas.width;
+    reference.height = canvas.height;
+    const drawWidth = canvas.height / image.naturalHeight * image.naturalWidth;
+    reference.getContext("2d").drawImage(image, (canvas.width - drawWidth) / 2, 0, drawWidth, canvas.height);
+    const expected = reference.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data;
+    const actual = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data;
+    let compared = 0;
+    let mismatches = 0;
+    for (let pixelIndex = 0; pixelIndex < expected.length; pixelIndex += 4 * 97) {
+      if (expected[pixelIndex + 3] !== 255) continue;
+      compared += 1;
+      if ([0, 1, 2].some((channel) => Math.abs(actual[pixelIndex + channel] - expected[pixelIndex + channel]) > 2)) {
+        mismatches += 1;
+      }
+    }
+    return { compared, mismatchRatio: mismatches / compared, sourceWidth: image.naturalWidth };
+  }, getStoryFrameUrl(frame));
+  expect(pixels.compared).toBeGreaterThan(100);
+  expect(pixels.sourceWidth).toBe(frame < 282 ? 2500 : 1920);
+  expect(pixels.mismatchRatio, `natural-aspect pixels at frame ${frame}`).toBeLessThan(0.005);
 }
 
 const positions = [
@@ -102,7 +130,8 @@ test("new sequence renders coded shells and holds the cleared plate for both exi
   page.on("request", (request) => {
     const path = new URL(request.url()).pathname;
     if (path.startsWith(homeStory.desktopFramePrefix)) {
-      requestedFrames.add(Number(path.slice(homeStory.desktopFramePrefix.length, -5)));
+      const frame = Number(path.slice(homeStory.desktopFramePrefix.length, -5));
+      if (Number.isInteger(frame)) requestedFrames.add(frame);
     }
   });
   await page.goto("/");
@@ -113,6 +142,9 @@ test("new sequence renders coded shells and holds the cleared plate for both exi
     { name: "shell-exit", frame: 138, scene: "shells" },
     { name: "plate-hand-entrance", frame: 254, scene: "sequence" },
     { name: "plate-hand-rotation", frame: 266, scene: "sequence" },
+    { name: "plate-hand-extended-sleeve", frame: 280, scene: "sequence" },
+    { name: "plate-hand-last-wide-frame", frame: 281, scene: "sequence" },
+    { name: "plate-cleared-boundary", frame: 282, scene: "plate" },
     ...["plate-center", "plate-center-next"].map((id) => {
       const overlay = storyTimeline.overlayWindows.find((beat) => beat.id === id);
       return { name: id, frame: 282, scene: "plate", progress: (overlay.progressStart + overlay.progressEnd) / 2, overlay: id };
@@ -131,6 +163,7 @@ test("new sequence renders coded shells and holds the cleared plate for both exi
     const state = await readStory(page);
     expect(state.scene).toBe(checkpoint.scene);
     if (checkpoint.overlay) expect(state.overlays).toEqual([checkpoint.overlay]);
+    if (checkpoint.frame >= 249 && checkpoint.frame <= 282) await expectNaturalSequenceFrame(page, checkpoint.frame);
     const pixels = await page.locator(".story-canvas").evaluate((canvas) => {
       const data = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data;
       const colors = new Set();

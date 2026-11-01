@@ -53,7 +53,8 @@ const activeLocationsQuery = `
     active,
     isHeadOffice,
     description,
-    sortOrder
+    sortOrder,
+    "teamOrder": teamOrder[]._ref
   }
 `;
 

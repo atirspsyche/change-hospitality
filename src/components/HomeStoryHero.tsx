@@ -18,6 +18,7 @@ import {
 import { frameForProgress, storyTimeline, clamp } from "../lib/homeStoryTimeline";
 import {
   getCartonCopyBounds,
+  getStoryLayerBounds,
   getStoryScene,
   sequenceFrameForPosition,
   storyKeyFrames,
@@ -446,8 +447,11 @@ export default function HomeStoryHero() {
       context.globalAlpha = 1;
       context.fillStyle = backgroundColor;
       context.fillRect(0, 0, canvas.width, canvas.height);
-      scene.layers.forEach((layer, index) => {
+      scene.layers.forEach((sceneLayer, index) => {
         const image = images[index]!;
+        const sourceWidth = image instanceof HTMLImageElement ? image.naturalWidth : image.width;
+        const sourceHeight = image instanceof HTMLImageElement ? image.naturalHeight : image.height;
+        const layer = getStoryLayerBounds(sceneLayer, sourceWidth, sourceHeight, canvas.width);
         context.save();
         context.globalAlpha = layer.opacity ?? 1;
         if (layer.rotation) {
@@ -456,8 +460,6 @@ export default function HomeStoryHero() {
           context.translate(-layer.rotation.x, -layer.rotation.y);
         }
         if (layer.crop) {
-          const sourceWidth = image instanceof HTMLImageElement ? image.naturalWidth : image.width;
-          const sourceHeight = image instanceof HTMLImageElement ? image.naturalHeight : image.height;
           const sx = sourceWidth / homeStory.animation.referenceWidth;
           const sy = sourceHeight / homeStory.animation.referenceHeight;
           context.drawImage(image,

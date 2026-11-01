@@ -1,4 +1,5 @@
-import { defineField, defineType } from 'sanity';
+import { defineArrayMember, defineField, defineType, getPublishedId } from 'sanity';
+import { validateTeamOrder } from '../lib/teamOrder.ts';
 
 export const location = defineType({
   name: 'location',
@@ -39,6 +40,27 @@ export const location = defineType({
       rows: 2,
       description: 'Optional description under this location on the team page.',
       validation: (rule) => rule.max(180),
+    }),
+    defineField({
+      name: 'teamOrder',
+      title: 'Team display order',
+      type: 'array',
+      description: 'Add published members from this office, then drag into website order, with leadership first. New or unlisted members still appear at the end alphabetically. Publish and rebuild to update the website.',
+      options: { layout: 'list', sortable: true },
+      of: [
+        defineArrayMember({
+          type: 'reference',
+          to: [{ type: 'consultant' }],
+          options: {
+            disableNew: true,
+            filter: ({ document }) => ({
+              filter: 'location._ref == $locationId',
+              params: { locationId: getPublishedId(document._id) },
+            }),
+          },
+        }),
+      ],
+      validation: (rule) => rule.unique().custom(validateTeamOrder),
     }),
     defineField({
       name: 'sortOrder',
