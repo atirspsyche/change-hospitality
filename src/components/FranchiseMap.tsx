@@ -1,14 +1,17 @@
 import { Popover, PopoverButton, PopoverGroup, PopoverPanel } from "@headlessui/react";
 import { useEffect, useId, useState, type CSSProperties } from "react";
-import { franchiseLocations, type FranchiseLocation } from "../data/franchiseLocations";
+import type { FranchiseLocation } from "../data/franchiseLocations";
+import { telephoneHref } from "../data/editorial";
 import "./FranchiseMap.css";
 
 function OfficeMarker({
   location,
   open,
+  close,
 }: {
   location: FranchiseLocation;
   open: boolean;
+  close: (element?: HTMLElement) => void;
 }) {
   const panelId = useId();
   const [previewing, setPreviewing] = useState(false);
@@ -27,6 +30,13 @@ function OfficeMarker({
     <div
       className="office-marker__content"
       data-visible={visible || undefined}
+      onBlur={(event) => {
+        const next = event.relatedTarget;
+        if (open && next instanceof HTMLElement && !event.currentTarget.contains(next)) {
+          setPreviewing(false);
+          close(next);
+        }
+      }}
       onPointerEnter={(event) => {
         if (event.pointerType === "mouse") setPreviewing(true);
       }}
@@ -69,15 +79,20 @@ function OfficeMarker({
         <svg className="office-marker__underline" viewBox="0 0 180 12" fill="none" aria-hidden="true">
           <path d="M3 6C44 0 111 10 177 4M22 11C68 6 113 8 151 9" />
         </svg>
-        <p className="office-marker__address">{location.address}<br />{location.name}, United Kingdom</p>
+        <p className="office-marker__address">{location.address}</p>
+        <a
+          className="office-marker__phone"
+          href={telephoneHref(location.phone)}
+          aria-label={`Call ${location.name} office on ${location.phone}`}
+        >{location.phone}</a>
       </PopoverPanel>
     </div>
   );
 }
 
-export default function FranchiseMap() {
+export default function FranchiseMap({ locations, compact = false }: { locations: FranchiseLocation[]; compact?: boolean }) {
   return (
-    <figure className="franchise-map" aria-label="Change Hospitality office locations" data-franchise-map>
+    <figure className={`franchise-map${compact ? " franchise-map--compact" : ""}`} aria-label="Change Hospitality office locations" data-franchise-map>
       <div className="franchise-map__heading" aria-hidden="true">
         <span>Good people.<br />Local knowledge.</span>
         <svg viewBox="0 0 90 70" fill="none" focusable="false">
@@ -100,9 +115,9 @@ export default function FranchiseMap() {
             transform="translate(813 -546) rotate(90)"
           />
         </svg>
-        {franchiseLocations.map((location, index) => (
+        {locations.map((location, index) => (
           <Popover
-            key={location.name}
+            key={location.id}
             className={`office-marker office-marker--${location.labelSide}${location.headOffice ? " office-marker--hq" : ""}`}
             style={{
               "--marker-x": `${location.x}%`,
@@ -111,7 +126,7 @@ export default function FranchiseMap() {
             } as CSSProperties}
             data-story-map-marker
           >
-            {({ open }) => <OfficeMarker location={location} open={open} />}
+            {({ open, close }) => <OfficeMarker location={location} open={open} close={close} />}
           </Popover>
         ))}
       </PopoverGroup>
@@ -121,10 +136,11 @@ export default function FranchiseMap() {
       </figcaption> */}
       <noscript>
         <ul className="franchise-map__directory">
-          {franchiseLocations.map((location) => (
-            <li key={location.name}>
+          {locations.map((location) => (
+            <li key={location.id}>
               <strong>{location.name}{location.headOffice ? " (Head office)" : ""}</strong>
               {" "}{location.address}
+              {" "}<a href={telephoneHref(location.phone)} aria-label={`Call ${location.name} office on ${location.phone}`}>{location.phone}</a>
             </li>
           ))}
         </ul>

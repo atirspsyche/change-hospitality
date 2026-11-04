@@ -1,6 +1,7 @@
 import { defineField, defineType } from 'sanity';
 import { logoSource } from '../lib/mediaSources.ts';
 import { validateImage } from '../lib/mediaRules.ts';
+import { hasPolicyText, policySlugPattern, policyThemes } from '../../src/lib/policies.ts';
 
 const order = () => defineField({ name: 'sortOrder', title: 'Display order', type: 'number', initialValue: 0, validation: (rule) => rule.integer().min(0) });
 const visible = () => defineField({ name: 'visible', title: 'Visible on website', type: 'boolean', initialValue: true });
@@ -30,15 +31,31 @@ export const siteSettings = defineType({ name: 'siteSettings', title: 'Public co
   defineField({ name: 'socialLinks', title: 'Social links', type: 'array', of: [{ type: 'object', fields: [text('label', 'Label'), defineField({ name: 'href', title: 'URL', type: 'url', validation: (rule) => rule.required().uri({ scheme: ['https'] }) })] }] }),
 ] });
 
-export const policy = defineType({ name: 'policy', title: 'Policy link', type: 'document', fields: [
-  text('label', 'Policy title'),
-  defineField({ name: 'href', title: 'Public Google Drive link', type: 'url', validation: (rule) => rule.required().custom((value) => {
+export const policy = defineType({ name: 'policy', title: 'Policy page', type: 'document', fields: [
+  text('label', 'Footer link label'),
+  text('title', 'Page title'),
+  defineField({ name: 'slug', title: 'Page URL slug', type: 'slug', options: { source: 'title', maxLength: 96 },
+    description: 'Appears after /policies/. Keep published slugs unchanged to preserve existing links.',
+    validation: (rule) => rule.required().custom((value) => !value?.current
+      || (value.current.length <= 96 && policySlugPattern.test(value.current)) ? true : 'Use lowercase letters, numbers and single hyphens only (up to 96 characters).') }),
+  defineField({ name: 'description', title: 'SEO description', type: 'text', rows: 3,
+    validation: (rule) => rule.required().max(180).custom((value) => hasPolicyText(value) ? true : 'Enter a policy summary for search results.') }),
+  defineField({ name: 'theme', title: 'Cover colour theme', type: 'string', initialValue: 'cocoa',
+    options: { list: Object.entries(policyThemes).map(([value, theme]) => ({ title: theme.label, value })) },
+    description: 'B-Corp green is reserved for environmental and sustainability policies.',
+    validation: (rule) => rule.required().custom((value) => value && Object.hasOwn(policyThemes, value) ? true : 'Choose one of the policy colour themes.') }),
+  defineField({ name: 'body', title: 'Policy content (Markdown)', type: 'text', rows: 30,
+    description: 'The page title is added automatically. Use ## for section headings, **bold**, - for bullet lists, and 1. for numbered lists. Indent nested lists by four spaces. Raw HTML is not displayed.',
+    validation: (rule) => rule.required().custom((value) => hasPolicyText(value) ? true : 'Enter the policy content in Markdown.') }),
+  defineField({ name: 'href', title: 'Original PDF link (optional reference)', type: 'url',
+    description: 'Retained for reference only. Website footer links now open the policy page, not this PDF.',
+    validation: (rule) => rule.custom((value) => {
     if (!value) return true;
     try { const url = new URL(value); return url.protocol === 'https:' && url.hostname === 'drive.google.com' ? true : 'Use a public HTTPS Google Drive link.'; }
     catch { return 'Enter a valid Google Drive URL.'; }
   }) }),
   order(), visible(),
-] });
+], preview: { select: { title: 'title', subtitle: 'label' } } });
 
 export const temporaryWork = defineType({ name: 'temporaryWork', title: 'Temporary worker guidance', type: 'document', fields: [
   defineField({ name: 'benefits', title: 'Benefits', type: 'array', validation: (rule) => rule.required().min(1), of: [{ type: 'object', fields: [text('title', 'Title'), defineField({ name: 'text', title: 'Description', type: 'text', validation: (rule) => rule.required().max(3000) })] }] }),

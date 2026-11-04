@@ -25,9 +25,9 @@ test.beforeEach(async ({ page }) => {
 test("the header matches the loading-screen logo without shadows or borders", async ({ page }, testInfo) => {
   const brand = page.getByRole("link", { name: "Change Hospitality home", exact: true }).first();
   const logo = brand.getByRole("img", { name: "Change Hospitality" });
-  await expect(logo).toHaveAttribute("src", "/change-hospitality-logo-new.svg");
-  await expect(logo).toHaveJSProperty("naturalWidth", 2000);
-  await expect(logo).toHaveJSProperty("naturalHeight", 2000);
+  await expect(logo.locator("image")).toHaveAttribute("href", "/new-change-logo.svg");
+  await expect(logo).toHaveAttribute("viewBox", "62 100 110 39");
+  await expect(logo).toHaveAttribute("preserveAspectRatio", "xMidYMid meet");
   await expect(brand).toHaveCSS("filter", "none");
   await expect(logo).toHaveCSS("filter", "brightness(0)");
   await expect(logo).toHaveCSS("opacity", "0.85");
@@ -48,8 +48,10 @@ test("the header matches the loading-screen logo without shadows or borders", as
     const toggleBounds = await page.locator(toggleSelector).boundingBox();
     expect(bounds.width).toBeGreaterThanOrEqual(136);
     expect(bounds.width).toBeLessThanOrEqual(208);
-    expect(bounds.width).toBeCloseTo(bounds.height, 1);
-    expect(bounds.width / brandBounds.height).toBeCloseTo(130 / 43, 2);
+    expect(bounds.width).toBeCloseTo(brandBounds.width, 1);
+    expect(bounds.height).toBeCloseTo(brandBounds.height, 1);
+    expect(bounds.width / brandBounds.height).toBeCloseTo(110 / 39, 2);
+    if (width >= 768) expect(bounds.width).toBeGreaterThanOrEqual(208);
     expect(bounds.x).toBeCloseTo(brandBounds.x, 1);
     expect(bounds.y + bounds.height / 2).toBeCloseTo(brandBounds.y + brandBounds.height / 2, 1);
     expect(brandBounds.x).toBeGreaterThanOrEqual(0);
@@ -66,8 +68,9 @@ test("the header matches the loading-screen logo without shadows or borders", as
   await expect(logo).toHaveCSS("filter", "brightness(0)");
 
   await page.goto("/");
-  const loadingLogo = page.locator(".loading-brand img");
-  await expect(loadingLogo).toHaveAttribute("src", await logo.getAttribute("src"));
+  const loadingLogo = page.locator(".loading-brand [role='img']");
+  await expect(loadingLogo.locator("image")).toHaveAttribute("href", await logo.locator("image").getAttribute("href"));
+  await expect(loadingLogo).toHaveAttribute("viewBox", await logo.getAttribute("viewBox"));
   await expect(loadingLogo).toHaveCSS("filter", await logo.evaluate(image => getComputedStyle(image).filter));
   await expect(loadingLogo).toHaveCSS("opacity", await logo.evaluate(image => getComputedStyle(image).opacity));
 });
@@ -106,7 +109,8 @@ test("the logo hover is springy without moving its link and respects motion pref
   await page.emulateMedia({ reducedMotion: "reduce" });
   await brand.hover();
   await expect(artwork).toHaveCSS("transform", "none");
-  await expect(artwork).toHaveCSS("transition-duration", "0s");
+  expect(await artwork.evaluate(element =>
+    Number.parseFloat(getComputedStyle(element).transitionDuration))).toBeLessThanOrEqual(0.001);
   expect(await brand.boundingBox()).toEqual(initialBounds);
 });
 

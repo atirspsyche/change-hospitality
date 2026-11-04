@@ -20,6 +20,20 @@ test("jobs arrival and mode switching download no gallery photos or Sanity image
   await page.goto("/jobs/");
   await expect(page.locator("[data-jobs-mode-switch]")).toHaveAttribute("data-ready", "true");
   await expect(page.locator(photoSelector)).toHaveCount(6);
+  await expect(page.locator("#gallery-title")).toHaveText("Where your next shift could take you");
+  await expect(page.locator(".storyboard-gallery-copy header p")).toHaveText("People behind great hospitality");
+  await expect(page.locator(".storyboard-gallery-intro")).toHaveText(
+    "Iconic London venues, stadiums, theatres, festivals and private dining rooms: a few frames of our people behind some of the best service in the country.",
+  );
+  expect(await page.locator("template[data-gallery-image]").evaluateAll((templates) =>
+    templates.map((template) => template.content.querySelector("img").alt))).toEqual([
+    "change hospitality waitress serving at wedding",
+    "front of house team behind the bar at Wimbledon games",
+    "change hospitality bartender mixing drinks at Bacardi arena at Wireless festival",
+    "reception staff at social pantry event",
+    "waitress pouring drinks at private members club",
+    "chef and waiting staff for christmas at claridges",
+  ]);
   const sources = await page.locator("template[data-gallery-image]").evaluateAll((templates) =>
     templates.flatMap((template) => {
       const image = template.content.querySelector("img");

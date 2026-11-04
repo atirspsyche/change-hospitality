@@ -40,7 +40,7 @@ const pageSchemas = Array.isArray(structuredData) ? structuredData : [structured
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content={`width=device-width, initial-scale=1${loadStory ? ', viewport-fit=cover' : ''}`} />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -60,7 +60,7 @@ const pageSchemas = Array.isArray(structuredData) ? structuredData : [structured
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImage} />
     {[agencySchema, ...pageSchemas].map((schema) => (
-      <script type="application/ld+json" set:html={JSON.stringify(schema)}></script>
+      <script type="application/ld+json" set:html={JSON.stringify(schema).replace(/</g, '\\u003c')}></script>
     ))}
     <ClientRouter />
   </head>

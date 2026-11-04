@@ -1,10 +1,11 @@
 ---
 import EggMoment from './EggMoment.astro';
+import SiteLogo from './SiteLogo.astro';
 ---
 
 <div class="story-loading-screen" data-story-loading-screen aria-label="Loading Change Hospitality">
   <div class="loading-brand">
-    <img src="/change-hospitality-logo-new.svg" alt="Change Hospitality" width="208" height="208" loading="eager" />
+    <SiteLogo />
   </div>
   <div class="loading-centre">
     <p class="loading-eyebrow">A little change is on the way</p>
@@ -19,7 +20,7 @@ import EggMoment from './EggMoment.astro';
       <span data-loading-percent>0%</span>
     </div>
   </div>
-  <p class="loading-signoff">Good people. Great hospitality.</p>
+  <p class="loading-signoff">We&rsquo;re good eggs</p>
 </div>
 
 <script is:inline data-astro-rerun>
@@ -109,6 +110,12 @@ import EggMoment from './EggMoment.astro';
     }
   }
 
+  @media screen and (max-width: 767px) and (prefers-reduced-motion: no-preference), screen and (max-width: 1023px) and (max-height: 500px) and (pointer: coarse) and (prefers-reduced-motion: no-preference) {
+    html:not([data-home-story-fallback="true"]) .story-experience:not(.is-failed) {
+      min-height: calc(100svh + var(--story-scroll-screens) * 100svh);
+    }
+  }
+
   html[data-story-loading],
   html[data-story-loading] body {
     overflow: hidden !important;
@@ -145,18 +152,8 @@ import EggMoment from './EggMoment.astro';
   .loading-brand {
     position: relative;
     width: 13rem;
-    height: 4.3rem;
+    aspect-ratio: 110 / 39;
     overflow: hidden;
-  }
-
-  .loading-brand img {
-    position: absolute;
-    top: 50%;
-    width: 100%;
-    height: auto;
-    transform: translateY(-50%);
-    filter: brightness(0);
-    opacity: 0.85;
   }
 
   .loading-centre { align-self: center; width: min(100%, 25rem); padding: 1rem 0 2rem; }
@@ -172,7 +169,7 @@ import EggMoment from './EggMoment.astro';
 
   @media (max-height: 650px) {
     .story-loading-screen { padding-block: 0.75rem; }
-    .loading-brand { height: 3rem; width: 10rem; }
+    .loading-brand { width: 10rem; }
     .loading-centre { padding-block: 0.5rem; }
     .loading-illustration { width: 10rem; margin-top: 0.25rem; }
     .loading-title { font-size: 1.8rem; }

@@ -77,6 +77,7 @@
   --color-mist: #B8C3CA;
   --color-paper: #F4F1EF;
   --color-ink: #1D1D1B;
+  --color-carton-ink: #544D44;
   --font-serif: "Clash Display", Helvetica, Arial, sans-serif;
   --font-display: "Clash Display", Helvetica, Arial, sans-serif;
   --font-hero: "Cherry Cream Soda", "Clash Display", Helvetica, Arial, sans-serif;
@@ -103,6 +104,7 @@
   --color-mist: #B8C3CA;
   --color-paper: #F4F1EF;
   --color-ink: #1D1D1B;
+  --color-carton-ink: #544D44;
   --ease-luxury: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-cartoon: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -117,8 +119,9 @@ html.lenis body {
   height: auto;
 }
 
-.lenis.lenis-smooth {
-  scroll-behavior: auto;
+/* GSAP's temporary scroll resets must stay instant, including between Lenis animations. */
+html.lenis {
+  scroll-behavior: auto !important;
 }
 
 body {

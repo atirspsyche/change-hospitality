@@ -1,0 +1,184 @@
+---
+import { policyThemes, type PolicyPage } from '../lib/policies';
+import { renderPolicyMarkdown } from '../lib/policyMarkdown';
+
+interface Props {
+  policy: PolicyPage;
+}
+
+const { policy } = Astro.props;
+const theme = policyThemes[policy.theme];
+const html = await renderPolicyMarkdown(policy.body);
+---
+
+<article class="policy-content" aria-labelledby="policy-title" data-policy-content>
+  <header
+    class="policy-cover"
+    style={{ backgroundColor: theme.background, color: theme.foreground }}
+    transition:name={`policy-shell-${policy.slug.current}`}
+    data-policy-cover
+  >
+    <div class="policy-cover-inner">
+      <p class="policy-eyebrow">Change Hospitality</p>
+      <h1 id="policy-title" transition:name={`policy-title-${policy.slug.current}`}>{policy.title}</h1>
+      <a class="policy-read-link" href="#policy-copy">
+        Read policy <span aria-hidden="true">&#8595;</span>
+      </a>
+    </div>
+  </header>
+
+  <div
+    id="policy-copy"
+    class="policy-copy"
+    tabindex="-1"
+    style={{ color: policy.theme === 'bcorp-green' ? theme.background : 'var(--color-cocoa)' }}
+    set:html={html}
+    data-policy-copy
+  />
+</article>
+
+<style>
+  .policy-content {
+    background: var(--color-cream);
+  }
+
+  .policy-cover {
+    display: flex;
+    align-items: flex-end;
+    min-height: min(85svh, 56rem);
+    padding-block: 9rem 4rem;
+  }
+
+  .policy-cover-inner {
+    width: min(100% - 3rem, 80rem);
+    margin-inline: auto;
+  }
+
+  .policy-eyebrow {
+    margin-bottom: 1.25rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    max-width: 17ch;
+    font-size: clamp(2.6rem, 7vw, 7.2rem);
+    font-weight: 650;
+    line-height: 1;
+    letter-spacing: -0.045em;
+    word-spacing: 1rem;
+    overflow-wrap: anywhere;
+    scroll-margin-top: 7rem;
+  }
+
+  .policy-read-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    min-height: 2.75rem;
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 0.3em;
+  }
+
+  .policy-read-link:focus-visible,
+  .policy-copy :global(a:focus-visible) {
+    outline: 2px solid currentColor;
+    outline-offset: 5px;
+  }
+
+  .policy-copy {
+    width: min(100% - 3rem, 70ch);
+    margin-inline: auto;
+    padding-block: clamp(3rem, 6vw, 6rem);
+    font-size: clamp(1rem, 1.4vw, 1.125rem);
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+    scroll-margin-top: 7rem;
+  }
+
+  .policy-copy :global(h1),
+  .policy-copy :global(h2),
+  .policy-copy :global(h3),
+  .policy-copy :global(h4) {
+    margin-block: 2.5rem 1rem;
+    font-size: 1.6em;
+    font-weight: 650;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+    scroll-margin-top: 7rem;
+  }
+
+  .policy-copy :global(h3),
+  .policy-copy :global(h4) {
+    font-size: 1.25em;
+  }
+
+  .policy-copy :global(> :first-child) {
+    margin-top: 0;
+  }
+
+  .policy-copy :global(p),
+  .policy-copy :global(ul),
+  .policy-copy :global(ol) {
+    margin-bottom: 1.4rem;
+  }
+
+  .policy-copy :global(ul),
+  .policy-copy :global(ol) {
+    padding-left: 1.6rem;
+  }
+
+  .policy-copy :global(ul) {
+    list-style-type: disc;
+  }
+
+  .policy-copy :global(ol) {
+    list-style-type: decimal;
+  }
+
+  .policy-copy :global(ol ol) {
+    list-style-type: lower-alpha;
+  }
+
+  .policy-copy :global(li + li) {
+    margin-top: 0.65rem;
+  }
+
+  .policy-copy :global(li > ul),
+  .policy-copy :global(li > ol) {
+    margin-top: 0.75rem;
+  }
+
+  .policy-copy :global(strong) {
+    font-weight: 700;
+  }
+
+  .policy-copy :global(a) {
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .policy-copy :global(hr) {
+    margin-block: 2.5rem;
+    border-color: currentColor;
+    opacity: 0.25;
+  }
+
+  .policy-copy :global(blockquote) {
+    margin-block: 1.5rem;
+    border-left: 3px solid currentColor;
+    padding-left: 1.25rem;
+  }
+
+  @media (min-width: 1024px) {
+    .policy-cover-inner {
+      width: min(100% - 6rem, 80rem);
+    }
+  }
+</style>

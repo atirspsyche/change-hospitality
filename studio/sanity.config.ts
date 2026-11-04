@@ -22,7 +22,7 @@ export default defineConfig({
             S.documentTypeListItem('location').title('Locations'),
             S.documentTypeListItem('client').title('Client logos'),
             S.documentTypeListItem('testimonial').title('Testimonials'),
-            S.documentTypeListItem('policy').title('Policy links'),
+            S.documentTypeListItem('policy').title('Policy pages'),
             ...[['siteSettings', 'public-contacts', 'Public contacts'], ['temporaryWork', 'temporary-work', 'Temporary worker guidance'], ['candidateGallery', 'candidate-gallery', 'Candidate gallery']].map(([type, id, title]) =>
               S.listItem().id(id).title(title).child(S.document().schemaType(type).documentId(id))),
             S.listItem()

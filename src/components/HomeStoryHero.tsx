@@ -7,17 +7,19 @@ import {
 } from "react";
 import { PrimaryButton } from "./Button";
 import FranchiseMap from "./FranchiseMap";
+import type { FranchiseLocation } from "../data/franchiseLocations";
 import {
   getStoryFrameUrl,
   homeStory,
+  homeStoryRecruitmentLine,
   type StoryAction,
   type StoryBeat,
   type StoryColumn,
   type StoryTypography,
 } from "../data/homeStory";
-import { frameForProgress, storyTimeline, clamp } from "../lib/homeStoryTimeline";
+import { frameForProgress, mobileStoryBeats, mobileStoryTimeline, storyTimeline, clamp } from "../lib/homeStoryTimeline";
 import {
-  getCartonCopyBounds,
+  getMobileStoryScene,
   getStoryLayerBounds,
   getStoryScene,
   sequenceFrameForPosition,
@@ -28,6 +30,7 @@ import {
 import "./HomeStoryHero.css";
 
 type DecodedFrame = ImageBitmap | HTMLImageElement;
+const mobileStoryQuery = "(max-width: 767px), (max-width: 1023px) and (max-height: 500px) and (pointer: coarse)";
 
 function getTypographyStyle(typography?: StoryTypography) {
   if (!typography) return undefined;
@@ -88,7 +91,7 @@ function StoryColumnContent({ column }: { column: StoryColumn }) {
   );
 }
 
-function BeatContent({ beat }: { beat: StoryBeat }) {
+function BeatContent({ beat, franchiseLocations }: { beat: StoryBeat; franchiseLocations: FranchiseLocation[] }) {
   const overlay = beat.overlay;
   if (!overlay) return null;
 
@@ -125,6 +128,7 @@ function BeatContent({ beat }: { beat: StoryBeat }) {
   }
 
   const HeadingTag = overlay.layout === "brand" ? "h1" : "h2";
+  const BodyTag = overlay.layout === "brand" ? "h1" : "p";
 
   const copy = (
     <div className="story-copy">
@@ -139,9 +143,9 @@ function BeatContent({ beat }: { beat: StoryBeat }) {
         </HeadingTag>
       )}
       {overlay.body && (
-        <p className="story-body" data-story-reveal={overlay.layout !== "brand" || undefined}>
+        <BodyTag className="story-body" data-story-reveal={overlay.layout !== "brand" || undefined}>
           {overlay.layout === "brand" ? <HeadingWords text={overlay.body} /> : overlay.body}
-        </p>
+        </BodyTag>
       )}
       {overlay.action && <StoryButton action={overlay.action} />}
     </div>
@@ -152,7 +156,7 @@ function BeatContent({ beat }: { beat: StoryBeat }) {
       <div className="story-locations-layout">
         {copy}
         <div className="story-locations-map" data-story-reveal>
-          <FranchiseMap />
+          <FranchiseMap locations={franchiseLocations} />
         </div>
       </div>
     );
@@ -161,7 +165,7 @@ function BeatContent({ beat }: { beat: StoryBeat }) {
   return copy;
 }
 
-function FallbackStory({ className }: { className: string }) {
+function FallbackStory({ className, franchiseLocations }: { className: string; franchiseLocations: FranchiseLocation[] }) {
   return (
     <section className={className} aria-label="Change Hospitality story">
       <figure className="story-fallback-figure">
@@ -181,11 +185,34 @@ function FallbackStory({ className }: { className: string }) {
               key={beat.id}
               style={getTypographyStyle(beat.overlay?.typography)}
             >
-              <BeatContent beat={beat} />
+              <BeatContent beat={beat} franchiseLocations={franchiseLocations} />
             </article>
           ))}
       </div>
     </section>
+  );
+}
+
+function MobileStoryChapters() {
+  return (
+    <div className="story-mobile-overlays">
+      {mobileStoryBeats.filter((beat) => beat.overlay).map((beat) => {
+        const overlay = beat.overlay!;
+        const HeadingTag = overlay.layout === "brand" ? "h1" : "h2";
+        return (
+          <article className="story-mobile-chapter" data-story-overlay={beat.id} key={beat.id}>
+            <div className="story-mobile-lead">
+              {overlay.eyebrow && <p className="story-mobile-eyebrow">{overlay.eyebrow}</p>}
+              <HeadingTag className="story-mobile-heading">{overlay.heading}</HeadingTag>
+            </div>
+            <div className="story-mobile-details">
+              {overlay.body && <p className="story-mobile-body">{overlay.body}</p>}
+              {overlay.action && <StoryButton action={overlay.action} />}
+            </div>
+          </article>
+        );
+      })}
+    </div>
   );
 }
 
@@ -207,7 +234,7 @@ async function mapWithConcurrency<T>(
   await Promise.all(workers);
 }
 
-export default function HomeStoryHero() {
+export default function HomeStoryHero({ franchiseLocations }: { franchiseLocations: FranchiseLocation[] }) {
   const experienceRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -234,7 +261,11 @@ export default function HomeStoryHero() {
     if (!experience || !hero || !canvas || !motionEnabled
       || document.documentElement.dataset.homeStoryFallback === "true") return;
     document.documentElement.dataset.homeStoryProgress = "0";
-    experience.classList.remove("is-failed");
+    experience.classList.remove("is-failed", "is-readable");
+    const mobileOverlays = hero.querySelector<HTMLElement>(".story-mobile-overlays")!;
+    const mobileMap = hero.querySelector<HTMLElement>(".story-mobile-map")!;
+    const mobileChapters = Array.from(mobileOverlays.querySelectorAll<HTMLElement>("[data-story-overlay]"));
+    let isMobileStory = window.matchMedia(mobileStoryQuery).matches;
 
     const notifyReady = () => {
       document.documentElement.dataset.homeStoryReady = "true";
@@ -263,7 +294,7 @@ export default function HomeStoryHero() {
     const spriteNames = Object.keys(homeStory.animation.sprites) as StorySprite[];
     const initialAssetCount = initialFrames.size + spriteNames.length;
     const remainingFrames = storySequenceFrames.filter((frame) => !initialFrames.has(frame));
-    const backgroundColor = getComputedStyle(hero).getPropertyValue("--color-flame").trim();
+    let backgroundColor = getComputedStyle(hero).backgroundColor;
     const sourceDpr = window.devicePixelRatio || 1;
     const prefersLightFrames = window.innerWidth < 768 || sourceDpr <= 1;
     const useMobileFrames =
@@ -289,6 +320,8 @@ export default function HomeStoryHero() {
     let parallaxY = 0;
     let renderFrame = 0;
     let gsapCleanup: (() => void) | undefined;
+    let refreshStory: (() => void) | undefined;
+    let storyHeight = hero.clientHeight;
 
     const renderParallax = () => {
       parallaxFrame = 0;
@@ -437,7 +470,9 @@ export default function HomeStoryHero() {
     const renderScene = () => {
       renderFrame = 0;
       if (destroyed || renderedPosition === requestedPosition) return;
-      const scene = getStoryScene(requestedPosition, canvas.width, canvas.height);
+      const scene = isMobileStory
+        ? getMobileStoryScene(requestedPosition, canvas.width, canvas.height)
+        : getStoryScene(requestedPosition, canvas.width, canvas.height);
       const images = scene.layers.map(({ asset }) => typeof asset === "number"
         ? decodedFrames.get(asset) : decodedSprites.get(asset));
       // Keep the last complete composition during a seek. Never substitute an
@@ -504,13 +539,35 @@ export default function HomeStoryHero() {
       decodeUpcomingFrames();
     };
 
+    const updateMobileLayout = () => {
+      if (!isMobileStory || destroyed) return;
+      const bounds = mobileOverlays.getBoundingClientRect();
+      if (!bounds.height) return;
+      const tallest = (selector: string) => Math.max(...mobileChapters.map((chapter) =>
+        chapter.querySelector<HTMLElement>(selector)!.getBoundingClientRect().height));
+      let leadHeight = tallest(".story-mobile-lead");
+      let detailHeight = tallest(".story-mobile-details");
+      if (bounds.height - leadHeight - detailHeight - 24 < 160) {
+        const active = mobileChapters.find((chapter) => chapter.dataset.storyOverlay === hero.dataset.storyMobileChapter)
+          ?? mobileChapters[0];
+        leadHeight = active.querySelector<HTMLElement>(".story-mobile-lead")!.getBoundingClientRect().height;
+        detailHeight = active.querySelector<HTMLElement>(".story-mobile-details")!.getBoundingClientRect().height;
+      }
+      const stageHeight = bounds.height - leadHeight - detailHeight - 24;
+      if (hero.clientHeight < 480 || stageHeight < 96) {
+        experience.classList.add("is-readable");
+        document.documentElement.dataset.homeStoryFallback = "true";
+        document.dispatchEvent(new Event("home-story-cancel"));
+        notifyReady();
+        return;
+      }
+      hero.style.setProperty("--story-mobile-stage-top", `${bounds.top - hero.getBoundingClientRect().top + leadHeight + 12}px`);
+      hero.style.setProperty("--story-mobile-stage-height", `${stageHeight}px`);
+    };
+
     const resizeCanvas = () => {
+      backgroundColor = getComputedStyle(hero).backgroundColor;
       const bounds = canvas.getBoundingClientRect();
-      const carton = getCartonCopyBounds(bounds.width, bounds.height);
-      hero.style.setProperty("--story-carton-x", `${carton.x}px`);
-      hero.style.setProperty("--story-carton-y", `${carton.y}px`);
-      hero.style.setProperty("--story-carton-width", `${carton.width}px`);
-      hero.style.setProperty("--story-carton-height", `${carton.height}px`);
       const width = Math.max(1, Math.round(bounds.width * renderDpr));
       const height = Math.max(1, Math.round(bounds.height * renderDpr));
       if (canvas.width !== width || canvas.height !== height) {
@@ -557,26 +614,61 @@ export default function HomeStoryHero() {
       ]);
       if (destroyed) return;
       gsap.registerPlugin(ScrollTrigger);
+      refreshStory = () => ScrollTrigger.refresh();
 
       const media = gsap.matchMedia();
       gsapCleanup = () => media.revert();
       media.add({
         desktop: "(min-width: 1024px)",
+        phone: mobileStoryQuery,
         motion: "(prefers-reduced-motion: no-preference)",
       }, (mediaContext) => {
         if (!mediaContext.conditions?.motion) return;
         const desktop = mediaContext.conditions.desktop;
+        isMobileStory = !!mediaContext.conditions.phone;
+        hero.dataset.storyLayout = isMobileStory ? "mobile" : "desktop";
+        const activeTimeline = isMobileStory ? mobileStoryTimeline : storyTimeline;
+        updateMobileLayout();
+        if (destroyed) return;
+        renderedPosition = Number.NaN;
+        resizeCanvas();
+        const allOverlays = Array.from(hero.querySelectorAll<HTMLElement>("[data-story-overlay]"));
         const overlays = Array.from(
-          hero.querySelectorAll<HTMLElement>("[data-story-overlay]"),
+          hero.querySelectorAll<HTMLElement>(isMobileStory
+            ? ".story-mobile-overlays [data-story-overlay]"
+            : ".story-overlays [data-story-overlay]"),
         );
-        gsap.set(overlays, { autoAlpha: 0 });
+        gsap.set(allOverlays, { autoAlpha: 0 });
+        allOverlays.forEach((overlay) => { overlay.inert = isMobileStory || mobileOverlays.contains(overlay); });
+        let activeChapter: string | undefined;
+        let hasSyncedChapter = false;
+        const syncStory = (progress: number) => {
+          requestFrame(frameForProgress(progress, activeTimeline));
+          const chapter = isMobileStory
+            ? activeTimeline.overlayWindows.find((window) => progress >= window.progressStart && progress <= window.progressEnd)?.id
+            : undefined;
+          if (hasSyncedChapter && chapter === activeChapter) return;
+          hasSyncedChapter = true;
+          activeChapter = chapter;
+          hero.dataset.storyMobileChapter = chapter ?? "transition";
+          mobileChapters.forEach((overlay) => { overlay.inert = overlay.dataset.storyOverlay !== chapter; });
+          const showMap = isMobileStory && chapter === "plate-center-next";
+          mobileMap.inert = !showMap;
+          gsap.set(mobileMap, { autoAlpha: showMap ? 1 : 0 });
+          canvas.style.opacity = showMap ? "0" : "";
+          if (isMobileStory) {
+            updateMobileLayout();
+            resizeCanvas();
+          }
+        };
+        syncStory(0);
         const playhead = { progress: 0 };
         const timeline = gsap.timeline({
           scrollTrigger: {
             id: "home-story",
             trigger: hero,
             start: "top top",
-            end: () => `+=${window.innerHeight * storyTimeline.scrollScreens}`,
+            end: () => `+=${(isMobileStory ? hero.clientHeight : window.innerHeight) * activeTimeline.scrollScreens}`,
             pin: true,
             // The story needs one pin on mobile too; omit secondary word
             // choreography and pointer motion there instead of extra pins.
@@ -584,7 +676,11 @@ export default function HomeStoryHero() {
             anticipatePin: 1,
             invalidateOnRefresh: true,
             // Refresh seeks the timeline with tween callbacks suppressed.
-            onRefresh: (trigger) => requestFrame(frameForProgress(trigger.progress)),
+            onRefresh: (trigger) => {
+              hero.dataset.storyPinned = String(trigger.isActive);
+              syncStory(trigger.progress);
+            },
+            onToggle: (trigger) => { hero.dataset.storyPinned = String(trigger.isActive); },
             onEnter: () => {
               isVisible = true;
               void streamRemainingFrames();
@@ -605,15 +701,13 @@ export default function HomeStoryHero() {
             progress: 1,
             duration: 1,
             ease: "none",
-            onUpdate: () => requestFrame(frameForProgress(playhead.progress)),
+            onUpdate: () => syncStory(playhead.progress),
           },
           0,
         );
 
-        storyTimeline.overlayWindows.forEach((overlayWindow) => {
-          const overlay = hero.querySelector<HTMLElement>(
-            `[data-story-overlay="${overlayWindow.id}"]`,
-          );
+        activeTimeline.overlayWindows.forEach((overlayWindow) => {
+          const overlay = overlays.find((element) => element.dataset.storyOverlay === overlayWindow.id);
           if (!overlay) return;
           const words = overlay.querySelectorAll<HTMLElement>(".story-word");
           const supportingCopy = overlay.querySelectorAll<HTMLElement>(
@@ -635,7 +729,7 @@ export default function HomeStoryHero() {
 
           timeline.fromTo(
             overlay,
-            { autoAlpha: 0, y: desktop && !isBrand ? 28 : 0 },
+            { autoAlpha: isMobileStory && isBrand ? 1 : 0, y: desktop && !isBrand ? 28 : 0 },
             {
               autoAlpha: 1,
               y: 0,
@@ -644,19 +738,21 @@ export default function HomeStoryHero() {
             },
             overlayWindow.progressStart,
           );
-          timeline.fromTo(
-            words,
-            { yPercent: desktop ? 115 : 0, rotate: desktop ? 2 : 0 },
-            {
-              yPercent: 0,
-              rotate: 0,
-              duration: enterDuration * 1.6,
-              stagger: desktop ? 0.0025 : 0,
-              ease: "power3.out",
-            },
-            overlayWindow.progressStart + enterDuration * 0.25,
-          );
-          if (supportingCopy.length) {
+          if (!isMobileStory) {
+            timeline.fromTo(
+              words,
+              { yPercent: desktop ? 115 : 0, rotate: desktop ? 2 : 0 },
+              {
+                yPercent: 0,
+                rotate: 0,
+                duration: enterDuration * 1.6,
+                stagger: desktop ? 0.0025 : 0,
+                ease: "power3.out",
+              },
+              overlayWindow.progressStart + enterDuration * 0.25,
+            );
+          }
+          if (supportingCopy.length && !isMobileStory) {
             timeline.fromTo(
               supportingCopy,
               { y: desktop ? 18 : 0, opacity: 0 },
@@ -687,7 +783,7 @@ export default function HomeStoryHero() {
               overlay,
               {
                 autoAlpha: 0,
-                y: isBrand ? 0 : -22,
+                y: isBrand || isMobileStory ? 0 : -22,
                 duration: exitDuration,
                 ease: "power2.in",
               },
@@ -697,8 +793,11 @@ export default function HomeStoryHero() {
         });
       }, hero);
 
+      if (destroyed) return;
       ScrollTrigger.refresh();
-      const scene = getStoryScene(requestedPosition, canvas.width, canvas.height);
+      const scene = isMobileStory
+        ? getMobileStoryScene(requestedPosition, canvas.width, canvas.height)
+        : getStoryScene(requestedPosition, canvas.width, canvas.height);
       await Promise.all(scene.layers.flatMap(({ asset }) =>
         typeof asset === "number" ? [decodeFrame(asset)] : []));
       if (destroyed) return;
@@ -706,8 +805,19 @@ export default function HomeStoryHero() {
       notifyReady();
     };
 
-    const resizeObserver = new ResizeObserver(resizeCanvas);
+    const resizeObserver = new ResizeObserver(() => {
+      const heightChanged = hero.clientHeight !== storyHeight;
+      storyHeight = hero.clientHeight;
+      updateMobileLayout();
+      resizeCanvas();
+      if (isMobileStory && heightChanged && !destroyed) refreshStory?.();
+    });
     resizeObserver.observe(canvas);
+    resizeObserver.observe(hero);
+    mobileChapters.forEach((chapter) => {
+      resizeObserver.observe(chapter.querySelector(".story-mobile-lead")!);
+      resizeObserver.observe(chapter.querySelector(".story-mobile-details")!);
+    });
 
     const visibilityObserver = new IntersectionObserver(
       ([entry]) => {
@@ -792,9 +902,12 @@ export default function HomeStoryHero() {
       hero.classList.remove("has-canvas-frame");
       hero.style.removeProperty("--story-copy-x");
       hero.style.removeProperty("--story-copy-y");
-      for (const property of ["x", "y", "width", "height"]) {
-        hero.style.removeProperty(`--story-carton-${property}`);
-      }
+      hero.style.removeProperty("--story-mobile-stage-top");
+      hero.style.removeProperty("--story-mobile-stage-height");
+      canvas.style.removeProperty("opacity");
+      delete hero.dataset.storyLayout;
+      delete hero.dataset.storyMobileChapter;
+      delete hero.dataset.storyPinned;
       delete document.documentElement.dataset.homeStoryReady;
     };
     document.addEventListener("home-story-cancel", dispose, { once: true });
@@ -826,10 +939,13 @@ export default function HomeStoryHero() {
           fetchPriority="high"
         />
         <canvas className="story-canvas" ref={canvasRef} aria-hidden="true" />
+        <h1 className="story-printed-copy visually-hidden">{homeStoryRecruitmentLine}</h1>
+        <div className="story-mobile-map"><FranchiseMap locations={franchiseLocations} compact /></div>
+        <MobileStoryChapters />
 
         <div className="story-overlays">
           {homeStory.beats
-            .filter((beat) => beat.overlay)
+            .filter((beat) => beat.overlay && beat.overlay.layout !== "brand")
             .map((beat) => (
               <article
                 className={`story-overlay story-overlay--${beat.overlay?.layout}`}
@@ -837,7 +953,7 @@ export default function HomeStoryHero() {
                 key={beat.id}
                 style={getTypographyStyle(beat.overlay?.typography)}
               >
-                <BeatContent beat={beat} />
+                <BeatContent beat={beat} franchiseLocations={franchiseLocations} />
               </article>
             ))}
         </div>
@@ -851,7 +967,7 @@ export default function HomeStoryHero() {
       <p className="story-fallback-notice" role="status">
         The animated story couldn&apos;t load this time. Here&apos;s the same story, at your own pace.
       </p>
-      <FallbackStory className="story-reduced" />
+      <FallbackStory className="story-reduced" franchiseLocations={franchiseLocations} />
     </div>
   );
 }

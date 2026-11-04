@@ -1,7 +1,28 @@
 import { expect, test } from "@playwright/test";
 
 const policyLabels = ["Data Protection", "Environmental", "Equality", "Modern Day Slavery"];
+const policySlugs = ["data-protection", "environmental-sustainability", "equality-inclusion-diversity", "modern-slavery"];
 const routes = ["/", "/jobs/", "/recruit-talent/", "/team/", "/our-story/", "/franchising/", "/sustainability-impact/"];
+
+test("global tagline and general email stay consistent across all page footers and menus", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  for (const route of [...routes, ...policySlugs.map((slug) => `/policies/${slug}/`), "/404/"]) {
+    await test.step(route, async () => {
+      await page.goto(route);
+      await expect(page.locator(".footer-art figcaption, .not-found-footer > span")).toHaveText("We\u2019re good eggs");
+      await expect(page.locator("body")).not.toContainText(/good\s+people[.\s]*great\s+hospitality/i);
+      const emails = page.locator('.funmenu-footer a[href^="mailto:"], .footer-contact a[href^="mailto:"], .not-found-footer a[href^="mailto:"]');
+      await expect(emails).toHaveCount(2);
+      for (const email of await emails.all()) {
+        await expect(email).toHaveAttribute("href", "mailto:info@changehospitality.co.uk");
+      }
+      await expect(page.locator('.funmenu-footer a[href^="mailto:"], .footer-contact a[href^="mailto:"]')).toHaveText(
+        Array(route === "/404/" ? 1 : 2).fill("info@changehospitality.co.uk"),
+      );
+      await expect(page.locator('a[href^="mailto:hello@changehospitality.co.uk"], a[href^="mailto:hello@changehopitality.co.uk"]')).toHaveCount(0);
+    });
+  }
+});
 
 async function expectMatchingFooterCorners(page, surfaceSelector) {
   const footer = page.locator("[data-site-footer]");
@@ -93,10 +114,10 @@ test("the shared footer keeps its buttons, page links, policies and branding", a
   const policies = footer.getByRole("navigation", { name: "Policy documents" }).getByRole("link");
   await expect(policies).toHaveCount(4);
   for (const [index, label] of policyLabels.entries()) {
-    await expect(policies.nth(index)).toHaveAccessibleName(`${label} (opens in a new tab)`);
-    await expect(policies.nth(index)).toHaveAttribute("href", /^https:\/\/drive\.google\.com\/file\/d\//);
-    await expect(policies.nth(index)).toHaveAttribute("target", "_blank");
-    await expect(policies.nth(index)).toHaveAttribute("rel", "noopener noreferrer");
+    await expect(policies.nth(index)).toHaveAccessibleName(label);
+    await expect(policies.nth(index)).toHaveAttribute("href", `/policies/${policySlugs[index]}/`);
+    expect(await policies.nth(index).getAttribute("target")).toBeNull();
+    expect(await policies.nth(index).getAttribute("rel")).toBeNull();
   }
   await expect(footer.getByRole("link", { name: "Change Hospitality home" })).toBeVisible();
   const logo = footer.locator(".footer-brand").getByRole("img", { name: "Change Hospitality" });

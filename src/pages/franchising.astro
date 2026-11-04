@@ -8,10 +8,10 @@ import PageMotion from '../components/PageMotion.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import StoryIllustration from '../components/StoryIllustration.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getPublicContacts } from '../sanity/queries';
+import { getFranchiseLocations, getPublicContacts } from '../sanity/queries';
 import { telephoneHref } from '../data/editorial';
 
-const contacts = await getPublicContacts();
+const [contacts, locations] = await Promise.all([getPublicContacts(), getFranchiseLocations()]);
 const email = contacts.franchisingEmail;
 const emailLink = `mailto:${email}?subject=Franchising%20with%20Change%20Hospitality`;
 const franchiseFilm = {
@@ -25,7 +25,6 @@ const sectionLinks = [
   { label: 'The Change way', href: '#the-change-way', meta: 'Get to know us' },
   { label: "Let's talk", href: '#lets-talk', meta: 'Start a conversation' },
 ];
-const locations = ['London', 'Manchester', 'Hampshire'];
 ---
 
 <BaseLayout
@@ -80,7 +79,7 @@ const locations = ['London', 'Manchester', 'Hampshire'];
         </div>
 
         <div class="hero-baseline">
-          <p>Good people. Great hospitality. <strong>Your next chapter.</strong></p>
+          <p>We&rsquo;re good eggs. <strong>Your next chapter.</strong></p>
           <a href="#the-opportunity" aria-label="Explore the franchising opportunity"><ArrowDown size={20} aria-hidden="true" /></a>
         </div>
       </div>
@@ -137,7 +136,7 @@ const locations = ['London', 'Manchester', 'Hampshire'];
           <p class="board-kicker">Three places. One Change.</p>
           <ol class="location-list" aria-label="Our current locations">
             {locations.map((location, index) => (
-              <li><span aria-hidden="true">0{index + 1}</span><strong>{location}</strong><span class="location-dot" aria-hidden="true"></span></li>
+              <li><span aria-hidden="true">0{index + 1}</span><strong>{location.name}</strong><span class="location-dot" aria-hidden="true"></span></li>
             ))}
           </ol>
           <div class="location-next">

@@ -166,13 +166,17 @@ test('the seed includes every official English city plus Hampshire, with three a
   assert.equal(seedLocations.length, 56);
   assert.equal(new Set(seedLocations.map((location) => location._id)).size, 56);
   assert.equal(new Set(seedLocations.map((location) => location.slug.current)).size, 56);
-  assert.deepEqual(seedLocations.filter((location) => location.active).map((location) => location.name).sort(), ['Hampshire', 'London', 'Manchester']);
+  assert.deepEqual(seedLocations.filter((location) => location.active).map((location) => location.name).sort(), ['Greater Manchester', 'Hampshire & Isle of Wight', 'London']);
   assert.deepEqual(seedLocations.filter((location) => location.isHeadOffice).map((location) => location.name), ['London']);
   assert.deepEqual(
     seedLocations.filter((location) => location.active).sort((first, second) => first.sortOrder - second.sortOrder).map((location) => location.name),
-    ['London', 'Manchester', 'Hampshire'],
+    ['London', 'Greater Manchester', 'Hampshire & Isle of Wight'],
   );
-  assert.deepEqual(getTeamGroups(seedLocations, teamMembers).map((group) => group.label), ['London', 'Manchester', 'Hampshire']);
+  assert.deepEqual(getTeamGroups(seedLocations, teamMembers).map((group) => group.label), ['London', 'Greater Manchester', 'Hampshire & Isle of Wight']);
+  for (const office of seedLocations.filter((location) => location.active)) {
+    assert.ok(office.address);
+    assert.ok(office.phone);
+  }
   assert.ok(englishCities.includes('Westminster'));
   assert.ok(englishCities.includes('Doncaster'));
   assert.ok(!englishCities.includes('Hampshire'));

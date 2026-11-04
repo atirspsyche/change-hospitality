@@ -1,22 +1,36 @@
 import { expect, test } from "@playwright/test";
 import { homeStory } from "../../src/data/homeStory.ts";
-import { storyTimeline } from "../../src/lib/homeStoryTimeline.ts";
+import { mobileStoryTimeline, storyTimeline } from "../../src/lib/homeStoryTimeline.ts";
 
-const beatWindow = storyTimeline.overlayWindows.find(({ id }) => id === "plate-center-next");
-const beatProgress = (beatWindow.progressStart + beatWindow.progressEnd) / 2;
-const officeNames = ["London", "Manchester", "Hampshire"];
+const offices = [
+  { name: "London", address: "Arch 4, 1 Crucifix Lane, SE1 3JW", phone: "020 8050 6312" },
+  { name: "Greater Manchester", address: "Neo Building, 9 Charlotte Street, M1 4ET", phone: "0161 399 8575" },
+  { name: "Hampshire & Isle of Wight", address: "Cell 4, 194 Victory Gate Lodge, The Hard, Charles Dickens, Portsmouth, PO1 3PU", phone: "02393 553506" },
+];
+const officeNames = offices.map(({ name }) => name);
 
 async function showMapBeat(page) {
   await page.goto("/");
   await expect(page.locator("html")).toHaveAttribute("data-home-story-ready", "true");
   await expect(page.locator("html")).not.toHaveAttribute("data-story-loading", "");
+  if (await page.locator(".story-hero").isHidden()) {
+    return page.locator(".story-reduced .story-fallback-beat--locations");
+  }
+  const mobile = await page.locator(".story-hero").getAttribute("data-story-layout") === "mobile";
+  const timeline = mobile ? mobileStoryTimeline : storyTimeline;
+  const beatWindow = timeline.overlayWindows.find(({ id }) => id === "plate-center-next");
+  const beatProgress = (beatWindow.progressStart + beatWindow.progressEnd) / 2;
   await page.evaluate(({ progress, screens }) => {
-    scrollTo({ top: innerHeight * screens * progress, behavior: "instant" });
-  }, { progress: beatProgress, screens: storyTimeline.scrollScreens });
-  const beat = page.locator('[data-story-overlay="plate-center-next"]');
-  await expect(beat).toHaveCSS("opacity", "1");
+    const hero = document.querySelector(".story-hero");
+    const spacer = hero.parentElement;
+    const start = spacer.getBoundingClientRect().top + scrollY;
+    const distance = Number.parseFloat(getComputedStyle(spacer).paddingBottom) || hero.clientHeight * screens;
+    scrollTo({ top: start + distance * progress, behavior: "instant" });
+  }, { progress: beatProgress, screens: timeline.scrollScreens });
+  const chapter = page.locator(`${mobile ? ".story-mobile-overlays" : ".story-overlays"} [data-story-overlay="plate-center-next"]`);
+  await expect(chapter).toHaveCSS("opacity", "1");
   await expect(page.locator(".story-hero")).toHaveAttribute("data-story-frame", homeStory.animation.plate.sourceFrame.toFixed(3));
-  return beat;
+  return mobile ? page.locator(".story-hero") : chapter;
 }
 
 async function expectContained(locator, page) {
@@ -31,15 +45,16 @@ async function expectContained(locator, page) {
 
 test("franchising pairs one CTA with the upright three-office map", async ({ page }, testInfo) => {
   const beat = await showMapBeat(page);
-  await expect(beat.getByRole("heading", { level: 2 })).toHaveText("Build something of your own");
+  await expect(beat.getByRole("heading", { level: 2 })).toHaveText("Build your own recruitment business");
   await expect(beat.getByRole("link")).toHaveCount(1);
   await expect(beat.getByRole("link")).toHaveAttribute("href", "/franchising/");
   await expect(beat.getByRole("button")).toHaveCount(3);
-  await expect(beat.locator("image")).toHaveAttribute("href", "/illustrations/map.webp");
-  await expect(beat.locator("image")).toHaveAttribute("transform", "translate(813 -546) rotate(90)");
-  await expect(beat.locator(".office-marker__hq")).toHaveText("Head office");
-  const copy = await beat.locator(".story-copy").boundingBox();
-  const map = await beat.locator("[data-franchise-map]").boundingBox();
+  const mapElement = beat.locator("[data-franchise-map]:visible");
+  await expect(mapElement.locator("image")).toHaveAttribute("href", "/illustrations/map.webp");
+  await expect(mapElement.locator("image")).toHaveAttribute("transform", "translate(813 -546) rotate(90)");
+  await expect(mapElement.locator(".office-marker__hq")).toHaveText("Head office");
+  const copy = await beat.locator(".story-copy:visible, .story-mobile-lead:visible").boundingBox();
+  const map = await mapElement.boundingBox();
   if (testInfo.project.name === "desktop") {
     expect(map.x).toBeGreaterThan(copy.x + copy.width);
     expect(copy.x + copy.width).toBeLessThan(page.viewportSize().width * 0.34);
@@ -60,7 +75,10 @@ test("office cards toggle by keyboard or touch and dismiss with Escape or an out
     await expect(button).toHaveAttribute("aria-expanded", "true");
     const card = beat.locator(".office-marker__card").filter({ has: page.getByRole("heading", { name, exact: true }) });
     await expect(card).toHaveAttribute("aria-hidden", "false");
-    await expect(card).toContainText("Office address to be confirmed");
+    const office = offices.find((entry) => entry.name === name);
+    await expect(card).toContainText(office.address);
+    await expect(card.getByRole("link")).toHaveText(office.phone);
+    await expect(card.getByRole("link")).toHaveAttribute("href", `tel:${office.phone.replace(/\s/g, "")}`);
     await expectContained(card, page);
     await page.keyboard.press("Escape");
     await expect(button).toHaveAttribute("aria-expanded", "false");
@@ -73,11 +91,14 @@ test("office cards toggle by keyboard or touch and dismiss with Escape or an out
   await page.keyboard.press("Enter");
   await expect(london).toHaveAttribute("aria-expanded", "true");
   await page.keyboard.press("Tab");
-  await expect(beat.getByRole("button", { name: /^Manchester/ })).toBeFocused();
+  await expect(beat.getByRole("link", { name: /^Call London/ })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(beat.getByRole("button", { name: /^Greater Manchester/ })).toBeFocused();
   await expect(london).toHaveAttribute("aria-expanded", "false");
   await page.keyboard.press("Space");
-  await expect(beat.getByRole("button", { name: /^Manchester/ })).toHaveAttribute("aria-expanded", "true");
-  await beat.getByRole("heading", { level: 2 }).click();
+  await expect(beat.getByRole("button", { name: /^Greater Manchester/ })).toHaveAttribute("aria-expanded", "true");
+  const outside = await beat.getByRole("heading", { level: 2 }).boundingBox();
+  await page.mouse.click(outside.x + outside.width / 2, outside.y + outside.height / 2);
   await expect(beat.locator('[aria-expanded="true"]')).toHaveCount(0);
 });
 
@@ -106,8 +127,14 @@ test("small, tablet and landscape layouts keep copy, markers and cards in the vi
   for (const viewport of viewports) {
     await page.setViewportSize(viewport);
     const beat = await showMapBeat(page);
-    await expectContained(beat.locator(".story-copy"), page);
-    await expectContained(beat.locator("[data-franchise-map]"), page);
+    if (await page.locator(".story-hero").isHidden()) {
+      await beat.locator("[data-franchise-map]").scrollIntoViewIfNeeded();
+      await expect(beat.locator("[data-franchise-map]")).toBeVisible();
+      await expect(beat.getByRole("button")).toHaveCount(3);
+      continue;
+    }
+    await expectContained(beat.locator(".story-copy:visible, .story-mobile-lead:visible"), page);
+    await expectContained(beat.locator("[data-franchise-map]:visible"), page);
     if (viewport.width >= 1024) {
       const copy = await beat.locator(".story-copy").boundingBox();
       const map = await beat.locator("[data-franchise-map]").boundingBox();
@@ -145,7 +172,7 @@ test("reduced motion retains an interactive map without the pinned story", async
 test.describe("without JavaScript", () => {
   test.use({ javaScriptEnabled: false });
 
-  test("the readable story lists all offices and honest address placeholders", async ({ page }) => {
+  test("the readable story lists all offices, approved addresses and telephone links", async ({ page }) => {
     await page.goto("/");
     const map = page.locator(".story-reduced [data-franchise-map]");
     await map.scrollIntoViewIfNeeded();
@@ -153,8 +180,7 @@ test.describe("without JavaScript", () => {
     await expect(map.locator(".franchise-map__directory li")).toHaveCount(3);
     await expect(map.locator(".franchise-map__directory")).toContainText("London (Head office)");
     for (const name of officeNames) await expect(map.locator(".franchise-map__directory")).toContainText(name);
-    await expect(map.locator(".franchise-map__directory li")).toContainText([
-      "Office address to be confirmed", "Office address to be confirmed", "Office address to be confirmed",
-    ]);
+    await expect(map.locator(".franchise-map__directory li")).toContainText(offices.map(({ address }) => address));
+    await expect(map.locator(".franchise-map__directory a")).toHaveText(offices.map(({ phone }) => phone));
   });
 });

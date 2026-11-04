@@ -4,8 +4,10 @@ import EggMoment from '../components/EggMoment.astro';
 import FunMenu from '../components/FunMenu.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getNotFoundContent } from '../lib/notFound';
+import { getPublicContacts } from '../sanity/queries';
 
 const content = getNotFoundContent(Astro.url.pathname);
+const contacts = await getPublicContacts();
 ---
 
 <BaseLayout title="Page not found | Change Hospitality" description="A little lost? Find your way back to Change Hospitality, or explore our latest hospitality jobs." noindex>
@@ -35,8 +37,8 @@ const content = getNotFoundContent(Astro.url.pathname);
       <p class="not-found-note" data-not-found-note>{content.note}</p>
     </div>
     <footer class="not-found-footer">
-      <span>Good people. Great hospitality.</span>
-      <a href="mailto:hello@changehospitality.co.uk">A human can help <span aria-hidden="true">&#8599;</span></a>
+      <span>We&rsquo;re good eggs</span>
+      <a href={`mailto:${contacts.generalEmail}`}>A human can help <span aria-hidden="true">&#8599;</span></a>
     </footer>
   </main>
 </BaseLayout>

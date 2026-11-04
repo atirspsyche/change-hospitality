@@ -17,7 +17,8 @@ const pages = [
     transitions: [
       [".division-flow", ".recruit-hero"],
       ["section.recruit-form-section", ".division-flow-item:last-child"],
-      [".client-stories", "section.recruit-form-section"],
+      ["#recruitment-faqs", "section.recruit-form-section"],
+      [".client-stories", "#recruitment-faqs"],
     ],
     lastSurface: ".client-stories",
   },

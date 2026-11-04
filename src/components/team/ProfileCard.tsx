@@ -173,7 +173,7 @@ export default function ProfileCard({
               </div>
 
               <div className="team-card-info relative z-10 px-1 pb-1">
-                <h4 className="team-card-name font-serif font-semibold leading-none text-ink">{name}</h4>
+                <h4 className="team-card-name font-serif font-semibold text-ink">{name}</h4>
                 <p className="team-card-title mt-2 w-fit rounded-lg bg-(--team-flame-surface) px-2.5 py-1.5 text-[0.65rem] font-black uppercase leading-tight text-off-white">
                   {title}
                 </p>

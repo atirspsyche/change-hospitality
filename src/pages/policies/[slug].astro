@@ -1,0 +1,93 @@
+---
+import type { GetStaticPaths } from 'astro';
+import FunMenu from '../../components/FunMenu.astro';
+import PolicyContent from '../../components/PolicyContent.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { policyHref, policyThemes, type PolicyPage } from '../../lib/policies';
+import { getPolicies } from '../../sanity/queries';
+
+interface Props {
+  policy: PolicyPage;
+}
+
+export const getStaticPaths = (async () => (await getPolicies()).map((policy) => ({
+  params: { slug: policy.slug.current },
+  props: { policy },
+}))) satisfies GetStaticPaths;
+
+const { policy } = Astro.props;
+const theme = policyThemes[policy.theme];
+const url = new URL(policyHref(policy.slug.current), Astro.site || Astro.url.origin).toString();
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: policy.title,
+  description: policy.description,
+  url,
+  publisher: { '@type': 'Organization', name: 'Change Hospitality', url: Astro.site?.toString() || Astro.url.origin },
+};
+---
+
+<BaseLayout
+  title={`${policy.title} | Change Hospitality`}
+  description={policy.description}
+  image="/CH_LOGO.svg"
+  {structuredData}
+>
+  <div
+    class="policy-page"
+    data-policy-theme={policy.theme}
+    style={{ '--policy-cover': theme.background }}
+  >
+    <a class="policy-skip" href="#policy-copy">Skip to policy content</a>
+    <FunMenu
+      sectionLinks={[{ label: 'Policy', href: '#policy-title', meta: policy.title }]}
+      menuButtonBackground={theme.foreground}
+      menuButtonBorderColor={theme.foreground}
+      menuButtonTextColor={theme.background}
+    />
+    <main>
+      <PolicyContent {policy} />
+    </main>
+    <SiteFooter backdropColor="var(--color-cream)" backToTopHref="#policy-title" />
+  </div>
+</BaseLayout>
+
+<style>
+  .policy-page {
+    min-height: 100vh;
+    background: var(--color-cream);
+    color: var(--color-cocoa);
+  }
+
+  .policy-page :global(.funmenu-bar) {
+    background: var(--policy-cover);
+  }
+
+  .policy-page[data-policy-theme='cocoa'] :global(.site-logo),
+  .policy-page[data-policy-theme='bcorp-green'] :global(.site-logo) {
+    filter: brightness(0) invert(1);
+    opacity: 1;
+  }
+
+  .policy-skip {
+    position: fixed;
+    top: 0.5rem;
+    left: 1rem;
+    z-index: 100;
+    transform: translateY(-200%);
+    border: 2px solid var(--color-cocoa);
+    border-radius: 0.5rem;
+    background: var(--color-cream);
+    color: var(--color-cocoa);
+    padding: 0.75rem 1rem;
+    font-weight: 700;
+  }
+
+  .policy-skip:focus {
+    transform: none;
+    outline: 2px solid var(--color-cocoa);
+    outline-offset: 3px;
+  }
+</style>

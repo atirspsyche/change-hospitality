@@ -1,6 +1,6 @@
 export const publicContacts = {
   _id: 'public-contacts', _type: 'siteSettings',
-  generalEmail: 'hello@changehospitality.co.uk', recruitmentEmail: 'info@changehospitality.co.uk',
+  generalEmail: 'info@changehospitality.co.uk', recruitmentEmail: 'info@changehospitality.co.uk',
   franchisingEmail: 'info@changehospitality.co.uk', timesheetsEmail: 'timesheets@changehospitality.co.uk', phone: '020 8050 6312',
   socialLinks: [
     { _key: 'linkedin', label: 'LinkedIn', href: 'https://www.linkedin.com/company/change-hospitality/' },
@@ -8,12 +8,7 @@ export const publicContacts = {
   ],
 };
 
-export const policies = [
-  { label: 'Data Protection', href: 'https://drive.google.com/file/d/1F0XXLU-BIkhUMy5drgsjA6yOwSmNWHju/view?usp=drive_link' },
-  { label: 'Environmental', href: 'https://drive.google.com/file/d/1q8Ebm8oPestODG0Wo6NEcT85vzSmzYym/view?usp=drive_link' },
-  { label: 'Equality', href: 'https://drive.google.com/file/d/1h2-kKHuK2fpHKKX6FDgTvyOr7zTuDvsi/view?usp=drive_link' },
-  { label: 'Modern Day Slavery', href: 'https://drive.google.com/file/d/1EoBwxBNnnQ9nZKmHgmhN93OCIwDQUdvP/view?usp=drive_link' },
-].map((policy, index) => ({ ...policy, _id: `policy-${index + 1}`, _type: 'policy', sortOrder: index, visible: true }));
+export { seedPolicies as policies } from './policies.ts';
 
 export const namedClients = [
   { name: 'Searcys', key: 'searcys' }, { name: 'Tate', key: 'tate' }, { name: 'Tobacco Dock', key: 'tobacco-dock' },

@@ -55,11 +55,49 @@ npm run deploy
 
 The public Astro website is a separate package in the repository root. It reads published jobs, team members, locations and environmental impact numbers from Content Lake during its static build.
 
+## Public Contacts
+
+Open **Public contacts** and edit **general email** to change the shared enquiries address, currently `info@changehospitality.co.uk`. The site menu, shared footer and 404 help link all use this field. Publish the change, then rebuild/redeploy the static website; the configured Sanity webhook can trigger this automatically. Updating the import seed alone does not overwrite existing published contacts.
+
+The site tagline is maintained in the website components and home story timeline, not in this Sanity document.
+
+## Policy Pages
+
+Open **Policy pages** to edit the four former PDF policies. Each existing `policy` document keeps its ID, footer label, display order, visibility and original PDF reference. The new **Page title**, **Page URL slug**, **SEO description**, **Cover colour theme** and **Policy content (Markdown)** fields control the website page. The PDF URL is optional and is no longer the footer destination.
+
+The Markdown field is a plain-text editor: use `##` for section headings, `**bold**`, `-` for bullets, and `1.` for numbered lists. Indent nested lists by four spaces; nested numbered lists display as a/b/c. An ordered list restarted with `7.` keeps that numbering after intervening paragraphs. A backslash at the end of a Markdown line creates an address line break. Do not repeat the page title as a `#` heading. Raw HTML is not displayed. No Markdown plugin or browser-side renderer is needed.
+
+Initial content lives in [the approved policy seed](data/policies.ts). From the repository root, preview the migration without writes:
+
+```sh
+npm --prefix studio run seed:policies
+```
+
+After confirming the target and reviewing the supplied wording, apply:
+
+```sh
+npm --prefix studio run seed:policies -- -- --apply --project=thyjjqzv
+```
+
+The migration only targets `thyjjqzv / production` and `policy-1` through `policy-4`. It refuses unpublished drafts and wrong document types, adds missing fields with revision-guarded atomic patches, creates absent documents, and verifies all saved fields. Rerunning never replaces existing Markdown, titles, slugs, themes, SEO copy or other editorial changes. The main content importer also includes complete policy pages for a new dataset; use this migration to upgrade existing PDF-only records.
+
+Default themes are Data Protection: **Mist / ink**; Environmental: **B-Corp green / cream**; Equality: **Cocoa / cream**; Modern Slavery: **Citron / cocoa**. Reserve green for environmental content. Keep published slugs stable: changing one changes its public `/policies/<slug>/` URL. Publish each edited policy and allow the website rebuild to finish before checking changes. The published `policy` webhook already belongs in the Vercel deploy-hook filter described above; remote webhooks and Studio deployment are not configured by this command.
+
+The supplied legal text is imported without substantive changes. Obtain client legal review of the Data Protection Act 1998 references, consent/access-fee wording and statement dates before launch. The website intentionally fails builds when a visible policy lacks required page content, rather than silently reverting to PDFs.
+
+## Office Contact Details
+
+The existing **Locations** records are also the source of truth for the franchising map. Edit **Name**, **Head office**, **Office address** and **Office phone** on the London, Greater Manchester and Hampshire & Isle of Wight records, then publish and rebuild the website. Deploy the updated Studio to expose the new address and phone fields. Keep their existing IDs and slugs (`london`, `manchester`, `hampshire`): team-member references, team order and map positions depend on those identities. The same published names appear on the team page and the franchising office list.
+
+For the approved initial details, preview with `npm --prefix studio run seed:locations -- -- --update-office-details`. Apply with `npm --prefix studio run seed:locations -- -- --update-office-details --apply --project=thyjjqzv`. This revision-guarded update only changes the three offices' names, addresses and phone numbers; drafts stop it for review. Existing profiles, office slugs, head-office settings and team orders are preserved. Future editorial changes belong in Studio, not in this initialization command. Map coordinates remain in website code.
+
 ## Candidate Gallery
 
-Open **Candidate gallery** to manage the Jobs page's **People behind the placements** photos. The singleton ID is `candidate-gallery`; drag photos to reorder them, replace images using the guarded picker, set crop/hotspot and provide accurate, non-blank image descriptions. Use only approved candidate photos. The gallery accepts one to six JPEG, PNG or WebP images, each at most 2 MiB and at least 600 by 450 pixels.
+Open **Candidate gallery** to manage the Jobs page's **People behind great hospitality** photos. The singleton ID is `candidate-gallery`; drag photos to reorder them, replace images using the guarded picker, set crop/hotspot and provide accurate, non-blank image descriptions. Use only approved candidate photos. The gallery accepts one to six JPEG, PNG or WebP images, each at most 2 MiB and at least 600 by 450 pixels.
 
 For the initial selection, run `npm --prefix studio run seed:gallery` from the repository root for a dry run. It validates all six source files under `public/candidate-pics/`: `09`, `03`, `07`, `04`, `08`, `02`, in display order. Apply with `npm --prefix studio run seed:gallery -- -- --apply --project=thyjjqzv`. The importer only targets `thyjjqzv / production`, uploads the six originals and creates the published gallery if absent. Existing published content is preserved without uploading more assets; an existing draft stops the import for review. It never overwrites other editorial documents. Sanity content-deduplicates repeated asset uploads.
+
+The approved descriptions for the original six photo keys can be previewed with `npm --prefix studio run seed:gallery -- -- --update-alt` and applied with `npm --prefix studio run seed:gallery -- -- --update-alt --apply --project=thyjjqzv`. This revision-guarded mode changes descriptions only, preserving images, crops and order; an existing draft or changed photo keys stops it for review. Replace the gallery images separately in Studio and keep their descriptions accurate.
 
 Publish changes, then rebuild/redeploy the Astro website. Include `candidateGallery` in the published-content webhook filter. Deploy the updated Studio with `npm run deploy` to expose the editor to the team.
 
@@ -113,13 +151,13 @@ When moving someone, publish their new **Office location**, remove their referen
 
 ### Initial Population
 
-`npm run seed:locations` uses the signed-in Sanity CLI user to create 56 published location documents: all 55 English cities from the [Cabinet Office list](https://www.gov.uk/government/publications/list-of-cities/list-of-cities-html), plus Hampshire, which is a county rather than a city. London, Hampshire and Manchester start active, in that order; London is head office. The other cities start inactive.
+`npm run seed:locations` uses the signed-in Sanity CLI user to create 56 published location documents: all 55 English cities from the [Cabinet Office list](https://www.gov.uk/government/publications/list-of-cities/list-of-cities-html), plus the Hampshire office. The Manchester and Hampshire office records use the approved display names Greater Manchester and Hampshire & Isle of Wight while preserving their original IDs and slugs. London, Greater Manchester and Hampshire & Isle of Wight start active, in that order; London is head office. The other cities start inactive.
 
 The seed uses stable document IDs and `createIfNotExists`, so rerunning it does not reset flags, names or other editorial changes. It does not replace team members or jobs.
 
 ### Editorial Workflow
 
-1. In **Locations**, enable **Active office** for a city, set the introduction and display order if needed, and **Publish**. Editors can also create new locations beyond the seed list; give each a unique slug.
+1. In **Locations**, enable **Active office** for a city, provide its public office address and phone, set the introduction and display order if needed, and **Publish**. Editors can also create new locations beyond the seed list; give each a unique slug.
 2. Open each team member, select their **Office location**, and **Publish**. Older documents with a plain-text location may show an invalid-type warning; reset that field and select the referenced location. Old `division` values are no longer used.
 3. In **Locations > office > Team display order**, add members and drag them into the preferred sequence, then **Publish**.
 4. Rebuild or redeploy the Astro website after publishing location or team changes.

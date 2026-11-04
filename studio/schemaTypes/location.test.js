@@ -19,6 +19,23 @@ const member = (id, name, locationId = 'location-london') => ({
   location: locationId ? { _id: locationId, name: 'Office' } : null,
 });
 
+test('active offices require public map contact details and reject malformed phone numbers', () => {
+  const validate = (name, value, active) => {
+    let validator;
+    location.fields.find((field) => field.name === name).validation({
+      custom(callback) { validator = callback; return this; },
+    });
+    return validator(value, { document: { active } });
+  };
+  assert.equal(validate('address', 'Arch 4, 1 Crucifix Lane, SE1 3JW', true), true);
+  assert.equal(validate('phone', '020 8050 6312', true), true);
+  assert.notEqual(validate('address', ' ', true), true);
+  assert.notEqual(validate('phone', '123', true), true);
+  assert.notEqual(validate('phone', undefined, true), true);
+  assert.equal(validate('address', undefined, false), true);
+  assert.equal(validate('phone', undefined, false), true);
+});
+
 test('locations offer a native sortable reference list without numeric member ranks', () => {
   const field = location.fields.find((entry) => entry.name === 'teamOrder');
   assert.equal(field.title, 'Team display order');

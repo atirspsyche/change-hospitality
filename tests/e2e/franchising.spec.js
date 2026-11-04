@@ -14,7 +14,7 @@ test("all original opportunity copy is readable in four numbered chapters", asyn
   const copy = await page.locator(".opportunity-copy p").allTextContents();
   expect(copy.map((paragraph) => paragraph.replace(/\s+/g, " ").trim())).toEqual(opportunityCopy);
   await expect(page.locator(".chapter-number")).toHaveText(["01", "02", "03", "04"]);
-  await expect(page.locator(".location-list li strong")).toHaveText(["London", "Manchester", "Hampshire"]);
+  await expect(page.locator(".location-list li strong")).toHaveText(["London", "Greater Manchester", "Hampshire & Isle of Wight"]);
   await expect(page.locator(".franchising-page astro-island")).toHaveCount(0);
 });
 

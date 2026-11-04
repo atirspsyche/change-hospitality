@@ -68,6 +68,7 @@ test("every optimised logo preserves the source artwork and fits its own cell at
 test("the loop is seamless and respects visibility, manual pause, hover and keyboard focus", async ({ page }, testInfo) => {
   const marquee = await openLogos(page);
   const track = marquee.locator(".division-client-track");
+  await expect(track).toHaveCSS("animation-duration", "210s");
   const button = page.locator("[data-logo-pause]");
   await expect(button).toHaveAttribute("aria-label", "Pause client logos");
   await page.mouse.move(0, 0);

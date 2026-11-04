@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { editorialTypes } from './editorial.ts';
-import { indexedClients, namedClients, clientTestimonials, candidateTestimonials, policies, temporaryGuidance } from '../data/websiteContent.ts';
+import { indexedClients, namedClients, clientTestimonials, candidateTestimonials, policies, temporaryGuidance, publicContacts } from '../data/websiteContent.ts';
 import { readFile } from 'node:fs/promises';
 import { parseTeam } from '../lib/teamImport.ts';
 
@@ -22,6 +22,12 @@ test('supplied roster keeps all 18 portraits and full biographies with approved 
 
 test('the five editorial areas are registered without duplicating testimonial models', () => {
   assert.deepEqual(editorialTypes.map((schema) => schema.name), ['client', 'testimonial', 'siteSettings', 'policy', 'temporaryWork']);
+});
+test('public contact defaults use the approved enquiries address without changing timesheet support', () => {
+  for (const field of ['generalEmail', 'recruitmentEmail', 'franchisingEmail']) {
+    assert.equal(publicContacts[field], 'info@changehospitality.co.uk', field);
+  }
+  assert.equal(publicContacts.timesheetsEmail, 'timesheets@changehospitality.co.uk');
 });
 test('existing logos keep numeric order and stable IDs independently of their editable names', () => {
   assert.equal(indexedClients.length, 42);

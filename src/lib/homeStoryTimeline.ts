@@ -1,4 +1,4 @@
-import { homeStory } from "../data/homeStory.ts";
+import { homeStory, type StoryBeat } from "../data/homeStory.ts";
 
 export const clamp = (value: number, minimum: number, maximum: number) =>
   Math.min(maximum, Math.max(minimum, value));
@@ -17,7 +17,7 @@ interface OverlayWindow {
   hideAtEnd: boolean;
 }
 
-function buildStoryTimeline() {
+function buildStoryTimeline(beats: StoryBeat[] = homeStory.beats) {
   const weightPerFrame = homeStory.movementWeight / (homeStory.frameCount - homeStory.posterFrame);
   const segments: FrameSegment[] = [];
   const plateaus = new Map<string, [number, number]>();
@@ -32,7 +32,7 @@ function buildStoryTimeline() {
   };
 
   let previousFrame = homeStory.posterFrame;
-  homeStory.beats.forEach((beat) => {
+  beats.forEach((beat) => {
     addSegment(beat.approachWeight ?? (beat.holdFrame - previousFrame) * weightPerFrame, previousFrame, beat.holdFrame);
     const plateau = addSegment(beat.holdWeight, beat.holdFrame, beat.holdFrame);
     if (beat.holdWeight > 0) plateaus.set(beat.id, plateau);
@@ -59,7 +59,7 @@ function buildStoryTimeline() {
     return segment.progressStart + (segment.progressEnd - segment.progressStart) * local;
   };
 
-  const overlayWindows = homeStory.beats.flatMap<OverlayWindow>((beat) => {
+  const overlayWindows = beats.flatMap<OverlayWindow>((beat) => {
     if (!beat.overlay) return [];
     if (beat.overlayFrames) {
       const hideAtEnd = beat.overlayFrames[1] < homeStory.frameCount;
@@ -85,13 +85,61 @@ function buildStoryTimeline() {
 
 export const storyTimeline = buildStoryTimeline();
 
+export const mobileStoryBeats = homeStory.beats.flatMap<StoryBeat>((source) => {
+  const beat: StoryBeat = source;
+  if (beat.overlay?.columns) {
+    return beat.overlay.columns.map((column, index) => ({
+      ...beat,
+      id: `${beat.id}-${index + 1}`,
+      frames: [beat.holdFrame, beat.holdFrame],
+      holdWeight: beat.id === "egg-transition" ? 0.85 : 0.9,
+      approachWeight: index ? 0 : beat.id === "egg-transition" ? 0.4 : 1.05,
+      overlayFrames: undefined,
+      overlay: { layout: "center", ...column },
+    }));
+  }
+  if (beat.id === "carton-open-brand") {
+    return [{
+      ...beat,
+      approachWeight: 0.6,
+      holdWeight: 0.95,
+      overlay: {
+        layout: "brand",
+        eyebrow: "Change Hospitality",
+        heading: beat.overlay?.body,
+      },
+    }];
+  }
+  if (beat.id === "egg-in-hand") {
+    return [{
+      ...beat,
+      approachWeight: 0.5,
+      holdWeight: 1.05,
+      overlay: { ...beat.overlay!, heading: "We\u2019re good eggs" },
+    }];
+  }
+  if (beat.id === "egg-zoom") return [{ ...beat, approachWeight: 0.45 }];
+  if (beat.id === "plate-center-next") return [{ ...beat, holdWeight: 1.1, approachWeight: 0 }];
+  if (beat.id === "final-plate") {
+    return [{ ...beat, holdFrame: 305, holdWeight: 0.75, approachWeight: 0.4, overlayFrames: undefined }];
+  }
+  return [beat];
+});
+
+const mobileTimeline = buildStoryTimeline(mobileStoryBeats);
+export const mobileStoryTimeline = {
+  ...mobileTimeline,
+  overlayWindows: mobileTimeline.overlayWindows.map((window, index) =>
+    index === 0 ? { ...window, progressStart: 0 } : window),
+};
+
 // Keep a fractional playhead: coded transforms must not step at the source FPS.
 // Only the image-sequence renderer rounds this value to an image number.
-export function frameForProgress(progress: number) {
+export function frameForProgress(progress: number, timeline = storyTimeline) {
   const safe = clamp(progress, 0, 1);
-  const segment = storyTimeline.segments.find(
+  const segment = timeline.segments.find(
     (item) => safe >= item.progressStart && safe <= item.progressEnd,
-  ) ?? storyTimeline.segments.at(-1);
+  ) ?? timeline.segments.at(-1);
   if (!segment) return homeStory.posterFrame;
   const length = segment.progressEnd - segment.progressStart;
   const local = length ? (safe - segment.progressStart) / length : 1;

@@ -1,5 +1,6 @@
 import { defineArrayMember, defineField, defineType, getPublishedId } from 'sanity';
 import { validateTeamOrder } from '../lib/teamOrder.ts';
+import { isOfficePhone } from '../../src/data/franchiseLocations.ts';
 
 export const location = defineType({
   name: 'location',
@@ -32,6 +33,27 @@ export const location = defineType({
       title: 'Head office',
       type: 'boolean',
       initialValue: false,
+    }),
+    defineField({
+      name: 'address',
+      title: 'Office address',
+      type: 'text',
+      rows: 3,
+      description: 'Public office address shown on the franchising map. Publish and rebuild the website to update it.',
+      validation: (rule) => rule.custom((value, context) =>
+        context.document?.active && (typeof value !== 'string' || !value.trim())
+          ? 'Active offices need a public office address.'
+          : true),
+    }),
+    defineField({
+      name: 'phone',
+      title: 'Office phone',
+      type: 'string',
+      description: 'Public telephone number shown as a clickable call link on the franchising map.',
+      validation: (rule) => rule.custom((value, context) => {
+        if (!value && !context.document?.active) return true;
+        return isOfficePhone(value) || 'Enter a public telephone number with 10 to 15 digits.';
+      }),
     }),
     defineField({
       name: 'description',
@@ -67,7 +89,7 @@ export const location = defineType({
       title: 'Display order',
       type: 'number',
       initialValue: 1000,
-      description: 'London, Manchester and Hampshire appear first in that order on the team page. Other offices use this order, then their name.',
+      description: 'London, Greater Manchester and Hampshire & Isle of Wight appear first in that order on the team page. Other offices use this order, then their name.',
       validation: (rule) => rule.integer().min(0),
     }),
   ],

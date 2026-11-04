@@ -78,21 +78,6 @@ function handPoseForPosition(frame: number) {
 
 type Point = { x: number; y: number };
 
-export function getCartonCopyBounds(viewportWidth: number, viewportHeight: number) {
-  const artboard = getStoryScene(homeStory.posterFrame, viewportWidth, viewportHeight).layers[0];
-  const scale = artboard.height / referenceHeight;
-  const bounds = animation.carton.copyBounds;
-  const margin = Math.min(16, viewportWidth * 0.05);
-  const left = Math.max(margin, artboard.x + bounds.left * scale);
-  const right = Math.min(viewportWidth - margin, artboard.x + bounds.right * scale);
-  return {
-    x: left,
-    y: bounds.top * scale,
-    width: Math.max(1, right - left),
-    height: (bounds.bottom - bounds.top) * scale,
-  };
-}
-
 // Find the smallest translation along the sleeve's outward normal that puts
 // its cut edge outside the viewport. Segment/rectangle separating axes avoid
 // unnecessary movement when the edge is already beyond the bottom-right corner.
@@ -242,4 +227,38 @@ export function getStoryScene(position: number, viewportWidth: number, viewportH
   if (frame > zoom.frames[1] && frame < shells.frames[0]) texture(sourceFrame);
   else image(sourceFrame);
   return { kind: "sequence", layers };
+}
+
+export function getMobileStoryScene(position: number, viewportWidth: number, viewportHeight: number): StoryScene {
+  const scene = getStoryScene(position, referenceWidth, referenceHeight);
+  const handProgress = progressIn(position, [40, 70]);
+  const panProgress = progressIn(position, [109, 138]);
+  const plateProgress = progressIn(position, [182, 282]);
+  const cutleryProgress = progressIn(position, [282, 305]);
+  const cameraWidth = position < 109
+    ? mix(1380, 740, handProgress)
+    : mix(mix(740, 950, panProgress), mix(850, 1050, cutleryProgress), plateProgress);
+  const cameraHeight = position < 109
+    ? mix(1080, 680, handProgress)
+    : mix(mix(680, 850, panProgress), 800, plateProgress);
+  const cameraY = position < 109 ? mix(540, 560, handProgress) : mix(560, 540, panProgress);
+  const scale = Math.min(viewportWidth / cameraWidth, viewportHeight / cameraHeight);
+  const offsetX = viewportWidth / 2 - referenceWidth / 2 * scale;
+  const offsetY = viewportHeight / 2 - cameraY * scale;
+
+  return {
+    kind: scene.kind,
+    layers: scene.layers.map((layer) => ({
+      ...layer,
+      x: offsetX + layer.x * scale,
+      y: offsetY + layer.y * scale,
+      width: layer.width * scale,
+      height: layer.height * scale,
+      rotation: layer.rotation ? {
+        radians: layer.rotation.radians,
+        x: offsetX + layer.rotation.x * scale,
+        y: offsetY + layer.rotation.y * scale,
+      } : undefined,
+    })),
+  };
 }

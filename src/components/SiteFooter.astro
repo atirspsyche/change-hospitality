@@ -25,6 +25,7 @@ const footerLinks = [
   { label: "Sustainability", href: "/sustainability-impact/" },
 ];
 const year = new Date().getFullYear();
+const currentPath = `${Astro.url.pathname.replace(/\/+$/, "")}/`;
 ---
 
 <div class="footer-backdrop" style={{ backgroundColor: backdropColor }}>
@@ -82,7 +83,7 @@ const year = new Date().getFullYear();
 
       <figure class="footer-art">
         <FooterIllustration />
-        <figcaption>Good people. Great hospitality.</figcaption>
+        <figcaption>We&rsquo;re good eggs</figcaption>
       </figure>
     </div>
 
@@ -117,13 +118,17 @@ const year = new Date().getFullYear();
           <nav aria-label="Policy documents">
             {
               policyLinks.map((link) => (
-                <a href={link.href} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={link.href}
+                  aria-current={currentPath === link.href ? "page" : undefined}
+                  transition:name={currentPath === link.href ? undefined : `policy-shell-${link.slug}`}
+                  data-policy-link={link.slug}
+                >
                   <svg class="footer-policy-outline" viewBox="0 0 240 44" preserveAspectRatio="none" fill="none" aria-hidden="true" focusable="false">
                     <path d="M22 3C72 1 161 4 216 2C243 1 244 40 218 41C161 44 79 40 23 42C-3 43-4 4 22 3Z" />
                   </svg>
-                  <span>
+                  <span transition:name={currentPath === link.href ? undefined : `policy-title-${link.slug}`}>
                     {link.label}
-                    <span class="sr-only"> (opens in a new tab)</span>
                   </span>
                   <ArrowUpRight class="footer-policy-arrow" size={14} aria-hidden="true" />
                 </a>
@@ -156,7 +161,7 @@ const year = new Date().getFullYear();
 
           <a class="footer-brand" href="/" aria-label="Change Hospitality home">
             <img
-              src="/CH_LOGO.svg"
+              src="/CH_LOGO_2.png"
               alt="Change Hospitality"
               width="314"
               height="276"

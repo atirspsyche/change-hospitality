@@ -1,5 +1,8 @@
 ---
 import FranchiseMap from "./FranchiseMap";
+import { getFranchiseLocations } from "../sanity/queries";
+
+const locations = await getFranchiseLocations();
 ---
 
-<FranchiseMap client:visible />
+<FranchiseMap locations={locations} client:visible />

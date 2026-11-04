@@ -5,6 +5,7 @@ import HomeStoryHero from '../components/HomeStoryHero';
 import PageMotion from '../components/PageMotion.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getFranchiseLocations } from '../sanity/queries';
 
 /*
 import ApplicationSection from '../components/ApplicationSection.astro';
@@ -22,6 +23,7 @@ const homeSectionLinks = [
   { label: 'Live jobs', href: '#opportunities', meta: 'Open opportunities' },
   { label: 'Apply', href: '#apply', meta: 'Join the pass' },
 ];
+const franchiseLocations = await getFranchiseLocations();
 ---
 
 <BaseLayout loadStory>
@@ -32,7 +34,7 @@ const homeSectionLinks = [
     menuButtonTextColor="var(--color-ink)"
   />
   <main class="home-page bg-cream text-ink">
-    <HomeStoryHero client:load />
+    <HomeStoryHero franchiseLocations={franchiseLocations} client:load />
     <!-- <div class="home-story-link">
       <p>A little idea. A lot of heart.</p>
       <PrimaryButton

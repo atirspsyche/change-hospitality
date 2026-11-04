@@ -1,9 +1,11 @@
 import type { JobPosting } from '../data/jobs';
 import type { OfficeLocation, TeamMember } from '../data/team';
 import { requireImpactNumbers } from '../lib/impactNumbers';
+import { franchiseMapPositions, requireFranchiseLocations, type FranchiseOfficeContent } from '../data/franchiseLocations';
 import { sanityClient } from './client';
 import { buildImage, type SourceImage } from '../lib/sanityImages';
-import type { PublicContacts, ClientLogo, CandidatePhoto, Testimonial, PolicyLink, TemporaryWork } from '../data/editorial';
+import type { PublicContacts, ClientLogo, CandidatePhoto, Testimonial, TemporaryWork } from '../data/editorial';
+import { policyHref, requirePolicies, type PolicyLink } from '../lib/policies';
 
 const jobsQuery = `
   *[_type == "job" && defined(slug.current)] | order(publishedAt desc) {
@@ -80,6 +82,13 @@ export const getTeamMembers = async (): Promise<TeamMember[]> => {
 export const getActiveLocations = () =>
   sanityClient.fetch<OfficeLocation[]>(activeLocationsQuery);
 
+export const getFranchiseLocations = async () =>
+  requireFranchiseLocations(await sanityClient.fetch<FranchiseOfficeContent[]>(
+    '*[_type == "location" && _id in $ids] {_id, name, isHeadOffice, address, phone}',
+    { ids: franchiseMapPositions.map(({ id }) => id) },
+    { perspective: 'published' },
+  ));
+
 export const getImpactNumbers = async () =>
   requireImpactNumbers(await sanityClient.fetch<unknown>(
     impactNumbersQuery,
@@ -102,9 +111,17 @@ export async function getTestimonials(audience: 'client' | 'candidate'): Promise
   return Promise.all(entries.map(async ({ client, ...entry }) => ({ ...entry, client: client ? { ...client, logo: await buildImage(client.logo, 'logo') } : undefined })));
 }
 
-export const getPolicyLinks = () => sanityClient.fetch<PolicyLink[]>(
-  '*[_type == "policy" && visible != false] | order(sortOrder asc) {_id, label, href}',
-);
+export const getPolicies = async () => requirePolicies(await sanityClient.fetch<unknown>(
+  '*[_type == "policy" && visible != false] | order(sortOrder asc, label asc) {_id, label, title, slug, description, theme, body}',
+  {},
+  { perspective: 'published' },
+));
+
+export async function getPolicyLinks(): Promise<PolicyLink[]> {
+  return (await getPolicies()).map(({ _id, label, slug }) => ({
+    _id, label, slug: slug.current, href: policyHref(slug.current),
+  }));
+}
 
 export async function getCandidateGallery(): Promise<CandidatePhoto[]> {
   const photos = await sanityClient.fetch<Array<SourceImage & { _key: string }> | null>(

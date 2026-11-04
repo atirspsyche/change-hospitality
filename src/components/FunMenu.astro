@@ -1,5 +1,6 @@
 ---
 import { getPublicContacts } from '../sanity/queries';
+import SiteLogo from './SiteLogo.astro';
 const contacts = await getPublicContacts();
 export interface FunMenuLink {
   label: string;
@@ -58,7 +59,7 @@ const menuPalettes = [
   <div class="funmenu-bar" data-funmenu-bar>
     <a class="funmenu-brand" href="/" aria-label="Change Hospitality home">
       <span class="funmenu-brand-artwork">
-        <img src="/change-hospitality-logo-new.svg" alt="Change Hospitality" width="2000" height="2000" />
+        <SiteLogo />
       </span>
     </a>
 
@@ -202,7 +203,7 @@ const menuPalettes = [
     position: relative;
     display: block;
     width: clamp(8.5rem, 40vw, 13rem);
-    aspect-ratio: 130 / 43;
+    aspect-ratio: 110 / 39;
     justify-self: start;
   }
 
@@ -212,17 +213,6 @@ const menuPalettes = [
     overflow: hidden;
     pointer-events: none;
     transform-origin: 50% 70%;
-  }
-
-  .funmenu-brand img {
-    position: absolute;
-    top: 50%;
-    height: auto;
-    width: 100%;
-    object-fit: contain;
-    transform: translateY(-50%);
-    filter: brightness(0);
-    opacity: 0.85;
   }
 
   @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {

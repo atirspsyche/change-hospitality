@@ -239,6 +239,22 @@
   line-height: 1.5;
 }
 
+.office-marker__phone {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  color: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.office-marker__phone:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
 .franchise-map__caption {
   display: grid;
   gap: 0.35rem;
@@ -308,4 +324,94 @@
   .office-marker__card {
     transition: none;
   }
+}
+
+.franchise-map--compact .franchise-map__heading {
+  display: none;
+}
+
+.franchise-map--compact .franchise-map__art {
+  display: grid;
+  height: 100%;
+  grid-template-columns: min(45cqw, 70cqh) minmax(0, 1fr);
+  grid-template-rows: repeat(3, 44px);
+  align-content: center;
+  align-items: center;
+  column-gap: 1rem;
+  row-gap: 0.5rem;
+  aspect-ratio: auto;
+}
+
+.franchise-map--compact .franchise-map__illustration {
+  grid-column: 1;
+  grid-row: 1 / -1;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 600 / 849;
+}
+
+.franchise-map--compact .office-marker {
+  position: static;
+  inset: auto;
+  grid-column: 2;
+  width: 100%;
+  height: 44px;
+  transform: none;
+  pointer-events: auto;
+}
+
+.franchise-map--compact .office-marker__button {
+  display: flex;
+  width: 100%;
+  gap: 0.5rem;
+  border-radius: 0;
+  text-align: left;
+}
+
+.franchise-map--compact .office-marker__label {
+  position: static;
+  width: auto;
+  max-width: none;
+  padding: 0;
+  background: none;
+  color: var(--color-obsidian);
+  font-size: 0.75rem;
+  text-align: left;
+  transform: none;
+}
+
+.franchise-map--compact .office-marker__hq {
+  display: none;
+}
+
+.franchise-map--compact .office-marker__dot {
+  flex: none;
+  width: 20px;
+  height: 20px;
+}
+
+.franchise-map--compact .office-marker__card {
+  top: 50%;
+  right: 0;
+  bottom: auto;
+  left: 0;
+  width: min(15rem, 80cqw);
+  margin-inline: auto;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  transform: translateY(-50%);
+}
+
+.franchise-map--compact [data-visible] > .office-marker__card {
+  transform: translateY(-50%);
+}
+
+.franchise-map--compact .office-marker__card-tag,
+.franchise-map--compact .office-marker__card-type,
+.franchise-map--compact .office-marker__underline {
+  display: none;
+}
+
+.franchise-map--compact .office-marker__address {
+  margin-top: 0.5rem;
 }

@@ -27,6 +27,11 @@ export default defineConfig({
         hasTouch: true,
       },
     },
+    {
+      name: "webkit",
+      testMatch: "**/dropdown-scroll.spec.js",
+      use: { browserName: "webkit", viewport: { width: 1440, height: 900 } },
+    },
   ],
   webServer: {
     command: "npm run dev -- --host 127.0.0.1",

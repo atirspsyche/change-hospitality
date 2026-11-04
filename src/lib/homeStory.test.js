@@ -1,9 +1,11 @@
 import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
+import sharp from "sharp";
 import { homeStory, getStoryFrameUrl } from "../data/homeStory.ts";
-import { frameForProgress, storyTimeline } from "./homeStoryTimeline.ts";
-import { getCartonCopyBounds, getStoryLayerBounds, getStoryScene, sequenceFrameForPosition, storySequenceFrames } from "./homeStoryScene.ts";
+import { frameForProgress, mobileStoryBeats, mobileStoryTimeline, storyTimeline } from "./homeStoryTimeline.ts";
+import { getMobileStoryScene, getStoryLayerBounds, getStoryScene, sequenceFrameForPosition, storySequenceFrames } from "./homeStoryScene.ts";
 
 const close = (actual, expected) => assert.ok(Math.abs(actual - expected) < 0.00001, `${actual} ≠ ${expected}`);
 const { animation } = homeStory;
@@ -16,6 +18,52 @@ test("the opening brand overlay contains only the recruitment line", () => {
   });
 });
 
+test("the recruitment line is printed in every visible inside-lid frame with the shared grey", async () => {
+  const css = await readFile(new URL("../styles/global.css", import.meta.url), "utf8");
+  const ink = css.match(/--color-carton-ink:\s*#([\da-f]{6})/i)[1]
+    .match(/../g).map((hex) => Number.parseInt(hex, 16));
+  for (let frame = 16; frame <= 58; frame++) {
+    const url = new URL(`../../public${getStoryFrameUrl(frame)}`, import.meta.url);
+    const { data, info } = await sharp(await readFile(url)).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    assert.deepEqual([info.width, info.height], [1920, 1080]);
+    let printedPixels = 0;
+    for (let offset = 0; offset < data.length; offset += 4) {
+      if (data[offset + 3] === 255 && ink.every((channel, index) => Math.abs(data[offset + index] - channel) < 8)) {
+        printedPixels++;
+      }
+    }
+    assert.ok(printedPixels > 50, `Missing printed recruitment line in frame ${frame}.`);
+  }
+});
+
+test("mobile gives each message its own chapter without changing desktop beats", () => {
+  assert.deepEqual(mobileStoryTimeline.overlayWindows.map((window) => window.id), [
+    "carton-open-brand", "egg-in-hand", "egg-transition-1", "egg-transition-2",
+    "plate-center-1", "plate-center-2", "plate-center-next", "final-plate",
+  ]);
+  const overlays = mobileStoryBeats.filter((beat) => beat.overlay);
+  assert.ok(overlays.every((beat) => !beat.overlay.columns));
+  assert.equal(overlays[1].overlay.heading, "We\u2019re good eggs");
+  assert.equal(overlays[2].overlay.body, homeStory.beats[3].overlay.columns[0].body);
+  assert.equal(overlays[3].overlay.action.href, "/jobs/");
+  assert.equal(overlays[4].overlay.action.href, "/team/");
+  assert.equal(overlays[5].overlay.action.href, "/sustainability-impact/");
+  assert.equal(homeStory.beats[1].overlay.heading,
+    "We build bridges between passionate people and the best hospitality venues");
+  close(mobileStoryTimeline.scrollScreens, storyTimeline.scrollScreens);
+  close(mobileStoryTimeline.overlayWindows[0].progressStart, 0);
+  close(mobileStoryTimeline.overlayWindows.at(-1).progressEnd, 1);
+  mobileStoryTimeline.overlayWindows.forEach((window, index) => {
+    const midpoint = (window.progressStart + window.progressEnd) / 2;
+    close(frameForProgress(midpoint, mobileStoryTimeline), overlays[index].holdFrame);
+    if (index) assert.ok(window.progressStart >= mobileStoryTimeline.overlayWindows[index - 1].progressEnd);
+  });
+  const frames = Array.from({ length: 1001 }, (_, index) => frameForProgress(index / 1000, mobileStoryTimeline));
+  assert.ok(frames.every((frame, index) => !index || frame >= frames[index - 1]));
+  close(frames[0], 1);
+  close(frames.at(-1), 305);
+});
+
 test("the storyboard omits egg-four-ways and has no terminal hold", () => {
   const plateaus = storyTimeline.segments.filter((segment) => segment.frameStart === segment.frameEnd);
   assert.deepEqual(plateaus.map((segment) => segment.frameStart), [40, 70, 282, 282]);
@@ -26,6 +74,34 @@ test("the storyboard omits egg-four-ways and has no terminal hold", () => {
   }
   close(frameForProgress(0), 1);
   close(frameForProgress(1), 305);
+});
+
+test("the mobile camera fits a complete table setting without moving cutlery over the plate", () => {
+  for (const [width, height] of [[288, 120], [354, 280], [394, 400], [700, 320]]) {
+    const scene = getMobileStoryScene(305, width, height);
+    const plate = scene.layers[0];
+    const scale = plate.width / animation.referenceWidth;
+    const plateLeft = plate.x + animation.cutlery.plateBounds.left * scale;
+    const plateRight = plate.x + animation.cutlery.plateBounds.right * scale;
+    const fork = scene.layers.find((layer) => layer.asset === "fork");
+    const knife = scene.layers.find((layer) => layer.asset === "knife");
+    assert.ok(fork.x + animation.sprites.fork.bounds.left * scale >= 0);
+    assert.ok(fork.x + animation.sprites.fork.bounds.right * scale < plateLeft);
+    assert.ok(knife.x + animation.sprites.knife.bounds.left * scale > plateRight);
+    assert.ok(knife.x + animation.sprites.knife.bounds.right * scale <= width);
+    for (const layer of scene.layers) {
+      close(layer.width / layer.height, animation.referenceWidth / animation.referenceHeight);
+    }
+    const egg = transformedPoint(getMobileStoryScene(70, width, height).layers[0], animation.hand.origin);
+    assert.ok(egg.x > 0 && egg.x < width && egg.y > 0 && egg.y < height);
+    for (const boundary of [40, 70, 109, 138, 182, 282]) {
+      const before = getMobileStoryScene(boundary - 0.000001, width, height).layers[0];
+      const after = getMobileStoryScene(boundary, width, height).layers[0];
+      if (before.asset === after.asset) {
+        for (const key of ["x", "y", "width", "height"]) assert.ok(Math.abs(before[key] - after[key]) < 0.01);
+      }
+    }
+  }
 });
 
 test("the story preserves its scroll pacing with two consecutive centered reveals", () => {
@@ -50,7 +126,8 @@ test("the story preserves its scroll pacing with two consecutive centered reveal
   const franchises = homeStory.beats.find((beat) => beat.id === second.id);
   assert.equal(franchises.overlay.layout, "locations");
   assert.equal(franchises.overlay.columns, undefined);
-  assert.equal(franchises.overlay.heading, "Build something of your own");
+  assert.equal(franchises.overlay.heading, "Build your own recruitment business");
+  assert.equal(franchises.overlay.action.label, "Explore Franchising");
   assert.equal(franchises.overlay.action.href, "/franchising/");
   assert.ok(second.progressEnd < storyTimeline.progressForFrame(292));
 });
@@ -245,19 +322,6 @@ test("hand key poses match the reference at its original aspect ratio", () => {
 });
 
 for (const [width, height] of [[1440, 900], [1438, 768], [1512, 982], [1920, 1080], [2560, 1080], [3440, 1440], [5120, 1440], [390, 844], [320, 568], [1024, 600]]) {
-  test(`${width}x${height}: opening copy stays within the carton print area and viewport`, () => {
-    const artboard = getStoryScene(40, width, height).layers[0];
-    const scale = height / animation.referenceHeight;
-    const bounds = animation.carton.copyBounds;
-    const copy = getCartonCopyBounds(width, height);
-    assert.ok(copy.width > 0 && copy.height > 0);
-    assert.ok(copy.x >= 0 && copy.x + copy.width <= width);
-    assert.ok(copy.x >= artboard.x + bounds.left * scale - 0.00001);
-    assert.ok(copy.x + copy.width <= artboard.x + bounds.right * scale + 0.00001);
-    close(copy.y, bounds.top * scale);
-    close(copy.y + copy.height, bounds.bottom * scale);
-  });
-
   test(`${width}×${height}: height-fit, offscreen shell exits and visible final cutlery`, () => {
     const scale = height / animation.referenceHeight;
     const ordinary = getStoryScene(40, width, height).layers[0];

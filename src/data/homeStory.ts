@@ -57,6 +57,8 @@ export interface StoryBeat {
   overlay?: StoryOverlay;
 }
 
+export const homeStoryRecruitmentLine = "Specialists in hospitality recruitment and staffing";
+
 export const homeStory = {
   // Logical frames include the coded transitions, not just downloaded images.
   frameCount: 305,
@@ -74,9 +76,6 @@ export const homeStory = {
   animation: {
     referenceWidth: 1920,
     referenceHeight: 1080,
-    carton: {
-      copyBounds: { left: 560, right: 1320, top: 340, bottom: 720 },
-    },
     hand: {
       frames: [55, 84] as const,
       // Keep these sequence frames ABOVE the coded hand so the carton hides it.
@@ -172,7 +171,7 @@ export const homeStory = {
       holdWeight: 0.75,
       overlay: {
         layout: "brand",
-        body: "Specialists in hospitality recruitment and staffing",
+        body: homeStoryRecruitmentLine,
       },
     },
     {
@@ -218,7 +217,7 @@ export const homeStory = {
           {
             eyebrow: "For Businesses",
             heading: "Build a team that delivers.",
-            body: "Permanent, temporary talent across front of house, back of house, events and commercial roles.",
+            body: "Permanent and temporary talent across front of house, back of house, events and commercial roles.",
             action: {
               label: "Find talent",
               href: "/recruit-talent/",
@@ -271,13 +270,13 @@ export const homeStory = {
       overlay: {
         layout: "locations",
         eyebrow: "Franchising",
-        heading: "Build something of your own",
-        body: "Local people. Lasting relationships. From our London head office to Manchester and Hampshire, we're growing a business built on knowing hospitality face to face. Your patch could be next.",
+        heading: "Build your own recruitment business",
+        body: "Our national agreements with some of the UK\u2019s biggest caterers mean work is waiting before you open. Run your own Change Hospitality franchise, with our training, our systems and our team behind you every step of the way.",
         typography: {
           headingSize: "clamp(2rem, 4.2vw, 4.5rem)",
           bodySize: "clamp(0.9rem, 1.25vw, 1.1rem)",
         },
-        action: { label: "Explore franchising", href: "/franchising/", tone: "citron" },
+        action: { label: "Explore Franchising", href: "/franchising/", tone: "citron" },
       },
     },
     {

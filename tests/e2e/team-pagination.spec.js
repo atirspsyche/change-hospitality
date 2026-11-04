@@ -61,6 +61,30 @@ async function expectContrast(directory) {
   }
 }
 
+async function expectNamesToFit(directory, width) {
+  const issues = await directory.locator(".team-card-name, .team-note-name").evaluateAll((headings) => {
+    const problems = [];
+    for (const heading of headings) {
+      const bounds = heading.getBoundingClientRect();
+      if (heading.scrollWidth > heading.clientWidth + 1) {
+        problems.push({ name: heading.textContent, heading: heading.className, overflow: heading.scrollWidth - heading.clientWidth });
+      }
+      for (const word of heading.textContent.matchAll(/[^\s-]+/g)) {
+        const range = document.createRange();
+        range.setStart(heading.firstChild, word.index);
+        range.setEnd(heading.firstChild, word.index + word[0].length);
+        const fragments = [...range.getClientRects()];
+        const lines = new Set(fragments.map((fragment) => Math.round(fragment.top)));
+        if (lines.size !== 1 || fragments.some((fragment) => fragment.left < bounds.left - 1 || fragment.right > bounds.right + 1)) {
+          problems.push({ name: heading.textContent, heading: heading.className, word: word[0], lines: lines.size });
+        }
+      }
+    }
+    return problems;
+  });
+  expect(issues, `${width}px profile names must keep whole words inside their headings`).toEqual([]);
+}
+
 test("team pagination renders only the current page and never downloads off-page portraits", async ({ page }) => {
   const requests = [];
   const errors = [];
@@ -211,10 +235,32 @@ test("team pagination fits narrow screens, keeps touch targets, and meets AA tex
   }
 });
 
+test("team profile names fit whole words on cards and biography sheets across screen sizes", async ({ page }, testInfo) => {
+  await page.goto("/team/#profiles");
+  const directory = page.locator("[data-team-directory]").first();
+  await directory.scrollIntoViewIfNeeded();
+  await expect(directory).toHaveAttribute("data-ready", "true");
+  await page.evaluate(() => document.fonts.ready);
+  const team = await readTeam(directory);
+  const widths = testInfo.project.name === "mobile" ? [320, 390, 639] : [640, 768, 1024, 1279, 1280, 1440, 1920];
+  for (let currentPage = 1; currentPage <= Math.ceil(team.members.length / pageSize); currentPage += 1) {
+    const start = (currentPage - 1) * pageSize;
+    await expect(directory.locator(".team-card-name")).toHaveText(team.members.slice(start, start + pageSize).map((member) => member.name));
+    for (const width of widths) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.evaluate(() => new Promise(requestAnimationFrame));
+      await expectNamesToFit(directory, width);
+    }
+    if (currentPage * pageSize < team.members.length) {
+      await directory.getByRole("button", { name: `Next ${team.office} team page` }).click();
+    }
+  }
+});
+
 test.describe("team pagination without JavaScript", () => {
   test.use({ javaScriptEnabled: false });
 
-  test("team fallback keeps every profile available without activating pagination", async ({ page }) => {
+  test("team fallback keeps every profile available without activating pagination", async ({ page }, testInfo) => {
     await page.goto("/team/");
     const office = page.locator("[data-accordion-item]").first();
     const total = Number(await office.locator(".team-accordion-count").textContent());
@@ -226,6 +272,12 @@ test.describe("team pagination without JavaScript", () => {
     }
     for (const image of await office.locator(".team-card-avatar").all()) {
       await expect(image).toHaveAttribute("loading", "lazy");
+    }
+    await page.evaluate(() => document.fonts.ready);
+    const widths = testInfo.project.name === "mobile" ? [320, 390] : [640, 1280, 1920];
+    for (const width of widths) {
+      await page.setViewportSize({ width, height: 900 });
+      await expectNamesToFit(directory, width);
     }
   });
 });
