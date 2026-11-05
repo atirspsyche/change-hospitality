@@ -113,6 +113,45 @@ test('policy covers and body text meet AA contrast and fit desktop and mobile wi
   expect(colours.size).toBe(4);
 });
 
+test('policy navigation stays transparent and neutral with a readable logo over the cover and copy', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  for (const policy of policies) {
+    await page.goto(`/policies/${policy.slug}/`);
+    const bar = page.locator('[data-funmenu-bar]');
+    const logo = bar.locator('.site-logo');
+    const darkCover = ['cocoa', 'bcorp-green'].includes(policy.theme);
+    await expect(bar).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    await expect(logo).toHaveCSS('filter', 'none');
+    await expect(logo).toHaveCSS('color', darkCover ? 'rgb(247, 233, 222)' : 'rgb(13, 13, 13)');
+    await expect(logo.locator('image')).toHaveCSS('filter', 'none');
+    const palette = await page.locator('[data-funmenu]').evaluate((menu) => ({
+      background: menu.style.getPropertyValue('--menu-toggle-background').trim(),
+      border: menu.style.getPropertyValue('--menu-toggle-border').trim(),
+      text: menu.style.getPropertyValue('--menu-toggle-text').trim(),
+    }));
+    expect(palette).toEqual({
+      background: 'var(--color-cream)', border: 'var(--color-cocoa)', text: 'var(--color-cocoa)',
+    });
+
+    await page.locator('[data-policy-copy]').evaluate((copy) => {
+      window.scrollTo(0, copy.getBoundingClientRect().top + window.scrollY + 120);
+    });
+    await expect(page.locator('[data-policy-theme]')).not.toHaveAttribute('data-policy-cover-visible', '');
+    await page.evaluate(() => window.scrollBy(0, -32));
+    await expect(bar).not.toHaveClass(/is-hidden/);
+    await expect(bar).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    await expect(logo).toHaveCSS('color', 'rgb(13, 13, 13)');
+    await expect(logo.locator('image')).toHaveCSS('filter', 'none');
+    await expect(logo).toHaveCSS('opacity', '0.85');
+    await page.locator('[data-funmenu-toggle]').click();
+    await expect(page.getByRole('dialog', { name: 'Site menu' })).toBeVisible();
+    await page.keyboard.press('Escape');
+
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await expect(logo).toHaveCSS('color', darkCover ? 'rgb(247, 233, 222)' : 'rgb(13, 13, 13)');
+  }
+});
+
 test('policy content keeps list numbering, nested formatting, contact breaks and keyboard access with reduced motion', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/policies/equality-inclusion-diversity/');

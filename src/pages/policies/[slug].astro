@@ -4,7 +4,7 @@ import FunMenu from '../../components/FunMenu.astro';
 import PolicyContent from '../../components/PolicyContent.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { policyHref, policyThemes, type PolicyPage } from '../../lib/policies';
+import { policyHref, type PolicyPage } from '../../lib/policies';
 import { getPolicies } from '../../sanity/queries';
 
 interface Props {
@@ -17,7 +17,6 @@ export const getStaticPaths = (async () => (await getPolicies()).map((policy) =>
 }))) satisfies GetStaticPaths;
 
 const { policy } = Astro.props;
-const theme = policyThemes[policy.theme];
 const url = new URL(policyHref(policy.slug.current), Astro.site || Astro.url.origin).toString();
 const structuredData = {
   '@context': 'https://schema.org',
@@ -35,17 +34,10 @@ const structuredData = {
   image="/CH_LOGO.svg"
   {structuredData}
 >
-  <div
-    class="policy-page"
-    data-policy-theme={policy.theme}
-    style={{ '--policy-cover': theme.background }}
-  >
+  <div class="policy-page" data-policy-theme={policy.theme} data-policy-cover-visible>
     <a class="policy-skip" href="#policy-copy">Skip to policy content</a>
     <FunMenu
       sectionLinks={[{ label: 'Policy', href: '#policy-title', meta: policy.title }]}
-      menuButtonBackground={theme.foreground}
-      menuButtonBorderColor={theme.foreground}
-      menuButtonTextColor={theme.background}
     />
     <main>
       <PolicyContent {policy} />
@@ -61,13 +53,9 @@ const structuredData = {
     color: var(--color-cocoa);
   }
 
-  .policy-page :global(.funmenu-bar) {
-    background: var(--policy-cover);
-  }
-
-  .policy-page[data-policy-theme='cocoa'] :global(.site-logo),
-  .policy-page[data-policy-theme='bcorp-green'] :global(.site-logo) {
-    filter: brightness(0) invert(1);
+  .policy-page[data-policy-cover-visible][data-policy-theme='cocoa'] :global(.site-logo),
+  .policy-page[data-policy-cover-visible][data-policy-theme='bcorp-green'] :global(.site-logo) {
+    color: var(--color-cream);
     opacity: 1;
   }
 
@@ -91,3 +79,29 @@ const structuredData = {
     outline-offset: 3px;
   }
 </style>
+
+<script>
+  let disconnectPolicyCover: (() => void) | undefined;
+
+  function initPolicyCover() {
+    disconnectPolicyCover?.();
+    disconnectPolicyCover = undefined;
+    const root = document.querySelector<HTMLElement>('.policy-page');
+    const cover = root?.querySelector<HTMLElement>('[data-policy-cover]');
+    const bar = root?.querySelector<HTMLElement>('[data-funmenu-bar]');
+    if (!root || !cover || !bar) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => root.toggleAttribute('data-policy-cover-visible', entry.isIntersecting));
+    }, { rootMargin: `-${bar.offsetHeight / 2}px 0px 0px 0px` });
+    observer.observe(cover);
+    disconnectPolicyCover = () => observer.disconnect();
+  }
+
+  initPolicyCover();
+  document.addEventListener('astro:page-load', initPolicyCover);
+  document.addEventListener('astro:before-swap', () => {
+    disconnectPolicyCover?.();
+    disconnectPolicyCover = undefined;
+  });
+</script>

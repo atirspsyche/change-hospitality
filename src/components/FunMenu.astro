@@ -1098,18 +1098,29 @@ const menuPalettes = [
       });
     }
 
-    // Hide the bar on scroll down, reveal on scroll up.
+    // Ignore idle events, small scroll corrections and mobile overscroll.
     let lastScroll = window.scrollY;
+    bar?.addEventListener('focusin', () => {
+      bar.classList.remove('is-hidden');
+      lastScroll = window.scrollY;
+    }, { signal: listeners.signal });
+
     window.addEventListener(
       'scroll',
       () => {
         if (open || !bar) return;
-        const current = window.scrollY;
-        if (current > lastScroll && current > 120) {
-          bar.classList.add('is-hidden');
-        } else {
+        const current = Math.max(0, Math.min(
+          window.scrollY,
+          document.documentElement.scrollHeight - window.innerHeight,
+        ));
+        if (current <= 120) {
           bar.classList.remove('is-hidden');
+          lastScroll = current;
+          return;
         }
+        const delta = current - lastScroll;
+        if (Math.abs(delta) < 12) return;
+        bar.classList.toggle('is-hidden', delta > 0);
         lastScroll = current;
       },
       { passive: true, signal: listeners.signal }

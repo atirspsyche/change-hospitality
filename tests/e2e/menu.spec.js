@@ -25,11 +25,16 @@ test.beforeEach(async ({ page }) => {
 test("the header matches the loading-screen logo without shadows or borders", async ({ page }, testInfo) => {
   const brand = page.getByRole("link", { name: "Change Hospitality home", exact: true }).first();
   const logo = brand.getByRole("img", { name: "Change Hospitality" });
-  await expect(logo.locator("image")).toHaveAttribute("href", "/new-change-logo.svg");
+  await expect(logo.locator("path")).toHaveCount(2);
+  await expect(logo.locator("image")).toHaveCount(1);
+  await expect(logo.locator("image")).toHaveAttribute("href", "/client-logos/sustainability-logo/EN-B-Corp-logo.png");
+  await expect(logo.locator("mask")).toHaveCSS("mask-type", "alpha");
+  await expect(logo.locator("rect")).toHaveAttribute("mask", `url(#${await logo.locator("mask").getAttribute("id")})`);
   await expect(logo).toHaveAttribute("viewBox", "62 100 110 39");
   await expect(logo).toHaveAttribute("preserveAspectRatio", "xMidYMid meet");
   await expect(brand).toHaveCSS("filter", "none");
-  await expect(logo).toHaveCSS("filter", "brightness(0)");
+  await expect(logo).toHaveCSS("filter", "none");
+  await expect(logo).toHaveCSS("color", (await tokenColours(page, ["obsidian"])).obsidian);
   await expect(logo).toHaveCSS("opacity", "0.85");
 
   for (const element of [brand, logo]) {
@@ -60,19 +65,85 @@ test("the header matches the loading-screen logo without shadows or borders", as
 
   const initialBounds = await brand.boundingBox();
   await brand.hover();
-  await expect(logo).toHaveCSS("filter", "brightness(0)");
+  await expect(logo).toHaveCSS("filter", "none");
   expect(await brand.boundingBox()).toEqual(initialBounds);
   await brand.focus();
   await expect(brand).toBeFocused();
   await expect(brand).toHaveCSS("outline-style", "solid");
-  await expect(logo).toHaveCSS("filter", "brightness(0)");
+  await expect(logo).toHaveCSS("filter", "none");
 
   await page.goto("/");
   const loadingLogo = page.locator(".loading-brand [role='img']");
+  await expect(loadingLogo.locator("path")).toHaveCount(2);
+  await expect(loadingLogo.locator("path").first()).toHaveAttribute("d", await logo.locator("path").first().getAttribute("d"));
   await expect(loadingLogo.locator("image")).toHaveAttribute("href", await logo.locator("image").getAttribute("href"));
+  const maskIds = await page.locator(".site-logo mask").evaluateAll(masks => masks.map(mask => mask.id));
+  expect(new Set(maskIds).size).toBe(maskIds.length);
   await expect(loadingLogo).toHaveAttribute("viewBox", await logo.getAttribute("viewBox"));
   await expect(loadingLogo).toHaveCSS("filter", await logo.evaluate(image => getComputedStyle(image).filter));
   await expect(loadingLogo).toHaveCSS("opacity", await logo.evaluate(image => getComputedStyle(image).opacity));
+});
+
+test("the navbar stays stable when scrolling stops on every main page", async ({ page }) => {
+  test.slow();
+  const bar = page.locator("[data-funmenu-bar]");
+  const scrollTo = async (top) => {
+    await page.evaluate((top) => {
+      window.scrollTo(0, top);
+      window.dispatchEvent(new Event("scroll"));
+    }, top);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(top);
+  };
+
+  for (const route of ["/jobs/", "/recruit-talent/", "/team/", "/our-story/", "/franchising/", "/sustainability-impact/", "/"]) {
+    await test.step(route, async () => {
+      await page.goto(route);
+      await expect(page.locator("[data-funmenu]")).toHaveAttribute("data-funmenu-ready", "true");
+      await expect(page.locator("html")).not.toHaveAttribute("data-story-loading", "");
+
+      await scrollTo(600);
+      await expect(bar).toHaveClass(/is-hidden/);
+      await page.evaluate(() => {
+        for (let index = 0; index < 10; index += 1) window.dispatchEvent(new Event("scroll"));
+      });
+      await expect(bar).toHaveClass(/is-hidden/);
+
+      for (const top of [601, 599, 600]) {
+        await scrollTo(top);
+        await expect(bar).toHaveClass(/is-hidden/);
+      }
+
+      await scrollTo(588);
+      await expect(bar).not.toHaveClass(/is-hidden/);
+      for (const top of [589, 587, 588]) {
+        await scrollTo(top);
+        await expect(bar).not.toHaveClass(/is-hidden/);
+      }
+      for (let top = 589; top <= 600; top += 1) await scrollTo(top);
+      await expect(bar).toHaveClass(/is-hidden/);
+
+      await scrollTo(0);
+      await expect(bar).not.toHaveClass(/is-hidden/);
+    });
+  }
+});
+
+test("keyboard focus reveals a scroll-hidden navbar without moving the page", async ({ page }) => {
+  const bar = page.locator("[data-funmenu-bar]");
+  await page.evaluate(() => {
+    window.scrollTo(0, 600);
+    window.dispatchEvent(new Event("scroll"));
+  });
+  await expect(bar).toHaveClass(/is-hidden/);
+  await page.locator(toggleSelector).evaluate((toggle) => toggle.focus({ preventScroll: true }));
+  await expect(bar).not.toHaveClass(/is-hidden/);
+  await expect(page.locator(toggleSelector)).toBeFocused();
+  expect(await page.evaluate(() => window.scrollY)).toBe(600);
+  await page.keyboard.press("Enter");
+  await expect(page.locator(overlaySelector)).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.locator(toggleSelector)).toBeFocused();
+  await expect(bar).not.toHaveClass(/is-hidden/);
 });
 
 test("the logo hover is springy without moving its link and respects motion preferences", async ({ page }, testInfo) => {
@@ -102,7 +173,7 @@ test("the logo hover is springy without moving its link and respects motion pref
   })).toEqual({ angle: -3, scaleX: 1035, scaleY: 1015, x: 0, y: -2 });
   expect(await brand.boundingBox()).toEqual(initialBounds);
   await expect(artwork).toHaveCSS("box-shadow", "none");
-  await expect(brand.getByRole("img")).toHaveCSS("filter", "brightness(0)");
+  await expect(brand.getByRole("img")).toHaveCSS("filter", "none");
 
   await page.mouse.move(0, 200);
   await expect(artwork).toHaveCSS("transform", "none");
