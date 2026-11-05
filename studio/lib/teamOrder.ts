@@ -46,6 +46,47 @@ export interface TeamOrderMember {
   location?: { _ref: string } | null;
 }
 
+export interface RequestedTeamOrder {
+  locationId: string;
+  memberNames: readonly string[];
+}
+
+export function getRequestedTeamOrders(
+  locations: TeamOrderLocation[],
+  members: TeamOrderMember[],
+  requests: readonly RequestedTeamOrder[],
+) {
+  const normalizeName = (name: string) => name.trim().replace(/[\u2018\u2019]/g, "'").replace(/\s+/g, ' ').toLowerCase();
+  const publishedMembers = members.filter((member) => getPublishedId(member._id) === member._id);
+  const draftIds = new Set<string>([...locations, ...members]
+    .filter((document) => getPublishedId(document._id) !== document._id)
+    .map((document) => getPublishedId(document._id)));
+  if (new Set(requests.map((request) => request.locationId)).size !== requests.length) {
+    throw new Error('Each office can appear only once in the requested order.');
+  }
+
+  return requests.map(({ locationId, memberNames }) => {
+    const location = locations.find((entry) => entry._id === locationId);
+    if (!location || draftIds.has(locationId)) {
+      throw new Error(`Review and publish ${locationId} before reordering its team.`);
+    }
+    const ids = new Set<string>();
+    const teamOrder = memberNames.map((name) => {
+      const matches = publishedMembers.filter((member) => normalizeName(member.name) === normalizeName(name));
+      if (matches.length !== 1) throw new Error(`Expected one published profile for ${name}; found ${matches.length}.`);
+      const member = matches[0];
+      if (draftIds.has(member._id)) throw new Error(`Review and publish the existing draft for ${name} before reordering.`);
+      if (member.location?._ref !== locationId) throw new Error(`${name} is not assigned to ${location.name}.`);
+      if (ids.has(member._id)) throw new Error(`${name} appears more than once in ${location.name}.`);
+      ids.add(member._id);
+      return { _key: member._id, _type: 'reference' as const, _ref: member._id };
+    });
+    const unlisted = publishedMembers.filter((member) => member.location?._ref === locationId && !ids.has(member._id));
+    if (unlisted.length) throw new Error(`Review unlisted members in ${location.name}: ${unlisted.map((member) => member.name).join(', ')}.`);
+    return { _id: location._id, _rev: location._rev, name: location.name, teamOrder };
+  });
+}
+
 export function getInitialTeamOrders(locations: TeamOrderLocation[], members: TeamOrderMember[]) {
   const draftIds = new Set(locations
     .filter((location) => getPublishedId(location._id) !== location._id)

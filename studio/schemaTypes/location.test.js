@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { location } from './location.ts';
-import { getInitialTeamOrders, validateTeamOrder } from '../lib/teamOrder.ts';
+import { getInitialTeamOrders, getRequestedTeamOrders, validateTeamOrder } from '../lib/teamOrder.ts';
 import { getTeamGroups, teamPageSize } from '../../src/data/team.ts';
 
 const reference = (id, key = id) => ({ _type: 'reference', _ref: id, _key: key });
@@ -238,4 +238,52 @@ test('initialization is non-mutating and reruns do not reset any previously crea
   const plans = getInitialTeamOrders(locations, members);
   assert.deepEqual({ locations, members }, before);
   assert.deepEqual(getInitialTeamOrders(plans, members), []);
+});
+
+test('requested ordering replaces existing lists by published identity before pagination without mutating profiles', () => {
+  const names = [
+    "Jim O'Brien", 'Charley Taylor-Smith', 'Gareth Townsend', 'Claire Hoolahan', 'Amy Fox', 'James Buckland',
+    'Louisa McLaughlin', 'Josh Beer', 'Tom Dukinfield', 'Beth Downey', 'Vanessa Zamora', 'Marieta Alecu',
+    'Anda Chirita', 'Kumkum Bhattacharya', 'Louie Knight', 'Aimee Corr',
+  ];
+  const members = names.map((name, index) => seedMember(`member-${index}`, name)).reverse();
+  members.push(seedMember('tj', 'TJ Rashid', 'location-manchester'), seedMember('michael', 'Michael Lovett', 'location-manchester'));
+  members.push(seedMember('sam', 'Sam McGrath', 'location-hampshire'));
+  const locations = [office('London', []), office('Manchester', []), office('Hampshire', [])];
+  const requests = [
+    { locationId: 'location-london', memberNames: ['Jim O\u2019Brien', ...names.slice(1)] },
+    { locationId: 'location-manchester', memberNames: ['TJ Rashid', 'Michael Lovett'] },
+    { locationId: 'location-hampshire', memberNames: ['Sam McGrath'] },
+  ];
+  const before = structuredClone({ locations, members, requests });
+  const plans = getRequestedTeamOrders(locations, members, requests);
+  assert.deepEqual(plans[0].teamOrder, names.map((name, index) => reference(`member-${index}`)));
+  assert.deepEqual({ locations, members, requests }, before);
+  const groups = getTeamGroups(locations.map((entry) => ({
+    ...entry, teamOrder: plans.find((plan) => plan._id === entry._id).teamOrder.map((entry) => entry._ref),
+  })), members.map((entry) => ({ ...entry, location: { _id: entry.location._ref } })));
+  assert.deepEqual(groups[0].members.slice(0, teamPageSize).map((entry) => entry.name), names.slice(0, 8));
+  assert.deepEqual(groups[0].members.slice(teamPageSize).map((entry) => entry.name), names.slice(8));
+  assert.deepEqual(groups[1].members.map((entry) => entry.name), ['TJ Rashid', 'Michael Lovett']);
+  assert.deepEqual(groups[2].members.map((entry) => entry.name), ['Sam McGrath']);
+});
+
+test('requested ordering refuses missing, ambiguous, duplicate, unlisted and wrong-office profiles', () => {
+  const locations = [office('London')];
+  const request = (memberNames) => [{ locationId: 'location-london', memberNames }];
+  assert.throws(() => getRequestedTeamOrders(locations, [], request(['Amy Fox'])), /Expected one published profile/);
+  assert.throws(() => getRequestedTeamOrders(locations, [seedMember('amy', 'Amy Fox'), seedMember('another-amy', 'Amy Fox')], request(['Amy Fox'])), /found 2/);
+  assert.throws(() => getRequestedTeamOrders(locations, [seedMember('amy', 'Amy Fox')], request(['Amy Fox', 'Amy Fox'])), /more than once/);
+  assert.throws(() => getRequestedTeamOrders(locations, [seedMember('amy', 'Amy Fox')], request([])), /unlisted members/);
+  assert.throws(() => getRequestedTeamOrders(locations, [seedMember('amy', 'Amy Fox', 'location-manchester')], request(['Amy Fox'])), /not assigned/);
+  assert.throws(() => getRequestedTeamOrders(locations, [], [...request([]), ...request([])]), /Each office/);
+});
+
+test('requested ordering refuses pending office or member drafts rather than overwriting editorial work', () => {
+  const london = office('London');
+  const amy = seedMember('amy', 'Amy Fox');
+  const requests = [{ locationId: 'location-london', memberNames: ['Amy Fox'] }];
+  assert.throws(() => getRequestedTeamOrders([london, { ...london, _id: 'drafts.location-london' }], [amy], requests), /Review and publish/);
+  assert.throws(() => getRequestedTeamOrders([london], [amy, { ...amy, _id: 'drafts.amy' }], requests), /existing draft for Amy Fox/);
+  assert.throws(() => getRequestedTeamOrders([], [amy], requests), /Review and publish/);
 });

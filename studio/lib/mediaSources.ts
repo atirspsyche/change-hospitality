@@ -12,3 +12,4 @@ function source(kind: MediaKind): AssetSource {
 export const portraitSource = source('portrait');
 export const logoSource = source('logo');
 export const gallerySource = source('gallery');
+export const instagramSource: AssetSource = { ...gallerySource, name: 'guarded-instagram', title: 'Instagram photos' };

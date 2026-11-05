@@ -7,6 +7,12 @@ const illustrations = [
   { route: "/sustainability-impact/", kind: "plant", hero: ".impact-hero" },
 ];
 
+const sectionIllustrations = [
+  { route: "/recruit-talent/", kind: "case", container: ".recruit-faqs-illustration" },
+  { route: "/franchising/", kind: "pipo", container: ".partnership-art" },
+  { route: "/sustainability-impact/", kind: "plant2", container: ".environment-sprout" },
+];
+
 async function loadIllustration(page, illustration) {
   await page.goto(illustration.route);
   await page.evaluate(() => document.fonts.ready);
@@ -58,13 +64,78 @@ for (const illustration of illustrations) {
   });
 }
 
-test("both sustainability plants use the supplied artwork", async ({ page }) => {
+test("sustainability retains its original hero plant", async ({ page }) => {
   await page.goto("/sustainability-impact/");
   const plants = page.locator(".impact-page [data-hero-illustration='plant']");
-  await expect(plants).toHaveCount(2);
-  await expect(plants.nth(1).locator("img")).toHaveAttribute("loading", "lazy");
-  await expect(plants.nth(1).locator("img")).toHaveAttribute("src", "/illustrations/plant.webp");
+  await expect(plants).toHaveCount(1);
+  await expect(plants.locator("img")).toHaveAttribute("loading", "eager");
+  await expect(plants.locator("img")).toHaveAttribute("src", "/illustrations/plant.webp");
+  await expect(plants.locator(".illustration-backdrop")).toHaveCount(1);
 });
+
+for (const illustration of sectionIllustrations) {
+  test(`${illustration.kind} section artwork is lazy, upright and standalone at every breakpoint`, async ({ page }, testInfo) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto(illustration.route);
+    await page.evaluate(() => document.fonts.ready);
+    const art = page.locator(`${illustration.container} [data-hero-illustration]`);
+    const image = art.locator("img");
+    await expect(art).toHaveAttribute("data-hero-illustration", illustration.kind);
+    await expect(art).toHaveAttribute("aria-hidden", "true");
+    await expect(image).toHaveAttribute("src", `/illustrations/${illustration.kind}.webp`);
+    await expect(image).toHaveAttribute("alt", "");
+    await expect(image).toHaveAttribute("loading", "lazy");
+    await expect(image).toHaveAttribute("decoding", "async");
+    await expect(art.locator(".illustration-backdrop, .illustration-marks")).toHaveCount(0);
+    await expect(page.locator(".recruit-faqs-doodle, .partnership-chef, .partnership-pan, .partnership-art-shape")).toHaveCount(0);
+    const viewports = testInfo.project.name === "mobile"
+      ? [[320, 568], [390, 844], [600, 900], [767, 1024]]
+      : [[601, 900], [768, 1024], [1024, 768], [1440, 900], [1920, 1080]];
+
+    for (const [width, height] of viewports) {
+      await page.setViewportSize({ width, height });
+      if (illustration.kind === "plant2" && width <= 600) {
+        await expect(art).toBeHidden();
+        continue;
+      }
+      await art.scrollIntoViewIfNeeded();
+      await image.evaluate((element) => element.decode());
+      const layout = await art.evaluate((root) => {
+        const bounds = root.getBoundingClientRect();
+        const section = root.closest("section");
+        const sectionBounds = section.getBoundingClientRect();
+        const artwork = root.querySelector(".illustration-crop").getBoundingClientRect();
+        const matrix = new DOMMatrix(getComputedStyle(root.querySelector(".illustration-artwork")).transform);
+        const overlapsText = [...section.querySelectorAll("h2, h3, p")].some((element) => {
+          const text = element.getBoundingClientRect();
+          return text.width > 0 && text.height > 0 && artwork.left < text.right && artwork.right > text.left
+            && artwork.top < text.bottom && artwork.bottom > text.top;
+        });
+        return {
+          overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          contained: artwork.left >= bounds.left - 1 && artwork.right <= bounds.right + 1
+            && artwork.top >= bounds.top - 1 && artwork.bottom <= bounds.bottom + 1
+            && artwork.left >= sectionBounds.left - 1 && artwork.right <= sectionBounds.right + 1
+            && artwork.top >= sectionBounds.top - 1 && artwork.bottom <= sectionBounds.bottom + 1,
+          substantial: artwork.width >= 80 && artwork.height >= 80,
+          loaded: root.querySelector("img").naturalWidth === 1920,
+          background: getComputedStyle(root).backgroundColor,
+          rotation: Math.round(Math.atan2(matrix.b, matrix.a) * 180 / Math.PI),
+          overlapsText,
+        };
+      });
+      expect(layout, `${illustration.kind} at ${width}x${height}`).toEqual({
+        overflow: 0,
+        contained: true,
+        substantial: true,
+        loaded: true,
+        background: "rgba(0, 0, 0, 0)",
+        rotation: 90,
+        overlapsText: false,
+      });
+    }
+  });
+}
 
 test("desktop hover is subtle, eased and returns to rest on every hero", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name === "mobile", "Fine-pointer desktop interaction");
@@ -222,6 +293,18 @@ test("all supplied illustrations remain visible without JavaScript", async ({ br
     for (const illustration of illustrations) {
       const art = await loadIllustration(page, illustration);
       await expect(art).toBeVisible();
+      await expect(art.locator(".illustration-crop")).toBeVisible();
+    }
+    for (const illustration of sectionIllustrations) {
+      await page.goto(illustration.route);
+      const art = page.locator(`${illustration.container} [data-hero-illustration]`);
+      if (illustration.kind === "plant2" && page.viewportSize().width <= 600) {
+        await expect(art).toBeHidden();
+        await page.setViewportSize({ width: 768, height: 1024 });
+      }
+      await art.scrollIntoViewIfNeeded();
+      await expect(art).toBeVisible();
+      await art.locator("img").evaluate((image) => image.decode());
       await expect(art.locator(".illustration-crop")).toBeVisible();
     }
   } finally {

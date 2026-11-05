@@ -1,10 +1,11 @@
 import type { JobPosting } from '../data/jobs';
 import type { OfficeLocation, TeamMember } from '../data/team';
 import { requireImpactNumbers } from '../lib/impactNumbers';
+import { requireInstagramPosts } from '../lib/instagram';
 import { franchiseMapPositions, requireFranchiseLocations, type FranchiseOfficeContent } from '../data/franchiseLocations';
 import { sanityClient } from './client';
 import { buildImage, type SourceImage } from '../lib/sanityImages';
-import type { PublicContacts, ClientLogo, CandidatePhoto, Testimonial, TemporaryWork } from '../data/editorial';
+import type { PublicContacts, ClientLogo, CandidatePhoto, InstagramPost, Testimonial, TemporaryWork } from '../data/editorial';
 import { policyHref, requirePolicies, type PolicyLink } from '../lib/policies';
 
 const jobsQuery = `
@@ -144,6 +145,21 @@ export async function getPublicContacts(): Promise<PublicContacts> {
     throw new Error('Publish the Public contacts document in Sanity before building the website. See studio/README.md.');
   }
   return { ...contacts, socialLinks: contacts.socialLinks || [] };
+}
+
+export async function getStoryInstagramPosts(): Promise<InstagramPost[]> {
+  const posts = requireInstagramPosts(await sanityClient.fetch<Array<{
+    _key: string; caption: string; postUrl?: string | null; image: SourceImage & { alt: string };
+  }> | null>(
+    '*[_type == "storyInstagram" && _id == "story-instagram"][0].posts[]{_key, caption, postUrl, image{alt, crop, hotspot, asset->{_id, url, metadata{dimensions}}}}',
+    {},
+    { perspective: 'published' },
+  ));
+  return Promise.all(posts.map(async ({ _key, caption, postUrl, image: source }) => {
+    const image = await buildImage(source, 'instagram');
+    if (!image) throw new Error(`Our story Instagram post "${_key}" has no published image asset.`);
+    return { key: _key, caption: caption.trim(), postUrl: postUrl ?? undefined, alt: source.alt.trim(), image };
+  }));
 }
 
 export async function getTemporaryWork(): Promise<TemporaryWork> {

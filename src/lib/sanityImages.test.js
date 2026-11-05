@@ -10,6 +10,7 @@ let buildImage;
 let getTeamMembers;
 let getActiveLocations;
 let getCandidateGallery;
+let getStoryInstagramPosts;
 let sanityClient;
 let calls;
 let probes;
@@ -39,7 +40,7 @@ before(async () => {
     }],
   });
   ({ buildImage } = await server.ssrLoadModule('/src/lib/sanityImages.ts'));
-  ({ getTeamMembers, getActiveLocations, getCandidateGallery } = await server.ssrLoadModule('/src/sanity/queries.ts'));
+  ({ getTeamMembers, getActiveLocations, getCandidateGallery, getStoryInstagramPosts } = await server.ssrLoadModule('/src/sanity/queries.ts'));
   ({ sanityClient } = await server.ssrLoadModule('/src/sanity/client.ts'));
   ({ calls, probes } = await server.ssrLoadModule('astro:assets'));
 });
@@ -210,6 +211,62 @@ test('missing or invalid gallery content fails explicitly rather than returning 
   }
   context.mock.method(sanityClient, 'fetch', async () => { throw new Error('CMS unavailable'); });
   await assert.rejects(getCandidateGallery(), /CMS unavailable/);
+});
+
+test('Instagram artwork keeps its full portrait composition, responsive local WebPs and editorial crops', async () => {
+  for (const [width, height] of [[1080, 1350], [900, 1600], [1200, 1600], [320, 400]]) {
+    const start = calls.length;
+    const image = await buildImage({
+      asset: {
+        _id: `image-instagram${width}-${width}x${height}-webp`,
+        url: `https://cdn.sanity.io/images/thyjjqzv/production/instagram${width}-${width}x${height}.webp`,
+        metadata: { dimensions: { width, height } },
+      },
+    }, 'instagram');
+    const generated = calls.slice(start);
+    assert.equal(image.width, Math.min(800, width));
+    assert.equal(image.height, Math.round(image.width * height / width));
+    assert.equal(image.shareSrc, undefined);
+    assert.equal(new Set(generated.map(({ width }) => width)).size, generated.length);
+    assert.ok(generated.every((options) => options.width <= width && options.format === 'webp' && options.quality === 75));
+    assert.ok(generated.every((options) => options.height === Math.round(options.width * height / width)));
+    assert.doesNotMatch(JSON.stringify(image), /cdn\.sanity\.io/);
+  }
+  const cropped = await buildImage({ ...portrait, crop: { left: 0.25, right: 0, top: 0, bottom: 0 } }, 'instagram');
+  assert.deepEqual([cropped.width, cropped.height], [800, 800]);
+  assert.ok(new URL(calls.at(-1).src).searchParams.has('rect'));
+});
+
+test('Instagram queries read published CMS images, preserving all five captions, links and image descriptions', async (context) => {
+  const content = Array.from({ length: 5 }, (_, index) => ({
+    _key: `instagram-${5 - index}`, caption: ` Moment ${index + 1} `,
+    image: { ...portrait, alt: ` Image ${index + 1} ` },
+    postUrl: index === 0 ? 'https://www.instagram.com/p/example/' : null,
+  }));
+  context.mock.method(sanityClient, 'fetch', async (query, params, options) => {
+    assert.match(query, /storyInstagram/);
+    assert.match(query, /story-instagram/);
+    assert.match(query, /crop, hotspot/);
+    assert.equal(options.perspective, 'published');
+    return content;
+  });
+  const result = await getStoryInstagramPosts();
+  assert.equal(result.length, 5);
+  assert.deepEqual(result.map(({ key }) => key), content.map(({ _key }) => _key));
+  assert.equal(result[0].caption, 'Moment 1');
+  assert.equal(result[0].alt, 'Image 1');
+  assert.equal(result[0].postUrl, content[0].postUrl);
+  assert.equal(result[1].postUrl, undefined);
+  assert.ok(result.every(({ image }) => image.src.startsWith('/_astro/')));
+  assert.doesNotMatch(JSON.stringify(result), /cdn\.sanity\.io/);
+});
+
+test('missing Instagram content and CMS failures never turn into hardcoded post images', async (context) => {
+  const missing = context.mock.method(sanityClient, 'fetch', async () => null);
+  await assert.rejects(getStoryInstagramPosts(), /Publish Our story Instagram/);
+  missing.mock.restore();
+  context.mock.method(sanityClient, 'fetch', async () => { throw new Error('Instagram CMS unavailable'); });
+  await assert.rejects(getStoryInstagramPosts(), /Instagram CMS unavailable/);
 });
 
 test('hashed website assets retain an immutable one-year browser cache on Vercel', async () => {

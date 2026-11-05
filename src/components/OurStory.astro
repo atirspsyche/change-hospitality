@@ -4,7 +4,7 @@ import "@fontsource/courier-prime/latin-700.css";
 import { ArrowDown } from "lucide-react";
 import { storyParagraphs } from "../data/ourStory";
 import { PrimaryButton } from "./Button";
-import StoryIllustration from "./StoryIllustration.astro";
+import StoryInstagram from "./StoryInstagram.astro";
 ---
 
 <section class="story" aria-labelledby="story-title" data-our-story>
@@ -34,13 +34,9 @@ import StoryIllustration from "./StoryIllustration.astro";
       </PrimaryButton>
     </div>
 
-    <div class="story-doodle story-chef" aria-hidden="true">
-      <StoryIllustration kind="chef" />
+    <div class="story-doodle story-chick" aria-hidden="true">
+      <img src="/illustrations/story-chick.webp" alt="" width="212" height="235" decoding="async" />
       <span>We&rsquo;re good eggs</span>
-    </div>
-    <div class="story-doodle story-pan" aria-hidden="true">
-      <StoryIllustration kind="pan" />
-      <span>People first.<br />Since day one.</span>
     </div>
 
     <article
@@ -90,7 +86,9 @@ import StoryIllustration from "./StoryIllustration.astro";
   </div>
 </section>
 
-<section class="story-next" aria-labelledby="story-next-title">
+<StoryInstagram />
+
+<!-- <section class="story-next" aria-labelledby="story-next-title">
   <p>Same heart. Next chapter.</p>
   <h2 id="story-next-title">Good people.<br />Positive change.</h2>
   <div>
@@ -111,7 +109,7 @@ import StoryIllustration from "./StoryIllustration.astro";
       Sustainability &amp; Impact
     </PrimaryButton>
   </div>
-</section>
+</section> -->
 
 <style>
   .story {
@@ -196,15 +194,15 @@ import StoryIllustration from "./StoryIllustration.astro";
     font-weight: 500;
     line-height: 1.2;
   }
-  .story-chef {
+  .story-chick {
     left: 3%;
     top: 47svh;
-    transform: rotate(-10deg);
+    transform: rotate(-4deg);
   }
-  .story-pan {
-    right: 3%;
-    top: 48svh;
-    transform: rotate(10deg);
+  .story-chick img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 0.5rem;
   }
   .story-letter {
     position: relative;
@@ -451,11 +449,8 @@ import StoryIllustration from "./StoryIllustration.astro";
       bottom: 20%;
       width: 13vw;
     }
-    .is-enhanced .story-chef {
+    .is-enhanced .story-chick {
       left: 1%;
-    }
-    .is-enhanced .story-pan {
-      right: 1%;
     }
   }
   @media (max-width: 1023px), (max-height: 599px) {
@@ -471,11 +466,8 @@ import StoryIllustration from "./StoryIllustration.astro";
       width: 8rem;
       font-size: 0.75rem;
     }
-    .story-chef {
-      left: 12%;
-    }
-    .story-pan {
-      right: 12%;
+    .story-chick {
+      left: calc(50% - 4rem);
     }
     .story-blob {
       width: 70vw;

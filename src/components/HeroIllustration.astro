@@ -1,6 +1,6 @@
 ---
 interface Props {
-  kind: 'chef' | 'bart' | 'plant' | 'salt';
+  kind: 'chef' | 'bart' | 'plant' | 'salt' | 'case' | 'pipo' | 'plant2';
   loading?: 'eager' | 'lazy';
 }
 
@@ -12,13 +12,17 @@ const frames = {
   bart: { left: 552, top: 76, width: 864, height: 928 },
   plant: { left: 763, top: 304, width: 421, height: 692 },
   salt: { left: 620, top: 87, width: 804, height: 768 },
+  case: { left: 547, top: 154, width: 782, height: 757 },
+  pipo: { left: 546, top: 212, width: 849, height: 601 },
+  plant2: { left: 1233, top: 198, width: 668, height: 556 },
 };
 const frame = frames[kind];
+const hasBackdrop = kind === 'chef' || kind === 'bart' || kind === 'plant';
 ---
 
 <div class:list={['hero-illustration', `hero-illustration-${kind}`]} data-hero-illustration={kind} aria-hidden="true">
   <div class="illustration-scene">
-    {kind !== 'salt' && <div class="illustration-backdrop"></div>}
+    {hasBackdrop && <div class="illustration-backdrop"></div>}
     <div class="illustration-artwork">
       <div class="illustration-crop" style={`aspect-ratio: ${frame.width} / ${frame.height}`}>
         <img
@@ -32,7 +36,7 @@ const frame = frames[kind];
         />
       </div>
     </div>
-    {kind !== 'salt' && <svg class="illustration-marks" viewBox="0 0 500 500" fill="none" focusable="false">
+    {hasBackdrop && <svg class="illustration-marks" viewBox="0 0 500 500" fill="none" focusable="false">
       <g class="illustration-spark illustration-spark-one">
         <path d="m65 105 4 18 18 4-18 4-4 18-4-18-18-4 18-4Z" />
       </g>
@@ -105,6 +109,13 @@ const frame = frames[kind];
   .hero-illustration-chef .illustration-artwork { left: 6%; width: 88%; }
   .hero-illustration-bart { --illustration-paper: var(--color-blush); }
   .hero-illustration-salt .illustration-artwork { left: 5%; width: 90%; }
+  .hero-illustration-case .illustration-artwork,
+  .hero-illustration-pipo .illustration-artwork,
+  .hero-illustration-plant2 .illustration-artwork {
+    left: 5%;
+    width: 90%;
+    transform: translateY(-50%) rotate(90deg);
+  }
   .hero-illustration-plant {
     --illustration-paper: var(--color-bcorp-green);
     --illustration-ink: var(--color-bcorp-green);

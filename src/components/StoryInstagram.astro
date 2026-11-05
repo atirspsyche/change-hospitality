@@ -1,0 +1,396 @@
+---
+import { ArrowUpRight, Bookmark, Heart, MessageCircle, Send } from '@lucide/astro';
+import { requireInstagramProfile } from '../lib/instagram';
+import { getPublicContacts, getStoryInstagramPosts } from '../sanity/queries';
+import { PrimaryButton } from './Button';
+
+const [contacts, posts] = await Promise.all([getPublicContacts(), getStoryInstagramPosts()]);
+const profile = requireInstagramProfile(contacts.socialLinks);
+const accents = ['citron', 'blush', 'mint', 'mist', 'citron'];
+const tilts = [-3, 2, -2, 2, -3];
+---
+
+<section class="story-instagram" id="story-instagram" aria-labelledby="story-instagram-title" data-story-instagram>
+  <div class="instagram-shell">
+    <header class="instagram-intro">
+      <div>
+        <p class="instagram-eyebrow">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false">
+            <rect x="3" y="3" width="18" height="18" rx="5" />
+            <circle cx="12" cy="12" r="4" />
+            <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+          </svg>
+          A little life at Change
+        </p>
+        <h2 id="story-instagram-title">
+          Off the page.<br />
+          <span>
+            On the feed.
+            <svg viewBox="0 0 480 24" preserveAspectRatio="none" fill="none" aria-hidden="true" focusable="false">
+              <path d="M5 15C119 3 260 3 473 11M69 22C190 13 315 13 417 18" />
+            </svg>
+          </span>
+        </h2>
+      </div>
+      <div class="instagram-intro-copy">
+        <p>The people, places and little moments that make us, us. Here&rsquo;s a peek behind the scenes.</p>
+        <a class="instagram-profile" href={profile.href} target="_blank" rel="noopener noreferrer" aria-label={`${profile.handle} on Instagram (opens in a new tab)`}>
+          {profile.handle}<ArrowUpRight size={18} aria-hidden="true" />
+        </a>
+        <div class="instagram-margin-note" aria-hidden="true">
+          <span>Small moments.<br />Big Change energy.</span>
+          <svg viewBox="0 0 100 68" fill="none" focusable="false">
+            <path d="M7 6C70 0 94 32 62 47C42 58 26 39 48 30C70 23 84 44 79 61M65 52L79 62L91 49" />
+          </svg>
+        </div>
+      </div>
+    </header>
+
+    <ol class="instagram-posts" aria-label="From our Instagram">
+      {posts.map((post, index) => (
+        <li class="instagram-post" style={`--post-tilt: ${tilts[index]}deg; --post-accent: var(--color-${accents[index]})`}>
+          <article>
+            <a
+              class="instagram-card"
+              href={post.postUrl ?? profile.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${post.postUrl ? 'View Instagram post' : 'Visit our Instagram'}: ${post.caption} (opens in a new tab)`}
+              data-instagram-post={post.key}
+            >
+              <div class="instagram-card-header" aria-hidden="true">
+                <span class="instagram-avatar">
+                  <img src="/CH_LOGO_2.png" alt="" width="314" height="276" loading="lazy" decoding="async" />
+                </span>
+                <span class="instagram-account"><strong>{profile.handle.slice(1)}</strong><span>Change Hospitality</span></span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" focusable="false">
+                  <rect x="3" y="3" width="18" height="18" rx="5" />
+                  <circle cx="12" cy="12" r="4" />
+                  <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+                </svg>
+              </div>
+              <div class="instagram-photo">
+                <img
+                  src={post.image.src}
+                  srcset={post.image.srcSet}
+                  sizes="(max-width: 599px) calc(100vw - 5rem), (max-width: 1023px) 40vw, 350px"
+                  alt={post.alt}
+                  width={post.image.width}
+                  height={post.image.height}
+                  loading="lazy"
+                  decoding="async"
+                  fetchpriority="low"
+                />
+              </div>
+              <div class="instagram-card-body">
+                <div class="instagram-reactions" aria-hidden="true">
+                  <Heart class="instagram-heart" size={23} stroke-width={1.8} />
+                  <MessageCircle size={23} stroke-width={1.8} />
+                  <Send size={23} stroke-width={1.8} />
+                  <Bookmark class="instagram-save" size={23} stroke-width={1.8} />
+                </div>
+                <h3>{post.caption}</h3>
+                <span class="instagram-card-link">
+                  {post.postUrl ? 'View on Instagram' : 'Find us on Instagram'}
+                  <ArrowUpRight size={16} aria-hidden="true" />
+                </span>
+              </div>
+            </a>
+          </article>
+        </li>
+      ))}
+    </ol>
+
+    <div class="instagram-outro">
+      <p>
+        <svg viewBox="0 0 52 52" fill="none" aria-hidden="true" focusable="false">
+          <path d="M26 3L30 17L43 10L36 24L49 29L34 32L39 46L26 38L17 49L16 34L2 36L12 25L3 15L19 17Z" />
+          <path d="M19 26C21 32 29 34 33 26M20 21L20 22M31 20L31 21" />
+        </svg>
+        Still people first.<br /><span>Just a little more social.</span>
+      </p>
+      <PrimaryButton
+        href={profile.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Follow Change Hospitality on Instagram (opens in a new tab)"
+        backgroundColor="var(--color-cocoa)"
+        borderColor="var(--color-cocoa)"
+        textColor="var(--color-cream)"
+        hoverBackgroundColor="var(--color-citron)"
+        hoverTextColor="var(--color-cocoa)"
+      >
+        Follow along on Instagram
+      </PrimaryButton>
+    </div>
+  </div>
+</section>
+
+<style>
+  .story-instagram {
+    position: relative;
+    padding: clamp(4.5rem, 8vw, 8rem) 2rem clamp(4rem, 6vw, 6rem);
+    border-radius: 50% 50% 0 0 / 3rem 3rem 0 0;
+    background: var(--color-cream);
+    color: var(--color-cocoa);
+  }
+  .instagram-shell {
+    width: min(100%, 74rem);
+    margin-inline: auto;
+  }
+  .instagram-intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.8fr);
+    align-items: center;
+    gap: 3rem;
+  }
+  .instagram-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  h2 {
+    margin-top: 1.5rem;
+    font-family: var(--font-hero);
+    font-size: clamp(2.6rem, 5.2vw, 5rem);
+    line-height: 1.15;
+    letter-spacing: -0.035em;
+  }
+  h2 > span {
+    position: relative;
+    display: inline-block;
+  }
+  h2 svg {
+    position: absolute;
+    inset: auto 0 -0.15em;
+    width: 100%;
+    height: 0.25em;
+    overflow: visible;
+    stroke: var(--color-flame);
+    stroke-width: 4;
+    stroke-linecap: round;
+  }
+  .instagram-intro-copy > p {
+    max-width: 24rem;
+    font-family: var(--font-display);
+    font-size: clamp(1rem, 1.4vw, 1.15rem);
+    font-weight: 500;
+    line-height: 1.6;
+  }
+  .instagram-profile {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-height: 2.75rem;
+    margin-top: 0.6rem;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 0.3em;
+    overflow-wrap: anywhere;
+  }
+  .instagram-margin-note {
+    display: flex;
+    align-items: start;
+    justify-content: end;
+    gap: 0.7rem;
+    margin-top: 1.25rem;
+    font-family: "Courier Prime", "Courier New", monospace;
+    font-size: 0.8rem;
+    line-height: 1.35;
+    transform: rotate(5deg);
+  }
+  .instagram-margin-note svg {
+    width: 5rem;
+    height: 3.5rem;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .instagram-posts {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    align-items: start;
+    gap: 4.5rem clamp(1.5rem, 3vw, 3rem);
+    margin: 4.5rem 0 0;
+    padding: 0.75rem;
+    list-style: none;
+  }
+  .instagram-post {
+    grid-column: span 2;
+    min-width: 0;
+    transform: rotate(var(--post-tilt));
+    transition: transform 450ms var(--ease-cartoon);
+  }
+  .instagram-post:nth-child(2) { translate: 0 1.5rem; }
+  .instagram-post:nth-child(4) { grid-column: 2 / span 2; }
+  .instagram-post:nth-child(5) { grid-column: 4 / span 2; translate: 0 1rem; }
+  .instagram-card {
+    position: relative;
+    display: block;
+    border: 2px solid var(--color-cocoa);
+    border-radius: 1.5rem 1.2rem 1.6rem 1.1rem;
+    background: var(--color-paper);
+    box-shadow: 6px 7px 0 var(--color-cocoa);
+    transition: box-shadow 450ms var(--ease-cartoon);
+  }
+  .instagram-card::before {
+    position: absolute;
+    z-index: 1;
+    top: -0.7rem;
+    left: calc(50% - 2.6rem);
+    width: 5.2rem;
+    height: 1.5rem;
+    background: var(--post-accent);
+    clip-path: polygon(3% 0, 97% 4%, 94% 24%, 100% 42%, 95% 65%, 99% 96%, 2% 100%, 5% 72%, 0 53%, 5% 30%);
+    transform: rotate(calc(var(--post-tilt) * -2));
+    content: "";
+  }
+  .instagram-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+    padding: 1.25rem 0.9rem 0.8rem;
+  }
+  .instagram-avatar {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0.3rem;
+    border: 1.5px solid var(--color-cocoa);
+    border-radius: 48% 52% 45% 55%;
+    background: var(--post-accent);
+  }
+  .instagram-avatar img { width: 100%; height: auto; }
+  .instagram-account {
+    display: grid;
+    flex: 1;
+    min-width: 0;
+    gap: 0.15rem;
+    font-size: clamp(0.65rem, 0.9vw, 0.8rem);
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+  }
+  .instagram-account > span { font-size: 0.65rem; }
+  .instagram-card-header > :global(svg) { flex-shrink: 0; }
+  .instagram-photo {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    margin-inline: 0.75rem;
+    border: 1.5px solid var(--color-cocoa);
+    border-radius: 0.75rem 0.6rem 0.8rem 0.65rem;
+    background: var(--color-cream);
+  }
+  .instagram-photo img {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    object-fit: contain;
+  }
+  .instagram-card-body { padding: 1rem 1.1rem 1.2rem; }
+  .instagram-reactions {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 0.85rem;
+  }
+  .instagram-reactions :global(.instagram-save) { margin-left: auto; }
+  .instagram-reactions :global(.instagram-heart) {
+    transition: fill 250ms ease, color 250ms ease;
+  }
+  h3 {
+    min-height: 3em;
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+  .instagram-card-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.8rem;
+    padding-top: 0.7rem;
+    border-top: 1px dashed var(--color-cocoa);
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+  .instagram-outro {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    margin-top: 5rem;
+    padding-top: 2rem;
+    border-top: 1px dashed var(--color-cocoa);
+  }
+  .instagram-outro > p {
+    position: relative;
+    padding-left: 4rem;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+  .instagram-outro > p > span { font-size: 0.9rem; font-weight: 400; }
+  .instagram-outro svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3rem;
+    height: 3rem;
+    overflow: visible;
+    stroke: var(--color-cocoa);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .instagram-outro svg > path:first-child { fill: var(--color-citron); }
+  .story-instagram :focus-visible {
+    outline: 3px solid var(--color-cocoa);
+    outline-offset: 6px;
+  }
+  .instagram-post:focus-within { transform: translateY(-0.4rem) rotate(0deg); }
+  .instagram-post:focus-within .instagram-card { box-shadow: 9px 10px 0 var(--color-cocoa); }
+  @media (hover: hover) and (pointer: fine) {
+    .instagram-post:hover { transform: translateY(-0.4rem) rotate(0deg); }
+    .instagram-post:hover .instagram-card { box-shadow: 9px 10px 0 var(--color-cocoa); }
+    .instagram-card:hover :global(.instagram-heart) { color: var(--color-flame); fill: var(--color-flame); }
+  }
+  @media (min-width: 600px) and (max-width: 1023px) {
+    .instagram-posts { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3.5rem 2rem; }
+    .instagram-post:nth-child(4) { grid-column: span 2; }
+    .instagram-post:nth-child(5) { grid-column: 2 / span 2; }
+  }
+  @media (max-width: 767px) {
+    .instagram-intro { grid-template-columns: minmax(0, 1fr); gap: 2rem; }
+    .instagram-intro-copy { max-width: 28rem; }
+    .instagram-margin-note { display: none; }
+    .instagram-posts { margin-top: 3rem; }
+    .instagram-outro { flex-direction: column; align-items: start; gap: 1.5rem; margin-top: 4rem; }
+  }
+  @media (max-width: 599px) {
+    .story-instagram { padding-inline: 1.5rem; }
+    .instagram-posts { grid-template-columns: minmax(0, 1fr); gap: 2.5rem; width: min(100%, 25rem); margin-inline: auto; }
+    .instagram-post:nth-child(n) { grid-column: auto; translate: none; --post-tilt: -1.5deg !important; }
+    .instagram-post:nth-child(even) { --post-tilt: 1.5deg !important; }
+    .instagram-account { font-size: 0.8rem; }
+    .instagram-outro :global([data-button-variant]) { --button-padding: 1rem 1.15rem; --button-font-size: 0.75rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .instagram-post, .instagram-card, .instagram-reactions :global(.instagram-heart) { transition: none; }
+    .instagram-post:is(:hover, :focus-within) { transform: rotate(var(--post-tilt)); }
+  }
+  @media print { .story-instagram { display: none; } }
+</style>

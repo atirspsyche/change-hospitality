@@ -4,9 +4,9 @@ import { ArrowDown, Mail, Phone } from 'lucide-react';
 import { PrimaryButton, SecondaryButton } from '../components/Button';
 import FranchiseFilm from '../components/FranchiseFilm.astro';
 import FunMenu from '../components/FunMenu.astro';
+import HeroIllustration from '../components/HeroIllustration.astro';
 import PageMotion from '../components/PageMotion.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import StoryIllustration from '../components/StoryIllustration.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getFranchiseLocations, getPublicContacts } from '../sanity/queries';
 import { telephoneHref } from '../data/editorial';
@@ -71,8 +71,8 @@ const sectionLinks = [
             <p class="card-eyebrow">Your ambition. Our next chapter.</p>
             <p class="hero-card-title">Your business.<br /><span>Our know-how.</span></p>
             <div class="hero-card-bottom">
-              <p><strong>20+</strong><span>years of<br />people-first recruitment</span></p>
-              <div class="hero-chef" aria-hidden="true"><StoryIllustration kind="chef" /></div>
+              <p><strong>20+</strong><span>years of people-first recruitment</span></p>
+              <!-- <div class="hero-chef" aria-hidden="true"><StoryIllustration kind="chef" /></div> -->
             </div>
           </div>
           <p class="franchise-hero-note"><ArrowUpRight size={28} aria-hidden="true" /><span>The next location?<br /><strong>That could be you.</strong></span></p>
@@ -192,9 +192,7 @@ const sectionLinks = [
     <section class="franchise-partnership" aria-labelledby="partnership-title">
       <div class="franchise-shell partnership-layout">
         <div class="partnership-art" aria-hidden="true" data-franchise-reveal>
-          <div class="partnership-art-shape"></div>
-          <div class="partnership-chef"><StoryIllustration kind="chef" /></div>
-          <div class="partnership-pan"><StoryIllustration kind="pan" /></div>
+          <HeroIllustration kind="pipo" loading="lazy" />
           <p>Your business.<br />Our people in your corner.</p>
         </div>
         <div>
@@ -378,11 +376,8 @@ const sectionLinks = [
 
   .franchise-partnership { background: var(--color-cream); padding-block: 6.5rem; }
   .partnership-layout { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 5rem; align-items: center; }
-  .partnership-art { position: relative; min-height: 26rem; }
-  .partnership-art-shape { position: absolute; inset: 1rem 0 2rem; border-radius: 45% 55% 40% 60%; background: var(--color-blush); transform: rotate(-10deg); }
-  .partnership-chef { position: absolute; top: 1rem; left: 0; width: 62%; transform: rotate(-12deg); }
-  .partnership-pan { position: absolute; top: 5rem; right: -1rem; width: 52%; transform: rotate(12deg); }
-  .partnership-art > p { position: absolute; bottom: 0; left: 15%; border-radius: 1rem; background: var(--color-mint); padding: 1rem 1.4rem; font-family: var(--font-display); font-size: 1.1rem; font-weight: 500; line-height: 1.4; transform: rotate(-4deg); }
+  .partnership-art { width: min(100%, 28rem); justify-self: center; }
+  .partnership-art > p { margin-top: 0.75rem; font-family: var(--font-display); font-size: 1.1rem; font-weight: 500; line-height: 1.4; text-align: center; transform: rotate(-4deg); }
 
   .franchise-contact { border-radius: 3rem 3rem 0 0; background: var(--color-blush); padding-block: 6.5rem; }
   .contact-layout { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 5rem; align-items: center; }
@@ -427,7 +422,6 @@ const sectionLinks = [
     .franchise-hero-note { left: 0; font-size: 0.9rem; }
     .opportunity-layout, .network-layout { gap: 2rem; }
     .model-layout, .partnership-layout { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2rem; }
-    .partnership-art { min-height: 21rem; }
     .network-path { gap: 1rem; }
     .network-result { padding: 1.2rem; }
     .desktop-break { display: none; }
@@ -467,7 +461,7 @@ const sectionLinks = [
     .network-path > div > span { margin-bottom: 0.6rem; }
     .network-connector { font-size: 1.7rem; }
     .network-result { padding: 1.5rem; }
-    .partnership-art { order: 2; width: min(100%, 24rem); min-height: 23rem; justify-self: center; margin-top: 0.5rem; }
+    .partnership-art { order: 2; width: min(100%, 24rem); margin-top: 0.5rem; }
     .contact-heading h2 { font-size: clamp(2.7rem, 9vw, 4rem); }
     .contact-actions { justify-items: stretch; }
     .contact-email { font-size: 0.8rem; }

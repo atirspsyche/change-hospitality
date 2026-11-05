@@ -11,6 +11,7 @@
     "seed:team-order": "sanity exec scripts/seed-team-order.ts --with-user-token",
     "seed:impact": "sanity exec scripts/seed-impact.ts --with-user-token",
     "seed:gallery": "sanity exec scripts/seed-gallery.ts --with-user-token",
+    "seed:instagram": "sanity exec scripts/seed-instagram.ts --with-user-token",
     "seed:policies": "sanity exec scripts/seed-policies.ts --with-user-token",
     "import:content": "sanity exec scripts/import-content.ts --with-user-token",
     "deploy": "sanity deploy"

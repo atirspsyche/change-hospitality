@@ -28,7 +28,7 @@ The Astro static build fetches source images, honours portrait crop/hotspot, gen
 
 ### Publishing and Cutover
 
-Configure a private Vercel Deploy Hook and one Sanity webhook for published `job`, `consultant`, `location`, `client`, `testimonial`, `siteSettings`, `policy`, `temporaryWork`, `candidateGallery` and `environmentalImpact` changes. Exclude draft IDs, asset documents and system documents; include create/update/delete events so publishing, replacements and unpublishing rebuild the site. Do not put the deploy-hook URL in frontend code or public Sanity content. Changes appear after the build completes.
+Configure a private Vercel Deploy Hook and one Sanity webhook for published `job`, `consultant`, `location`, `client`, `testimonial`, `siteSettings`, `policy`, `temporaryWork`, `candidateGallery`, `storyInstagram` and `environmentalImpact` changes. Exclude draft IDs, asset documents and system documents; include create/update/delete events so publishing, replacements and unpublishing rebuild the site. Do not put the deploy-hook URL in frontend code or public Sanity content. Changes appear after the build completes.
 
 Verify a Vercel Preview against the new project before changing live production. Website builds and `api/apply.js` must select the same project. Keep the previous Vercel deployment and its matching environment settings for rollback; leave both Sanity projects intact during acceptance. This repository does not create remote webhooks, CORS origins, memberships or deployments automatically.
 
@@ -48,6 +48,7 @@ npm test
 npm run seed:locations
 npm run seed:impact
 npm run seed:gallery
+npm run seed:instagram
 npm run deploy
 ```
 
@@ -95,13 +96,36 @@ For the approved initial details, preview with `npm --prefix studio run seed:loc
 
 Open **Candidate gallery** to manage the Jobs page's **People behind great hospitality** photos. The singleton ID is `candidate-gallery`; drag photos to reorder them, replace images using the guarded picker, set crop/hotspot and provide accurate, non-blank image descriptions. Use only approved candidate photos. The gallery accepts one to six JPEG, PNG or WebP images, each at most 2 MiB and at least 600 by 450 pixels.
 
-For the initial selection, run `npm --prefix studio run seed:gallery` from the repository root for a dry run. It validates all six source files under `public/candidate-pics/`: `09`, `03`, `07`, `04`, `08`, `02`, in display order. Apply with `npm --prefix studio run seed:gallery -- -- --apply --project=thyjjqzv`. The importer only targets `thyjjqzv / production`, uploads the six originals and creates the published gallery if absent. Existing published content is preserved without uploading more assets; an existing draft stops the import for review. It never overwrites other editorial documents. Sanity content-deduplicates repeated asset uploads.
+For the initial selection, run `npm --prefix studio run seed:gallery` from the repository root for a dry run. It validates all six source files under `public/candidate-pics/`: `09`, `10`, `11`, `04`, `08`, `02`, in display order. Apply with `npm --prefix studio run seed:gallery -- -- --apply --project=thyjjqzv`. The importer only targets `thyjjqzv / production`, uploads the six originals and creates the published gallery if absent. Existing published content is preserved without uploading more assets; an existing draft stops the import for review. It never overwrites other editorial documents. Sanity content-deduplicates repeated asset uploads.
 
-The approved descriptions for the original six photo keys can be previewed with `npm --prefix studio run seed:gallery -- -- --update-alt` and applied with `npm --prefix studio run seed:gallery -- -- --update-alt --apply --project=thyjjqzv`. This revision-guarded mode changes descriptions only, preserving images, crops and order; an existing draft or changed photo keys stops it for review. Replace the gallery images separately in Studio and keep their descriptions accurate.
+To replace `03.webp` with `10.webp` in slot two and `07.webp` with `11.webp` in slot three, preview with `npm --prefix studio run seed:gallery -- -- --replace-photos`. Apply with `npm --prefix studio run seed:gallery -- -- --replace-photos --apply --project=thyjjqzv`. This mode validates the current image hashes and positions, rejects pending drafts, saves a gallery snapshot under ignored `temp/sanity-backups/`, and uses a revision-guarded patch. Only the two asset references and descriptions change; their obsolete crop/hotspot settings are cleared. The original keys `candidate-03` and `candidate-07`, the remaining four photos and display order are preserved. The entire saved photo array is verified, and an already-completed replacement is a no-op.
+
+The approved descriptions for the current six photo keys can be previewed with `npm --prefix studio run seed:gallery -- -- --update-alt` and applied with `npm --prefix studio run seed:gallery -- -- --update-alt --apply --project=thyjjqzv`. This revision-guarded mode changes descriptions only, preserving images, crops and order; an existing draft or changed photo keys stops it for review. Future editorial image replacements can be made directly in Studio with matching descriptions.
 
 Publish changes, then rebuild/redeploy the Astro website. Include `candidateGallery` in the published-content webhook filter. Deploy the updated Studio with `npm run deploy` to expose the editor to the team.
 
 The build generates local responsive WebP variants, honours crop/hotspot, caps output at the source size or 1280px and uses quality 75. Visitors load only website-hosted assets, not Sanity URLs. The desktop stack fetches the first/current photo plus one ahead as needed; the mobile/reduced-motion grid fetches nearby cards. Inert image templates prevent early downloads, and native lazy-loaded images are available without JavaScript. The root Vercel configuration gives hashed `/_astro/` assets a one-year immutable browser cache. Only build-time source downloads and Studio previews use Sanity image bandwidth.
+
+## Our Story Instagram
+
+Open **Our story Instagram** to edit the five cards directly after Jim's letter on `/our-story/`. The singleton ID is `story-instagram`. Each post has an image, accurate image description, short caption and optional original Instagram post/reel URL. Drag cards to reorder them. The account name and shared profile destination come from **Public contacts > Social links > Instagram**, so changing the account there updates both this section and the footer.
+
+Use approved JPEG, PNG or WebP images, at most **2 MiB** and at least **600 by 450 pixels**. The guarded **Instagram photos** picker checks uploads and publication. The website preserves the complete artwork, including text on portrait/reel covers; it does not automatically square-crop the images. Crop/hotspot remains available for intentional editorial changes. There are no fake engagement counts or non-functional action buttons: the familiar heart, comment, share and save icons are decorative, and the whole card is a labelled link.
+
+Initialize the five supplied images from `public/instagram-pics/1.webp` through `5.webp`, in numeric order:
+
+```sh
+npm --prefix studio run seed:instagram
+npm --prefix studio run seed:instagram -- -- --apply --project=thyjjqzv
+```
+
+The first command is a no-write dry run. Apply validates every source before uploading, only targets `thyjjqzv / production`, creates the published document if absent and verifies the saved image references and ordering. An existing draft stops initialization; existing published content is preserved without uploads or writes. It never modifies Candidate gallery or other editorial documents.
+
+Original post URLs were not supplied, so the initial cards explicitly link to the Instagram profile. Add each original `/p/`, `/reel/` or `/tv/` HTTPS link to open that specific post instead; leaving the field empty intentionally keeps the profile destination. Captions are short website summaries, not imported Instagram engagement data.
+
+Publish changes and rebuild/redeploy the static website. Include `storyInstagram` in the published-content Sanity webhook filter for automatic rebuilds. Deploy the updated Studio to expose the new editor in the hosted sidebar; the initializer does not deploy Studio or configure webhooks. Missing, incomplete or non-five-post content fails the website build with an actionable error instead of silently showing local image defaults.
+
+The section renders as static HTML with no new client JavaScript, embed, Instagram API or tracking scripts. Astro emits local responsive WebP variants up to 800px wide without upscaling; visitors receive website-hosted, lazy-loaded images. Desktop uses three cards above two centred cards, tablet uses two columns and mobile stacks the cards. Keyboard focus, reduced motion and disabled JavaScript are supported. Run `npx playwright test story-instagram.spec.js` for the targeted website checks.
 
 ## Environmental Impact Numbers
 
@@ -146,6 +170,17 @@ npm --prefix studio run seed:team-order -- -- --apply --project=thyjjqzv
 ```
 
 The initializer preserves existing lists (including deliberately empty ones), refuses offices with pending drafts, uses revision-checked atomic patches, and verifies the saved sequence and office membership. Rerunning does not reset editorial ordering. Run it after importing the roster; it does not guess seniority from job titles or change member documents.
+
+For an explicitly approved replacement order, update `requestedOrders` in `scripts/seed-team-order.ts`, then preview with `npm --prefix studio run seed:team-order -- -- --reorder`. This separate mode requires a complete roster for each listed office and rejects missing, ambiguous, duplicate, wrong-office or draft profiles. Normal initialization continues to preserve editorial lists.
+
+The approved November 2026 order includes 16 London members, two Manchester members and one Hampshire member. To include Amy Fox's validated local portrait in the same update, preview and then apply:
+
+```sh
+npm --prefix studio run seed:team-order -- -- --reorder "--amy-portrait=public/team-pics/Amy fox.jpg"
+npm --prefix studio run seed:team-order -- -- --reorder "--amy-portrait=public/team-pics/Amy fox.jpg" --apply --project=thyjjqzv
+```
+
+Applying saves the affected documents under ignored `temp/sanity-backups/`, uploads the portrait with alternative text, and commits revision-guarded office/profile patches atomically. Existing biographies, contacts and office assignments are preserved; Jim's title is confirmed as Founder & Managing Director. Saved published lists and the portrait reference are verified before reporting success. Rebuild or redeploy the website afterwards. This mode intentionally replaces existing orders; future editorial changes can still be made in Studio.
 
 When moving someone, publish their new **Office location**, remove their reference from the old office order, and add/reposition them in the new office order. Stale old-office references cannot move a profile back; the website always uses the member's current office assignment. Before deleting a member, remove their office-order references and any job references.
 

@@ -1,4 +1,6 @@
 ---
+import HeroIllustration from './HeroIllustration.astro';
+
 const faqs = [
   {
     question: 'Do you only recruit chefs and front-of-house staff?',
@@ -39,21 +41,9 @@ const faqs = [
       <p class="recruit-faqs-copy">
         A few things worth knowing before we find your next great hire.
       </p>
-      <svg class="recruit-faqs-doodle" viewBox="0 0 280 210" fill="none" aria-hidden="true" focusable="false">
-        <path class="recruit-faqs-chat-back" d="M159 28C180 18 226 18 245 30C260 40 259 73 245 82L251 101L228 87C208 93 177 89 161 79C146 69 144 40 159 28Z" />
-        <circle cx="185" cy="55" r="3" fill="currentColor" stroke="none" />
-        <circle cx="204" cy="55" r="3" fill="currentColor" stroke="none" />
-        <circle cx="223" cy="55" r="3" fill="currentColor" stroke="none" />
-        <path d="M88 148L80 179L64 182M137 149L146 180L164 179M40 104L24 100L18 87M177 111L193 117L203 109" />
-        <path class="recruit-faqs-chat-front" d="M53 51C80 37 135 38 160 52C182 64 186 112 168 132C150 151 97 155 69 144L40 160L46 134C25 118 29 66 53 51Z" />
-        <path d="M76 83L86 79M126 78L136 82M91 115C102 127 119 125 129 111" />
-        <ellipse cx="87" cy="97" rx="3.5" ry="6" fill="currentColor" stroke="none" />
-        <ellipse cx="126" cy="96" rx="3.5" ry="6" fill="currentColor" stroke="none" />
-        <path d="M18 45L21 34L25 44L36 47L25 51L22 62L18 51L8 48Z" />
-        <path d="M226 145L230 131L235 144L249 148L235 153L231 167L226 154L213 149Z" />
-        <path d="M66 20L61 10M84 17L85 6M252 116L263 111M256 130L268 132" />
-        <path class="recruit-faqs-ground" d="M49 195C90 189 149 190 180 194M79 202C104 200 130 200 148 202" />
-      </svg>
+      <div class="recruit-faqs-illustration" aria-hidden="true">
+        <HeroIllustration kind="case" loading="lazy" />
+      </div>
     </header>
 
     <div class="recruit-faqs-list">
@@ -138,26 +128,9 @@ const faqs = [
     text-wrap: pretty;
   }
 
-  .recruit-faqs-doodle {
+  .recruit-faqs-illustration {
     width: 9rem;
     margin-top: 1.25rem;
-    overflow: visible;
-    stroke: currentColor;
-    stroke-width: 2.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-
-  .recruit-faqs-chat-back {
-    fill: var(--color-blush);
-  }
-
-  .recruit-faqs-chat-front {
-    fill: var(--color-citron);
-  }
-
-  .recruit-faqs-ground {
-    opacity: 0.5;
   }
 
   .recruit-faqs-list {
@@ -323,7 +296,7 @@ const faqs = [
       gap: 4rem;
     }
 
-    .recruit-faqs-doodle {
+    .recruit-faqs-illustration {
       width: 16rem;
       margin-top: 2rem;
     }

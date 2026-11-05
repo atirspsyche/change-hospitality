@@ -10,7 +10,7 @@ export interface SourceImage {
 export interface LocalImage { src: string; srcSet?: string; width: number; height: number; shareSrc?: string }
 const builder = createImageUrlBuilder(getSanityConfig(import.meta.env));
 const images = new Map<string, Promise<LocalImage>>();
-type ImageKind = 'portrait' | 'logo' | 'gallery';
+type ImageKind = 'portrait' | 'logo' | 'gallery' | 'instagram';
 
 export function buildImage(image: SourceImage | undefined, kind: ImageKind): Promise<LocalImage | undefined> {
   if (!image?.asset?.url) return Promise.resolve(undefined);
@@ -22,18 +22,20 @@ export function buildImage(image: SourceImage | undefined, kind: ImageKind): Pro
 async function generateImage(image: SourceImage, kind: ImageKind): Promise<LocalImage> {
   const { getImage, inferRemoteSize } = await import('astro:assets');
   const dimensions = image.asset!.metadata?.dimensions;
-  if (kind === 'gallery') {
+  if (kind === 'gallery' || kind === 'instagram') {
     const source = dimensions && Number.isFinite(dimensions.width) && dimensions.width > 0
       && Number.isFinite(dimensions.height) && dimensions.height > 0
       ? dimensions : await inferRemoteSize(image.asset!.url);
     const cropWidth = Math.floor(source.width * (1 - (image.crop?.left || 0) - (image.crop?.right || 0)));
     const cropHeight = Math.floor(source.height * (1 - (image.crop?.top || 0) - (image.crop?.bottom || 0)));
-    const width = Math.max(1, Math.min(1280, cropWidth, Math.floor(cropHeight * 4 / 3)));
-    const height = Math.max(1, Math.round(width * 0.75));
+    if (cropWidth <= 0 || cropHeight <= 0) throw new Error('The Sanity image crop must leave a visible image area.');
+    const ratio = kind === 'gallery' ? 4 / 3 : cropWidth / cropHeight;
+    const width = Math.max(1, Math.min(kind === 'gallery' ? 1280 : 800, cropWidth, Math.floor(cropHeight * ratio)));
+    const height = Math.max(1, Math.round(width / ratio));
     const src = builder.image(image as Parameters<typeof builder.image>[0]).width(width).height(height).fit('crop').quality(90).url();
     const widths = [...new Set([400, 640, 960, width].filter((size) => size <= width))];
     const variants = await Promise.all(widths.map((size) =>
-      getImage({ src, width: size, height: Math.max(1, Math.round(size * 0.75)), format: 'webp', quality: 75 }),
+      getImage({ src, width: size, height: Math.max(1, Math.round(size / ratio)), format: 'webp', quality: 75 }),
     ));
     return {
       src: variants[variants.length - 1].src,

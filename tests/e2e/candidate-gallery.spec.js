@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+import { readFile } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
 
 const photoSelector = "[data-gallery-photo]";
@@ -28,12 +30,19 @@ test("jobs arrival and mode switching download no gallery photos or Sanity image
   expect(await page.locator("template[data-gallery-image]").evaluateAll((templates) =>
     templates.map((template) => template.content.querySelector("img").alt))).toEqual([
     "change hospitality waitress serving at wedding",
-    "front of house team behind the bar at Wimbledon games",
-    "change hospitality bartender mixing drinks at Bacardi arena at Wireless festival",
+    "Front of house team in green uniforms posing together behind a bar.",
+    "Bartender performing a bottle flair move at an event bar.",
     "reception staff at social pantry event",
     "waitress pouring drinks at private members club",
     "chef and waiting staff for christmas at claridges",
   ]);
+  for (const [index, file] of ["10.webp", "11.webp"].entries()) {
+    const buffer = await readFile(new URL(`../../public/candidate-pics/${file}`, import.meta.url));
+    const hash = createHash("sha1").update(buffer).digest("hex");
+    const source = await page.locator("template[data-gallery-image]").nth(index + 1)
+      .evaluate((template) => template.content.querySelector("img").src);
+    expect(source, `${file} must occupy gallery slot ${index + 2}`).toContain(hash);
+  }
   const sources = await page.locator("template[data-gallery-image]").evaluateAll((templates) =>
     templates.flatMap((template) => {
       const image = template.content.querySelector("img");
