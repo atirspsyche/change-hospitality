@@ -11,17 +11,16 @@ const divisions = [
     description:
       "Guest-facing people with the judgement, pace and personality to make every service feel considered.",
     roles: [
+      "Operations Managers & Directors",
       "General managers",
       "Reception",
       "Food & beverage",
-      "Waiters",
+      "Waiters & Bar Staff",
+      "Bar Management",
       "Banqueting Staff",
       "Hosts",
     ],
-    images: [
-      "/recruit-talent-images/foh.png",
-      "/recruit-talent-images/foh2.png",
-    ],
+    image: "/recruit-talent-images/foh.png",
   },
   {
     name: "Back of House",
@@ -31,16 +30,13 @@ const divisions = [
       "Kitchen staff at every level, from casual covers to inspiring leaders who shape the change.",
     roles: [
       "Executive chefs",
-      "Sous chefs",
       "Head Chef",
-      "Chef De Partie",
+      "Sous chefs",
       "Pastry Chef",
+      "Chef De Partie",
       "Kitchen Porter",
     ],
-    images: [
-      "/recruit-talent-images/boh.png",
-      "/recruit-talent-images/boh2.png",
-    ],
+    image: "/recruit-talent-images/boh2.png",
   },
   {
     name: "Events & Commercial",
@@ -49,16 +45,13 @@ const divisions = [
     description:
       "The people behind big moves : operational, commercial and support specialists who keep your business moving.",
     roles: [
-      "Senior executives",
+      "Senior executive",
       "Sales & marketing",
       "Events",
       "HR",
       "Finance & Administration",
     ],
-    images: [
-      "/recruit-talent-images/event1.png",
-      "/recruit-talent-images/event2.png",
-    ],
+    image: "/recruit-talent-images/event2.png",
   },
 ];
 ---
@@ -120,41 +113,28 @@ const divisions = [
           data-division-item
           data-expanded="false"
         >
-          <button
-            class="division-flow-trigger"
-            type="button"
-            aria-expanded="false"
-            aria-controls={`division-panel-${index}`}
-            data-division-trigger
-          >
-            <span class="division-flow-index">{division.index}</span>
-            <span class="division-flow-name">{division.name}</span>
-            <span class="division-flow-action" aria-hidden="true">
-              +
-            </span>
-            <span class="division-flow-marquee" aria-hidden="true">
-              <span class="division-flow-track">
-                {[0, 1].map(() => (
-                  <span class="division-flow-track-group">
-                    <span>{division.name}</span>
-                    <img
-                      src={division.images[0]}
-                      alt=""
-                      loading="lazy"
-                      decoding="async"
-                    />
-                    <span>{division.name}</span>
-                    <img
-                      src={division.images[1]}
-                      alt=""
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </span>
-                ))}
+          <h3 class="division-flow-title">
+            <button
+              class="division-flow-trigger"
+              type="button"
+              aria-expanded="false"
+              aria-controls={`division-panel-${index}`}
+              data-division-trigger
+            >
+              <span class="division-flow-index" aria-hidden="true">{division.index}</span>
+              <img
+                class="division-flow-image"
+                src={division.image}
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+              <span class="division-flow-name">{division.name}</span>
+              <span class="division-flow-action" aria-hidden="true">
+                +
               </span>
-            </span>
-          </button>
+            </button>
+          </h3>
 
           <div
             id={`division-panel-${index}`}
@@ -164,12 +144,14 @@ const divisions = [
             aria-hidden="true"
           >
             <div class="division-flow-panel-inner">
-              <p>{division.description}</p>
-              <ul aria-label={`${division.name} example roles`}>
-                {division.roles.map((role) => (
-                  <li>{role}</li>
-                ))}
-              </ul>
+              <div class="division-flow-copy">
+                <p>{division.description}</p>
+                <ul aria-label={`${division.name} example roles`}>
+                  {division.roles.map((role) => (
+                    <li>{role}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         </article>
@@ -338,115 +320,85 @@ const divisions = [
     translate: 0 0;
   }
 
+  .division-flow-title {
+    margin: 0;
+    background-color: var(--item-tone);
+    color: var(--color-ink);
+    transition:
+      background-color 500ms var(--ease-luxury),
+      color 500ms var(--ease-luxury);
+  }
+
+  .division-flow-trigger,
+  .division-flow-panel-inner {
+    display: grid;
+    width: min(100% - 2.5rem, 80rem);
+    grid-template-columns: clamp(2.5rem, 8vw, 4rem) minmax(0, 1fr) 2rem;
+    column-gap: 0.5rem;
+    margin: 0 auto;
+  }
+
   .division-flow-trigger {
     position: relative;
-    display: grid;
-    width: 100%;
     min-height: 7rem;
-    grid-template-columns: 2.5rem minmax(0, 1fr) 2.5rem;
     align-items: center;
-    gap: 0.75rem;
     overflow: hidden;
     border: 0;
     background: transparent;
     color: inherit;
-    padding: 1rem 1.25rem;
+    padding: 1.5rem 0;
     text-align: left;
     cursor: pointer;
   }
 
   .division-flow-trigger:focus-visible {
     z-index: 3;
-    outline-color: var(--color-ink);
+    outline-color: currentColor;
     outline-offset: -0.45rem;
   }
 
   .division-flow-index {
-    font-size: 0.75rem;
+    position: absolute;
+    top: 0.5rem;
+    left: 0;
+    font-size: 0.65rem;
     font-weight: 900;
   }
 
   .division-flow-name {
+    min-width: 0;
     font-family: var(--font-display);
-    font-size: 2.2rem;
-    /* font-weight: 650; */
-    line-height: 0.9;
-    transition: opacity 180ms ease;
+    font-size: clamp(1.375rem, 4.6vw, 2.2rem);
+    font-weight: 500;
+    line-height: 1.05;
+    text-wrap: balance;
   }
 
-  .division-flow-action {
-    display: grid;
-    width: 2.3rem;
-    height: 2.3rem;
-    place-items: center;
-    border-radius: 50%;
-    background: color-mix(in srgb, var(--color-cream) 72%, transparent);
-    font-size: 1.7rem;
-    line-height: 1;
-    transition:
-      transform 350ms var(--ease-cartoon),
-      background-color 220ms ease,
-      color 220ms ease;
-  }
-
-  .division-flow-marquee {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    background: var(--color-ink);
-    color: var(--color-cream);
-    opacity: 0;
-    transform: translateY(100%);
-    transition:
-      transform 450ms var(--ease-luxury),
-      opacity 200ms ease;
-  }
-
-  .division-flow-track {
-    display: flex;
-    width: max-content;
-    animation: division-marquee 16s linear infinite;
-    animation-play-state: paused;
-  }
-
-  .division-flow-track-group {
-    display: flex;
-    flex: 0 0 auto;
-    align-items: center;
-    gap: 1.3rem;
-    padding-right: 1.3rem;
-  }
-
-  .division-flow-track-group > span {
-    font-family: var(--font-display);
-    font-size: 3rem;
-    font-weight: 650;
-    line-height: 1;
-    white-space: nowrap;
-  }
-
-  .division-flow-track-group img {
-    flex: 0 0 auto;
-    width: clamp(7rem, 11vw, 10rem);
-    height: clamp(3.5rem, 6vw, 5.5rem);
+  .division-flow-image {
+    width: 100%;
+    height: clamp(3.5rem, 9vw, 4.5rem);
     border-radius: 999px;
     object-fit: cover;
   }
 
-  .division-flow-item[data-expanded="true"] .division-flow-marquee {
-    opacity: 1;
-    transform: translateY(0);
+  .division-flow-action {
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--color-cream) 72%, transparent);
+    font-size: 1.5rem;
+    line-height: 1;
+    transition:
+      transform 350ms var(--ease-cartoon),
+      background-color 500ms var(--ease-luxury),
+      color 500ms var(--ease-luxury);
   }
 
-  .division-flow-item[data-expanded="true"] .division-flow-track {
-    animation-play-state: running;
-  }
-
-  .division-flow-item[data-expanded="true"] .division-flow-name {
-    opacity: 0;
+  .division-flow-item[data-expanded="true"] .division-flow-title {
+    background-color: var(--color-ink);
+    color: var(--color-cream);
   }
 
   .division-flow-item[data-expanded="true"] .division-flow-action {
@@ -462,12 +414,17 @@ const divisions = [
   }
 
   .division-flow-panel-inner {
-    display: grid;
-    width: min(100% - 2.5rem, 77.5rem);
     min-height: 0;
-    margin: 0 auto;
-    gap: 1.5rem;
     overflow: hidden;
+    padding-block: 0;
+    transition: padding-block 500ms var(--ease-luxury);
+  }
+
+  .division-flow-copy {
+    display: grid;
+    grid-column: 2 / -1;
+    min-width: 0;
+    gap: 1.75rem;
   }
 
   .division-flow-item[data-expanded="true"] .division-flow-panel {
@@ -475,14 +432,15 @@ const divisions = [
   }
 
   .division-flow-item[data-expanded="true"] .division-flow-panel-inner {
-    padding-block: 2rem 2.5rem;
+    padding-block: 2.5rem 3rem;
   }
 
-  .division-flow-panel-inner > p {
-    max-width: 42rem;
-    font-size: 1.15rem;
+  .division-flow-copy > p {
+    max-width: 46rem;
+    font-size: 1.25rem;
     font-weight: 800;
-    line-height: 1.55;
+    line-height: 1.6;
+    text-wrap: pretty;
   }
 
   .division-flow-panel ul {
@@ -503,12 +461,6 @@ const divisions = [
     text-transform: uppercase;
   }
 
-  @keyframes division-marquee {
-    to {
-      transform: translateX(-50%);
-    }
-  }
-
   @media (min-width: 640px) {
     .division-flow-heading {
       width: min(100% - 5rem, 80rem);
@@ -518,24 +470,44 @@ const divisions = [
       font-size: 3rem;
     }
 
+    .division-flow-trigger,
+    .division-flow-panel-inner {
+      width: min(100% - 5rem, 80rem);
+      grid-template-columns:
+        2.5rem clamp(4rem, 10vw, 10rem) minmax(0, 1fr) 2.5rem;
+      column-gap: 1rem;
+    }
+
     .division-flow-trigger {
       min-height: 8.5rem;
-      grid-template-columns: 4rem minmax(0, 1fr) 3rem;
-      gap: 1.5rem;
-      padding-inline: max(2.5rem, calc((100vw - 80rem) / 2));
+      padding-block: 1.75rem;
+    }
+
+    .division-flow-index {
+      position: static;
+      font-size: 0.75rem;
     }
 
     .division-flow-name {
-      font-size: 4rem;
+      font-size: clamp(2.2rem, 4.5vw, 4.5rem);
     }
 
-    .division-flow-panel-inner {
-      grid-template-columns: 1.1fr 0.9fr;
-      align-items: start;
+    .division-flow-image {
+      height: clamp(4rem, 7vw, 6rem);
     }
 
-    .division-flow-track-group > span {
-      font-size: 5rem;
+    .division-flow-action {
+      width: 2.5rem;
+      height: 2.5rem;
+      font-size: 1.7rem;
+    }
+
+    .division-flow-copy {
+      grid-column: 3 / -1;
+    }
+
+    .division-flow-copy > p {
+      font-size: 1.35rem;
     }
   }
 
@@ -548,12 +520,19 @@ const divisions = [
       min-height: 10rem;
     }
 
-    .division-flow-name {
-      font-size: 5.5rem;
+    .division-flow-trigger,
+    .division-flow-panel-inner {
+      column-gap: 1.5rem;
     }
 
-    .division-flow-panel-inner > p {
-      font-size: 1.35rem;
+    .division-flow-copy {
+      grid-template-columns: 1.25fr 0.75fr;
+      align-items: start;
+      gap: 2rem;
+    }
+
+    .division-flow-copy > p {
+      font-size: 1.5rem;
     }
   }
 
@@ -575,14 +554,11 @@ const divisions = [
     }
 
     .division-flow-item,
-    .division-flow-marquee,
+    .division-flow-title,
     .division-flow-action,
-    .division-flow-panel {
+    .division-flow-panel,
+    .division-flow-panel-inner {
       transition: none;
-    }
-
-    .division-flow-track {
-      animation: none;
     }
   }
 </style>
@@ -657,31 +633,10 @@ const divisions = [
       );
       if (!trigger) return;
 
-      trigger.addEventListener("click", (event) => {
-        const openedByMouseHover =
-          event.detail > 0 &&
-          item.matches(":hover") &&
-          item.dataset.expanded === "true";
-        const shouldExpand =
-          openedByMouseHover || item.dataset.expanded !== "true";
+      trigger.addEventListener("click", () => {
+        const shouldExpand = item.dataset.expanded !== "true";
         closeOthers(item);
         setExpanded(item, shouldExpand);
-      });
-
-      item.addEventListener("focusout", (event) => {
-        const nextTarget = event.relatedTarget;
-        if (nextTarget instanceof Node && item.contains(nextTarget)) return;
-        if (!item.matches(":hover")) setExpanded(item, false);
-      });
-
-      item.addEventListener("pointerenter", (event) => {
-        if (event.pointerType !== "mouse") return;
-        closeOthers(item);
-        setExpanded(item, true);
-      });
-      item.addEventListener("pointerleave", (event) => {
-        if (event.pointerType !== "mouse") return;
-        if (!item.contains(document.activeElement)) setExpanded(item, false);
       });
     });
   }

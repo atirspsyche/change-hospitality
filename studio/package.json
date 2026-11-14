@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "sanity dev",
+    "check": "tsc --noEmit",
     "build": "sanity build",
     "test": "node --experimental-strip-types --test schemaTypes/*.test.js",
     "seed:locations": "sanity exec scripts/seed-locations.ts --with-user-token",

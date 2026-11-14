@@ -20,19 +20,13 @@ const franchiseFilm = {
   captions: '',
   transcriptUrl: '',
 };
-const sectionLinks = [
-  { label: 'The opportunity', href: '#the-opportunity', meta: 'Your next chapter' },
-  { label: 'The Change way', href: '#the-change-way', meta: 'Get to know us' },
-  { label: "Let's talk", href: '#lets-talk', meta: 'Start a conversation' },
-];
 ---
 
 <BaseLayout
   title="Franchising | Change Hospitality"
-  description="Build your own hospitality recruitment agency with Change Hospitality: over 20 years of experience, proven systems, established processes and national client agreements."
+  description="Build your own hospitality recruitment business with Change Hospitality's experience, established systems and national client relationships."
 >
   <FunMenu
-    sectionLinks={sectionLinks}
     menuButtonBackground="var(--color-blush)"
     menuButtonBorderColor="var(--color-cocoa)"
     menuButtonTextColor="var(--color-cocoa)"
@@ -221,7 +215,7 @@ const sectionLinks = [
           <h2 id="contact-title">Big plans?<br /><span>Start with a hello.</span></h2>
         </div>
         <div class="contact-copy" data-franchise-reveal>
-          <p>If that sounds like something you'd like to build, tell us a little about yourself by email or phone and we'll be in touch.</p>
+          <p>If that sounds like something you'd like to build, drop us an email or give us a call.</p>
           <div class="contact-actions">
             <PrimaryButton href={emailLink} icon={Mail} shadow={false} backgroundColor="var(--color-cocoa)" textColor="var(--color-cream)">
               Let's talk franchising

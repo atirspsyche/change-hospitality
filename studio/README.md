@@ -129,7 +129,7 @@ The section renders as static HTML with no new client JavaScript, embed, Instagr
 
 ## Environmental Impact Numbers
 
-Open **Environmental impact** in the Studio sidebar to edit the **To date** cards on `/sustainability-impact/`. This is a single document with the stable ID `environmental-impact`. Each entry has a required display value, label and card shape, plus an optional unit. Display values are text so formatting such as `3.09` and `20,000+` is preserved. Drag entries to reorder them; add or remove entries as needed, keeping at least one.
+Open **Environmental impact** in the Studio sidebar to edit the **To date** cards on `/environmental-policy/`. This is a single document with the stable ID `environmental-impact`. Each entry has a required display value, label and card shape, plus an optional unit. Display values are text so formatting such as `3.09` and `20,000+` is preserved. Drag entries to reorder them; add or remove entries as needed, keeping at least one.
 
 ### Initial Population
 

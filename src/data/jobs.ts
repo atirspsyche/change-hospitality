@@ -1,8 +1,14 @@
 export type JobType = 'Permanent' | 'Temporary' | 'Contract';
-export type JobPosition =
-  | 'Front of House'
-  | 'Back of House'
-  | 'Events & Commercial';
+export const jobPositions = [
+  'Back of House',
+  'Front of House',
+  'Sales & Marketing',
+  'Events',
+  'HR',
+  'Finance',
+  'Admin',
+] as const;
+export type JobPosition = (typeof jobPositions)[number] | 'Events & Commercial';
 
 export interface JobSalary {
   display: string;
@@ -41,8 +47,8 @@ export interface JobPosting {
 
 type JobSeed = Omit<
   JobPosting,
-  'overview' | 'roleDetails' | 'responsibilities' | 'idealCandidate' | 'offer'
->;
+  'overview' | 'roleDetails' | 'responsibilities' | 'idealCandidate' | 'offer' | 'position'
+> & { position: 'Front of House' | 'Back of House' | 'Events & Commercial' };
 
 const jobSeeds: JobSeed[] = [
   {
@@ -240,7 +246,7 @@ const jobSeeds: JobSeed[] = [
 ];
 
 const detailsByPosition: Record<
-  JobPosition,
+  JobSeed['position'],
   Pick<JobPosting, 'responsibilities' | 'idealCandidate'>
 > = {
   'Front of House': {
@@ -306,9 +312,6 @@ export const jobs: JobPosting[] = jobSeeds.map((job) => ({
   ...detailsByPosition[job.position],
   offer: offerByType[job.jobType],
 }));
-
-export const getJobBySlug = (slug: string) =>
-  jobs.find((job) => job.slug.current === slug);
 
 export const testJobs: JobPosting[] = jobs.slice(0, 3).map((job, index) => ({
   ...job,

@@ -20,7 +20,8 @@ const originalEnvironment = {
 };
 
 afterEach(() => {
-  Object.assign(process.env, originalEnvironment);
+  if (originalEnvironment.RECRUITMENT_INBOX === undefined) delete process.env.RECRUITMENT_INBOX;
+  else process.env.RECRUITMENT_INBOX = originalEnvironment.RECRUITMENT_INBOX;
 });
 
 function createResponse() {
@@ -151,5 +152,6 @@ test('returns a controlled error when the email provider is unavailable', async 
 
   assert.equal(response.statusCode, 502);
   assert.equal(response.body.ok, false);
-  assert.match(response.body.message, /could not deliver your brief/i);
+  assert.match(response.body.message, /could not confirm receipt of your brief/i);
+  assert.match(response.body.reference, /^CH-HIRE-\d{8}-[A-F0-9]{12}$/);
 });

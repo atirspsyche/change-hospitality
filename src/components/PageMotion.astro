@@ -24,8 +24,8 @@ const { page } = Astro.props;
 
   const settings = {
     home: {
-      layers: '.franchise-map__halo',
-      reveals: '[data-map-copy], .home-story-link > *, .home-policy-link > *, #site-footer-title',
+      layers: null,
+      reveals: '#site-footer-title',
     },
     jobs: {
       layers: '.jobs-hero-art',
@@ -33,18 +33,18 @@ const { page } = Astro.props;
     },
     story: {
       layers: '.story-doodle',
-      reveals: '.story-next h2, .story-next p',
+      reveals: null,
     },
     recruit: {
-      layers: '.recruit-hero-art, .recruit-footer-egg',
-      reveals: '.division-flow-heading, .recruit-footer-inner > h2, .recruit-footer-actions',
+      layers: '.recruit-hero-art',
+      reveals: '.division-flow-heading',
     },
     impact: {
-      layers: '.hero-sprout, .bcorp-badge, .intro-flower, .certification-photo, .environment-sprout',
+      layers: '.hero-sprout, .bcorp-badge, .intro-flower, .environment-sprout',
       reveals: '.intro-heading, .intro-copy, .partner-garden > div, .certification-copy, .environment-header > div:first-child, .environment-copy, .impact-number, .office-note, .social-header, .social-card',
     },
     team: {
-      layers: '.team-hero-composition, .team-hero-oval, .team-hero-confetti span, .team-section-oval',
+      layers: '.team-hero-composition, .team-hero-oval, .team-section-oval',
       reveals: '.team-profiles-section h2',
     },
     franchising: {
@@ -142,6 +142,7 @@ const { page } = Astro.props;
       const tick = (time: number) => lenis.raf(time * 1000);
       lenis.on('scroll', ScrollTrigger.update);
       gsap.ticker.add(tick);
+      let resizeFrame = 0;
 
       const focusTarget = (target: HTMLElement) => {
         if (!target.hasAttribute('tabindex')) {
@@ -150,6 +151,25 @@ const { page } = Astro.props;
         }
         target.focus({ preventScroll: true });
       };
+
+      document.addEventListener('page-motion-scroll-to', (event) => {
+        const { target, onComplete } = (event as CustomEvent<{
+          target: HTMLElement;
+          onComplete: () => void;
+        }>).detail;
+        event.preventDefault();
+        cancelAnimationFrame(resizeFrame);
+        ScrollTrigger.refresh();
+        lenis.resize();
+        lenis.scrollTo(target, { onComplete });
+      }, { signal: listeners.signal });
+
+      document.addEventListener('page-motion-scroll-immediate', (event) => {
+        const { top } = (event as CustomEvent<{ top: number }>).detail;
+        event.preventDefault();
+        lenis.resize();
+        lenis.scrollTo(top, { immediate: true, force: true });
+      }, { signal: listeners.signal });
 
       document.addEventListener('click', (event) => {
         if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -188,26 +208,30 @@ const { page } = Astro.props;
       };
 
       const initAnimations = () => context.add(() => {
-        root.querySelectorAll<HTMLElement>(settings[page].reveals).forEach((element) => {
-          ScrollTrigger.create({
-            trigger: element,
-            start: 'top 94%',
-            once: true,
-            onEnter: () => context.add(() => {
-              track(element);
-              gsap.fromTo(element, { '--page-motion-y': '24px', opacity: 0.35 }, {
-                '--page-motion-y': '0px',
-                opacity: 1,
-                duration: 0.8,
-                ease: 'power2.out',
-                clearProps: '--page-motion-y,opacity',
-              });
-            }),
+        const reveals = settings[page].reveals;
+        if (reveals) {
+          root.querySelectorAll<HTMLElement>(reveals).forEach((element) => {
+            ScrollTrigger.create({
+              trigger: element,
+              start: 'top 94%',
+              once: true,
+              onEnter: () => context.add(() => {
+                track(element);
+                gsap.fromTo(element, { '--page-motion-y': '24px', opacity: 0.35 }, {
+                  '--page-motion-y': '0px',
+                  opacity: 1,
+                  duration: 0.8,
+                  ease: 'power2.out',
+                  clearProps: '--page-motion-y,opacity',
+                });
+              }),
+            });
           });
-        });
+        }
 
-        if (context.conditions?.desktop) {
-          root.querySelectorAll<HTMLElement>(settings[page].layers).forEach((element, index) => {
+        const layers = settings[page].layers;
+        if (context.conditions?.desktop && layers) {
+          root.querySelectorAll<HTMLElement>(layers).forEach((element, index) => {
             const section = element.closest('section') || root;
             const hero = section === root.querySelector('section');
             ScrollTrigger.create({
@@ -242,7 +266,6 @@ const { page } = Astro.props;
         initAnimations();
       }
 
-      let resizeFrame = 0;
       const resizeObserver = new ResizeObserver(() => {
         lenis.resize();
         cancelAnimationFrame(resizeFrame);

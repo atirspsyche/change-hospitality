@@ -1,37 +1,19 @@
 ---
 import { PrimaryButton } from './Button';
+import FormContactFallback from './FormContactFallback.astro';
+import { staffingGroups } from '../data/formOptions.js';
 
 interface Props {
   action?: string;
   id?: string;
+  contactEmail: string;
 }
 
 const {
   action = '/api/recruit-talent',
   id = 'staffing-brief',
+  contactEmail,
 } = Astro.props;
-
-const staffingGroups = [
-  {
-    label: 'A',
-    title: 'Temporary Staffing',
-    options: [
-      { label: 'Front of House Casual', value: 'Temporary Staffing - Front of House Casual' },
-      { label: 'Back of House Casual', value: 'Temporary Staffing - Back of House Casual' },
-    ],
-  },
-  {
-    label: 'B',
-    title: 'Permanent Placements',
-    options: [
-      { label: 'Front of House', value: 'Permanent Placements - Front of House' },
-      { label: 'Back of House', value: 'Permanent Placements - Back of House' },
-      { label: 'Sales, Marketing & Events', value: 'Permanent Placements - Sales, Marketing & Events' },
-      { label: 'HR', value: 'Permanent Placements - HR' },
-      { label: 'Finance and Administration', value: 'Permanent Placements - Finance and Administration' },
-    ],
-  },
-];
 ---
 
 <form
@@ -40,6 +22,7 @@ const staffingGroups = [
   method="post"
   action={action}
   data-recruitment-form
+  data-js-required
 >
   <div class="recruit-form-heading">
     <div>
@@ -126,6 +109,8 @@ const staffingGroups = [
     <p class="recruit-form-status" role="status" aria-live="polite" data-form-status></p>
   </div>
 </form>
+
+<FormContactFallback purpose="send a staffing brief" email={contactEmail} />
 
 <style>
   .recruit-form {
@@ -458,6 +443,8 @@ const staffingGroups = [
 </style>
 
 <script>
+  import { submitForm, SubmissionError, clearFieldErrors, showFieldErrors } from '../lib/formSubmission';
+
   function initRecruitmentForms() {
     document.querySelectorAll<HTMLFormElement>('[data-recruitment-form]').forEach((form) => {
       if (form.dataset.ready === 'true') return;
@@ -485,9 +472,13 @@ const staffingGroups = [
       };
 
       staffingInputs.forEach((input) => input.addEventListener('change', validateStaffingTypes));
+      form.addEventListener('input', () => clearFieldErrors(form));
+      form.addEventListener('change', () => clearFieldErrors(form));
 
       form.addEventListener('submit', async (event) => {
         event.preventDefault();
+        if (button.disabled) return;
+        clearFieldErrors(form);
         setStatus('');
 
         const staffingTypesAreValid = validateStaffingTypes();
@@ -516,23 +507,18 @@ const staffingGroups = [
         setStatus('Passing your brief to the recruitment team.');
 
         try {
-          const response = await fetch(form.action, {
+          const result = await submitForm(form.action, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
           });
-          const result = await response.json().catch(() => ({}));
-
-          if (!response.ok) {
-            throw new Error(result.message || 'We could not send your brief. Please try again.');
-          }
-
           form.reset();
           validateStaffingTypes();
           staffingError.textContent = '';
           staffingGroup.setAttribute('aria-invalid', 'false');
           setStatus(`${result.message} Reference ${result.reference}.`, 'success');
         } catch (error) {
+          if (error instanceof SubmissionError) showFieldErrors(form, error.fieldErrors);
           const message = error instanceof Error ? error.message : 'We could not send your brief. Please try again.';
           setStatus(message, 'error');
         } finally {

@@ -4,7 +4,7 @@ Premium Astro website concept for Change Hospitality, focused on editorial luxur
 
 ## Highlights
 
-- Astro homepage built from reusable sections for hero, philosophy, divisions, impact, opportunities, testimonials, candidate application and footer CTA.
+- Illustrated Astro homepage with a hydrated canvas story, shared office map, readable reduced-motion/no-JavaScript content and the shared footer. The superseded cinematic homepage components have been retired.
 - Tailwind tokens for Obsidian, Champagne, Off-White and B-Corp Green.
 - GSAP + ScrollTrigger effects wrapped in responsive `matchMedia()` rules, with simplified mobile motion and reduced-motion support.
 - Lenis smooth scrolling for desktop polish. Native CSS smooth scrolling stays disabled while Lenis is active, so GSAP layout refreshes can reset and restore the scroll position synchronously without competing browser animations.
@@ -12,7 +12,7 @@ Premium Astro website concept for Change Hospitality, focused on editorial luxur
 - Role-specific candidate applications with server-validated CV attachments and consultant email routing.
 - Sanity-managed job listings, team profiles and environmental impact numbers, with a standalone Studio in `studio/`.
 - Team cards retain their hover effects, with direct email/call shortcuts and an accessible sliding biography sheet. Notes scroll inside the card without resizing the grid; Escape or Show less closes the sheet, and reduced-motion preferences disable its animation.
-- Team offices fetch their member data once at build time and render eight cards per page in a single `client:visible` island per office. Off-page cards and portraits stay out of the live DOM; each office remembers its page when reopening. The themed controls support keyboard navigation, screen-reader range announcements and a compact mobile layout. Remaining profiles are available without JavaScript.
+- Team offices fetch their member data once at build time and render eight cards per page in a single `client:visible` island per office. Off-page cards and portraits stay out of the live DOM; each office remembers its page when reopening. Switching offices keeps the clicked heading in place throughout the panel transition, including with Lenis and reduced motion; scrolling or navigating manually interrupts this anchoring. The themed controls support keyboard navigation, screen-reader range announcements and a compact mobile layout. Remaining profiles are available without JavaScript. Run `npx playwright test team-accordion-scroll.spec.js team-pagination.spec.js` for office-switch scrolling and pagination regressions.
 - Shareable `/jobs/[slug]/` detail routes with assigned consultant contacts and role-specific stepped applications.
 - Reusable recruiter staffing brief with accessible multi-select controls, responsive motion and SMTP delivery.
 - SEO metadata, Open Graph tags, JSON-LD and sitemap generation.
@@ -24,40 +24,56 @@ Premium Astro website concept for Change Hospitality, focused on editorial luxur
 | :-- | :-- |
 | `npm install` | Install dependencies |
 | `npm run dev` | Start local development at `localhost:4321` |
+| `npm run check` | Check Astro and TypeScript diagnostics |
 | `npm run build` | Build the production site to `dist/` |
-| `npm test` | Run the Vercel function and SMTP configuration tests |
+| `npm test` | Run API, SMTP, shared helper and content regression tests |
 | `npm run test:e2e` | Run desktop/mobile Chromium regressions and WebKit dropdown scroll checks |
 | `npm run preview` | Preview the built site locally |
+| `npm --prefix studio run check` | Type-check the standalone Studio |
+
+The [validation workflow](.github/workflows/validate.yml) runs website and Studio checks, unit tests and production builds on Node 22. Browser regressions remain a separate release check; install the browsers before running them.
+
+## Shared Architecture
+
+- [Navigation data](src/data/navigation.ts) owns the seven menu/footer destinations and presentation-specific labels. The unused per-page section-link API has been removed.
+- [Form options](src/data/formOptions.js) supply the displayed staffing/temporary choices and the API allowlists. This module is plain ESM so both Astro and the Node functions can import it without a TypeScript transform.
+- [Server form helpers](server/form-utils.js) share text cleaning, allow-listing, HTML escaping and JSON parsing. The JSON endpoints retain their separate body limits, measured in UTF-8 bytes. [The email template](server/email-template.js) shares presentation while each endpoint retains its recipients, reference format, plain text and attachment handling. Email colours remain inline for email-client compatibility.
+- [Global styles](src/styles/global.css) define the palette once in `@theme static`, retaining dynamically referenced variables. [Tailwind configuration](tailwind.config.mjs) references those tokens rather than duplicating their values.
+- [Form contact guidance](src/components/FormContactFallback.astro) provides email alternatives without JavaScript; inactive mode controls and the JSON-only recruitment form are hidden in that mode. [The browser submission helper](src/lib/formSubmission.ts) validates confirmations, bounds requests, preserves details on failure and links server errors to the affected fields.
+
+The empty-jobs fallback intentionally retains three clearly marked sample vacancies until production cutover. Their noindex, sitemap exclusions and application restrictions remain in place. Retiring the samples remains a separate release task.
 
 Install the test browsers with `npx playwright install chromium webkit`. Run `npx playwright test dropdown-scroll.spec.js` for frame-by-frame scroll-position checks when opening and closing job FAQs and recruiter dropdowns, including navigation from the homepage, keyboard input, reduced motion and disabled JavaScript. The WebKit project is scoped to this suite; the other suites continue to use Chromium. Confirm Safari-specific reports on the affected macOS Safari version as well.
 
 ## Email Flows
 
-The job application form posts multipart data to the Vercel function at `/api/apply`. The function validates the candidate fields and CV, confirms the published job and assigned consultant in Sanity, then sends the application to that consultant with the CV attached. If `APPLICATIONS_INBOX` is configured, it receives a blind copy and acts as a fallback when a consultant has no valid email. CVs are limited to 4 MB so the complete multipart request stays below Vercel's function payload limit.
+The job application form posts multipart data to the Vercel function at `/api/apply`. The function validates the candidate fields and CV, confirms the published job and assigned consultant in Sanity, then sends the application to that consultant with the CV attached. If `APPLICATIONS_INBOX` is configured, it receives a blind copy and acts as a fallback when a consultant has no valid email. CVs may be up to **4,194,304 bytes (4 MiB), inclusive**; complete multipart bodies are limited to 4,400,000 bytes independently of `Content-Length`. Interrupted and stalled uploads settle with an explicit error.
+
+[CV screening](server/resume.js) matches the extension to PDF/legacy DOC signatures or a parsed DOCX ZIP package, rather than trusting browser-supplied MIME. DOCX requires well-formed content-type, relationship and document XML, with CRC checks on those parts. Encrypted archives, duplicate parts, macros, more than 2,048 entries, more than 64 MiB total declared expansion, or more than 8 MiB per required XML part are rejected. MIME is assigned from the validated extension. This is format screening, **not antivirus, sandboxing or complete PDF/DOC/document validation**; mail-provider attachment scanning is still required.
 
 Job and team content is loaded from the Sanity `production` dataset during each static build. Each published job generates a static `/jobs/[slug]/` page.
 
-The **To date** impact numbers on `/sustainability-impact/` also come from published Sanity content at build time. Before the first build, run `npm run seed:impact` in [studio/](studio/) to migrate the existing four figures without overwriting editorial changes. Editors can update values, labels, units, shapes and their order under **Environmental impact**, then publish and rebuild the site. Missing or invalid impact content fails the build rather than falling back to hardcoded numbers. See the [Studio workflow](studio/README.md#environmental-impact-numbers) for setup and deployment.
+The **To date** impact numbers on `/environmental-policy/` also come from published Sanity content at build time. Before the first build, run `npm run seed:impact` in [studio/](studio/) to migrate the existing four figures without overwriting editorial changes. Editors can update values, labels, units, shapes and their order under **Environmental impact**, then publish and rebuild the site. Missing or invalid impact content fails the build rather than falling back to hardcoded numbers. See the [Studio workflow](studio/README.md#environmental-impact-numbers) for setup and deployment.
 
 ### Sustainability artwork
 
-Certification and partner logos, including the supplied B Corp mark, are local assets in [public/client-logos/sustainability-logo/](public/client-logos/sustainability-logo/). [EnvironmentalPolicy.astro](src/components/EnvironmentalPolicy.astro) reuses the same B Corp artwork in the hero, partner list and certifications, with real ISO 14001 and ISO 9001 logos. The Social Impact cards reuse the Living Wage, The Good Apple Effect and Beyond Food logos instead of illustrations. Desktop cards share logo and text rows, aligning their tops, bottoms and copy; tablet and mobile cards remain stacked. Social logos are top-aligned in matching frames without decorative parallax. Logo dimensions match their source files; portrait and wide marks have separate sizing and use containment rather than cropping or recolouring.
+Certification and partner logos, including the supplied B Corp mark, are local assets in [public/client-logos/sustainability-logo/](public/client-logos/sustainability-logo/). The full implementation now lives directly in [environmental-policy.astro](src/pages/environmental-policy.astro), reusing the same B Corp artwork in the hero, partner list and certifications, with real ISO 14001 and ISO 9001 logos. The Social Impact cards reuse the Living Wage, The Good Apple Effect and Beyond Food logos instead of illustrations. Desktop cards share logo and text rows, aligning their tops, bottoms and copy; tablet and mobile cards remain stacked. Social logos are top-aligned in matching frames without decorative parallax. Logo dimensions match their source files; portrait and wide marks have separate sizing and use containment rather than cropping or recolouring.
 
-The three certification photos in [sustainability-pics/](public/client-logos/sustainability-logo/sustainability-pics/) retain their full landscape, square and portrait compositions. Larger frames form a three-column desktop gallery, two columns on tablet and one on mobile. Images have explicit dimensions, descriptive alt text and lazy loading. These media changes require a website rebuild, not a Sanity migration or Studio deployment; the published impact figures remain unchanged. Run `npx playwright test sustainability.spec.js` for responsive artwork and certification-gallery checks.
+Certifications retain the current logo-led design; the previously disabled photo gallery and its unused styles are removed, without changing the published impact figures. Run `npx playwright test sustainability.spec.js` for canonical-page, responsive artwork and no-JavaScript checks. The legal environmental policy remains a separate CMS-managed page at `/policies/environmental-sustainability/`.
 
 The `/jobs/` hero uses a compact, keyboard-accessible Permanent / Temporary selector. Permanent mode shows a compact, transparent location and position filter toolbar within Open roles, with a single Search jobs action. Choose Anywhere and Any team to broaden the search again; the no-results state also provides a reset. Temporary mode hides those listings and filters in favour of the temporary-work experience. Filter selections are preserved when switching between modes.
 
 The hero content is vertically centred on larger screens, with content-driven height on mobile. Focused filter fields underline their labels instead of adding a second outer border.
 
-The recruiter experience lives at `/recruit-talent/`. Its form posts JSON to `/api/recruit-talent`, which validates and sanitizes the staffing brief before sending it to `RECRUITMENT_INBOX`. Division separators stay between rows only, leaving the curved transition from Events & Commercial into the staffing form unbroken. The form section has no oversized decorative side capsule.
+The recruiter experience lives at `/recruit-talent/`. Its form posts JSON to `/api/recruit-talent`, which validates and sanitizes the staffing brief before sending it to `RECRUITMENT_INBOX`. Each division has one stationary heading with a single left-side photo, aligned with the larger description below; Back of House and Events & Commercial use their former right-side photos. Division names no longer repeat or scroll, while the separate client-logo strip remains unchanged. Divisions open only by click or keyboard activation, not hover or focus; activating the open heading or its cross closes it, and opening another division closes the previous one. Ink colour and panel transitions share smooth 500ms easing, disabled for reduced motion. Run `npx playwright test recruitment-divisions.spec.js` for responsive heading, image, alignment, manual-toggle and keyboard checks. Division separators stay between rows only, leaving the curved transition from Events & Commercial into the staffing form unbroken. The form section has no oversized decorative side capsule.
 
 Directly below the staffing form, [RecruitmentFAQs.astro](src/components/RecruitmentFAQs.astro) presents five recruitment FAQs in the footer's playful cream, citron and cocoa style. Native HTML disclosures keep every question and answer as server-rendered text, support keyboard controls and work without JavaScript. Answers open independently with a smooth CSS height transition and a gentle fade/slide in browsers supporting `interpolate-size` and `::details-content`; other browsers retain instant native toggles. Reduced-motion preferences disable the expansion, hover and toggle transitions. Run `npx playwright test recruitment-faqs.spec.js` for exact-copy, placement, interaction, responsive and contrast checks.
 
 Run `npx playwright test client-logos.spec.js` for logo aspect ratios, responsive containment, seamless looping, pause controls and reduced-motion scrolling. Run `npx playwright test section-curves.spec.js --grep Recruit` for the staffing-form transition with the last division open and closed.
 
-The temporary-work option on `/jobs/` posts candidate details to `/api/temporary-application`. The endpoint validates every field and the selected role list before emailing `TEMP_APPLICATIONS_INBOX`, falling back to `APPLICATIONS_INBOX` when no dedicated temporary-work inbox is configured.
+The temporary-work option on `/jobs/` posts candidate details to `/api/temporary-application`. Its country question asks "Which country do you live in?" and its required hospitality-experience textarea accepts up to 5,000 characters, enforced in both the form and endpoint without silently truncating answers. The email labels the country as "Country of residence" and includes the complete experience answer in a separate section, preserving paragraphs in plain text and HTML while escaping user content in HTML. The endpoint validates every field and the selected role list before emailing `TEMP_APPLICATIONS_INBOX`, falling back to `APPLICATIONS_INBOX` when no dedicated temporary-work inbox is configured.
 
-Both functions use the shared Nodemailer transport in `server/mail.js`. They wait for the SMTP server to accept the message before returning success. Set these variables in the Vercel project for Production, Preview and Development as required:
+All three functions use the shared Nodemailer transport in `server/mail.js`. They wait for the SMTP server to accept the message before returning success. Set these variables in the Vercel project for Production, Preview and Development as required:
 
 | Variable | Purpose |
 | :-- | :-- |
@@ -70,16 +86,36 @@ Both functions use the shared Nodemailer transport in `server/mail.js`. They wai
 | `RECRUITMENT_INBOX` | Destination for company staffing briefs |
 | `APPLICATIONS_INBOX` | Optional archive and fallback destination for job applications |
 | `TEMP_APPLICATIONS_INBOX` | Optional dedicated destination for temporary candidate applications; falls back to `APPLICATIONS_INBOX` |
+| `EMAIL_TEST_INBOX` | Required in Vercel Preview/Development. Replaces every SMTP envelope recipient, including consultant and archive addresses. Must be absent in Production. |
 
 `SMTP_HOST`, `SMTP_USER` and `SMTP_PASS` are accepted as aliases for `SMTP_SERVER`, `SMTP_LOGIN` and `SMTP_PASSWORD`. Keep all credentials in Vercel environment variables and never expose them through `PUBLIC_` variables or browser code.
 
 No separate backend application is required for these flows. Files under `api/` are deployed as serverless Vercel functions alongside the static Astro site. A cold start can add latency but does not skip an awaited SMTP operation. An HTTP success means the SMTP server accepted the message; final mailbox delivery still depends on the mail provider, DNS authentication and bounce handling. Configure SPF, DKIM and DMARC for the sender domain, and use port `465` or `587` rather than port `25`.
+
+### Submission and delivery guarantees
+
+- All three flows use random, dated references. Successful browser confirmations require a successful HTTP status, `ok: true`, a valid reference and a non-empty message. Invalid, null, HTML or empty responses never clear the form. Server field errors are displayed inline with accessible descriptions; stepped applications reveal the affected step.
+- JSON byte limits apply to raw and already-parsed bodies. Required fields, consent and option allowlists are checked server-side; overlong text is rejected rather than silently emailed after truncation. The temporary experience answer retains its 5,000-character limit and paragraph breaks.
+- TLS is mandatory on every SMTP port. Port 465 uses implicit TLS; other ports use required STARTTLS. Invalid TLS flags and sender addresses fail before connecting. Nodemailer's public SMTP connection and MIME-composer APIs allow the 25-second overall SMTP deadline to close the active connection, not just abandon a promise.
+- Upload parsing is bounded at 20 seconds; the live job lookup at 10 seconds with no automatic retries. Vercel functions have a 60-second budget and browser requests a 65-second deadline. Verify those limits against the deployed Vercel plan and provider attachment limits before launch.
+- Receipt requires acceptance by an intended recipient. If only the archive accepts, the user is told the application was sent to **the recruitment team**, never the named consultant. Partial acceptance logs a reference-correlated follow-up warning without resending accepted copies.
+- SMTP failures and browser timeouts can have uncertain outcomes. Details are preserved and users are advised to contact the team before resubmitting. Concurrent submit events are blocked in the browser, but this is **not cross-request idempotency**.
+- SMTP outcome logs include reference, message ID and recipient counts; failures include provider error codes without logging CVs, form contents or credentials. Operations must monitor partial-acceptance and submission-failure events. These logs are not a durable delivery ledger.
+- Preview/Development cannot send without `EMAIL_TEST_INBOX`; confirmations explicitly identify test routing. For local `vercel dev`, set the same variable before any approved SMTP testing. Never copy a production environment into a preview without the test-routing override.
+
+### Remaining operational release gates
+
+This implementation intentionally does not introduce persistent infrastructure. It has **no durable outbox, cross-request deduplication, automatic recovery, shared rate limiter, bounce webhook, or delivery-event ledger**. Do not add process-local caches as substitutes: serverless instances do not share reliable state. Before adding those capabilities, agree storage/provider services, access controls, retention and deletion policies for CVs and applicant details.
+
+Before release, verify sender SPF/DKIM/DMARC, bounce ownership, consultant/archive mailbox arrival, attachment integrity and scanning, spam/quarantine behaviour, provider quotas and deployment timeouts using approved test recipients. Configure platform/provider abuse controls and alert ownership. Applicants receive an on-screen reference, not an acknowledgement email.
 
 Astro's local server does not execute root-level Vercel functions. Use `npx vercel dev` to exercise the complete form and SMTP path locally, or deploy a Preview build with Preview environment variables configured. Run the endpoint tests without sending real email using:
 
 ```sh
 npm test
 ```
+
+Run `npx playwright test email-submissions.spec.js form-fallbacks.spec.js` for mocked desktop/mobile form and no-JavaScript regressions. Permanent-application tests use current component markup and handlers in an isolated browser harness because sample vacancies intentionally cannot accept applications; real published-job routing remains a Preview acceptance check. No real email is sent by these tests.
 
 ## Jobs Page Gallery
 
@@ -93,6 +129,14 @@ Image markup stays inside inert templates until needed, so browser-native lazy-l
 
 Run `npx playwright test candidate-gallery.spec.js` for deferred requests, staged desktop/mobile loading, responsive sources, mode/preference changes and no-JavaScript coverage. See [Studio setup](studio/README.md#candidate-gallery) for the safe initial upload, publishing and rebuild workflow.
 
+## Our Story Letter
+
+The letter at `/our-story/` keeps its original wording, punctuation and all fourteen paragraphs. Each paragraph has its own scroll-triggered typewriter; Jim's signature follows the final paragraph without an extra step. Typing runs at roughly 100 characters per second, with each reveal lasting between 0.55 and 2.6 seconds and no additional punctuation delays. Stopping the scroll does not stop it mid-sentence. Moving ahead softly reveals unfinished earlier paragraphs instead of queuing them.
+
+Desktop reading position follows scroll progress continuously in both directions, including within a paragraph, with a short 250ms glide. Typing can follow a long paragraph down, but never overrides reverse scrolling; previously revealed text is not erased or retyped. The existing overall scroll distance and normal wheel, touch and keyboard behaviour are unchanged. One persistent cursor gently fades in and out without restarting on each letter. Mobile and short screens use natural document flow, without pinning. Hidden tabs and off-screen letters pause typing without catch-up bursts. Resizing preserves revealed text; reduced-motion, print and no-JavaScript views show the complete letter. **Read full letter** exits the animation and focuses the readable original, using the shared smooth-scroll integration when available.
+
+Run `npx playwright test our-story-letter.spec.js` for copy preservation, fourteen independent reveals, faster bounded pacing, smooth movement/cursor, skipping, within-paragraph reverse scrolling, responsive/preference changes, navigation and readable fallbacks.
+
 ## Loading & Missing Pages
 
 The homepage uses [StoryLoadingScreen.astro](src/components/StoryLoadingScreen.astro) while its opening story assets decode and the scroll timeline initializes. The branded hatching-egg illustration is inline SVG/CSS, with actual asset progress, a reduced-motion treatment and no artificial minimum wait. Scrolling and background controls stay locked until the story and fonts are ready. Other static pages do not incur a loading-screen delay.
@@ -101,7 +145,7 @@ The top-left header and loading screen share [SiteLogo.astro](src/components/Sit
 
 The opening story reserves its scroll height in the server-rendered layout so reload restoration can reach the same position before hydration. The canvas is synchronized on ScrollTrigger refresh, and the restored scene is decoded and drawn before the loader releases the page. Reloading within the story or in a section below it therefore preserves both the scroll position and the animation frame without requiring a wheel/touch event. Reduced-motion, failed-asset and JavaScript-disabled views do not reserve pin space.
 
-The `plate-center-next` beat pairs franchising copy and its CTA with [FranchiseMap](src/components/FranchiseMap.tsx). Desktop copy and artwork align to the outer story gutters, leaving the centre clear for the plate even on wide displays; portrait-tablet layouts stack them. On phones, the map replaces the plate in the illustration area, with three separate 44px office controls and contained popovers. The supplied [map illustration](public/illustrations/map.webp) is cropped to its artwork and rotated clockwise in SVG without altering the source image. London (head office), Greater Manchester and Hampshire & Isle of Wight markers use the footer's warm palette and hand-drawn accents; hover previews an office card, while tap or Enter/Space toggles its Headless UI popover. Escape and outside clicks dismiss opened cards. Office names, head-office status, addresses and clickable phone numbers come from the existing published **Locations** records in Sanity at build time; [franchiseLocations.ts](src/data/franchiseLocations.ts) retains only stable office IDs, map coordinates and validation. Missing contact details fail the build rather than displaying placeholders. The homepage, reusable `client:visible` Astro wrapper, reduced-motion and failed-story views share that data; the no-JavaScript directory includes the same addresses and call links. The franchising page's office list uses the same published names. See the [Studio office workflow](studio/README.md#office-contact-details) for the guarded initial update and later editorial changes.
+The `plate-center-next` beat pairs franchising copy and its CTA with [FranchiseMap](src/components/FranchiseMap.tsx). Desktop copy and artwork align to the outer story gutters, leaving the centre clear for the plate even on wide displays; portrait-tablet layouts stack them. On phones, the map replaces the plate in the illustration area, with three separate 44px office controls and contained popovers. The supplied [map illustration](public/illustrations/map.webp) is cropped to its artwork and rotated clockwise in SVG without altering the source image. London (head office), Greater Manchester and Hampshire & Isle of Wight markers are illustrated halved boiled eggs, with smooth egg-shaped whites and centered golden yolks using the named `yolk` colour token. Their hand-drawn hover borders follow the same egg shape within a shared SVG, keeping the outline centered at desktop and compact mobile sizes; reduced motion disables the drawing and tilt transitions. Hover previews an office card, while tap or Enter/Space toggles its Headless UI popover. Escape and outside clicks dismiss opened cards. Office names, head-office status, addresses and clickable phone numbers come from the existing published **Locations** records in Sanity at build time; [franchiseLocations.ts](src/data/franchiseLocations.ts) retains only stable office IDs, map coordinates and validation. Missing contact details fail the build rather than displaying placeholders. The homepage, reduced-motion and failed-story views share that data; the unused standalone Astro wrapper has been retired. The no-JavaScript directory includes the same addresses and call links. The franchising page's office list uses the same published names. See the [Studio office workflow](studio/README.md#office-contact-details) for the guarded initial update and later editorial changes.
 
 The supplied [new logo](public/new-change-logo.svg) is printed into the first 13 opening frames. **Specialists in hospitality recruitment and staffing** is also printed directly into frames 16–58 of the [carton sequence](public/story_sequence/), from the first visible inside-lid surface until the lettering moves out of view. Its perspective, scale and position follow the lid, including reverse scrolling and the fully open hold; there is no detached desktop text reveal. The print uses Clash Display and the named `carton-ink` grey sampled from the carton tagline, with at least 3:1 contrast for its large lettering. Asset dimensions, frame count and story pacing are unchanged, with no new runtime drawing or font dependency. A screen-reader heading preserves the desktop message; mobile chapters, reduced-motion and no-JavaScript views retain readable HTML copy. Replacing these source frames must preserve the printed artwork. The shared sign-off is **We're good eggs** across the loader, footer, story, franchising, missing page and mobile story.
 
@@ -167,7 +211,7 @@ Focused component tests run with `node --experimental-strip-types --test src/lib
 
 ## Shared Footer
 
-[SiteFooter](src/components/SiteFooter.astro) provides the citron footer on the main website pages, including Franchising and Recruit. It occupies exactly one dynamic viewport in height and the available viewport width, with height-aware type and spacing for short screens. Its rounded top is component-owned, so it also applies without a `brand-footer` wrapper. The lower footer has two vertical columns: large stacked page links on the left (Home, Jobs, Recruit, Team, Our story, Franchising and Sustainability), and policies, Sanity-managed contact/social links, then the smaller logo on the right. The right-hand groups share one left alignment. Policies use two compact columns on desktop and a single column on narrow screens. The original square logo is framed by an SVG viewBox containing the complete wordmark and Hospitality line, rather than an oversized, positioned image. All content remains server-rendered without React hydration. Recruit keeps its existing conversation CTA above the shared footer; Franchising passes `backToTopHref="#franchise-title"` to preserve its return link.
+[SiteFooter](src/components/SiteFooter.astro) provides the citron footer on the main website pages, including Franchising and Recruit. It occupies exactly one dynamic viewport in height and the available viewport width, with height-aware type and spacing for short screens. Its rounded top is component-owned, so it also applies without a `brand-footer` wrapper. The lower footer has two vertical columns: large stacked page links on the left (Home, Jobs, Recruit, Team, Our story, Franchising and Sustainability), and policies, Sanity-managed contact/social links, then the smaller logo on the right. The right-hand groups share one left alignment. Policies use two compact columns on desktop and a single column on narrow screens. The original square logo is framed by an SVG viewBox containing the complete wordmark and Hospitality line, rather than an oversized, positioned image. All content remains server-rendered without React hydration. Recruit flows from client testimonials into the shared footer; the disabled conversation footer and handoff section have been retired. The disabled Team process section is also removed. Franchising passes `backToTopHref="#franchise-title"` to preserve its return link.
 
 [FooterIllustration](src/components/FooterIllustration.astro) uses the supplied [hand illustration](public/illustrations/hand.webp), with decorative SVG stars and rays. The illustration stays contained inside the original content column; no edge extension or sleeve manipulation is applied. A one-shot intersection observer starts a short star animation only when the footer enters view; it is disconnected on Astro navigation. Hovering the artwork moves the stars smoothly without transforming the image. Link lettering retains its staggered bounce on hover and keyboard focus, without duplicating accessible link names. Reduced motion disables these animations, and all content and links work without JavaScript. Compact policy and contact links retain at least 24px target heights.
 
@@ -197,7 +241,7 @@ Run `npx playwright test section-curves.spec.js` for desktop/mobile curve geomet
 
 The desktop letter in [src/components/OurStory.astro](src/components/OurStory.astro) uses a `600svh` sticky section, leaving five viewport-heights of scroll travel instead of ten. The typewriter reveal therefore advances twice as fast for the same scroll input. Mobile and short viewports retain their natural, unpinned flow; reduced-motion preferences, printing and no-JavaScript reading retain the complete letter.
 
-All four story content actions use the shared `PrimaryButton` without React hydration. The letter entry keeps its downward arrow, the closing links keep their destinations and colours, and "Read full letter" still exits the animation and focuses the complete letter. The read control stays hidden when the animation is unavailable or has been skipped.
+The letter entry and "Read full letter" controls use the shared `PrimaryButton` without React hydration. The entry keeps its downward arrow, and "Read full letter" still exits the animation and focuses the complete letter. The read control stays hidden when the animation is unavailable or has been skipped. The disabled closing CTA section and its styles have been retired; Instagram is the final content section before the shared footer.
 
 ## Team Page
 
@@ -234,7 +278,7 @@ npm run deploy
 
 The deployed `*.sanity.studio` URL uses Sanity login and project roles. Uploaded team portraits are preferred; the external portrait URL field remains available for the imported starter content.
 
-Because the site is statically generated, publishing in Studio requires a new Vercel deployment before the public pages change. Configure a Vercel Deploy Hook and a Sanity webhook for document creates, updates and deletes on `job`, `consultant` and `location` documents, including published team-order changes.
+Because the site is statically generated, publishing in Studio requires a new Vercel deployment before the public pages change. Configure a Vercel Deploy Hook and a Sanity webhook for published creates, updates and deletes on `job`, `consultant`, `location`, `client`, `testimonial`, `siteSettings`, `policy`, `temporaryWork`, `candidateGallery`, `storyInstagram` and `environmentalImpact`, excluding drafts, assets and system documents. See the [client handoff workflow](studio/README.md#client-production-handoff) for deployment and rollback checks.
 
 ## Illustrated Menu Control
 
@@ -282,3 +326,55 @@ npm run build
 ```
 
 The `public/robots.txt` file and Astro sitemap integration use `https://www.changehospitality.co.uk` as the production site URL.
+
+`/environmental-policy/` serves the complete Sustainability & Impact page and is used by navigation, story CTAs, canonical metadata and the sitemap. [Vercel routing](vercel.json) redirects both `/sustainability-impact` and `/sustainability-impact/` to it with HTTP 301; the old Astro page is removed. Astro's local dev/preview servers do not execute Vercel redirect rules. Verify their actual HTTP status and destination on a Vercel Preview before cutover.
+
+### SEO and legacy URL migration
+
+The seven main pages have distinct, intent-focused descriptions. [BaseLayout](src/layouts/BaseLayout.astro) uses each description for search metadata and Open Graph/Twitter previews; the homepage uses its default description. Job descriptions remain generated from the role and location, and policy descriptions remain managed in Sanity.
+
+The legacy site's [sitemap index](https://www.changehospitality.co.uk/sitemap_index.xml), its linked sitemaps and main navigation were checked on 14 November 2026. Confirmed replacements use explicit HTTP **301** rules in [vercel.json](vercel.json), including both trailing-slash variants for page URLs:
+
+| Legacy URL | Destination |
+| :-- | :-- |
+| `/search-jobs/`, `/job-search/` | `/jobs/` |
+| `/our-company/` | `/our-story/` |
+| `/contact/`, `/consultant/:slug/` | `/team/#profiles` |
+| `/success-stories/` | `/jobs/#candidate-testimonials` |
+| `/data-protection-policy/` | `/policies/data-protection/` |
+| `/modern-slavery/` | `/policies/modern-slavery/` |
+| `/diversity-policy/` | `/policies/equality-inclusion-diversity/` |
+| `/job-division/front-of-house/` | `/recruit-talent/#divisions` |
+| `/job-division/recruiting-for-back-of-house-roles/` | `/recruit-talent/#divisions` |
+| `/job-division/recruiting-sales-events-marketing-roles/` | `/recruit-talent/#divisions` |
+| `/job-division/recruiting-for-executive-level-roles/` | `/recruit-talent/#divisions` |
+| `/job-division/recruiting-for-hospitality-human-resource-roles/` | `/recruit-talent/#divisions` |
+| `/job-division/recruiting-office-support-roles-for-luxury-and-hospitality-organisations/` | `/recruit-talent/#divisions` |
+| `/job-division/recruiting-financial-staff-for-roles-in-hospitality-businesses/` | `/recruit-talent/#divisions` |
+| `/job-division/submit-a-vacancy/` | `/recruit-talent/#staffing-requirement` |
+| `/sustainability-impact/` | `/environmental-policy/` |
+| `/sitemap_index.xml` | `/sitemap-index.xml` |
+
+Unchanged routes such as `/recruit-talent/`, `/franchising/` and `/environmental-policy/` are not redirected. Consultant profiles are consolidated into the team directory; the consultant pattern matches only one slug segment. The staffing destination anchors the surrounding section so the contact fallback remains reachable without JavaScript. There is deliberately no site-wide or job-detail catch-all.
+
+**Unmatched content to review before cutover:**
+
+- The 20 individual vacancies in the legacy [job sitemap](https://www.changehospitality.co.uk/job-search-sitemap.xml). Verify which vacancies remain open and add exact redirects only after their corresponding production job pages exist. Do not send expired or unmatched jobs to the generic jobs page.
+- `/blog/` and its 13 articles, plus category, tag and author archives. Restore any content that should survive the redesign before redirecting it.
+- `/send-cv/`, `/foh-sign-up/`, `/boh-form/` and `/festival-sign-up/`. The general CV upload and standalone registration experiences have no confirmed like-for-like replacement.
+- `/work-for-us/` (internal recruitment, not client vacancies), `/coming-soon/`, individual `/testimonial/` pages and testimonial archives.
+- Job taxonomy archives under `/area/`, `/location/`, `/position/`, and `/job-search/permanent/`; equivalent filtered landing pages do not currently exist.
+- `/change-group-privacy-policy/` and `/cookies-and-privacy-policy/`. These contain a separate Privacy Notice, not the Data Protection Policy now served at `/policies/data-protection/`; retain or replace that notice with client/legal approval rather than silently redirecting to different policy content.
+
+As agreed, these unmatched URLs remain unmapped for now and return the site's genuine 404 when no page exists. Do not treat this as approval to remove their content at launch. Reconcile the inventory with Search Console/backlink exports and any legacy downloads not exposed by the sitemap; the public crawl is not a complete historical URL inventory.
+
+Run `node --experimental-strip-types --test src/lib/navigation.test.js src/lib/seoRedirects.test.js` and `npx playwright test seo.spec.js` for redirect configuration, destination anchors and rendered metadata coverage. On a Vercel Preview, additionally check the actual 301 `Location` headers for both slash variants and a consultant URL, confirm unrelated missing URLs still return 404, and verify that the generated sitemap contains canonical destinations rather than redirect sources. After production cutover, submit `/sitemap-index.xml` in Search Console and retain permanent redirects for at least a year.
+
+Before delivery:
+
+- Run website/Studio checks, tests and builds, then the browser release suite and real-device accessibility/performance checks.
+- Verify all three email flows on an approved Vercel Preview, including CV attachments, fallback recipients and actual mailbox delivery.
+- Confirm CMS publish/unpublish/delete rebuilds and record the rollback deployment/environment pairing.
+- Obtain legal approval for policy wording, content/imagery/font rights and sustainability claims.
+- Approve the franchising film's coming-soon state or supply the film, poster, captions and transcript.
+- Complete the separately owned Recruit confirmation review and production sample-job removal. Jobs mode keyboard-focus follow-up is outside this cleanup.

@@ -47,7 +47,7 @@ test("mobile gives each message its own chapter without changing desktop beats",
   assert.equal(overlays[2].overlay.body, homeStory.beats[3].overlay.columns[0].body);
   assert.equal(overlays[3].overlay.action.href, "/jobs/");
   assert.equal(overlays[4].overlay.action.href, "/team/");
-  assert.equal(overlays[5].overlay.action.href, "/sustainability-impact/");
+  assert.equal(overlays[5].overlay.action.href, "/environmental-policy/");
   assert.equal(homeStory.beats[1].overlay.heading,
     "We build bridges between passionate people and the best hospitality venues");
   close(mobileStoryTimeline.scrollScreens, storyTimeline.scrollScreens);

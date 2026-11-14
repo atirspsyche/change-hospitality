@@ -4,13 +4,13 @@ const illustrations = [
   { route: "/jobs/", kind: "chef", hero: ".jobs-hero" },
   { route: "/recruit-talent/", kind: "bart", hero: ".recruit-hero" },
   { route: "/team/", kind: "salt", hero: ".team-hero" },
-  { route: "/sustainability-impact/", kind: "plant", hero: ".impact-hero" },
+  { route: "/environmental-policy/", kind: "plant", hero: ".impact-hero" },
 ];
 
 const sectionIllustrations = [
   { route: "/recruit-talent/", kind: "case", container: ".recruit-faqs-illustration" },
   { route: "/franchising/", kind: "pipo", container: ".partnership-art" },
-  { route: "/sustainability-impact/", kind: "plant2", container: ".environment-sprout" },
+  { route: "/environmental-policy/", kind: "plant2", container: ".environment-sprout" },
 ];
 
 async function loadIllustration(page, illustration) {
@@ -65,7 +65,7 @@ for (const illustration of illustrations) {
 }
 
 test("sustainability retains its original hero plant", async ({ page }) => {
-  await page.goto("/sustainability-impact/");
+  await page.goto("/environmental-policy/");
   const plants = page.locator(".impact-page [data-hero-illustration='plant']");
   await expect(plants).toHaveCount(1);
   await expect(plants.locator("img")).toHaveAttribute("loading", "eager");

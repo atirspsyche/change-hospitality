@@ -1,10 +1,11 @@
 ---
 import { PrimaryButton } from "./Button";
 import SectionCurve from "./SectionCurve.astro";
+import FormContactFallback from "./FormContactFallback.astro";
+import { temporaryRoles as roles } from '../data/formOptions.js';
 import { getTemporaryWork, getPublicContacts } from '../sanity/queries';
 const [{ benefits, faqs }, contacts] = await Promise.all([getTemporaryWork(), getPublicContacts()]);
 
-const roles = ["Back of house", "Front of house", "Sales", "Events", "Admin"];
 ---
 
 <section
@@ -68,7 +69,7 @@ const roles = ["Back of house", "Front of house", "Sales", "Events", "Admin"];
             <input name="name" autocomplete="name" required maxlength="160" />
           </label>
           <label class="temp-field">
-            <span>Country</span>
+            <span>Which country do you live in?</span>
             <input
               name="country"
               autocomplete="country-name"
@@ -128,6 +129,18 @@ const roles = ["Back of house", "Front of house", "Sales", "Events", "Admin"];
           </p>
         </fieldset>
 
+        <label class="temp-field temp-experience-field">
+          <span>In few words, tell us about your hospitality experience</span>
+          <textarea
+            name="experience"
+            rows="6"
+            required
+            maxlength="5000"
+            aria-describedby="temp-experience-help"
+          ></textarea>
+          <small id="temp-experience-help">Maximum 5,000 characters.</small>
+        </label>
+
         <div class="temp-honeypot" aria-hidden="true">
           <label
             >Website<input
@@ -166,7 +179,7 @@ const roles = ["Back of house", "Front of house", "Sales", "Events", "Admin"];
         tabindex="-1"
       >
         <span aria-hidden="true">&#10003;</span><p>Details received</p><h3>
-          You're on our list.
+          Thank you for getting in touch.
         </h3><p data-temp-success-message></p>
       </div>
     </div>
@@ -194,15 +207,17 @@ const roles = ["Back of house", "Front of house", "Sales", "Events", "Admin"];
                 ))}
                 {contact === 'team' && <p><a href="/team/">Contact a consultant</a></p>}
                 {contact === 'timesheets' && <p><a href={`mailto:${contacts.timesheetsEmail}`}>{contacts.timesheetsEmail}</a></p>}
-              </section>
-              </SectionCurve>
+              </div>
             </details>
           ))
         }
       </div>
     </div>
-  </div>
+  </section>
+  </SectionCurve>
 </section>
+
+<FormContactFallback purpose="apply for temporary work" email={contacts.generalEmail} />
 
 <style>
   .temp-experience {
@@ -368,7 +383,8 @@ const roles = ["Back of house", "Front of house", "Sales", "Events", "Admin"];
     font-weight: 900;
     text-transform: uppercase;
   }
-  .temp-field input {
+  .temp-field input,
+  .temp-field textarea {
     width: 100%;
     min-width: 0;
     min-height: 2.4rem;
@@ -378,6 +394,17 @@ const roles = ["Back of house", "Front of house", "Sales", "Events", "Admin"];
     font-size: 1rem;
     font-weight: 800;
     outline: 0;
+  }
+  .temp-field textarea {
+    resize: vertical;
+    line-height: 1.5;
+  }
+  .temp-experience-field {
+    margin-top: 1.5rem;
+  }
+  .temp-field small {
+    color: var(--color-cocoa);
+    font-size: 0.78rem;
   }
 
   .temp-role-group {
@@ -686,6 +713,8 @@ const roles = ["Back of house", "Front of house", "Sales", "Events", "Admin"];
 </style>
 
 <script>
+  import { submitForm, SubmissionError, clearFieldErrors, showFieldErrors } from '../lib/formSubmission';
+
   function initTemporaryApplication() {
     document
       .querySelectorAll<HTMLElement>("[data-temp-experience]")
@@ -743,9 +772,13 @@ const roles = ["Back of house", "Front of house", "Sales", "Events", "Admin"];
         roleInputs.forEach((input) =>
           input.addEventListener("change", validateRoles),
         );
+        form.addEventListener("input", () => clearFieldErrors(form));
+        form.addEventListener("change", () => clearFieldErrors(form));
 
         form.addEventListener("submit", async (event) => {
           event.preventDefault();
+          if (submit.disabled) return;
+          clearFieldErrors(form);
           setStatus("");
           const rolesAreValid = validateRoles();
           if (!form.checkValidity() || !rolesAreValid) {
@@ -762,6 +795,7 @@ const roles = ["Back of house", "Front of house", "Sales", "Events", "Admin"];
             email: formData.get("email"),
             phone: formData.get("phone"),
             roles: formData.getAll("roles"),
+            experience: formData.get("experience"),
             consent: formData.has("consent"),
             website: formData.get("website"),
           };
@@ -771,21 +805,11 @@ const roles = ["Back of house", "Front of house", "Sales", "Events", "Admin"];
           setStatus("Passing your details to our temporary recruitment team.");
 
           try {
-            const response = await fetch(form.action, {
+            const result = await submitForm(form.action, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(payload),
             });
-            const result: {
-              ok?: boolean;
-              message?: string;
-              reference?: string;
-            } = await response.json().catch(() => ({}));
-            if (!response.ok || !result.ok)
-              throw new Error(
-                result.message ||
-                  "We could not send your details. Please try again.",
-              );
             form.hidden = true;
             success.hidden = false;
             if (successMessage)
@@ -793,6 +817,7 @@ const roles = ["Back of house", "Front of house", "Sales", "Events", "Admin"];
             success.focus();
             form.reset();
           } catch (error) {
+            if (error instanceof SubmissionError) showFieldErrors(form, error.fieldErrors);
             setStatus(
               error instanceof Error
                 ? error.message

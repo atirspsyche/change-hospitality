@@ -10,7 +10,7 @@ const captions = [
   'Hello, Hampshire. Good things are happening.',
 ];
 
-test('five Instagram cards sit after the letter and before the next-chapter links', async ({ page }) => {
+test('five Instagram cards follow the letter as the final content section', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   const sanityRequests = [];
   page.on('request', (request) => {
@@ -23,8 +23,8 @@ test('five Instagram cards sit after the letter and before the next-chapter link
   await expect(section.locator('h3')).toHaveText(captions);
   expect(await section.evaluate((element) => ({
     afterLetter: element.previousElementSibling.matches('[data-our-story]'),
-    beforeNextChapter: element.nextElementSibling.matches('.story-next'),
-  }))).toEqual({ afterLetter: true, beforeNextChapter: true });
+    finalSection: element.matches('section:last-of-type'),
+  }))).toEqual({ afterLetter: true, finalSection: true });
   await expect(section.locator('astro-island, script, button')).toHaveCount(0);
 
   const images = section.locator('.instagram-photo img');

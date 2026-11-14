@@ -1,6 +1,7 @@
 ---
 import type { JobPosting } from '../data/jobs';
 import type { TeamMember } from '../data/team';
+import FormContactFallback from './FormContactFallback.astro';
 
 interface Props {
   job: JobPosting;
@@ -68,15 +69,15 @@ const { job, consultant } = Astro.props;
           <div class="job-form-grid">
             <label class="job-form-field job-form-field-wide">
               <span>Your name</span>
-              <input name="name" autocomplete="name" required />
+              <input name="name" autocomplete="name" required maxlength="160" />
             </label>
             <label class="job-form-field">
               <span>Your email</span>
-              <input name="email" type="email" autocomplete="email" required />
+              <input name="email" type="email" autocomplete="email" required maxlength="254" />
             </label>
             <label class="job-form-field">
               <span>Contact number</span>
-              <input name="phone" type="tel" autocomplete="tel" inputmode="tel" required />
+              <input name="phone" type="tel" autocomplete="tel" inputmode="tel" required maxlength="40" />
             </label>
           </div>
           <div class="job-form-actions">
@@ -102,11 +103,11 @@ const { job, consultant } = Astro.props;
             </fieldset>
             <label class="job-form-field job-form-field-wide" data-visa-field hidden>
               <span>If a non-EU citizen, what is your visa status?</span>
-              <input name="visaStatus" autocomplete="off" data-visa-input />
+              <input name="visaStatus" autocomplete="off" maxlength="160" data-visa-input />
             </label>
             <label class="job-form-field job-form-field-wide">
               <span>Ideal location for working</span>
-              <input name="idealLocation" autocomplete="address-level2" value={job.location} required />
+              <input name="idealLocation" autocomplete="address-level2" value={job.location} required maxlength="180" />
             </label>
           </div>
           <div class="job-form-actions job-form-actions-split">
@@ -171,13 +172,15 @@ const { job, consultant } = Astro.props;
       <div class="job-form-success" data-job-form-success hidden tabindex="-1">
         <span aria-hidden="true">&#10003;</span>
         <p>Application received</p>
-        <h3>It is with {consultant.name} now.</h3>
+        <h3>Thank you for getting in touch.</h3>
         <p data-job-success-message></p>
         <a href="/jobs/#jobs">Explore more jobs</a>
       </div>
     </div>
   </div>
 </section>
+
+<FormContactFallback purpose="apply for this role" email={consultant.email} />
 
 <style>
   .job-application {
@@ -591,6 +594,8 @@ const { job, consultant } = Astro.props;
 </style>
 
 <script>
+  import { submitForm, SubmissionError, clearFieldErrors, showFieldErrors } from '../lib/formSubmission';
+
   function initJobApplication() {
     document.querySelectorAll<HTMLElement>('[data-job-application]').forEach((root) => {
       if (root.dataset.applicationReady === 'true') return;
@@ -612,6 +617,9 @@ const { job, consultant } = Astro.props;
 
       const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       let currentStep = 0;
+      form.noValidate = true;
+      form.addEventListener('input', () => clearFieldErrors(form));
+      form.addEventListener('change', () => clearFieldErrors(form));
 
       const setStatus = (message: string, isError = false) => {
         status.textContent = message;
@@ -683,8 +691,12 @@ const { job, consultant } = Astro.props;
 
       form.addEventListener('submit', async (event) => {
         event.preventDefault();
-        if (!validateStep() || !form.checkValidity()) {
-          form.reportValidity();
+        if (submit.disabled) return;
+        clearFieldErrors(form);
+        const invalidStep = steps.findIndex((step) => Boolean(step.querySelector(':invalid')));
+        if (invalidStep !== -1) {
+          showStep(invalidStep, false);
+          validateStep();
           return;
         }
 
@@ -703,22 +715,19 @@ const { job, consultant } = Astro.props;
           resumeInput?.focus();
           return;
         }
-        if (resume.size > 4 * 1024 * 1024) {
+        if (resume.size === 0 || resume.size > 4 * 1024 * 1024) {
           setStatus('Please upload a CV no larger than 4MB.', true);
           resumeInput?.focus();
           return;
         }
 
         submit.disabled = true;
+        submit.setAttribute('aria-busy', 'true');
         submit.textContent = 'Sending...';
         setStatus('Sending your application...');
 
         try {
-          const response = await fetch(form.action, { method: 'POST', body: formData });
-          const result: { ok?: boolean; reference?: string; message?: string } = await response.json().catch(() => ({}));
-          if (!response.ok || !result.ok) {
-            throw new Error(result.message || 'We could not send your application. Please try again.');
-          }
+          const result = await submitForm(form.action, { method: 'POST', body: formData });
 
           form.hidden = true;
           progress.forEach((item) => item.removeAttribute('aria-current'));
@@ -729,12 +738,20 @@ const { job, consultant } = Astro.props;
           success.focus();
           form.reset();
         } catch (error) {
+          if (error instanceof SubmissionError) {
+            showFieldErrors(form, error.fieldErrors, (control) => {
+              const step = control.closest('[data-form-step]');
+              const index = steps.findIndex((candidate) => candidate === step);
+              if (index !== -1) showStep(index, false);
+            });
+          }
           const message = error instanceof Error
             ? error.message
             : 'Something went wrong. Please check your connection and try again.';
           setStatus(message, true);
         } finally {
           submit.disabled = false;
+          submit.removeAttribute('aria-busy');
           submit.innerHTML = 'Send application <span aria-hidden="true">&#8599;</span>';
         }
       });

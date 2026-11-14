@@ -4,6 +4,8 @@ import type { FranchiseLocation } from "../data/franchiseLocations";
 import { telephoneHref } from "../data/editorial";
 import "./FranchiseMap.css";
 
+const eggShapePath = "M20 5C14 5 7 18 7 29C7 37 12 43 20 43C28 43 33 37 33 29C33 18 26 5 20 5Z";
+
 function OfficeMarker({
   location,
   open,
@@ -48,14 +50,18 @@ function OfficeMarker({
         aria-expanded={visible}
         aria-controls={panelId}
       >
-        <span className="office-marker__dot" aria-hidden="true">
-          <svg viewBox="0 0 48 48" fill="none" focusable="false">
+        <span className="office-marker__egg" aria-hidden="true">
+          <svg viewBox="0 0 40 48" fill="none" focusable="false">
+            <path className="office-marker__egg-white" d={eggShapePath} />
+            <circle className="office-marker__egg-yolk" cx="20" cy="24" r="8" />
+            <path className="office-marker__egg-glint" d="M17 21C18 19.5 20 19 21.5 19.5" />
             <path
-              d="M24 5C36 2 45 13 43 26C42 39 29 46 17 41C4 37 1 22 8 12C12 6 20 3 29 6"
+              className="office-marker__egg-outline"
+              d={eggShapePath}
+              transform="translate(20 24) scale(1.16) translate(-20 -24)"
               pathLength="1"
             />
           </svg>
-          <span />
         </span>
         <span className="office-marker__label" aria-hidden="true">
           {location.name}
@@ -94,7 +100,7 @@ export default function FranchiseMap({ locations, compact = false }: { locations
   return (
     <figure className={`franchise-map${compact ? " franchise-map--compact" : ""}`} aria-label="Change Hospitality office locations" data-franchise-map>
       <div className="franchise-map__heading" aria-hidden="true">
-        <span>Good people.<br />Local knowledge.</span>
+        <span>Good eggs,<br />cracking local knowledge.</span>
         <svg viewBox="0 0 90 70" fill="none" focusable="false">
           <path d="M4 4C66 0 87 30 61 58M46 44L59 62L78 52" />
         </svg>
@@ -130,10 +136,6 @@ export default function FranchiseMap({ locations, compact = false }: { locations
           </Popover>
         ))}
       </PopoverGroup>
-      {/* <figcaption className="franchise-map__caption">
-        <span>Three local teams. One Change.</span>
-        <span className="franchise-map__hint">Hover or tap a location to say hello.</span>
-      </figcaption> */}
       <noscript>
         <ul className="franchise-map__directory">
           {locations.map((location) => (

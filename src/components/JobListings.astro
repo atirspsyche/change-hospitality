@@ -1,6 +1,6 @@
 ---
 import { PrimaryButton, SecondaryButton } from './Button';
-import type { JobPosting } from '../data/jobs';
+import { jobPositions, type JobPosting } from '../data/jobs';
 
 interface Props {
   jobs: JobPosting[];
@@ -9,7 +9,6 @@ interface Props {
 
 const { jobs, pageSize = 6 } = Astro.props;
 const locations = [...new Set(jobs.map((job) => job.location))].sort();
-const positions = [...new Set(jobs.map((job) => job.position))].sort();
 const newRoleAccents = ['flame', 'citron', 'cocoa'];
 const toExcerpt = (description: string, maxLength = 88) => {
   if (description.length <= maxLength) return description;
@@ -51,7 +50,7 @@ const toExcerpt = (description: string, maxLength = 88) => {
           <span class="jobs-select-control">
             <select name="position" data-job-filter="position">
               <option value="">Any team</option>
-              {positions.map((position) => (
+              {jobPositions.map((position) => (
                 <option value={position}>{position}</option>
               ))}
             </select>

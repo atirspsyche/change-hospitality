@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity';
+import { jobPositions } from '../../src/data/jobs';
 
 export const job = defineType({
   name: 'job',
@@ -28,14 +29,10 @@ export const job = defineType({
     }),
     defineField({
       name: 'position',
-      title: 'Division',
+      title: 'Position',
       type: 'string',
       options: {
-        list: [
-          { title: 'Front of House', value: 'Front of House' },
-          { title: 'Back of House', value: 'Back of House' },
-          { title: 'Events & Commercial', value: 'Events & Commercial' },
-        ],
+        list: jobPositions.map((position) => ({ title: position, value: position })),
       },
       validation: (rule) => rule.required(),
     }),

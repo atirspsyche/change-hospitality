@@ -14,20 +14,13 @@ import { getDisplayJobs } from '../data/jobs';
 
 const jobs = getDisplayJobs(await getJobs());
 
-const sectionLinks = [
-  { label: 'Search', href: '#job-search-form', meta: 'Choose what matters' },
-  { label: 'Open roles', href: '#jobs', meta: 'See every opportunity' },
-  { label: 'Candidate stories', href: '#candidate-testimonials', meta: 'In their own words' },
-  { label: 'Gallery', href: '#gallery', meta: 'People behind great hospitality' },
-];
 ---
 
 <BaseLayout
   title="Hospitality Jobs in London | Manchester | Hampshire | Change Hospitality"
-  description="Explore permanent, temporary and contract hospitality jobs across front of house, back of house, events and commercial teams in London, Manchester and Hampshire."
+  description="Find permanent, temporary and contract hospitality jobs in London, Manchester and Hampshire. Explore opportunities with Change Hospitality."
 >
   <FunMenu
-    sectionLinks={sectionLinks}
     menuButtonBackground="var(--color-cocoa)"
     menuButtonBorderColor="var(--color-ink)"
     menuButtonTextColor="var(--color-cream)"
@@ -80,26 +73,56 @@ const sectionLinks = [
     const inputs = Array.from(switcher.querySelectorAll<HTMLInputElement>('input[name="jobsMode"]'));
     const panels = Array.from(document.querySelectorAll<HTMLElement>('[data-jobs-mode-panel]'));
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let currentMode = '';
+    let scrollFrame = 0;
+    let focusTimer = 0;
 
     const setMode = (mode: string, shouldScroll = false) => {
+      currentMode = mode;
+      cancelAnimationFrame(scrollFrame);
+      window.clearTimeout(focusTimer);
       panels.forEach((panel) => {
         panel.hidden = panel.dataset.jobsModePanel !== mode;
       });
       const target = panels.find((panel) => panel.dataset.jobsModePanel === mode);
       if (shouldScroll && target) {
-        target.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' });
-        const heading = target.querySelector<HTMLElement>('h2[tabindex="-1"]');
-        window.setTimeout(() => heading?.focus({ preventScroll: true }), reducedMotion ? 0 : 650);
+        scrollFrame = requestAnimationFrame(() => {
+          scrollFrame = requestAnimationFrame(() => {
+            scrollFrame = 0;
+            if (target.hidden || !target.isConnected) return;
+            const focusHeading = () => {
+              if (!target.hidden) target.querySelector<HTMLElement>('h2[tabindex="-1"]')?.focus({ preventScroll: true });
+            };
+            const scrollEvent = new CustomEvent('page-motion-scroll-to', {
+              cancelable: true,
+              detail: { target, onComplete: focusHeading },
+            });
+            if (document.dispatchEvent(scrollEvent)) {
+              window.scrollTo({
+                top: window.scrollY + target.getBoundingClientRect().top,
+                behavior: reducedMotion ? 'instant' : 'smooth',
+              });
+              focusTimer = window.setTimeout(focusHeading, reducedMotion ? 0 : 650);
+            }
+          });
+        });
       }
     };
 
     inputs.forEach((input) => {
-      input.addEventListener('change', () => {
+      input.addEventListener('click', () => {
         if (input.checked) setMode(input.value, true);
+      });
+      input.addEventListener('change', () => {
+        if (input.checked && input.value !== currentMode) setMode(input.value, true);
       });
     });
 
     setMode(inputs.find((input) => input.checked)?.value || 'permanent');
+    document.addEventListener('astro:before-swap', () => {
+      cancelAnimationFrame(scrollFrame);
+      window.clearTimeout(focusTimer);
+    }, { once: true });
   }
 
   initJobsModeSwitch();

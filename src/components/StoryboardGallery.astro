@@ -296,7 +296,7 @@ const galleryItems = await getCandidateGallery();
           imageObserver?.unobserve(entry.target);
         });
       }, { rootMargin: '200px 0px' });
-      if (stacked) imageObserver.observe(section);
+      if (stacked && section) imageObserver.observe(section);
       else photos.forEach((photo) => imageObserver?.observe(photo));
     }
 

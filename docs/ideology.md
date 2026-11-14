@@ -1,5 +1,7 @@
 # Global Design Tokens
 
+> Historical design proposal, retained for context rather than implementation guidance. See the [current architecture](../README.md#shared-architecture) and [active design tokens](../src/styles/global.css).
+
 ## Colors
 
 - **Obsidian Black** (#0D0D0D) – Primary background

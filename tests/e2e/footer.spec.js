@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 const policyLabels = ["Data Protection", "Environmental", "Equality", "Modern Day Slavery"];
 const policySlugs = ["data-protection", "environmental-sustainability", "equality-inclusion-diversity", "modern-slavery"];
-const routes = ["/", "/jobs/", "/recruit-talent/", "/team/", "/our-story/", "/franchising/", "/sustainability-impact/"];
+const routes = ["/", "/jobs/", "/recruit-talent/", "/team/", "/our-story/", "/franchising/", "/environmental-policy/"];
 
 test("global tagline and general email stay consistent across all page footers and menus", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -62,13 +62,13 @@ for (const javaScriptEnabled of [true, false]) {
     test.use({ javaScriptEnabled, reducedMotion: "reduce" });
 
     for (const [route, surface] of [
-      ["/", ".home-policy-link"],
+      ["/", ".story-experience"],
       ["/jobs/", "#gallery"],
-      ["/recruit-talent/", ".recruit-footer"],
+      ["/recruit-talent/", "#client-testimonials"],
       ["/team/", ".team-profiles-section"],
-      ["/our-story/", ".story-next"],
+      ["/our-story/", ".story-instagram"],
       ["/franchising/", ".franchise-contact"],
-      ["/sustainability-impact/", "#social-impact"],
+      ["/environmental-policy/", "#social-impact"],
     ]) {
       test(`${route} matches the final section at both rounded corners`, async ({ page }) => {
         await page.goto(route);
@@ -323,7 +323,7 @@ test("franchising retains its back-to-top action", async ({ page }) => {
 
 test("all main pages share the footer and Astro navigation reinitializes it", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  for (const route of ["/jobs/", "/team/", "/recruit-talent/", "/franchising/", "/sustainability-impact/", "/"]) {
+  for (const route of ["/jobs/", "/team/", "/recruit-talent/", "/franchising/", "/environmental-policy/", "/"]) {
     await page.goto(route);
     await expect(page.locator("[data-site-footer]")).toHaveCount(1);
     await expect(page.locator("[data-site-footer]").getByRole("navigation", { name: "Policy documents" }).getByRole("link")).toHaveCount(4);

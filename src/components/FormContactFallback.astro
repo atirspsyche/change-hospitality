@@ -1,0 +1,36 @@
+---
+import { getPublicContacts } from '../sanity/queries';
+
+interface Props {
+  purpose: string;
+  email?: string;
+}
+
+const { purpose, email: contactEmail } = Astro.props;
+const email = contactEmail || (await getPublicContacts()).generalEmail;
+---
+
+<noscript>
+  <style is:inline>[data-js-required] { display: none !important; }</style>
+  <p class="form-contact-fallback" data-form-contact-fallback>
+    To {purpose}, enable JavaScript or <a href={`mailto:${email}`}>email {email}</a>.
+  </p>
+</noscript>
+
+<style>
+  .form-contact-fallback {
+    width: min(100% - 2.5rem, 80rem);
+    margin: 1.5rem auto;
+    border-radius: 1rem;
+    background: var(--color-cream);
+    color: var(--color-cocoa);
+    padding: 1.25rem;
+    line-height: 1.6;
+  }
+
+  a {
+    overflow-wrap: anywhere;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+</style>

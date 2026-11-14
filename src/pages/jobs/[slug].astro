@@ -75,10 +75,6 @@ const jobSchema = {
   },
 };
 
-const sectionLinks = [
-  { label: 'Job details', href: '#job-detail-title', meta: job.role },
-  ...(!job.isTest ? [{ label: 'Apply', href: '#job-application', meta: 'Send your application' }] : []),
-];
 ---
 
 <BaseLayout
@@ -89,7 +85,6 @@ const sectionLinks = [
   noindex={job.isTest}
 >
   <FunMenu
-    sectionLinks={sectionLinks}
     menuButtonBackground="var(--color-cocoa)"
     menuButtonBorderColor="var(--color-ink)"
     menuButtonTextColor="var(--color-cream)"

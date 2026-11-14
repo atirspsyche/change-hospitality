@@ -43,6 +43,45 @@ async function expectContained(locator, page) {
   expect(rect.y + rect.height).toBeLessThanOrEqual(viewport.height + 1);
 }
 
+async function expectEggOutlineAligned(egg) {
+  const geometry = await egg.evaluate((element) => {
+    const svg = element.querySelector("svg").getBoundingClientRect();
+    const whitePath = element.querySelector(".office-marker__egg-white");
+    const white = whitePath.getBoundingClientRect();
+    const shape = whitePath.getBBox();
+    const yolk = element.querySelector(".office-marker__egg-yolk");
+    const outline = element.querySelector(".office-marker__egg-outline").getBoundingClientRect();
+    const marker = element.getBoundingClientRect();
+    return {
+      svgWidth: svg.width,
+      svgHeight: svg.height,
+      markerWidth: marker.width,
+      markerHeight: marker.height,
+      whiteWidth: shape.width,
+      whiteHeight: shape.height,
+      yolkCenterOffset: Math.hypot(
+        yolk.cx.baseVal.value - shape.x - shape.width / 2,
+        yolk.cy.baseVal.value - shape.y - shape.height / 2,
+      ),
+      centerOffset: Math.hypot(
+        outline.x + outline.width / 2 - white.x - white.width / 2,
+        outline.y + outline.height / 2 - white.y - white.height / 2,
+      ),
+      horizontalGap: (outline.width - white.width) / 2,
+      verticalGap: (outline.height - white.height) / 2,
+    };
+  });
+  expect(geometry.svgWidth).toBeCloseTo(geometry.markerWidth, 1);
+  expect(geometry.svgHeight).toBeCloseTo(geometry.markerHeight, 1);
+  expect(geometry.whiteHeight).toBeGreaterThan(geometry.whiteWidth * 1.25);
+  expect(geometry.yolkCenterOffset).toBeLessThan(0.1);
+  expect(geometry.centerOffset).toBeLessThan(0.5);
+  expect(geometry.horizontalGap).toBeGreaterThan(0.5);
+  expect(geometry.horizontalGap).toBeLessThan(3);
+  expect(geometry.verticalGap).toBeGreaterThan(0.5);
+  expect(geometry.verticalGap).toBeLessThan(3);
+}
+
 test("franchising pairs one CTA with the upright three-office map", async ({ page }, testInfo) => {
   const beat = await showMapBeat(page);
   await expect(beat.getByRole("heading", { level: 2 })).toHaveText("Build your own recruitment business");
@@ -65,6 +104,32 @@ test("franchising pairs one CTA with the upright three-office map", async ({ pag
 
   const ids = await page.locator(".office-marker__card").evaluateAll((cards) => cards.map(({ id }) => id));
   expect(new Set(ids).size).toBe(ids.length);
+});
+
+test("halved egg markers have centered yolks and close, aligned borders at desktop and compact sizes", async ({ page }, testInfo) => {
+  const beat = await showMapBeat(page);
+  const map = beat.locator("[data-franchise-map]:visible");
+  await expect(map.locator(".office-marker__egg")).toHaveCount(offices.length);
+  for (const name of officeNames) {
+    const button = map.getByRole("button", { name: new RegExp(`^${name}`) });
+    const egg = button.locator(".office-marker__egg");
+    const white = egg.locator(".office-marker__egg-white");
+    const outline = egg.locator(".office-marker__egg-outline");
+    await expect(outline).toHaveAttribute("d", await white.getAttribute("d"));
+    await expect(outline).toHaveAttribute("pathLength", "1");
+    await expect(outline).toHaveCSS("stroke-dashoffset", /^1(?:px)?$/);
+    await expectEggOutlineAligned(egg);
+    if (testInfo.project.name === "mobile") await button.tap();
+    else await button.hover();
+    await expect(outline).toHaveCSS("stroke-dashoffset", /^0(?:px)?$/);
+    await expectEggOutlineAligned(egg);
+    const target = await button.boundingBox();
+    expect(target.width).toBeGreaterThanOrEqual(44);
+    expect(target.height).toBeGreaterThanOrEqual(44);
+    await page.keyboard.press("Escape");
+    await page.mouse.move(0, 0);
+    await expect(outline).toHaveCSS("stroke-dashoffset", /^1(?:px)?$/);
+  }
 });
 
 test("office cards toggle by keyboard or touch and dismiss with Escape or an outside click", async ({ page }) => {
@@ -165,8 +230,11 @@ test("reduced motion retains an interactive map without the pinned story", async
   const button = map.getByRole("button", { name: /^London/ });
   await button.click();
   await expect(button).toHaveAttribute("aria-expanded", "true");
-  expect(await map.locator(".office-marker__card").first().evaluate((element) =>
-    parseFloat(getComputedStyle(element).transitionDuration))).toBeLessThanOrEqual(0.001);
+  const durations = await map.locator(".office-marker__egg, .office-marker__egg-outline, .office-marker__card")
+    .evaluateAll((elements) => elements.flatMap((element) =>
+      getComputedStyle(element).transitionDuration.split(",").map(Number.parseFloat)));
+  for (const duration of durations) expect(duration).toBeLessThanOrEqual(0.001);
+  await expectEggOutlineAligned(button.locator(".office-marker__egg"));
 });
 
 test.describe("without JavaScript", () => {

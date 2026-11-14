@@ -15,7 +15,7 @@ const logos = [
 
 async function openSustainability(page) {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/sustainability-impact/");
+  await page.goto("/environmental-policy/");
 }
 
 async function decodeImages(locator) {
@@ -82,49 +82,26 @@ test("all supplied partner logos load with their actual dimensions and the new B
   }
 });
 
-test("the three larger certification photos retain their complete compositions without overflow", async ({ page }, testInfo) => {
+test("certifications keep their logo-led layout without the retired photo gallery", async ({ page }, testInfo) => {
+  const photoRequests = [];
+  page.on("request", (request) => {
+    if (request.url().includes("/sustainability-pics/")) photoRequests.push(request.url());
+  });
   await openSustainability(page);
-  const photos = page.locator(".certification-photo");
-  await expect(photos).toHaveCount(3);
-  const images = await decodeImages(photos.locator("img"));
-  for (const [index, [width, height]] of [[1200, 900], [1200, 1200], [900, 1200]].entries()) {
-    expect(images[index]).toMatchObject({
-      src: `${assetRoot}sustainability-pics/0${index + 1}.webp`,
-      width,
-      height,
-      naturalWidth: width,
-      naturalHeight: height,
-      fit: "contain",
-      contained: true,
-    });
-    expect(images[index].alt.trim()).not.toBe("");
-  }
-  await expect(photos.locator("figcaption")).toHaveCount(3);
+  await expect(page.locator(".certification-scrapbook, .certification-photo")).toHaveCount(0);
+  await expect(page.locator(".certification-credentials img")).toHaveCount(3);
 
   const viewports = testInfo.project.name === "mobile"
     ? [[320, 568], [390, 844], [600, 900], [844, 390]]
     : [[768, 1024], [1024, 768], [1440, 900], [1920, 1080]];
   for (const [width, height] of viewports) {
     await page.setViewportSize({ width, height });
-    const layout = await photos.evaluateAll((figures) => figures.map((figure) => {
-      const image = figure.querySelector("img");
-      return {
-        frameWidth: figure.offsetWidth,
-        imageWidth: image.clientWidth,
-        ratio: image.clientWidth / image.clientHeight,
-        naturalRatio: image.naturalWidth / image.naturalHeight,
-      };
-    }));
-    for (const photo of layout) {
-      expect(photo.imageWidth, `${width}px viewport`).toBeGreaterThanOrEqual(width <= 600 ? 240 : 250);
-      if (width >= 1440) expect(photo.frameWidth).toBeGreaterThan(336);
-      expect(photo.ratio).toBeCloseTo(photo.naturalRatio, 2);
-    }
     for (const logo of await decodeImages(page.locator(".partner-logo, .iso-badges img"))) {
       expect(logo.contained, `${logo.alt} at ${width}px`).toBe(true);
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
   }
+  expect(photoRequests).toEqual([]);
 });
 
 test("Social Impact uses the three matching partner logos and keeps them contained at every breakpoint", async ({ page }, testInfo) => {
@@ -192,13 +169,26 @@ test("certification and Social Impact artwork remain available without JavaScrip
   const context = await browser.newContext({ javaScriptEnabled: false });
   try {
     const page = await context.newPage();
-    await page.goto(`${baseURL}/sustainability-impact/`);
+    await page.goto(`${baseURL}/environmental-policy/`);
     await expect(page.locator(".partner-logo")).toHaveCount(8);
-    await expect(page.locator(".certification-photo")).toHaveCount(3);
+    await expect(page.locator(".certification-photo")).toHaveCount(0);
     await expect(page.locator(".social-logo img")).toHaveCount(3);
-    const images = await decodeImages(page.locator(".certification-credentials img, .certification-photo img, .social-logo img"));
+    const images = await decodeImages(page.locator(".certification-credentials img, .social-logo img"));
     for (const image of images) expect(image.naturalWidth).toBeGreaterThan(0);
   } finally {
     await context.close();
   }
+});
+
+test("the environmental route serves full canonical content and shared navigation directly", async ({ page }) => {
+  await openSustainability(page);
+  await expect(page.getByRole("heading", { name: "Sustainability & Impact", exact: true })).toBeVisible();
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://www.changehospitality.co.uk/environmental-policy/");
+  await expect(page.locator('meta[http-equiv="refresh"]')).toHaveCount(0);
+  await expect(page.locator('nav[aria-label="Page sections"]')).toHaveCount(0);
+  await page.locator('[data-funmenu-toggle]').click();
+  await expect(page.locator(".funmenu-list").getByRole("link", { name: /Sustainability/ })).toHaveAttribute("href", "/environmental-policy/");
+  await page.keyboard.press('Escape');
+  await expect(page.locator(".footer-page-links").getByRole("link", { name: "Sustainability", exact: true })).toHaveAttribute("href", "/environmental-policy/");
+  await expect(page.getByRole("navigation", { name: "Policy documents" }).getByRole("link", { name: "Environmental", exact: true })).toHaveAttribute("href", "/policies/environmental-sustainability/");
 });

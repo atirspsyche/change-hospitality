@@ -1,54 +1,11 @@
-import { MailConfigurationError, sendEmail } from '../server/mail.js';
+import { MailConfigurationError, sendEmail, confirmMailAcceptance, logMailFailure } from '../server/mail.js';
+import { cleanString, cleanList, readJsonBody, createReference, isEmailAddress, validateTextLengths, RequestError, checkRequestSize, requestContentType } from '../server/form-utils.js';
+import { renderEmailTemplate } from '../server/email-template.js';
+import { staffingGroups } from '../src/data/formOptions.js';
 
-const JOB_TYPES = new Set([
-  'Temporary Staffing - Front of House Casual',
-  'Temporary Staffing - Back of House Casual',
-  'Permanent Placements - Front of House',
-  'Permanent Placements - Back of House',
-  'Permanent Placements - Sales, Marketing & Events',
-  'Permanent Placements - HR',
-  'Permanent Placements - Finance and Administration',
-]);
+const JOB_TYPES = new Set(staffingGroups.flatMap(({ options }) => options.map(({ value }) => value)));
 
 const MAX_BODY_SIZE = 24_000;
-const EMAIL_PATTERN = /^\S+@\S+\.\S+$/;
-
-function cleanString(value, maxLength = 160) {
-  if (typeof value !== 'string') return '';
-  return value.replace(/\s+/g, ' ').trim().slice(0, maxLength);
-}
-
-function cleanList(value, allowedValues) {
-  if (!Array.isArray(value)) return [];
-  return [...new Set(value.filter((item) => allowedValues.has(item)))];
-}
-
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-}
-
-function readBody(request) {
-  if (request.body && typeof request.body === 'object' && !Buffer.isBuffer(request.body)) {
-    return request.body;
-  }
-
-  const rawBody = Buffer.isBuffer(request.body)
-    ? request.body.toString('utf8')
-    : String(request.body ?? '');
-
-  if (!rawBody || rawBody.length > MAX_BODY_SIZE) return null;
-
-  try {
-    return JSON.parse(rawBody);
-  } catch {
-    return null;
-  }
-}
 
 export function validateRecruitmentBrief(payload) {
   if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
@@ -70,16 +27,20 @@ export function validateRecruitmentBrief(payload) {
   const errors = {};
   if (!data.submitterName) errors.submitterName = 'Enter your name.';
   if (!data.companyName) errors.companyName = 'Enter the company name.';
-  if (!EMAIL_PATTERN.test(data.email)) errors.email = 'Enter a valid email address.';
+  if (!isEmailAddress(data.email)) errors.email = 'Enter a valid email address.';
   if (!data.phone) errors.phone = 'Enter a contact number.';
   if (!data.location) errors.location = 'Enter the role location.';
   if (!data.jobTypes.length) errors.jobTypes = 'Choose at least one staffing type.';
   if (!data.consent) errors.consent = 'Confirm that we may contact you about this brief.';
+  validateTextLengths(payload, {
+    submitterName: 160, companyName: 160, email: 254, phone: 40,
+    location: 180, message: 2_000, website: 200,
+  }, errors);
 
   return { data, errors };
 }
 
-function renderRows(data) {
+export function renderRecruitmentEmail(data, reference) {
   const rows = [
     ['Submitted by', data.submitterName],
     ['Company', data.companyName],
@@ -90,12 +51,6 @@ function renderRows(data) {
     ['Additional detail', data.message || 'None provided'],
   ];
 
-  return rows
-    .map(([label, value]) => `<tr><th align="left" style="padding:10px 14px;border-bottom:1px solid #d9d3cd;vertical-align:top">${escapeHtml(label)}</th><td style="padding:10px 14px;border-bottom:1px solid #d9d3cd">${escapeHtml(value)}</td></tr>`)
-    .join('');
-}
-
-export function renderRecruitmentEmail(data, reference) {
   const text = [
     `Recruitment brief ${reference}`,
     `Submitted by: ${data.submitterName}`,
@@ -107,7 +62,11 @@ export function renderRecruitmentEmail(data, reference) {
     `Additional detail: ${data.message || 'None provided'}`,
   ].join('\n');
 
-  const html = `<!doctype html><html><body style="margin:0;background:#f4f1ef;color:#1d1d1b;font-family:Arial,sans-serif"><div style="margin:0 auto;max-width:680px;padding:32px 20px"><div style="background:#cccf5a;padding:24px;border-radius:8px 8px 0 0"><p style="margin:0 0 8px;font-size:12px;font-weight:700;text-transform:uppercase">New client brief / ${escapeHtml(reference)}</p><h1 style="margin:0;font-size:30px;line-height:1.1">${escapeHtml(data.companyName)}</h1></div><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#fff;border-collapse:collapse">${renderRows(data)}</table></div></body></html>`;
+  const html = renderEmailTemplate({
+    eyebrow: `New client brief / ${reference}`,
+    title: data.companyName,
+    rows,
+  });
 
   return { html, text };
 }
@@ -120,17 +79,19 @@ export default async function handler(request, response, dependencies = {}) {
     return response.status(405).json({ ok: false, message: 'Method not allowed.' });
   }
 
-  const contentType = request.headers['content-type'] ?? '';
-  if (!contentType.includes('application/json')) {
+  if (requestContentType(request) !== 'application/json') {
     return response.status(415).json({ ok: false, message: 'Content type must be application/json.' });
   }
 
-  const contentLength = Number(request.headers['content-length'] ?? 0);
-  if (contentLength > MAX_BODY_SIZE) {
-    return response.status(413).json({ ok: false, message: 'Submission is too large.' });
+  let payload;
+  try {
+    checkRequestSize(request, MAX_BODY_SIZE);
+    payload = readJsonBody(request.body, MAX_BODY_SIZE);
+  } catch (error) {
+    if (!(error instanceof RequestError)) throw error;
+    return response.status(error.status).json({ ok: false, message: error.message });
   }
 
-  const payload = readBody(request);
   const { data, errors } = validateRecruitmentBrief(payload);
 
   if (!data || Object.keys(errors).length) {
@@ -141,23 +102,24 @@ export default async function handler(request, response, dependencies = {}) {
     });
   }
 
-  const reference = `CH-HIRE-${Date.now().toString().slice(-8)}`;
+  const reference = createReference('HIRE');
 
   // Quietly accept bot submissions caught by the honeypot.
   if (data.website) {
     return response.status(202).json({ ok: true, reference, message: 'Your staffing brief has been received.' });
   }
 
-  const inbox = cleanString(process.env.RECRUITMENT_INBOX, 254).toLowerCase();
+  const inbox = (process.env.RECRUITMENT_INBOX || '').trim().toLowerCase();
   const email = renderRecruitmentEmail(data, reference);
   const mailer = dependencies.sendMail || sendEmail;
 
+  let redirected = false;
   try {
-    if (!EMAIL_PATTERN.test(inbox)) {
+    if (!isEmailAddress(inbox)) {
       throw new MailConfigurationError('RECRUITMENT_INBOX is missing or invalid.');
     }
 
-    await mailer({
+    const result = await mailer({
       to: inbox,
       replyTo: data.email,
       subject: `New staffing brief: ${data.companyName}`,
@@ -165,25 +127,29 @@ export default async function handler(request, response, dependencies = {}) {
       text: email.text,
       headers: { 'X-Change-Hospitality-Reference': reference },
     });
+    confirmMailAcceptance(result, [inbox]);
+    redirected = result.redirected === true;
   } catch (error) {
+    logMailFailure('recruitment', reference, error);
     if (error instanceof MailConfigurationError) {
-      console.error('Recruitment email configuration is incomplete:', error.message);
       return response.status(503).json({
         ok: false,
         message: 'Email delivery is temporarily unavailable. Please contact the recruitment team directly.',
       });
     }
 
-    console.error('SMTP delivery failed for a recruitment brief:', error);
     return response.status(502).json({
       ok: false,
-      message: 'We could not deliver your brief. Please try again or contact the recruitment team directly.',
+      reference,
+      message: 'We could not confirm receipt of your brief. Please contact the recruitment team with this reference before resubmitting.',
     });
   }
 
   return response.status(202).json({
     ok: true,
     reference,
-    message: 'Your staffing brief is with our recruitment team.',
+    message: redirected
+      ? 'Test submission accepted by the preview inbox. No email was sent to the recruitment team.'
+      : 'Your staffing brief has been sent to our recruitment team.',
   });
 }

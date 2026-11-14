@@ -36,9 +36,7 @@ const structuredData = {
 >
   <div class="policy-page" data-policy-theme={policy.theme} data-policy-cover-visible>
     <a class="policy-skip" href="#policy-copy">Skip to policy content</a>
-    <FunMenu
-      sectionLinks={[{ label: 'Policy', href: '#policy-title', meta: policy.title }]}
-    />
+    <FunMenu />
     <main>
       <PolicyContent {policy} />
     </main>

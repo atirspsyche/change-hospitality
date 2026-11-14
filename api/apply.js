@@ -1,58 +1,19 @@
-import { randomBytes } from 'node:crypto';
 import path from 'node:path';
 import { createClient } from '@sanity/client';
 import Busboy from 'busboy';
-import { MailConfigurationError, sendEmail } from '../server/mail.js';
+import { MailConfigurationError, sendEmail, acceptedRecipient, confirmMailAcceptance, logMailFailure } from '../server/mail.js';
 import { getSanityConfig } from '../server/sanity-config.js';
+import { cleanString, createReference, isEmailAddress, validateTextLengths, RequestError, checkRequestSize, requestContentType } from '../server/form-utils.js';
+import { renderEmailTemplate } from '../server/email-template.js';
+import { MAX_RESUME_SIZE, RESUME_MIME_TYPES, detectedResumeExtension } from '../server/resume.js';
 
-const MAX_RESUME_SIZE = 4 * 1024 * 1024;
 const MAX_REQUEST_SIZE = 4_400_000;
 const ALLOWED_NATIONALITIES = new Set(['British', 'EU', 'Other']);
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const sanityClient = createClient(getSanityConfig(process.env));
-
-class RequestError extends Error {
-  constructor(status, message) {
-    super(message);
-    this.name = 'RequestError';
-    this.status = status;
-  }
-}
-
-function cleanString(value, maxLength = 180) {
-  if (typeof value !== 'string') return '';
-  return value.replace(/\s+/g, ' ').trim().slice(0, maxLength);
-}
-
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-}
-
-function createReference() {
-  const date = new Date().toISOString().slice(0, 10).replaceAll('-', '');
-  return `CH-APP-${date}-${randomBytes(3).toString('hex').toUpperCase()}`;
-}
+const sanityClient = createClient({ ...getSanityConfig(process.env), timeout: 10_000, maxRetries: 0 });
 
 function safeFilename(filename) {
   return path.basename(filename || 'cv').replace(/[\u0000-\u001f\u007f]/g, '').slice(0, 180);
-}
-
-function detectedResumeExtension(content) {
-  if (content.subarray(0, 5).toString('ascii') === '%PDF-') return 'pdf';
-
-  const compoundDocumentSignature = Buffer.from([0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1]);
-  if (content.subarray(0, 8).equals(compoundDocumentSignature)) return 'doc';
-
-  const isZip = content[0] === 0x50 && content[1] === 0x4b && [0x03, 0x05, 0x07].includes(content[2]);
-  if (isZip && content.includes(Buffer.from('word/'))) return 'docx';
-
-  return '';
 }
 
 function parseMultipartRequest(request) {
@@ -66,7 +27,8 @@ function parseMultipartRequest(request) {
           fieldSize: 2_000,
           fields: 16,
           files: 1,
-          fileSize: MAX_RESUME_SIZE,
+          // Busboy emits its limit event at equality; one extra byte makes 4 MiB inclusive.
+          fileSize: MAX_RESUME_SIZE + 1,
           parts: 18,
         },
       });
@@ -75,13 +37,47 @@ function parseMultipartRequest(request) {
       return;
     }
 
-    const fields = {};
+    const fields = Object.create(null);
     let resume = null;
     let parseError = null;
+    let settled = false;
+    let receivedBytes = 0;
+    const cleanup = () => {
+      clearTimeout(deadline);
+      request.unpipe?.(parser);
+      request.removeListener?.('data', onData);
+      request.removeListener?.('aborted', onAborted);
+      request.removeListener?.('error', onRequestError);
+      request.removeListener?.('close', onClose);
+    };
+    const finish = (error) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      if (error) {
+        parser.destroy(error);
+        request.resume?.();
+        reject(error);
+      } else resolve({ fields, resume });
+    };
+    const onData = (chunk) => {
+      receivedBytes += chunk.length;
+      if (receivedBytes > MAX_REQUEST_SIZE) finish(new RequestError(413, 'Submission is too large.'));
+    };
+    const onAborted = () => finish(new RequestError(400, 'The upload was interrupted. Please choose your CV again.'));
+    const onRequestError = () => finish(new RequestError(400, 'The application upload could not be read.'));
+    const onClose = () => {
+      if (!request.readableEnded && !request.complete) onAborted();
+    };
+    const deadline = setTimeout(() => finish(new RequestError(408, 'The upload took too long. Please try again.')), 20_000);
 
     parser.on('field', (name, value, info) => {
       if (info.nameTruncated || info.valueTruncated) {
         parseError ||= new RequestError(413, 'One or more application fields are too large.');
+        return;
+      }
+      if (Object.hasOwn(fields, name)) {
+        parseError ||= new RequestError(422, 'Application fields must not be repeated.');
         return;
       }
       fields[name] = value;
@@ -108,13 +104,12 @@ function parseMultipartRequest(request) {
         chunks.push(chunk);
       });
       stream.on('error', () => {
-        parseError ||= new RequestError(400, 'The uploaded CV could not be read.');
+        finish(new RequestError(400, 'The uploaded CV could not be read.'));
       });
       stream.on('end', () => {
         if (wasTruncated) return;
         resume = {
           filename: safeFilename(info.filename),
-          mimeType: info.mimeType,
           size,
           content: Buffer.concat(chunks, size),
         };
@@ -131,20 +126,27 @@ function parseMultipartRequest(request) {
       parseError ||= new RequestError(413, 'The application contains too many parts.');
     });
     parser.on('error', () => {
-      reject(new RequestError(400, 'The application form could not be read.'));
+      finish(new RequestError(400, 'The application form could not be read.'));
     });
     parser.on('close', () => {
-      if (parseError) reject(parseError);
-      else resolve({ fields, resume });
+      finish(parseError);
     });
 
-    if (Buffer.isBuffer(request.body)) parser.end(request.body);
-    else if (typeof request.pipe === 'function') request.pipe(parser);
-    else reject(new RequestError(400, 'The application form could not be read.'));
+    if (request.aborted || request.destroyed) return onAborted();
+    if (Buffer.isBuffer(request.body)) {
+      if (request.body.length > MAX_REQUEST_SIZE) finish(new RequestError(413, 'Submission is too large.'));
+      else parser.end(request.body);
+    } else if (typeof request.pipe === 'function') {
+      request.on('data', onData);
+      request.once('aborted', onAborted);
+      request.once('error', onRequestError);
+      request.once('close', onClose);
+      request.pipe(parser);
+    } else finish(new RequestError(400, 'The application form could not be read.'));
   });
 }
 
-export function validateApplication(fields, resume) {
+export async function validateApplication(fields, resume) {
   const data = {
     jobId: cleanString(fields.jobId, 80),
     jobSlug: cleanString(fields.jobSlug, 120),
@@ -163,19 +165,23 @@ export function validateApplication(fields, resume) {
   if (!data.jobId || !data.jobSlug || !data.consultantId) errors.job = 'This job could not be identified.';
   if (data.jobId.startsWith('TEST-') || data.jobSlug.startsWith('test-')) errors.job = 'Sample vacancies do not accept applications.';
   if (!data.name) errors.name = 'Enter your name.';
-  if (!EMAIL_PATTERN.test(data.email)) errors.email = 'Enter a valid email address.';
+  if (!isEmailAddress(data.email)) errors.email = 'Enter a valid email address.';
   if (!data.phone) errors.phone = 'Enter a contact number.';
   if (!ALLOWED_NATIONALITIES.has(data.nationality)) errors.nationality = 'Choose your nationality.';
   if (data.nationality === 'Other' && !data.visaStatus) errors.visaStatus = 'Enter your visa status.';
   if (!data.idealLocation) errors.idealLocation = 'Enter your ideal work location.';
   if (!data.consent) errors.consent = 'Confirm that we may review your application.';
+  validateTextLengths(fields, {
+    jobId: 80, jobSlug: 120, consultantId: 120, name: 160, email: 254,
+    phone: 40, nationality: 20, visaStatus: 160, idealLocation: 180, website: 200,
+  }, errors);
 
   if (!resume?.filename || !resume.content?.length) {
     errors.resume = 'Upload your CV.';
   } else {
     const extension = path.extname(resume.filename).slice(1).toLowerCase();
-    const detectedExtension = detectedResumeExtension(resume.content);
-    if (!['pdf', 'doc', 'docx'].includes(extension) || detectedExtension !== extension) {
+    const detectedExtension = await detectedResumeExtension(resume.content);
+    if (!Object.hasOwn(RESUME_MIME_TYPES, extension) || detectedExtension !== extension) {
       errors.resume = 'Upload a valid PDF, DOC or DOCX file.';
     }
   }
@@ -221,10 +227,12 @@ function renderApplicationEmail(data, job, reference) {
     ['Consultant', job.consultant?.name || 'Recruitment team'],
   ];
   const text = values.map(([label, value]) => `${label}: ${value}`).join('\n');
-  const rows = values
-    .map(([label, value]) => `<tr><th align="left" style="padding:10px 14px;border-bottom:1px solid #d9d3cd;vertical-align:top">${escapeHtml(label)}</th><td style="padding:10px 14px;border-bottom:1px solid #d9d3cd">${escapeHtml(value)}</td></tr>`)
-    .join('');
-  const html = `<!doctype html><html><body style="margin:0;background:#f4f1ef;color:#1d1d1b;font-family:Arial,sans-serif"><div style="margin:0 auto;max-width:680px;padding:32px 20px"><div style="background:#c9dfd2;padding:24px;border-radius:8px 8px 0 0"><p style="margin:0 0 8px;font-size:12px;font-weight:700;text-transform:uppercase">New job application / ${escapeHtml(reference)}</p><h1 style="margin:0;font-size:30px;line-height:1.1">${escapeHtml(job.role)}</h1></div><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#fff;border-collapse:collapse">${rows}</table></div></body></html>`;
+  const html = renderEmailTemplate({
+    eyebrow: `New job application / ${reference}`,
+    title: job.role,
+    rows: values,
+    accent: 'mint',
+  });
 
   return { html, text };
 }
@@ -232,8 +240,11 @@ function renderApplicationEmail(data, job, reference) {
 function applicationRecipients(job, environment) {
   const consultantEmail = cleanString(job.consultant?.email, 254).toLowerCase();
   const archiveInbox = cleanString(environment.APPLICATIONS_INBOX, 254).toLowerCase();
-  const consultantIsValid = EMAIL_PATTERN.test(consultantEmail);
-  const archiveIsValid = EMAIL_PATTERN.test(archiveInbox);
+  const consultantIsValid = isEmailAddress(job.consultant?.email?.trim()) && isEmailAddress(consultantEmail);
+  const archiveIsValid = isEmailAddress(environment.APPLICATIONS_INBOX?.trim()) && isEmailAddress(archiveInbox);
+  if (environment.APPLICATIONS_INBOX && !archiveIsValid) {
+    throw new MailConfigurationError('APPLICATIONS_INBOX is invalid.');
+  }
 
   if (!consultantIsValid && !archiveIsValid) {
     throw new MailConfigurationError('No valid application recipient is configured.');
@@ -252,31 +263,25 @@ export default async function handler(request, response, dependencies = {}) {
     return response.status(405).json({ ok: false, message: 'Method not allowed' });
   }
 
-  const contentType = request.headers['content-type'] ?? '';
-  if (!contentType.includes('multipart/form-data')) {
+  if (requestContentType(request) !== 'multipart/form-data') {
     return response.status(415).json({ ok: false, message: 'Content type must be multipart/form-data.' });
-  }
-
-  const contentLength = Number(request.headers['content-length'] ?? 0);
-  if (contentLength > MAX_REQUEST_SIZE) {
-    return response.status(413).json({ ok: false, message: 'Please upload a CV no larger than 4MB.' });
   }
 
   let parsed;
   try {
+    checkRequestSize(request, MAX_REQUEST_SIZE);
     parsed = await parseMultipartRequest(request);
   } catch (error) {
-    const status = error instanceof RequestError ? error.status : 400;
-    const message = error instanceof Error ? error.message : 'The application form could not be read.';
-    return response.status(status).json({ ok: false, message });
+    if (!(error instanceof RequestError)) throw error;
+    return response.status(error.status).json({ ok: false, message: error.message });
   }
 
-  const reference = createReference();
+  const reference = createReference('APP');
   if (cleanString(parsed.fields.website, 200)) {
     return response.status(202).json({ ok: true, reference, message: 'Your application has been received.' });
   }
 
-  const { data, errors } = validateApplication(parsed.fields, parsed.resume);
+  const { data, errors } = await validateApplication(parsed.fields, parsed.resume);
   if (Object.keys(errors).length) {
     return response.status(422).json({
       ok: false,
@@ -290,7 +295,7 @@ export default async function handler(request, response, dependencies = {}) {
   try {
     job = await resolveJob(data);
   } catch (error) {
-    console.error('Sanity lookup failed for a job application:', error);
+    logMailFailure('application-job-lookup', reference, error);
     return response.status(502).json({
       ok: false,
       message: 'We could not confirm this role. Please try again shortly.',
@@ -305,10 +310,11 @@ export default async function handler(request, response, dependencies = {}) {
   }
 
   const mailer = dependencies.sendMail || sendEmail;
+  let confirmation;
   try {
     const recipients = applicationRecipients(job, process.env);
     const email = renderApplicationEmail(data, job, reference);
-    await mailer({
+    const result = await mailer({
       ...recipients,
       replyTo: data.email,
       subject: `Application: ${job.role} - ${data.name}`,
@@ -317,29 +323,41 @@ export default async function handler(request, response, dependencies = {}) {
       attachments: [{
         filename: parsed.resume.filename,
         content: parsed.resume.content,
-        contentType: parsed.resume.mimeType,
+        contentType: RESUME_MIME_TYPES[path.extname(parsed.resume.filename).slice(1).toLowerCase()],
       }],
       headers: { 'X-Change-Hospitality-Reference': reference },
     });
+    confirmMailAcceptance(result, [recipients.to, recipients.bcc].filter(Boolean));
+    const consultantAccepted = acceptedRecipient(result, job.consultant?.email?.trim());
+    if (!result.redirected && (!consultantAccepted || (recipients.bcc && !acceptedRecipient(result, recipients.bcc)))) {
+      console.error('Application recipient requires follow-up.', {
+        reference, consultantAccepted, archiveAccepted: acceptedRecipient(result, process.env.APPLICATIONS_INBOX?.trim()),
+      });
+    }
+    confirmation = result.redirected
+      ? 'Test submission accepted by the preview inbox. No email was sent to the recruitment team.'
+      : consultantAccepted
+        ? `Your application has been sent to ${job.consultant?.name || 'our recruitment team'}.`
+        : 'Your application has been sent to our recruitment team.';
   } catch (error) {
+    logMailFailure('application', reference, error);
     if (error instanceof MailConfigurationError) {
-      console.error('Application email configuration is incomplete:', error.message);
       return response.status(503).json({
         ok: false,
         message: 'Email delivery is temporarily unavailable. Please contact the recruitment team directly.',
       });
     }
 
-    console.error('SMTP delivery failed for a job application:', error);
     return response.status(502).json({
       ok: false,
-      message: 'We could not deliver your application. Please try again or contact the recruitment team directly.',
+      reference,
+      message: 'We could not confirm receipt of your application. Please contact the recruitment team with this reference before resubmitting.',
     });
   }
 
   return response.status(202).json({
     ok: true,
     reference,
-    message: `Your application is with ${job.consultant?.name || 'our recruitment team'}.`,
+    message: confirmation,
   });
 }

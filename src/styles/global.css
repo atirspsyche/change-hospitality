@@ -57,7 +57,7 @@
   font-display: swap;
 }
 
-@theme {
+@theme static {
   --color-obsidian: #0D0D0D;
   --color-champagne: #D4C3B3;
   --color-off-white: #FBF9F6;
@@ -69,6 +69,7 @@
   --color-story-pale: #FEFFE0;
   /* Flat light-mode palette (client refresh) */
   --color-flame: #CF4F3A;
+  --color-yolk: #F4B942;
   --color-cream: #F7E9DE;
   --color-cocoa: #4D2525;
   --color-mint: #C9DFD2;
@@ -85,28 +86,21 @@
 }
 
 :root {
-  --color-obsidian: #0D0D0D;
-  --color-champagne: #D4C3B3;
-  --color-off-white: #FBF9F6;
-  --color-bcorp-green: #2E5A44;
-  --color-story-pink: #F6B6EA;
-  --color-story-blue: #9EECF6;
-  --color-story-black: #0C0C0C;
-  --color-story-lime: #D0E86E;
-  --color-story-pale: #FEFFE0;
-  /* Flat light-mode palette (client refresh) */
-  --color-flame: #CF4F3A;
-  --color-cream: #F7E9DE;
-  --color-cocoa: #4D2525;
-  --color-mint: #C9DFD2;
-  --color-blush: #F1D1D1;
-  --color-citron: #CCCF5A;
-  --color-mist: #B8C3CA;
-  --color-paper: #F4F1EF;
-  --color-ink: #1D1D1B;
-  --color-carton-ink: #544D44;
   --ease-luxury: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-cartoon: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+[data-submission-error] {
+  display: block;
+  margin-top: 0.5rem;
+  color: var(--color-cocoa);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+[data-server-invalid] {
+  outline: 2px solid var(--color-cocoa);
+  outline-offset: 3px;
 }
 
 html {
@@ -204,127 +198,12 @@ svg {
   color: var(--color-bcorp-green);
 }
 
-.surface-line {
-  background-image: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(in srgb, var(--color-champagne) 32%, transparent),
-    transparent
-  );
-}
-
 .text-balance {
   text-wrap: balance;
 }
 
 .text-pretty {
   text-wrap: pretty;
-}
-
-.luxury-button {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--color-champagne) 48%, transparent);
-  transition:
-    color 400ms var(--ease-luxury),
-    border-color 400ms var(--ease-luxury),
-    transform 400ms var(--ease-luxury);
-}
-
-.luxury-button::before {
-  position: absolute;
-  inset: auto 0 0;
-  z-index: -1;
-  height: 0;
-  background: var(--color-champagne);
-  content: "";
-  transition: height 450ms var(--ease-luxury);
-}
-
-.luxury-button:hover,
-.luxury-button:focus-visible {
-  color: var(--color-obsidian);
-  border-color: var(--color-champagne);
-  transform: translateY(-2px);
-}
-
-.luxury-button:hover::before,
-.luxury-button:focus-visible::before {
-  height: 100%;
-}
-
-.image-veil::after {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(to top, var(--color-obsidian), transparent 48%, color-mix(in srgb, var(--color-obsidian) 52%, transparent)),
-    linear-gradient(to right, color-mix(in srgb, var(--color-obsidian) 62%, transparent), transparent 48%);
-  content: "";
-}
-
-.job-card::before {
-  position: absolute;
-  inset: auto 0 0;
-  height: 0;
-  background: var(--color-champagne);
-  content: "";
-  transition: height 450ms var(--ease-luxury);
-}
-
-.job-card:hover::before,
-.job-card:focus-within::before {
-  height: 100%;
-}
-
-.job-card:hover,
-.job-card:focus-within {
-  transform: scale(1.03);
-}
-
-.job-card:hover *,
-.job-card:focus-within * {
-  color: var(--color-obsidian);
-}
-
-.job-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-champagne) transparent;
-}
-
-.job-scrollbar::-webkit-scrollbar {
-  height: 6px;
-}
-
-.job-scrollbar::-webkit-scrollbar-thumb {
-  background: var(--color-champagne);
-}
-
-.field-shell {
-  border: 1px solid color-mix(in srgb, var(--color-off-white) 14%, transparent);
-  background: color-mix(in srgb, var(--color-off-white) 6%, transparent);
-  transition:
-    border-color 250ms ease,
-    background-color 250ms ease;
-}
-
-.field-shell:focus-within {
-  border-color: var(--color-champagne);
-  background: color-mix(in srgb, var(--color-off-white) 10%, transparent);
-}
-
-.field-shell input,
-.field-shell select,
-.field-shell textarea {
-  width: 100%;
-  background: transparent;
-  color: var(--color-off-white);
-  outline: none;
-}
-
-.field-shell select option {
-  color: var(--color-obsidian);
 }
 
 .visually-hidden {

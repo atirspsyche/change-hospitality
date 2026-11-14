@@ -7,29 +7,24 @@ import FunMenu from "../components/FunMenu.astro";
 import PageMotion from "../components/PageMotion.astro";
 import SectionCurve from "../components/SectionCurve.astro";
 import SiteFooter from "../components/SiteFooter.astro";
-import { getTeamGroups, teamPageSize, teamPassSteps } from "../data/team";
+import { getTeamGroups, teamPageSize } from "../data/team";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getActiveLocations, getTeamMembers } from "../sanity/queries";
 
-const showTeamPass = false;
 const [teamMembers, locations] = await Promise.all([getTeamMembers(), getActiveLocations()]);
 const teamGroups = getTeamGroups(locations, teamMembers);
 const officeNames = new Intl.ListFormat("en-GB", { style: "long", type: "conjunction" }).format(
   teamGroups.map((group) => `${group.label}${group.isHeadOffice ? " (head office)" : ""}`),
 );
 
-const teamSectionLinks = [
-  { label: "Profiles", href: "#profiles", meta: "Meet the team" },
-];
 ---
 
 <BaseLayout
   title="Team Profiles | Change Hospitality"
-  description={`Meet the Change Hospitality team across ${officeNames || "our offices"}: people-first hospitality recruitment specialists.`}
+  description="Meet the hospitality recruitment specialists behind Change Hospitality and connect with your local team in London, Manchester or Hampshire."
   image="https://images.unsplash.com/photo-1559329007-40df8a9345d8?auto=format&fit=crop&w=1600&q=85"
 >
   <FunMenu
-    sectionLinks={teamSectionLinks}
     menuButtonBackground="var(--color-cocoa)"
     menuButtonBorderColor="var(--color-ink)"
     menuButtonTextColor="var(--color-cream)"
@@ -44,30 +39,12 @@ const teamSectionLinks = [
       class="team-hero relative isolate overflow-hidden bg-blush px-5 pb-8 pt-20 md:px-10 md:pt-24"
       aria-labelledby="team-title"
     >
-      <!-- <div
-        class="team-cloud team-cloud-1"
-        data-parallax="18"
-        aria-hidden="true"
-      >
-      </div> -->
-      <!-- <div
-        class="team-cloud team-cloud-2"
-        data-parallax="-26"
-        aria-hidden="true"
-      >
-      </div> -->
       <div
         class="team-hero-oval team-hero-oval-1"
         data-hero-shape="1"
         aria-hidden="true"
       >
       </div>
-      <!-- <div class="team-hero-confetti" aria-hidden="true">
-        <span data-parallax="12"></span>
-        <span data-parallax="-18"></span>
-        <span data-parallax="24"></span>
-        <span data-parallax="-14"></span>
-      </div> -->
 
       <div
         class="relative z-10 mx-auto grid w-full max-w-7xl gap-6 lg:grid-cols-[1.02fr_0.98fr] lg:items-center"
@@ -264,56 +241,7 @@ const teamSectionLinks = [
     </section>
     </SectionCurve>
 
-    {
-      /* Temporarily disabled; set showTeamPass to true to restore this section. */
-    }
-    {
-      showTeamPass && (
-        <SectionCurve backdropColor="var(--color-cream)">
-        <section
-          id="pass"
-          class="team-pass-section relative overflow-hidden bg-flame px-5 py-18 md:px-10 md:py-24"
-          aria-labelledby="pass-title"
-        >
-          <div
-            class="team-section-oval team-section-oval-three"
-            data-parallax="38"
-            aria-hidden="true"
-          />
-          <div class="relative z-10 mx-auto grid max-w-7xl gap-6 lg:grid-cols-[0.7fr_1.3fr] lg:items-stretch">
-            <div
-              class="team-process-poster rounded-[30px] bg-blush p-6 text-ink md:p-8"
-              data-parallax="26"
-            >
-              <p class="mb-5 text-sm font-black uppercase tracking-wide">
-                How the handoff works
-              </p>
-              <h2
-                id="pass-title"
-                class="font-serif text-5xl font-semibold leading-none md:text-6xl"
-              >
-                Not a database. A pass.
-              </h2>
-            </div>
-            <div class="grid gap-4 md:grid-cols-3">
-              {teamPassSteps.map((step) => (
-                <article class="team-step-card rounded-[30px] bg-cream p-5 text-ink">
-                  <p class="text-sm font-black uppercase text-flame">
-                    {step.label}
-                  </p>
-                  <p class="mt-6 text-xl font-semibold leading-7">
-                    {step.copy}
-                  </p>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-        </SectionCurve>
-      )
-    }
-
-    <SiteFooter backdropColor={showTeamPass ? "var(--color-flame)" : "var(--color-cream)"} />
+    <SiteFooter backdropColor="var(--color-cream)" />
   </main>
 </BaseLayout>
 
@@ -323,36 +251,12 @@ const teamSectionLinks = [
   }
 
   /* ---------- Decorative flat shapes (parallax) ---------- */
-  .team-cloud,
   .team-hero-oval,
-  .team-hero-confetti span,
   .team-section-oval {
     position: absolute;
     pointer-events: none;
     will-change: transform;
     transition: transform 220ms ease-out;
-  }
-
-  .team-cloud {
-    border-radius: 999px;
-    background: var(--color-cream);
-  }
-
-  .team-cloud-1 {
-    top: 8%;
-    left: -5rem;
-    height: 7rem;
-    width: 19rem;
-    transform: rotate(-8deg);
-  }
-
-  .team-cloud-2 {
-    top: 12%;
-    right: 30%;
-    height: 3.5rem;
-    width: 8rem;
-    background: var(--color-citron);
-    transform: rotate(18deg);
   }
 
   .team-hero-oval,
@@ -378,56 +282,6 @@ const teamSectionLinks = [
     min-height: 100svh;
     padding-bottom: 3rem;
     background: var(--color-blush);
-  }
-
-  /* .team-hero::after {
-    position: absolute;
-    right: 3%;
-    bottom: 5%;
-    z-index: 0;
-    height: 8rem;
-    width: 8rem;
-    /* border-radius: 50% 50% 46% 54% / 58% 42% 58% 42%; */
-  /* background: var(--color-citron); 
-    content: "";
-    transform: rotate(18deg);
-  } */
-
-  .team-hero-confetti span {
-    z-index: 1;
-    height: 1.1rem;
-    width: 4.8rem;
-    border-radius: 999px;
-    background: var(--color-cocoa);
-  }
-
-  .team-hero-confetti span:nth-child(1) {
-    top: 19%;
-    left: 39%;
-    transform: rotate(55deg);
-  }
-
-  .team-hero-confetti span:nth-child(2) {
-    top: 45%;
-    left: 3%;
-    width: 3.6rem;
-    background: var(--color-mint);
-    transform: rotate(-38deg);
-  }
-
-  .team-hero-confetti span:nth-child(3) {
-    right: 4%;
-    bottom: 36%;
-    width: 3.2rem;
-    background: var(--color-cream);
-    transform: rotate(68deg);
-  }
-
-  .team-hero-confetti span:nth-child(4) {
-    left: 43%;
-    bottom: 12%;
-    background: var(--color-citron);
-    transform: rotate(-18deg);
   }
 
   .team-hero-copy {
@@ -498,10 +352,6 @@ const teamSectionLinks = [
     background: var(--color-cream);
   }
 
-  .team-pass-section {
-    background: var(--color-flame);
-  }
-
   .team-section-oval-one {
     top: -7rem;
     right: -16rem;
@@ -520,15 +370,6 @@ const teamSectionLinks = [
     transform: rotate(-12deg);
   }
 
-  .team-section-oval-three {
-    right: -15rem;
-    top: 12%;
-    height: 20rem;
-    width: 36rem;
-    background: var(--color-citron);
-    transform: rotate(-8deg);
-  }
-
   /* ---------- Pass stage illustration ---------- */
   .team-pass-stage {
     display: grid;
@@ -542,39 +383,6 @@ const teamSectionLinks = [
     aspect-ratio: 1;
     place-items: center;
     animation: team-hero-art-in 900ms 120ms var(--ease-cartoon) both;
-  }
-
-  .team-hero-tag {
-    position: absolute;
-    z-index: 3;
-    right: 3%;
-    bottom: 4%;
-    display: grid;
-    height: 8.4rem;
-    width: 10.6rem;
-    place-items: center;
-    border: 2px solid var(--color-ink);
-    border-radius: 54% 46% 48% 52% / 61% 42% 58% 39%;
-    background: var(--color-cream);
-    color: var(--color-ink);
-    padding: 1rem;
-    font-size: 0.78rem;
-    font-weight: 900;
-    line-height: 1.2;
-    text-align: center;
-    text-transform: uppercase;
-    transform: rotate(7deg);
-  }
-
-  .team-hero-tag::after {
-    position: absolute;
-    inset: 35% auto auto 42%;
-    z-index: -1;
-    height: 2.9rem;
-    width: 2.9rem;
-    border-radius: 999px;
-    background: var(--color-citron);
-    content: "";
   }
 
   .team-hero-stamp {
@@ -612,111 +420,6 @@ const teamSectionLinks = [
     font-weight: 900;
     line-height: 1.15;
     text-transform: uppercase;
-  }
-
-  .team-pass-ticket,
-  .team-orbit-card {
-    position: absolute;
-    z-index: 4;
-    color: var(--color-ink);
-    transform: translate3d(0, 0, 0) rotate(var(--float-rotate, 0deg));
-    will-change: transform;
-  }
-
-  .team-pass-ticket {
-    width: 12rem;
-    border-radius: 1.25rem;
-    background: var(--color-cream);
-    padding: 1rem 1.1rem;
-    animation: team-float 6.5s cubic-bezier(0.42, 0, 0.18, 1) infinite;
-  }
-
-  .team-pass-ticket span,
-  .team-orbit-card span {
-    display: block;
-    font-size: 0.72rem;
-    font-weight: 900;
-    text-transform: uppercase;
-  }
-
-  .team-pass-ticket strong {
-    display: block;
-    margin-top: 0.4rem;
-    font-family: var(--font-serif);
-    font-size: 1.65rem;
-    line-height: 0.9;
-  }
-
-  .team-pass-ticket-one {
-    --float-rotate: -8deg;
-    left: 0;
-    top: 8%;
-    background: var(--color-citron);
-  }
-
-  .team-pass-ticket-two {
-    --float-rotate: 7deg;
-    right: -2%;
-    top: 3%;
-    background: var(--color-mint);
-    animation-delay: 700ms;
-  }
-
-  .team-pass-ticket-three {
-    --float-rotate: -3deg;
-    bottom: 6%;
-    right: 8%;
-    background: var(--color-blush);
-    animation-delay: 1200ms;
-  }
-
-  .team-orbit-card {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    min-width: 11rem;
-    border-radius: 999px;
-    background: var(--color-cream);
-    padding: 0.5rem 0.75rem;
-    animation: team-float 7s cubic-bezier(0.42, 0, 0.18, 1) infinite;
-  }
-
-  .team-orbit-card img {
-    height: 2.8rem;
-    width: 2.8rem;
-    border-radius: 999px;
-    object-fit: cover;
-  }
-
-  .team-orbit-1 {
-    --float-rotate: 4deg;
-    left: 6%;
-    bottom: 20%;
-    background: var(--color-mist);
-  }
-
-  .team-orbit-2 {
-    --float-rotate: -5deg;
-    right: 2%;
-    top: 32%;
-    background: var(--color-citron);
-    animation-delay: 500ms;
-  }
-
-  .team-orbit-3 {
-    --float-rotate: -2deg;
-    left: 0;
-    top: 44%;
-    background: var(--color-blush);
-    animation-delay: 900ms;
-  }
-
-  .team-orbit-4 {
-    --float-rotate: 5deg;
-    right: 16%;
-    bottom: 2%;
-    background: var(--color-mint);
-    animation-delay: 1400ms;
   }
 
   /* ---------- Team category accordion ---------- */
@@ -1011,50 +714,6 @@ const teamSectionLinks = [
       );
   }
 
-  /* ---------- Process step cards ---------- */
-  .team-step-card {
-    transition:
-      transform 260ms var(--ease-cartoon),
-      background-color 260ms ease;
-  }
-
-  .team-step-card:hover {
-    transform: translateY(-4px) rotate(-1deg);
-    background: var(--color-citron);
-  }
-
-  .team-process-poster {
-    clip-path: polygon(0 6%, 96% 0, 100% 88%, 8% 100%);
-  }
-
-  .team-step-card:nth-child(2) {
-    background: var(--color-mint);
-    transform: rotate(1deg);
-    transition:
-      transform 260ms var(--ease-cartoon),
-      background-color 260ms ease;
-  }
-
-  .team-step-card:nth-child(3) {
-    background: var(--color-citron);
-    transform: rotate(-1deg);
-    transition:
-      transform 260ms var(--ease-cartoon),
-      background-color 260ms ease;
-  }
-
-  @keyframes team-float {
-    0%,
-    100% {
-      transform: translate3d(0, 0, 0) rotate(var(--float-rotate, 0deg));
-    }
-
-    50% {
-      transform: translate3d(0, -0.65rem, 0)
-        rotate(calc(var(--float-rotate, 0deg) + 1deg));
-    }
-  }
-
   @keyframes team-card-arrive {
     from {
       opacity: 0;
@@ -1143,17 +802,6 @@ const teamSectionLinks = [
       padding-bottom: 2rem;
     }
 
-    .team-cloud-1 {
-      top: 5%;
-      left: -8rem;
-    }
-
-    .team-cloud-2,
-    .team-hero-confetti span:nth-child(1),
-    .team-hero-confetti span:nth-child(4) {
-      display: none;
-    }
-
     .team-hero-oval-1 {
       top: 4rem;
       right: -13rem;
@@ -1206,15 +854,6 @@ const teamSectionLinks = [
       width: 100%;
     }
 
-    .team-hero-tag {
-      right: 2.75rem;
-      bottom: 1.75rem;
-      height: 5.6rem;
-      width: 6.8rem;
-      padding: 0.65rem;
-      font-size: 0.52rem;
-    }
-
     .team-hero-stamp {
       top: 0;
       left: 0;
@@ -1254,10 +893,7 @@ const teamSectionLinks = [
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .team-pass-ticket,
-    .team-orbit-card,
     .team-hero-composition,
-    .team-cloud,
     .team-hero-oval,
     .team-section-oval,
     :global(.team-card-wrap) {
@@ -1295,6 +931,21 @@ const teamSectionLinks = [
             item.querySelector<HTMLButtonElement>("[data-accordion-trigger]"),
           )
           .filter((trigger): trigger is HTMLButtonElement => Boolean(trigger));
+        const panels = Array.from(
+          accordion.querySelectorAll<HTMLElement>("[data-accordion-panel]"),
+        );
+        let scrollFrame = 0;
+        let scrollListeners: AbortController | undefined;
+
+        const stopPreservingPosition = () => {
+          cancelAnimationFrame(scrollFrame);
+          scrollFrame = 0;
+          scrollListeners?.abort();
+          scrollListeners = undefined;
+        };
+        document.addEventListener("astro:before-swap", stopPreservingPosition, {
+          once: true,
+        });
 
         const setOpen = (item: HTMLElement, open: boolean) => {
           const trigger = item.querySelector<HTMLButtonElement>(
@@ -1317,10 +968,52 @@ const teamSectionLinks = [
           setOpen(item, item.dataset.open === "true");
 
           trigger.addEventListener("click", () => {
+            stopPreservingPosition();
+            const triggerTop = trigger.getBoundingClientRect().top;
             const shouldOpen = item.dataset.open !== "true";
             items.forEach((candidate) =>
               setOpen(candidate, shouldOpen && candidate === item),
             );
+
+            scrollListeners = new AbortController();
+            const interruptScroll = (event: Event) => {
+              if (
+                event instanceof KeyboardEvent &&
+                !["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " ", "Tab"].includes(event.key)
+              ) return;
+              stopPreservingPosition();
+            };
+            ["wheel", "touchstart", "pointerdown", "keydown"].forEach((type) => {
+              window.addEventListener(type, interruptScroll, {
+                passive: true,
+                signal: scrollListeners?.signal,
+              });
+            });
+
+            const restorePosition = () => {
+              if (!trigger.isConnected) {
+                stopPreservingPosition();
+                return;
+              }
+              // Anchor the heading throughout the CSS transition, not just after it.
+              const top = window.scrollY + trigger.getBoundingClientRect().top - triggerTop;
+              const scrollEvent = new CustomEvent("page-motion-scroll-immediate", {
+                cancelable: true,
+                detail: { top },
+              });
+              if (document.dispatchEvent(scrollEvent)) {
+                window.scrollTo({ top, behavior: "instant" });
+              }
+
+              if (panels.some((panel) =>
+                panel.getAnimations().some((animation) => animation.playState === "running"),
+              )) {
+                scrollFrame = requestAnimationFrame(restorePosition);
+              } else {
+                stopPreservingPosition();
+              }
+            };
+            restorePosition();
           });
 
           trigger.addEventListener("keydown", (event) => {

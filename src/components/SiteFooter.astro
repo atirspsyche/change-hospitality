@@ -3,6 +3,7 @@ import { ArrowUp, ArrowUpRight } from "@lucide/astro";
 import { PrimaryButton, SecondaryButton } from "./Button";
 import FooterIllustration from "./FooterIllustration.astro";
 import { telephoneHref } from "../data/editorial";
+import { siteLinks } from "../data/navigation";
 import { getPublicContacts, getPolicyLinks } from "../sanity/queries";
 
 interface Props {
@@ -15,15 +16,6 @@ const [contacts, policyLinks] = await Promise.all([
   getPublicContacts(),
   getPolicyLinks(),
 ]);
-const footerLinks = [
-  { label: "Home", href: "/" },
-  { label: "Jobs", href: "/jobs/" },
-  { label: "Recruit", href: "/recruit-talent/" },
-  { label: "Team", href: "/team/" },
-  { label: "Our story", href: "/our-story/" },
-  { label: "Franchising", href: "/franchising/" },
-  { label: "Sustainability", href: "/sustainability-impact/" },
-];
 const year = new Date().getFullYear();
 const currentPath = `${Astro.url.pathname.replace(/\/+$/, "")}/`;
 ---
@@ -93,11 +85,11 @@ const currentPath = `${Astro.url.pathname.replace(/\/+$/, "")}/`;
       </svg>
       <nav class="footer-page-links" aria-label="Footer navigation">
         {
-          footerLinks.map((link) => (
+          siteLinks.map((link) => (
             <a class="footer-playful-link" href={link.href}>
-              <span class="sr-only">{link.label}</span>
+              <span class="sr-only">{link.footerLabel ?? link.label}</span>
               <span class="footer-link-letters" aria-hidden="true">
-                {[...link.label].map((letter, index) => (
+                {[...(link.footerLabel ?? link.label)].map((letter, index) => (
                   <span style={`--letter-index: ${index}`}>
                     {letter === " " ? "\u00a0" : letter}
                   </span>

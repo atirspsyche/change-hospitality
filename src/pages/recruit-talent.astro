@@ -1,7 +1,6 @@
 ---
 import ClientTestimonials from '../components/ClientTestimonials.astro';
 import FunMenu from '../components/FunMenu.astro';
-import EggIllustration from '../components/EggIllustration.astro';
 import PageMotion from '../components/PageMotion.astro';
 import RecruitTalentHero from '../components/RecruitTalentHero.astro';
 import RecruitmentDivisions from '../components/RecruitmentDivisions.astro';
@@ -14,39 +13,13 @@ import { getPublicContacts } from '../sanity/queries';
 import { telephoneHref } from '../data/editorial';
 const contacts = await getPublicContacts();
 
-const showHandoff = false;
-
-const sectionLinks = [
-  { label: 'Client stories', href: '#client-testimonials', meta: 'Better together' },
-  { label: 'Divisions', href: '#divisions', meta: 'Where we recruit' },
-  { label: 'Staffing brief', href: '#staffing-brief', meta: 'Tell us what you need' },
-];
-
-const handoffSteps = [
-  {
-    number: '01',
-    title: 'Send the brief',
-    copy: 'Share the role, location and shape of the team. Just the useful detail, all in one place.',
-  },
-  {
-    number: '02',
-    title: 'Talk to a specialist',
-    copy: 'A consultant calls to understand the culture, timing and judgement the role really needs.',
-  },
-  {
-    number: '03',
-    title: 'Meet the right people',
-    copy: 'We search our network, qualify candidates face to face and manage every introduction.',
-  },
-];
 ---
 
 <BaseLayout
   title="Recruit Hospitality Talent | Change Hospitality"
-  description="Submit a staffing brief to Change Hospitality for temporary and permanent front of house, back of house, events and commercial recruitment."
+  description="Hire front of house, back of house, events and commercial talent through face-to-face hospitality recruitment. Send your staffing brief."
 >
   <FunMenu
-    sectionLinks={sectionLinks}
     menuButtonBackground="var(--color-flame)"
     menuButtonBorderColor="var(--color-ink)"
     menuButtonTextColor="var(--color-cream)"
@@ -56,38 +29,16 @@ const handoffSteps = [
   <main class="recruit-page" data-recruit-page>
     <RecruitTalentHero />
 
-    {showHandoff && (
-      <SectionCurve backdropColor="var(--color-mist)">
-      <section id="how-it-works" class="recruit-handoff" aria-labelledby="handoff-title" data-section-reveal>
-        <div class="recruit-handoff-inner">
-          <div class="recruit-handoff-heading">
-            <p>The handoff</p>
-            <h2 id="handoff-title">A clear brief in.<br />A human search out.</h2>
-          </div>
-          <div class="recruit-handoff-steps">
-            {handoffSteps.map((step) => (
-              <article class="recruit-handoff-step">
-                <span>{step.number}</span>
-                <h3>{step.title}</h3>
-                <p>{step.copy}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-      </SectionCurve>
-    )}
-
-    <SectionCurve backdropColor={showHandoff ? "var(--color-mint)" : "var(--color-mist)"}>
+    <SectionCurve backdropColor="var(--color-mist)">
       <RecruitmentDivisions />
     </SectionCurve>
 
     <SectionCurve backdropColor="var(--color-citron)">
-    <section class="recruit-form-section" aria-label="Submit a staffing requirement">
+    <section id="staffing-requirement" class="recruit-form-section" aria-label="Submit a staffing requirement">
       <div class="recruit-form-layout">
         <aside class="recruit-form-intro" data-section-reveal>
           <p class="recruit-form-eyebrow">Recruit talent</p>
-          <h2>Tell us what the team needs.</h2>
+          <h2>Tell us what your team needs.</h2>
           <p>
             Permanent hire, casual cover or a whole opening team: give us the starting point and the right consultant takes it from there.
           </p>
@@ -99,7 +50,7 @@ const handoffSteps = [
         </aside>
 
         <div class="recruit-form-wrap" data-section-reveal>
-          <RecruitmentForm id="staffing-brief" />
+          <RecruitmentForm id="staffing-brief" contactEmail={contacts.recruitmentEmail} />
         </div>
       </div>
     </section>
@@ -113,23 +64,11 @@ const handoffSteps = [
       <ClientTestimonials />
     </SectionCurve>
 
-    <!-- <section class="recruit-footer" aria-labelledby="recruit-conversation-title">
-      <EggIllustration class="recruit-footer-egg" />
-      <div class="recruit-footer-inner">
-        <p>Still shaping the role?</p>
-        <h2 id="recruit-conversation-title">We can take it<br />from a conversation.</h2>
-        <div class="recruit-footer-actions">
-          <a href={telephoneHref(contacts.phone)}>Call the team</a>
-          <a href={`mailto:${contacts.recruitmentEmail}`}>Send an email</a>
-        </div>
-        <div class="recruit-footer-base">
-          <a href="/">Change Hospitality</a>
-          <span>Front of House / Back of House / Events &amp; Commercial</span>
-        </div>
-      </div>
-    </section> -->
     <SiteFooter backdropColor="var(--color-paper)" />
   </main>
+  <noscript>
+    <style is:inline>[data-recruit-page] [data-section-reveal] { opacity: 1; translate: none; }</style>
+  </noscript>
 </BaseLayout>
 
 <style>
@@ -140,19 +79,7 @@ const handoffSteps = [
     color: var(--color-ink);
   }
 
-  .recruit-handoff {
-    background: var(--color-mint);
-    padding: 5rem 1.25rem;
-  }
-
-  .recruit-handoff-inner {
-    width: min(100%, 80rem);
-    margin: 0 auto;
-  }
-
-  .recruit-handoff-heading > p,
-  .recruit-form-eyebrow,
-  .recruit-footer-inner > p {
+  .recruit-form-eyebrow {
     margin-bottom: 1rem;
     color: var(--color-flame);
     font-size: 0.75rem;
@@ -160,50 +87,11 @@ const handoffSteps = [
     text-transform: uppercase;
   }
 
-  .recruit-handoff-heading h2,
-  .recruit-form-intro h2,
-  .recruit-footer h2 {
+  .recruit-form-intro h2 {
     font-family: var(--font-display);
     font-size: 3rem;
-    /* font-weight: 650; */
     line-height: 0.92;
     text-wrap: balance;
-  }
-
-  .recruit-handoff-steps {
-    display: grid;
-    margin-top: 3rem;
-    border-top: 1px solid color-mix(in srgb, var(--color-ink) 28%, transparent);
-  }
-
-  .recruit-handoff-step {
-    display: grid;
-    grid-template-columns: 2.4rem 1fr;
-    gap: 0.5rem 1rem;
-    border-bottom: 1px solid color-mix(in srgb, var(--color-ink) 28%, transparent);
-    padding: 1.5rem 0;
-  }
-
-  .recruit-handoff-step > span {
-    grid-row: span 2;
-    color: var(--color-flame);
-    font-size: 0.75rem;
-    font-weight: 900;
-  }
-
-  .recruit-handoff-step h3 {
-    font-family: var(--font-display);
-    font-size: 1.8rem;
-    /* font-weight: 650; */
-    line-height: 1;
-  }
-
-  .recruit-handoff-step p {
-    max-width: 31rem;
-    color: var(--color-cocoa);
-    font-size: 0.95rem;
-    font-weight: 700;
-    line-height: 1.55;
   }
 
   .recruit-form-section {
@@ -284,141 +172,21 @@ const handoffSteps = [
     translate: 0 0;
   }
 
-  .recruit-footer {
-    position: relative;
-    min-height: 43rem;
-    overflow: hidden;
-    background: var(--color-cream);
-    color: var(--color-ink);
-    padding: 5rem 1.25rem 2rem;
-  }
-
-  .recruit-footer::before {
-    position: absolute;
-    left: -12rem;
-    bottom: -8rem;
-    width: 32rem;
-    height: 22rem;
-    border-radius: 999px;
-    background: var(--color-mint);
-    content: '';
-    transform: rotate(13deg);
-  }
-
-  :global(.recruit-footer-egg) {
-    --egg-position: absolute;
-    --egg-width: 18rem;
-    top: 6rem;
-    right: -4rem;
-  }
-
-  .recruit-footer-inner {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    width: min(100%, 80rem);
-    min-height: 36rem;
-    margin: 0 auto;
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  .recruit-footer h2 {
-    max-width: 54rem;
-    font-size: 3.8rem;
-  }
-
-  .recruit-footer-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 0.7rem;
-    margin-top: 2rem;
-  }
-
-  .recruit-footer-actions a {
-    display: inline-flex;
-    min-height: 3.8rem;
-    align-items: center;
-    justify-content: center;
-    border: 0;
-    border-radius: 1.2rem;
-    background: var(--color-citron);
-    padding: 0.9rem 1.3rem;
-    font-size: 0.85rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    transition: transform 280ms var(--ease-cartoon), background-color 220ms ease;
-  }
-
-  .recruit-footer-actions a:last-child {
-    background: var(--color-blush);
-  }
-
-  .recruit-footer-actions a:hover,
-  .recruit-footer-actions a:focus-visible {
-    background: var(--color-flame);
-    color: var(--color-cream);
-    transform: translateY(-0.25rem) rotate(-1deg);
-  }
-
-  .recruit-footer-base {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    margin-top: auto;
-    border-top: 1px solid color-mix(in srgb, var(--color-ink) 28%, transparent);
-    padding-top: 1rem;
-    font-size: 0.72rem;
-    font-weight: 900;
-    text-transform: uppercase;
-  }
-
   @media (min-width: 640px) {
-    .recruit-handoff,
-    .recruit-form-section,
-    .recruit-footer {
+    .recruit-form-section {
       padding-inline: 2.5rem;
     }
 
-    .recruit-handoff-heading h2,
     .recruit-form-intro h2 {
       font-size: 4.6rem;
       color: var(--color-cream);
     }
 
-    .recruit-footer h2 {
-      font-size: 5.5rem;
-    }
-
-    .recruit-footer-actions {
-      flex-direction: row;
-    }
-
-    .recruit-footer-actions a {
-      min-width: 13rem;
-    }
-
-    .recruit-footer-base {
-      flex-direction: row;
-      justify-content: space-between;
-    }
   }
 
   @media (min-width: 1024px) {
-    .recruit-handoff,
     .recruit-form-section {
       padding-block: 7rem;
-    }
-
-    .recruit-handoff-inner {
-      display: grid;
-      grid-template-columns: 0.85fr 1.15fr;
-      gap: 6rem;
-      align-items: start;
-    }
-
-    .recruit-handoff-steps {
-      margin-top: 0;
     }
 
     .recruit-form-layout {
@@ -431,14 +199,6 @@ const handoffSteps = [
       top: 7rem;
     }
 
-    .recruit-footer h2 {
-      font-size: 7rem;
-    }
-
-    :global(.recruit-footer-egg) {
-      right: 5%;
-      --egg-width: 25rem;
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {

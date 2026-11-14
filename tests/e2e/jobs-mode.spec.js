@@ -31,6 +31,26 @@ test("job modes keep native radio selection, keyboard access and the matching co
   await expect(temporaryPanel).toBeHidden();
 });
 
+test("job position search offers the configured categories and filters loaded jobs", async ({ page }) => {
+  const positions = ["Back of House", "Front of House", "Sales & Marketing", "Events", "HR", "Finance", "Admin"];
+  const positionFilter = page.locator('[data-job-filter="position"]');
+  await expect(positionFilter.locator("option")).toHaveText(["Any team", ...positions]);
+  const optionValues = await positionFilter.locator("option").evaluateAll((options) => options.map((option) => option.value));
+  expect(optionValues).toEqual(["", ...positions]);
+  const cards = page.locator("[data-job-card]");
+  const savedPositions = await cards.evaluateAll((elements) => elements.map((card) => card.dataset.position));
+
+  for (const position of [...positions, ""]) {
+    await positionFilter.selectOption(position);
+    await page.getByRole("button", { name: "Search jobs", exact: true }).click();
+    const expectedCount = savedPositions.filter((value) => !position || value === position).length;
+    await expect(page.locator("[data-job-count]")).toHaveText(String(expectedCount));
+    const visiblePositions = await cards.evaluateAll((elements) => elements.filter((card) => !card.hidden).map((card) => card.dataset.position));
+    expect(visiblePositions.every((value) => !position || value === position)).toBe(true);
+    await expect(page.locator("[data-job-empty]")).toBeVisible({ visible: expectedCount === 0 });
+  }
+});
+
 test("job mode choices use the footer palette, readable states and responsive touch targets", async ({ page }, testInfo) => {
   await page.evaluate(() => document.fonts.ready);
   const choices = page.locator(".jobs-mode-choice");

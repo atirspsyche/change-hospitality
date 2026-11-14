@@ -85,7 +85,7 @@ const phoneHref = consultant?.phone ? `tel:${consultant.phone.replace(/[^+\d]/g,
             </ul>
           </section>
 
-          {!job.isTest && <button class="job-detail-apply" type="button" data-open-job-application>
+          {!job.isTest && <button class="job-detail-apply" type="button" data-open-job-application data-js-required>
             Apply for this role <span aria-hidden="true">&#8595;</span>
           </button>}
         </div>

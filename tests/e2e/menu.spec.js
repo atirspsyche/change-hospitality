@@ -95,7 +95,7 @@ test("the navbar stays stable when scrolling stops on every main page", async ({
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(top);
   };
 
-  for (const route of ["/jobs/", "/recruit-talent/", "/team/", "/our-story/", "/franchising/", "/sustainability-impact/", "/"]) {
+  for (const route of ["/jobs/", "/recruit-talent/", "/team/", "/our-story/", "/franchising/", "/environmental-policy/", "/"]) {
     await test.step(route, async () => {
       await page.goto(route);
       await expect(page.locator("[data-funmenu]")).toHaveAttribute("data-funmenu-ready", "true");
@@ -409,13 +409,13 @@ test("current-page markers follow Franchising and Home through client navigation
 });
 
 test("the current row and stamp stay prominent without overlapping long labels", async ({ page }, testInfo) => {
-  await page.goto("/sustainability-impact/");
+  await page.goto("/environmental-policy/");
   await page.evaluate(() => document.fonts.ready);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.locator(toggleSelector).focus();
   await page.keyboard.press("Enter");
   const current = page.locator(`${overlaySelector} [aria-current="page"]`);
-  await expect(current).toHaveAttribute("href", "/sustainability-impact/");
+  await expect(current).toHaveAttribute("href", "/environmental-policy/");
   const colours = await tokenColours(page, ["citron", "ink", "cream", "cocoa"]);
   const sizes = testInfo.project.name === "mobile"
     ? [[320, 568], [390, 844]]

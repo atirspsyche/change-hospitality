@@ -3,7 +3,6 @@ import HeroIllustration from "./HeroIllustration.astro";
 ---
 
 <section class="jobs-hero" aria-labelledby="jobs-page-title" data-jobs-hero>
-  <!-- <div class="jobs-hero-shape jobs-hero-shape-one" data-hero-shape="1" aria-hidden="true"></div> -->
   <div class="jobs-hero-shape jobs-hero-shape-two" data-hero-shape="-1" aria-hidden="true"></div>
   <div class="jobs-hero-inner">
     <div class="jobs-hero-copy">
@@ -12,11 +11,11 @@ import HeroIllustration from "./HeroIllustration.astro";
         <span>Your next move</span> is closer than you think
       </h1>
       <p class="jobs-hero-intro">
-        From small independents to biggest names in the industry, and everything in between. 
+        From small independents to the biggest names in the industry, and everything in between.
         There's something for everyone here.
       </p>
 
-      <fieldset class="jobs-mode-switch" data-jobs-mode-switch>
+      <fieldset class="jobs-mode-switch" data-jobs-mode-switch data-js-required>
         <legend>What kind of work suits you?</legend>
         <div class="jobs-mode-options">
           <label>
@@ -78,15 +77,6 @@ import HeroIllustration from "./HeroIllustration.astro";
     pointer-events: none;
   }
 
-  .jobs-hero-shape-one {
-    left: -8rem;
-    bottom: -3rem;
-    width: 24rem;
-    height: 13rem;
-    background: var(--color-cream);
-    transform: rotate(18deg);
-  }
-
   .jobs-hero-shape-two {
     top: 4rem;
     right: -12rem;
@@ -126,8 +116,7 @@ import HeroIllustration from "./HeroIllustration.astro";
   .jobs-hero h1 {
     max-width: 50rem;
     font-family: var(--font-hero);
-    /* font-size: clamp(2.5rem, 6vw, 6rem); */
-    font-size: clamp(2.5rem, 5.3vw, 5rem);;
+    font-size: clamp(2.5rem, 5.3vw, 5rem);
     font-weight: 400;
     line-height: 0.9;
     text-wrap: balance;
@@ -145,7 +134,7 @@ import HeroIllustration from "./HeroIllustration.astro";
     font-size: clamp(1.05rem, 1.5vw, 1.3rem);
     font-weight: 800;
     line-height: 1.5;
-    font-family: var(--font-body);
+    font-family: var(--font-sans);
 
   }
 

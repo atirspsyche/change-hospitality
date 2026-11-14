@@ -254,7 +254,7 @@ export const homeStory = {
             body: "At the core of it all, we're a business continuously striving to look after its people and its footprint with a commitment to doing right by both.",
             action: {
               label: "Sustainability",
-              href: "/sustainability-impact/",
+              href: "/environmental-policy/",
               tone: "citron",
             },
           },

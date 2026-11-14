@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { consultant } from './consultant.ts';
 import { location as locationSchema } from './location.ts';
-import { getTeamGroups, teamMembers } from '../../src/data/team.ts';
+import { getTeamGroups } from '../../src/data/team.ts';
 import { englishCities, seedLocations } from '../data/locations.ts';
 import { mediaLimits, uploadError, validateImage } from '../lib/mediaRules.ts';
 
@@ -102,6 +102,12 @@ const offices = [
   { _id: 'location-hampshire', name: 'Hampshire', slug: { current: 'hampshire' }, active: true, sortOrder: 1 },
   { _id: 'location-manchester', name: 'Manchester', slug: { current: 'manchester' }, active: true, sortOrder: 2 },
 ];
+
+const teamMembers = ['london', 'london', 'hampshire', 'manchester'].map((office, index) => ({
+  _id: `consultant-${index}`,
+  name: `Example member ${index}`,
+  location: { _id: `location-${office}`, name: office },
+}));
 
 test('active offices group every assigned member by document ID', () => {
   const groups = getTeamGroups(offices, teamMembers);

@@ -1,5 +1,7 @@
 # System Context & Brief: Change Hospitality Redesign
 
+> Historical concept brief. The final implementation uses the approved illustrated light-theme design, not the original cinematic layout below. See the [current architecture and workflows](../README.md).
+
 ## 1. Project Overview & Target Audience
 - **Client:** Change Hospitality (https://www.changehospitality.co.uk/)
 - **Business Model:** A premium recruitment agency specializing in temporary and permanent staffing for the hospitality sector (Front of House, Back of House, Events, and Commercial).

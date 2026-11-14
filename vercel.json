@@ -1,4 +1,196 @@
 {
+  "functions": {
+    "api/*.js": {
+      "maxDuration": 60
+    }
+  },
+  "redirects": [
+    {
+      "source": "/sustainability-impact",
+      "destination": "/environmental-policy/",
+      "statusCode": 301
+    },
+    {
+      "source": "/sustainability-impact/",
+      "destination": "/environmental-policy/",
+      "statusCode": 301
+    },
+    {
+      "source": "/search-jobs",
+      "destination": "/jobs/",
+      "statusCode": 301
+    },
+    {
+      "source": "/search-jobs/",
+      "destination": "/jobs/",
+      "statusCode": 301
+    },
+    {
+      "source": "/job-search",
+      "destination": "/jobs/",
+      "statusCode": 301
+    },
+    {
+      "source": "/job-search/",
+      "destination": "/jobs/",
+      "statusCode": 301
+    },
+    {
+      "source": "/our-company",
+      "destination": "/our-story/",
+      "statusCode": 301
+    },
+    {
+      "source": "/our-company/",
+      "destination": "/our-story/",
+      "statusCode": 301
+    },
+    {
+      "source": "/contact",
+      "destination": "/team/#profiles",
+      "statusCode": 301
+    },
+    {
+      "source": "/contact/",
+      "destination": "/team/#profiles",
+      "statusCode": 301
+    },
+    {
+      "source": "/consultant/:slug",
+      "destination": "/team/#profiles",
+      "statusCode": 301
+    },
+    {
+      "source": "/consultant/:slug/",
+      "destination": "/team/#profiles",
+      "statusCode": 301
+    },
+    {
+      "source": "/success-stories",
+      "destination": "/jobs/#candidate-testimonials",
+      "statusCode": 301
+    },
+    {
+      "source": "/success-stories/",
+      "destination": "/jobs/#candidate-testimonials",
+      "statusCode": 301
+    },
+    {
+      "source": "/data-protection-policy",
+      "destination": "/policies/data-protection/",
+      "statusCode": 301
+    },
+    {
+      "source": "/data-protection-policy/",
+      "destination": "/policies/data-protection/",
+      "statusCode": 301
+    },
+    {
+      "source": "/modern-slavery",
+      "destination": "/policies/modern-slavery/",
+      "statusCode": 301
+    },
+    {
+      "source": "/modern-slavery/",
+      "destination": "/policies/modern-slavery/",
+      "statusCode": 301
+    },
+    {
+      "source": "/diversity-policy",
+      "destination": "/policies/equality-inclusion-diversity/",
+      "statusCode": 301
+    },
+    {
+      "source": "/diversity-policy/",
+      "destination": "/policies/equality-inclusion-diversity/",
+      "statusCode": 301
+    },
+    {
+      "source": "/job-division/front-of-house",
+      "destination": "/recruit-talent/#divisions",
+      "statusCode": 301
+    },
+    {
+      "source": "/job-division/front-of-house/",
+      "destination": "/recruit-talent/#divisions",
+      "statusCode": 301
+    },
+    {
+      "source": "/job-division/recruiting-for-back-of-house-roles",
+      "destination": "/recruit-talent/#divisions",
+      "statusCode": 301
+    },
+    {
+      "source": "/job-division/recruiting-for-back-of-house-roles/",
+      "destination": "/recruit-talent/#divisions",
+      "statusCode": 301
+    },
+    {
+      "source": "/job-division/recruiting-sales-events-marketing-roles",
+      "destination": "/recruit-talent/#divisions",
+      "statusCode": 301
+    },
+    {
+      "source": "/job-division/recruiting-sales-events-marketing-roles/",
+      "destination": "/recruit-talent/#divisions",
+      "statusCode": 301
+    },
+    {
+      "source": "/job-division/recruiting-for-executive-level-roles",
+      "destination": "/recruit-talent/#divisions",
+      "statusCode": 301
+    },
+    {
+      "source": "/job-division/recruiting-for-executive-level-roles/",
+      "destination": "/recruit-talent/#divisions",
+      "statusCode": 301
+    },
+    {
+      "source": "/job-division/recruiting-for-hospitality-human-resource-roles",
+      "destination": "/recruit-talent/#divisions",
+      "statusCode": 301
+    },
+    {
+      "source": "/job-division/recruiting-for-hospitality-human-resource-roles/",
+      "destination": "/recruit-talent/#divisions",
+      "statusCode": 301
+    },
+    {
+      "source": "/job-division/recruiting-office-support-roles-for-luxury-and-hospitality-organisations",
+      "destination": "/recruit-talent/#divisions",
+      "statusCode": 301
+    },
+    {
+      "source": "/job-division/recruiting-office-support-roles-for-luxury-and-hospitality-organisations/",
+      "destination": "/recruit-talent/#divisions",
+      "statusCode": 301
+    },
+    {
+      "source": "/job-division/recruiting-financial-staff-for-roles-in-hospitality-businesses",
+      "destination": "/recruit-talent/#divisions",
+      "statusCode": 301
+    },
+    {
+      "source": "/job-division/recruiting-financial-staff-for-roles-in-hospitality-businesses/",
+      "destination": "/recruit-talent/#divisions",
+      "statusCode": 301
+    },
+    {
+      "source": "/job-division/submit-a-vacancy",
+      "destination": "/recruit-talent/#staffing-requirement",
+      "statusCode": 301
+    },
+    {
+      "source": "/job-division/submit-a-vacancy/",
+      "destination": "/recruit-talent/#staffing-requirement",
+      "statusCode": 301
+    },
+    {
+      "source": "/sitemap_index.xml",
+      "destination": "/sitemap-index.xml",
+      "statusCode": 301
+    }
+  ],
   "headers": [
     {
       "source": "/_astro/(.*)",
